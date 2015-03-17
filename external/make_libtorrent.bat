@@ -24,10 +24,10 @@ echo BOOST:      %BOOST_ROOT%
 echo.
 
 rem Check for webp
-if /I not exist ..\webp\mingw\msys\1.0\home\libwebp-0.4.0.tar.gz  (echo ERROR: libwebp-0.4.0.tar.gz not found in webp\mingw\msys\1.0\home & goto EOF)
+rem if /I not exist ..\webp\mingw\msys\1.0\home\libwebp-0.4.0.tar.gz  (echo ERROR: libwebp-0.4.0.tar.gz not found in webp\mingw\msys\1.0\home & goto EOF)
 
 rem prepare for webp
-if /I exist %GCC_PATH%\msys\1.0\home\libwebp-0.4.0.tar.gz (echo Skipping prepwebp & goto skipprepwebp)
+rem if /I exist %GCC_PATH%\msys\1.0\home\libwebp-0.4.0.tar.gz (echo Skipping prepwebp & goto skipprepwebp)
 xcopy ..\webp\mingw %GCC_PATH% /E /I /Y
 echo %GCC_PATH% /mingw > %GCC_PATH%\msys\1.0\etc\fstab
 :skipprepwebp
