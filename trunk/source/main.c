@@ -18,7 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global variables
-const WCHAR *menu3str[]=
+/*const WCHAR *menu3str[]=
 {
     L"SDI at samforum.org (Russian)",
     L"SDI at forum.oszone.net (Russian)",
@@ -38,7 +38,7 @@ WCHAR *menu3url[]=
     L"http://code.google.com/p/snappy-driver-installer",
     L"http://driveroff.net/sam",
     L"http://driverpacks.net",
-};
+};*/
 
 // Manager
 manager_t manager_v[2];
@@ -1721,7 +1721,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 InvalidateRect(hwnd,NULL,TRUE);
             }
-            if(j==7||j==12)contextmenu3(x,y);
+            if(j==7||j==12)RunSilent(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
             break;
 
         case WM_RBUTTONUP:
@@ -1820,10 +1820,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 default:
                     break;
             }
-            if(wp>=ID_URL0&&wp<=ID_URL4)
+            /*if(wp>=ID_URL0&&wp<=ID_URL4)
             {
                 RunSilent(L"open",menu3url[wp-ID_URL0],SW_SHOWNORMAL,0);
-            }
+            }*/
             if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
             {
                 virtual_os_version=windows_ver[wp-ID_WIN_2000];
@@ -2010,7 +2010,7 @@ void contextmenu2(int x,int y)
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
 }
 
-void contextmenu3(int x,int y)
+/*void contextmenu3(int x,int y)
 {
     int i;
     RECT rect;
@@ -2020,7 +2020,7 @@ void contextmenu3(int x,int y)
     SetForegroundWindow(hMain);
     GetWindowRect(hMain,&rect);
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
-}
+}*/
 
 
 void contextmenu(int x,int y)

@@ -29,7 +29,7 @@ int downlimit=0,uplimit=0;
 #include "libtorrent/alert_types.hpp"
 #include "libtorrent/session.hpp"
 
-#define TORRENT_URL "http://driveroff.net/SDI_Update.torrent"
+#define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
 using namespace libtorrent;
 
