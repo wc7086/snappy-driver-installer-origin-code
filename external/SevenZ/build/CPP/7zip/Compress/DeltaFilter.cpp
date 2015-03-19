@@ -123,7 +123,7 @@ static CCodecInfo g_CodecsInfo[] =
 };
 
 REGISTER_CODECS(Delta)
-extern "C" void registerDelta()
+void registerDelta()
 {
 	REGISTER_CODECS_NAME(Delta) *g_RegisterCodecs;
 }

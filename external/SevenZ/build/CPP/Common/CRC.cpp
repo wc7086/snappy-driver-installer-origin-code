@@ -6,7 +6,7 @@
 
 __declspec(dllexport) struct CCRCTableInit { CCRCTableInit() { CrcGenerateTable(); } } g_CRCTableInit;
 
-extern "C"  void registercrc()
+void registercrc()
 {
 	CCRCTableInit *a;
 }

@@ -29,7 +29,7 @@ static CCodecInfo g_CodecsInfo[] =
 
 REGISTER_CODECS(Branch)
 
-extern "C" void registerBranch()
+void registerBranch()
 {
 	REGISTER_CODECS_NAME(Branch) *g_RegisterCodecs;
 }

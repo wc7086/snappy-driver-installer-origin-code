@@ -340,7 +340,7 @@ void registerall()
 {
 #ifndef CONSOLE_MODE
     registercrc();
-    register7z();
+    NArchive::N7z::register7z();
     registerBCJ();
     registerBCJ2();
     registerBranch();

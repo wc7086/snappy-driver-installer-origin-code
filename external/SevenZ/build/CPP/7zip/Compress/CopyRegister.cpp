@@ -13,7 +13,7 @@ static CCodecInfo g_CodecInfo =
 
 REGISTER_CODEC(Copy)
 
-extern "C"  void registerCopy()
+void registerCopy()
 {
 	REGISTER_CODEC_NAME(Copy) *g_RegisterCodec;
 }

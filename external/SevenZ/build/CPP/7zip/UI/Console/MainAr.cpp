@@ -30,7 +30,7 @@ static const char *kInternalExceptionMessage = "\n\nInternal Error #";
 
 #define NT_CHECK_FAIL_ACTION (*g_StdStream) << "Unsupported Windows version"; return NExitCode::kFatalError;
 
-extern "C" int Extract7z(WCHAR *str);
+int Extract7z(WCHAR *str);
 int MY_CDECL _main
 (
   #ifndef _WIN32
@@ -40,7 +40,7 @@ int MY_CDECL _main
 {
 	return Extract7z(0);
 }
-extern "C" int Extract7z(WCHAR *str)
+int Extract7z(WCHAR *str)
 {
   g_StdStream = &g_StdOut;
 

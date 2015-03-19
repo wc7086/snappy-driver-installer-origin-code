@@ -56,9 +56,9 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include "update.h"
 
 #include <webp\decode.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
+
+extern "C"
+{
 #include "7z.h"
 #include "7zAlloc.h"
 #include "7zCrc.h"
@@ -66,10 +66,7 @@ extern "C" {
 #include "7zVersion.h"
 #include "LzmaEnc.h"
 #include "Lzma86.h"
-#ifdef __cplusplus
 }
-#endif
-//}
 
 //{ Defines
 

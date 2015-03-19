@@ -225,11 +225,5 @@ int iswide(int x,int y);
 int opencatfile(state_t *state,driver_t *cur_driver);
 void isnotebook_a(state_t *state);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
-#ifdef __cplusplus
-}
-#endif
