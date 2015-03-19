@@ -56,7 +56,9 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include "update.h"
 
 #include <webp\decode.h>
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include "7z.h"
 #include "7zAlloc.h"
 #include "7zCrc.h"
@@ -64,6 +66,9 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include "7zVersion.h"
 #include "LzmaEnc.h"
 #include "Lzma86.h"
+#ifdef __cplusplus
+}
+#endif
 //}
 
 //{ Defines
@@ -252,9 +257,9 @@ typedef struct _bundle_t
 // Main
 void settings_parse(const WCHAR *str,int ind);
 void settings_save();
-int  settings_load(WCHAR *filename);
+int  settings_load(const WCHAR *filename);
 void SignalHandler(int signum);
-void CALLBACK drp_callback(LPTSTR szFile,DWORD action,LPARAM lParam);
+void CALLBACK drp_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
 void checkupdates();
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
 
@@ -293,7 +298,7 @@ void extractto();
 // GUI
 void tabadvance(int v);
 void gui(int nCmd);
-void checktimer(WCHAR *str,long long t,int uMsg);
+void checktimer(const WCHAR *str,long long t,int uMsg);
 LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
@@ -305,7 +310,7 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
 void str_unicode2ansi(char *a);
 void set_rstpnt(int checked);
 void drvdir();
-WCHAR *getHWIDby(int id,int num);
+const WCHAR *getHWIDby(int id,int num);
 void escapeAmpUrl(WCHAR *buf,WCHAR *source);
 void escapeAmp(WCHAR *buf,WCHAR *source);
 void contextmenu3(int x,int y);

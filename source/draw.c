@@ -300,7 +300,7 @@ void image_load(img_t *img,BYTE *data,int sz)
     bmi.bmiHeader.biSizeImage=img->sx*img->sy*4;
 
     img->dc=CreateCompatibleDC(0);
-    img->bitmap=CreateDIBSection(img->dc,&bmi,DIB_RGB_COLORS,(void *)&bits,0,0);
+    img->bitmap=CreateDIBSection(img->dc,&bmi,DIB_RGB_COLORS,(void **)&bits,0,0);
     SelectObject(img->dc,img->bitmap);
 
     p1=bits;p2=img->big;
@@ -341,7 +341,7 @@ void image_loadFile(img_t *img,WCHAR *filename)
     fseek(f,0,SEEK_END);
     sz=ftell(f);
     fseek(f,0,SEEK_SET);
-    imgbuf=malloc(sz);
+    imgbuf=(BYTE *)malloc(sz);
 
     sz=fread(imgbuf,1,sz,f);
     if(!sz)
@@ -365,14 +365,14 @@ void image_loadRes(img_t *img,int id)
         log_err("ERROR in image_loadRes(): failed get_resource\n");
         return;
     }
-    image_load(img,myResourceData,sz);
+    image_load(img,(BYTE *)myResourceData,sz);
 }
 
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
     HBRUSH oldbrush;
-    uintptr_t *r;
+    HGDIOBJ r;
     unsigned r32;
 
     oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
@@ -402,7 +402,7 @@ void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
 {
     HPEN newpen,oldpen;
     HBRUSH oldbrush;
-    uintptr_t *r;
+    HGDIOBJ r;
     x1-=2;
     y1-=2;
     x2+=2;
@@ -587,7 +587,7 @@ void canvas_free(canvas_t *canvas)
 
 void canvas_begin(canvas_t *canvas,HWND hwnd,int x,int y)
 {
-    uintptr_t *r;
+    HGDIOBJ r;
     unsigned r32;
 
     canvas->hwnd=hwnd;
@@ -607,7 +607,7 @@ void canvas_begin(canvas_t *canvas,HWND hwnd,int x,int y)
         }
         canvas->bitmap=CreateCompatibleBitmap(canvas->localDC,x,y);
         if(!canvas->bitmap)log_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
-        canvas->oldbitmap=SelectObject(canvas->hdcMem,canvas->bitmap);
+        canvas->oldbitmap=(HBITMAP)SelectObject(canvas->hdcMem,canvas->bitmap);
         if(!canvas->oldbitmap)log_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
     }
     canvas->clipping=CreateRectRgnIndirect(&canvas->ps.rcPaint);

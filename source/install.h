@@ -46,8 +46,14 @@ void updateoverall(manager_t *manager);
 void updatecur();
 void driver_install(WCHAR *hwid,WCHAR *inf,int *ret,int *needrb);
 void removeextrainfs(WCHAR *inf);
+#ifdef __cplusplus
+extern "C" {
+#endif
 void _7z_total(long long i);
 int _7z_setcomplited(long long i);
+#ifdef __cplusplus
+}
+#endif
 unsigned int __stdcall thread_install(void *arg);
 
 void calcwnddata(wnddata_t *w,HWND hwnd);

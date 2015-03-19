@@ -123,19 +123,19 @@ void manager_selectall(manager_t *manager);
 // Helpers
 int groupsize(manager_t *manager,int index);
 void itembar_init(itembar_t *item,devicematch_t *devicematch,hwidmatch_t *match,int groupindex,int rm,int first);
-void itembar_settext(manager_t *manager,int i,WCHAR *txt1,int percent);
+void itembar_settext(manager_t *manager,int i,const WCHAR *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
 int  itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb);
 int  isdrivervalid(hwidmatch_t *hwidmatch);
 void str_status(WCHAR *buf,itembar_t *itembar);
 int  box_status(int index);
 void str_date(version_t *v,WCHAR *buf);
-WCHAR *str_version(version_t *ver);
+const WCHAR *str_version(version_t *ver);
 
 // Driver list
 void manager_setpos(manager_t *manager);
 int  manager_animate(manager_t *manager);
-void drawbutton(HDC hdc,int x,int pos,int index,WCHAR *str1,WCHAR *str2);
+void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *str2);
 int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int cutoff);
 int  isbehind(manager_t *manager,int pos,int ofs,int j);
 int  calc_cutoff(manager_t *manager);
@@ -143,10 +143,10 @@ void manager_draw(manager_t *manager,HDC hdc,int ofsy);
 void manager_restorepos(manager_t *manager,manager_t *manager_prev);
 
 // Draw
-void TextOut_CM(HDC hdcMem,int x,int y,WCHAR *str,int color,int *maxsz,int mode);
-void TextOutP(textdata_t *td,WCHAR *format,...);
-void TextOutF(textdata_t *td,int col,WCHAR *format,...);
-void TextOutSF(textdata_t *td,WCHAR *str,WCHAR *format,...);
+void TextOut_CM(HDC hdcMem,int x,int y,const WCHAR *str,int color,int *maxsz,int mode);
+void TextOutP(textdata_t *td,const WCHAR *format,...);
+void TextOutF(textdata_t *td,int col,const WCHAR *format,...);
+void TextOutSF(textdata_t *td,const WCHAR *str,const WCHAR *format,...);
 
 // Popup
 void format_size(WCHAR *buf,long long val,int isspeed);

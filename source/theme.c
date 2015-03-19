@@ -107,9 +107,9 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
         *sz-=3;
         fread(data,1,1,f);
         int q=fread(data,1,*sz,f);
-        szo=MultiByteToWideChar(CP_UTF8,0,data,q,0,0);
+        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)data,q,0,0);
         data1=malloc(szo*2+2);
-        *sz=MultiByteToWideChar(CP_UTF8,0,data,q,data1,szo);
+        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)data,q,(LPWSTR)data1,szo);
         free(data);
         fclose(f);
         return data1;
@@ -125,7 +125,7 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
     {
         data1=malloc(*sz+2);
         fread(data,*sz,1,f);
-        _swab(data,data1,*sz);
+        _swab((char *)data,(char *)data1,*sz);
         free(data);
         *sz>>=1;(*sz)--;
         fclose(f);
@@ -140,7 +140,7 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
             free(data);
             return 0;
         }
-        p=data;(*sz)--;
+        p=(WCHAR *)data;(*sz)--;
         while(!feof(f))
         {
             fgetws(p,*sz,f);
@@ -285,7 +285,7 @@ void vault_loadfromfile(vault_t *v,WCHAR *filename)
     //printf("{%ws\n",filename);
     //if(v->odata)free(v->odata);
     //v->odata=v->data;
-    data=vault_loadfile(filename,&sz);
+    data=(WCHAR *)vault_loadfile(filename,&sz);
     if(!data)
     {
         log_err("ERROR in vault_loadfromfile(): failed to load '%ws'\n",filename);
@@ -307,7 +307,7 @@ void vault_loadfromres(vault_t *v,int id)
     //if(v->odata)free(v->odata);
     //v->odata=v->data;
     get_resource(id,(void **)&data1,&sz);
-    data=malloc(sz*2+2);
+    data=(WCHAR*)malloc(sz*2+2);
     int j=0;
     for(i=0;i<sz;i++,j++)
     {
@@ -348,7 +348,7 @@ void theme_set(int i)
     icon_init(&icon[7],BUTTON_BITMAP_CHECKED_H);
 }
 
-int lang_enum(HWND hwnd,WCHAR *path,int locale)
+int lang_enum(HWND hwnd,const WCHAR *path,int locale)
 {
     WCHAR buf[4096];
     WCHAR langauto[4096];
@@ -396,7 +396,7 @@ int lang_enum(HWND hwnd,WCHAR *path,int locale)
     return i-1;
 }
 
-void theme_enum(HWND hwnd,WCHAR *path)
+void theme_enum(HWND hwnd,const WCHAR *path)
 {
     WCHAR buf[BUFLEN];
     HANDLE hFind;
@@ -428,7 +428,7 @@ void theme_enum(HWND hwnd,WCHAR *path)
     }
 }
 
-void CALLBACK lang_callback(LPTSTR szFile,DWORD action,LPARAM lParam)
+void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
@@ -437,7 +437,7 @@ void CALLBACK lang_callback(LPTSTR szFile,DWORD action,LPARAM lParam)
     PostMessage(hMain,WM_UPDATELANG,0,0);
 }
 
-void CALLBACK theme_callback(LPTSTR szFile,DWORD action,LPARAM lParam)
+void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
@@ -450,7 +450,7 @@ void CALLBACK theme_callback(LPTSTR szFile,DWORD action,LPARAM lParam)
 //{ Monitors
 monitor_t monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
 {
-	monitor_t pMonitor = HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor));
+	monitor_t pMonitor = (monitor_t)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor));
 
 	wcscpy(pMonitor->dir,szDirectory);
 	pMonitor->hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,

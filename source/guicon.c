@@ -189,7 +189,7 @@ void log_nul(CHAR const *format,...)
 }
 //}
 
-WCHAR *errno_str()
+const WCHAR *errno_str()
 {
     switch(errno)
     {
@@ -277,7 +277,7 @@ void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj)
         log_err("ERROR in %ws(): failed CloseHandle(%ws)\n",func,obj);
 }
 
-void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,WCHAR *func,WCHAR *obj)
+void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj)
 {
     if(!UnregisterClass(lpClassName,hInstance))
         log_err("ERROR in %ws(): failed UnregisterClass(%ws)\n",func,obj);
@@ -302,7 +302,7 @@ int canWrite(const WCHAR *path)
     return flagsv&FILE_READ_ONLY_VOLUME?0:1;
 }
 
-void CALLBACK viruscheck(LPTSTR szFile,DWORD action,LPARAM lParam)
+void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);

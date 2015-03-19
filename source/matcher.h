@@ -37,7 +37,7 @@ extern const char *nts[NUM_DECS];
 
 typedef struct _markers_t
 {
-    char *name;
+    const char *name;
     int major,minor,arch;
 }markers_t;
 
@@ -83,8 +83,8 @@ unsigned calc_score_h(driver_t *driver,state_t *state);
 int calc_secttype(const char *s);
 int calc_decorscore(int id,state_t *state);
 int calc_markerscore(state_t *state,char *path);
-intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,state_t *state,WCHAR *str);
-int isblacklisted(hwidmatch_t *hwidmatch,state_t *state,WCHAR *hwid,char *section);
+intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *str);
+int isblacklisted(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *hwid,const char *section);
 int isvalid_ver(hwidmatch_t *hwidmatch,state_t *state);
 int calc_notebook(hwidmatch_t *hwidmatch);
 int calc_altsectscore(hwidmatch_t *hwidmatch,state_t *state,int curscore);
@@ -122,8 +122,8 @@ int   getdrp_packontorrent(hwidmatch_t *hwidmatch);
 //inffile
 char *getdrp_infpath(hwidmatch_t *hwidmatch);
 char *getdrp_infname(hwidmatch_t *hwidmatch);
-char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n);
-char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n);
+const char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n);
+const char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n);
 version_t *getdrp_drvversion(hwidmatch_t *hwidmatch);
 int   getdrp_infsize(hwidmatch_t *hwidmatch);
 int   getdrp_infcrc(hwidmatch_t *hwidmatch);

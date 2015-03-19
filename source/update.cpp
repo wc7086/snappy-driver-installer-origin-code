@@ -33,12 +33,10 @@ int downlimit=0,uplimit=0;
 #define SMOOTHING_FACTOR 0.005
 using namespace libtorrent;
 
-extern "C"
-{
+extern "C" {
 #define _WIN32_IE 0x0400
 #include "main.h"
 }
-
 int cxn[]=
 {
     199,

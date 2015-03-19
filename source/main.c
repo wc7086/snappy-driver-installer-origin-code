@@ -310,7 +310,7 @@ void settings_save()
     fclose(f);
 }
 
-int  settings_load(WCHAR *filename)
+int  settings_load(const WCHAR *filename)
 {
     FILE *f;
     WCHAR buf[BUFLEN];
@@ -330,7 +330,7 @@ void SignalHandler(int signum)
     log_stop();
 }
 
-void CALLBACK drp_callback(LPTSTR szFile,DWORD action,LPARAM lParam)
+void CALLBACK drp_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -381,7 +381,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
       settings_parse(buff,0);
     }
     else
-    if(!settings_load(L"settings.cfg"))
+    if(!settings_load(L"sdi.cfg"))
         settings_load(L"tools\\SDI\\settings.cfg");
 
     settings_parse(GetCommandLineW(),1);
@@ -1230,7 +1230,7 @@ void drvdir()
     }
 }
 
-WCHAR *getHWIDby(int id,int num)
+const WCHAR *getHWIDby(int id,int num)
 {
     devicematch_t *devicematch_f=manager_g->items_list[id].devicematch;
     WCHAR *p;
@@ -1284,7 +1284,7 @@ void escapeAmpUrl(WCHAR *buf,WCHAR *source)
     *p1=0;
 }
 
-void checktimer(WCHAR *str,long long t,int uMsg)
+void checktimer(const WCHAR *str,long long t,int uMsg)
 {
     if(GetTickCount()-t>20&&log_verbose&LOG_VERBOSE_LAGCOUNTER)
         log_con("GUI lag in %ws[%X]: %ld\n",str,uMsg,GetTickCount()-t);
@@ -2386,12 +2386,12 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
 
     HWND hEditBox;
     RECT rect;
-    void *s;int sz;
+    LPCSTR s;int sz;
 
     switch(Message)
     {
         case WM_INITDIALOG:
-            get_resource(IDR_LICENSE,&s,&sz);
+            get_resource(IDR_LICENSE,(void **)&s,&sz);
             hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
             SetWindowTextA(hEditBox,s);
             SendMessage(hEditBox,EM_SETREADONLY,1,0);

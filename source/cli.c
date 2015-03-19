@@ -3,6 +3,7 @@
 const WCHAR INSTALLEDVENFILENAMEDEFPATH[]=L"%temp%\\SDI2\\InstalledID.txt";
 
 HFONT CLIHelp_Font;
+ CommandLineParam_t CLIParam;
 
 void SaveHWID(WCHAR *hwid)
 {
@@ -32,7 +33,7 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
    UNREFERENCED_PARAMETER(lParam);
 
     HWND hEditBox;
-    void *s;
+    LPCSTR s;
     int sz;
 
     switch(Message)
@@ -48,7 +49,7 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
         SetWindowTextW(hEditBox,L"Close");
 
 
-        get_resource(IDR_CLI_HELP,&s,&sz);
+        get_resource(IDR_CLI_HELP,(void **)&s,&sz);
         hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
 
         SendMessage(hEditBox,WM_SETFONT,(WPARAM)CLIHelp_Font,0);

@@ -401,7 +401,7 @@ WCHAR *finddrp(WCHAR *s)
 //}
 
 //{ Collection
-void collection_init(collection_t *col,WCHAR *driverpacks_dir,WCHAR *index_bin_dir,WCHAR *index_linear_dir,int flags_l)
+void collection_init(collection_t *col,WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags_l)
 {
     heap_init(&col->driverpack_handle,ID_DRIVERPACK,(void **)&col->driverpack_list,0,sizeof(driverpack_t));
     col->flags=flags_l;
@@ -599,7 +599,7 @@ void collection_load(collection_t *col)
 //{thread
     int i;
     HANDLE thr;
-    col->inflist=malloc(LSTCNT*sizeof(inflist_t));
+    col->inflist=(inflist_t *)malloc(LSTCNT*sizeof(inflist_t));
     if(!col->inflist){log_con("ERROR 1\n");return;}
     for(i=0;i<LSTCNT;i++)
     {
@@ -960,7 +960,7 @@ int driverpack_loadindex(driverpack_t *drp)
     return 1;
 }
 
-void driverpack_getindexfilename(driverpack_t *drp,WCHAR *dir,const WCHAR *ext,WCHAR *indfile)
+void driverpack_getindexfilename(driverpack_t *drp,const WCHAR *dir,const WCHAR *ext,WCHAR *indfile)
 {
     WCHAR *p;
     WCHAR buf[BUFLEN];
