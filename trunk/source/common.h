@@ -138,13 +138,13 @@ char *strtolower_alloc(const char *s);
 char *memcpy_alloc(const char *s,int sz);
 
 // 7-zip
+namespace NArchive{
+namespace N7z{
+extern void register7z();
+}}
 void registerall();
-#ifdef __cplusplus
-extern "C" {
-#endif
 extern int  Extract7z(WCHAR *str);
 extern void registercrc();
-extern void register7z();
 extern void registerBCJ();
 extern void registerBCJ2();
 extern void registerBranch();
@@ -154,9 +154,6 @@ extern void registerLZMA2();
 extern void registerPPMD();
 extern void registerDelta();
 extern void registerByteSwap();
-#ifdef __cplusplus
-}
-#endif
 
 // Hash
 unsigned hash_getcode(const char *s,int sz);

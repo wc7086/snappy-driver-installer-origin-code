@@ -24,7 +24,7 @@ REGISTER_ARC_DEC_SIG(7z)
 
 //REGISTER_ARC(7z)
 
-extern "C" void register7z()
+void register7z()
 {
 	REGISTER_ARC_NAME(7z) *g_RegisterArc;
 }

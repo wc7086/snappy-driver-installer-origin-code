@@ -50,11 +50,8 @@ static const char *kDataAfterEnd = "There are some data after the end of the pay
 static const char *kIsNotArc = "Is not archive";
 static const char *kHeadersError = "Headers Error";
 
-extern "C"
-{
 void _7z_total(long long  i);
 int  _7z_setcomplited(long long i);
-}
 
 static const char *k_ErrorFlagsMessages[] =
 {

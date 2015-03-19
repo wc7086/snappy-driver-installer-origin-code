@@ -15,11 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-extern "C"
-{
 int torrentport=50171;
 int downlimit=0,uplimit=0;
-}
 
 #ifdef USE_TORRENT
 #define IPV6_TCLASS 30
@@ -33,10 +30,9 @@ int downlimit=0,uplimit=0;
 #define SMOOTHING_FACTOR 0.005
 using namespace libtorrent;
 
-extern "C" {
 #define _WIN32_IE 0x0400
 #include "main.h"
-}
+
 int cxn[]=
 {
     199,

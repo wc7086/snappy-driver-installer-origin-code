@@ -236,13 +236,8 @@ int  encode(char *dest,int dest_sz,char *src,int src_sz);
 int  decode(char *dest,int dest_sz,char *src,int src_sz);
 int  checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);
 void hash_clearfiles(hashtable_t *t);
-#ifdef __cplusplus
-extern "C" {
-#endif
 WCHAR *finddrp(WCHAR *s);
-#ifdef __cplusplus
-}
-#endif
+
 // Collection
 void collection_init(collection_t *col,WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
 void collection_free(collection_t *col);

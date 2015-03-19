@@ -72,7 +72,7 @@ static CCodecInfo g_CodecsInfo[] =
 
 REGISTER_CODECS(ByteSwap)
 
-extern "C"  void registerByteSwap()
+void registerByteSwap()
 {
 	REGISTER_CODECS_NAME(ByteSwap) *g_RegisterCodecs;
 }

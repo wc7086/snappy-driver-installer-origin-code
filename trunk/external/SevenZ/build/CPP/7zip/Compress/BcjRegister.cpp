@@ -18,7 +18,7 @@ static CCodecInfo g_CodecInfo =
 
 REGISTER_CODEC(BCJ)
 
-extern "C" void registerBCJ()
+void registerBCJ()
 {
 	REGISTER_CODEC_NAME(BCJ) *g_RegisterCodec;
 }

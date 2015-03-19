@@ -14,9 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct _torrent_status_t
 {
@@ -67,6 +64,3 @@ void delolddrp(const char *ptr);
 void update_movefiles();
 unsigned int __stdcall thread_download(void *arg);
 
-#ifdef __cplusplus
-}
-#endif

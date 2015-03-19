@@ -20,7 +20,7 @@ static CCodecInfo g_CodecInfo =
 
 REGISTER_CODEC(PPMD)
 
-extern "C" void registerPPMD()
+void registerPPMD()
 {
 	REGISTER_CODEC_NAME(PPMD) *g_RegisterCodec;
 }

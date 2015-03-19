@@ -194,57 +194,57 @@
 		<Unit filename="../resources/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="../source/cli.c">
+		<Unit filename="../source/cli.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/cli.h" />
-		<Unit filename="../source/common.c">
+		<Unit filename="../source/common.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/common.h" />
 		<Unit filename="../source/device.h" />
-		<Unit filename="../source/draw.c">
+		<Unit filename="../source/draw.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/draw.h" />
-		<Unit filename="../source/enum.c">
+		<Unit filename="../source/enum.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/enum.h" />
-		<Unit filename="../source/guicon.c">
+		<Unit filename="../source/guicon.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/guicon.h" />
-		<Unit filename="../source/indexing.c">
+		<Unit filename="../source/indexing.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/indexing.h" />
-		<Unit filename="../source/install.c">
+		<Unit filename="../source/install.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/install.h" />
-		<Unit filename="../source/langlist.c">
+		<Unit filename="../source/langlist.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/langlist.h" />
-		<Unit filename="../source/main.c">
+		<Unit filename="../source/main.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/main.h" />
-		<Unit filename="../source/manager.c">
+		<Unit filename="../source/manager.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/manager.h" />
-		<Unit filename="../source/matcher.c">
+		<Unit filename="../source/matcher.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/matcher.h" />
 		<Unit filename="../source/svnrev.h" />
-		<Unit filename="../source/theme.c">
+		<Unit filename="../source/theme.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/theme.h" />
-		<Unit filename="../source/themelist.c">
+		<Unit filename="../source/themelist.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/themelist.h" />

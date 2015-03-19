@@ -19,7 +19,7 @@ static CCodecInfo g_CodecInfo =
 
 REGISTER_CODEC(LZMA)
 
-extern "C" void registerLZMA()
+void registerLZMA()
 {
 	REGISTER_CODEC_NAME(LZMA) *g_RegisterCodec;
 }
