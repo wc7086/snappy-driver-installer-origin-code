@@ -278,12 +278,12 @@ void settings_save()
     FILE *f;
 
     if(flags&FLAG_PRESERVECFG)return;
-    if(!canWrite(L"settings.cfg"))
+    if(!canWrite(L"sdi.cfg"))
     {
-        log_err("ERROR in settings_save(): Write-protected,'settings.cfg'\n");
+        log_err("ERROR in settings_save(): Write-protected,'sdi.cfg'\n");
         return;
     }
-    f=_wfopen(L"settings.cfg",L"wt");
+    f=_wfopen(L"sdi.cfg",L"wt");
     if(!f)return;
     fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
               "\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"

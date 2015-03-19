@@ -350,9 +350,9 @@ void theme_set(int i)
 
 int lang_enum(HWND hwnd,const WCHAR *path,int locale)
 {
-    WCHAR buf[4096];
-    WCHAR langauto[4096];
-    WCHAR langauto2[4096];
+    WCHAR buf[BUFLEN];
+    WCHAR langauto[BUFLEN];
+    WCHAR langauto2[BUFLEN];
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     int i=0;

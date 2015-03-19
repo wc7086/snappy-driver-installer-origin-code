@@ -97,7 +97,7 @@ typedef struct _textdata_t
 }textdata_t;
 
 //{ Global vars
-extern WCHAR extractdir[4096];
+extern WCHAR extractdir[BUFLEN];
 //}
 
 // Manager
