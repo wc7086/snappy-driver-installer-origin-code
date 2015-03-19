@@ -296,7 +296,7 @@ void parse_getstr(parse_info_t *parse_info,char **vb,char **ve)
 
 void str_sub(parse_info_t *parse_info)
 {
-    static char static_buf[4096];
+    static char static_buf[BUFLEN];
     int vers_len;
     char *v1b,*v1e;
     char *res;
@@ -729,8 +729,8 @@ void collection_scanfolder(collection_t *col,const WCHAR *path)
                 driverpack_init(drp,path,FindFileData.cFileName,col);
                 if(flags&COLLECTION_FORCE_REINDEXING||!driverpack_loadindex(drp))
                 {
-                    WCHAR bufw1[4096];
-                    WCHAR bufw2[4096];
+                    WCHAR bufw1[BUFLEN];
+                    WCHAR bufw2[BUFLEN];
                     if(!drp_count)drp_count=1;
                     wsprintf(bufw1,L"Indexing %d/%d",drp_cur,drp_count);
                     wsprintf(bufw2,L"%s\\%s",path,FindFileData.cFileName);
@@ -985,7 +985,7 @@ void driverpack_print(driverpack_t *drp)
     version_t *t;
     data_inffile_t *d_i;
     hwidmatch_t hwidmatch;
-    char buf[4096];
+    char buf[BUFLEN];
     WCHAR filename[BUFLEN];
     FILE *f;
     int cnts[NUM_DECS],plain;
@@ -1800,7 +1800,7 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
 
                             //{ featurescore
                             cur_desc->feature=0xFF;
-                            char installsection[4096];
+                            char installsection[BUFLEN];
                             sect_data_t *lnk3;
                             //parse_info3.pack=drp;
                             find_t savedfind;
@@ -1837,7 +1837,7 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
                                     installsection[strlen(installsection)-1]=0;
                                 }
                             }
-                            char iii[4096];
+                            char iii[BUFLEN];
                             *iii=0;
                             //int cnt=0;
                             sect_data_t *tlnk;

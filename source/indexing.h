@@ -48,8 +48,8 @@ enum
 typedef struct _inflist_t
 {
     driverpack_t *drp;
-    WCHAR pathinf[4096];
-    WCHAR inffile[4096];
+    WCHAR pathinf[BUFLEN];
+    WCHAR inffile[BUFLEN];
     char *adr;
     int len;
 

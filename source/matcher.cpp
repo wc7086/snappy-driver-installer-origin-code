@@ -590,7 +590,7 @@ void minlen(CHAR *s,int *len)
 
 void hwidmatch_calclen(hwidmatch_t *hwidmatch,int *limits)
 {
-    char buf[4096];
+    char buf[BUFLEN];
     version_t *v;
 
     getdrp_drvsection(hwidmatch,buf);
@@ -736,7 +736,7 @@ void matcher_populate(matcher_t *matcher)
     device_t *cur_device;
     WCHAR *p;
     char *s=state->text;
-    char buf[4096];
+    char buf[BUFLEN];
     int dev_pos;
     int i;
 

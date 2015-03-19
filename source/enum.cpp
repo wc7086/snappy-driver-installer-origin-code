@@ -376,7 +376,7 @@ void state_save(state_t *state,const WCHAR *filename)
 
 int  state_load(state_t *state,const WCHAR *filename)
 {
-    char buf[4096];
+    char buf[BUFLEN];
     //WCHAR txt2[256];
     FILE *f;
     int sz;
@@ -730,20 +730,6 @@ void state_scandevices(state_t *state)
     hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
     heap_reset(&state->devices_handle,0);
 
-/*
-    DWORD HwProfileList[4096];
-    DWORD HwProfileListSize=4096;
-    DWORD RequiredSize;
-    DWORD CurrentlyActiveIndex;
-    log_file("Profiles\n");
-    SetupDiGetHwProfileList(HwProfileList,HwProfileListSize,&RequiredSize,&CurrentlyActiveIndex);
-    for(i=0;i<RequiredSize;i++)
-    {
-        SetupDiGetHwProfileFriendlyName(i,buf,4096,0);
-        log_file("  %d:%ws%s\n",RequiredSize,buf,(CurrentlyActiveIndex==i)?"(current)":"");
-    }
-    log_file("\n");
-*/
     hDevInfo=SetupDiGetClassDevs(0,0,0,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
     {
@@ -773,7 +759,7 @@ void state_scandevices(state_t *state)
 
         SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,0,0,&buffersize);
         cur_device->InstanceId=heap_alloc(&state->text_handle,buffersize);
-        SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,(WCHAR *)(state->text+cur_device->InstanceId),4096,0);
+        SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,(WCHAR *)(state->text+cur_device->InstanceId),BUFLEN,0);
 
 /*
         SP_DEVINSTALL_PARAMS  devdt;
@@ -977,7 +963,7 @@ void state_scandevices(state_t *state)
         SetupDiGetDriverInstallParams(hDevInfo,DeviceInfoData,&drvinfo,&drvparams);
         SP_DRVINFO_DETAIL_DATA drvdet;
         drvdet.cbSize=sizeof(SP_DRVINFO_DETAIL_DATA);
-        SetupDiGetDriverInfoDetail(hDevInfo,DeviceInfoData,&drvinfo,&drvdet,4096,0);
+        SetupDiGetDriverInfoDetail(hDevInfo,DeviceInfoData,&drvinfo,&drvdet,BUFLEN,0);
     //Error(GetLastError());
         FileTimeToSystemTime(&drvinfo.DriverDate,&t);
     }*/

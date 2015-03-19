@@ -22,7 +22,7 @@ typedef struct _torrent_status_t
     int elapsed,remaining;
 
     WCHAR *status;
-    WCHAR error[4096];
+    WCHAR error[BUFLEN];
     int uploadspeed,downloadspeed;
     int seedstotal,seedsconnected;
     int peerstotal,peersconnected;

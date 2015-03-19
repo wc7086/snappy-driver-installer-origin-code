@@ -174,7 +174,7 @@ int _7z_setcomplited(long long i)
     return S_OK;
 }
 
-void driver_install(WCHAR *hwid,WCHAR *inf,int *ret,int *needrb)
+void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
 {
     WCHAR cmd[BUFLEN];
     WCHAR buf[BUFLEN];

@@ -30,7 +30,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 extern int log_verbose;
 extern int log_console;
-extern WCHAR timestamp[4096];
+extern WCHAR timestamp[BUFLEN];
 extern long
     time_total,
     time_startup,
