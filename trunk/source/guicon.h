@@ -66,12 +66,12 @@ void log_err(CHAR const *format,...);
 void log_con(CHAR const *format,...);
 void log_nul(CHAR const *format,...);
 
-WCHAR *errno_str();
+const WCHAR *errno_str();
 void print_error(int r,const WCHAR *s);
 DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait);
 int canWrite(const WCHAR *path);
-void CALLBACK viruscheck(LPTSTR szFile,DWORD action,LPARAM lParam);
+void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam);
 void virusmonitor_start();
 void virusmonitor_stop();
 void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj);
-void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,WCHAR *func,WCHAR *obj);
+void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj);

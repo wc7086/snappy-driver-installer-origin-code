@@ -133,16 +133,16 @@ void manager_populate(manager_t *manager)
         hwidmatch=&matcher->hwidmatch_list[devicematch->start_matches];
         for(j=0;j<devicematch->num_matches;j++,hwidmatch++)
         {
-            itembar_init(heap_allocitem_ptr(&manager->items_handle),devicematch,hwidmatch,i+RES_SLOTS,
+            itembar_init((itembar_t *)heap_allocitem_ptr(&manager->items_handle),devicematch,hwidmatch,i+RES_SLOTS,
                 remap[i],j?2:2);
-            itembar_init(heap_allocitem_ptr(&manager->items_handle),devicematch,hwidmatch,i+RES_SLOTS,
+            itembar_init((itembar_t *)heap_allocitem_ptr(&manager->items_handle),devicematch,hwidmatch,i+RES_SLOTS,
                 remap[i],j?0:1);
 
             id++;
         }
         if(!devicematch->num_matches)
         {
-            itembar_init(heap_allocitem_ptr(&manager->items_handle),devicematch,0,i+RES_SLOTS,remap[i],1);
+            itembar_init((itembar_t *)heap_allocitem_ptr(&manager->items_handle),devicematch,0,i+RES_SLOTS,remap[i],1);
             id++;
         }
     }
@@ -625,7 +625,7 @@ void itembar_init(itembar_t *item,devicematch_t *devicematch,hwidmatch_t *hwidma
     item->first=first;
 }
 
-void itembar_settext(manager_t *manager,int i,WCHAR *txt1,int percent)
+void itembar_settext(manager_t *manager,int i,const WCHAR *txt1,int percent)
 {
     itembar_t *itembar=&manager->items_list[i];
     wcscpy(itembar->txt1,txt1);
@@ -838,9 +838,9 @@ void str_date(version_t *v,WCHAR *buf)
         GetDateFormat(manager_g->matcher->state->locale,0,&tm,0,buf,100);
 }
 
-WCHAR *str_version(version_t *ver)
+WCHAR unkver[128];
+const WCHAR *str_version(version_t *ver)
 {
-    static WCHAR unkver[128];
 
     wsprintf(unkver,L"%s%s",STR(STR_HINT_VERSION),STR(STR_HINT_UNKNOWN));
     return ver->v1<0?unkver:L"%s%d.%d.%d.%d";
@@ -929,7 +929,7 @@ int groupsize(manager_t *manager,int index)
 }
 
 
-void drawbutton(HDC hdc,int x,int pos,int index,WCHAR *str1,WCHAR *str2)
+void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *str2)
 {
     pos+=D(ITEM_TEXT_OFS_Y);
     SetTextColor(hdc,D(boxindex[box_status(index)]+14));
@@ -984,7 +984,7 @@ int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int
         HPEN oldpen,newpen;
 
         newpen=CreatePen(PS_SOLID,D(DRVITEM_LINE_WIDTH),D(DRVITEM_LINE_COLOR));
-        oldpen=SelectObject(hdc,newpen);
+        oldpen=(HPEN)SelectObject(hdc,newpen);
         MoveToEx(hdc,x-D(DRVITEM_LINE_INTEND)/2,(manager->items_list[intend].curpos>>16)-D(DRVITEM_DIST_Y0)+D(DRVITEM_WY)-ofsy,0);
         LineTo(hdc,x-D(DRVITEM_LINE_INTEND)/2,pos+D(DRVITEM_WY)/2);
         LineTo(hdc,x,pos+D(DRVITEM_WY)/2);
@@ -1456,7 +1456,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
 //}
 
 //{ Draw
-void TextOut_CM(HDC hdcMem,int x,int y,WCHAR *str,int color,int *maxsz,int mode)
+void TextOut_CM(HDC hdcMem,int x,int y,const WCHAR *str,int color,int *maxsz,int mode)
 {
     SIZE ss;
     GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
@@ -1468,7 +1468,7 @@ void TextOut_CM(HDC hdcMem,int x,int y,WCHAR *str,int color,int *maxsz,int mode)
     //SetTextColor(hdcMem,0);
 }
 
-void TextOutP(textdata_t *td,WCHAR *format,...)
+void TextOutP(textdata_t *td,const WCHAR *format,...)
 {
     WCHAR buffer[BUFLEN];
     va_list args;
@@ -1481,7 +1481,7 @@ void TextOutP(textdata_t *td,WCHAR *format,...)
     va_end(args);
 }
 
-void TextOutF(textdata_t *td,int col,WCHAR *format,...)
+void TextOutF(textdata_t *td,int col,const WCHAR *format,...)
 {
     WCHAR buffer[BUFLEN];
     va_list args;
@@ -1493,7 +1493,7 @@ void TextOutF(textdata_t *td,int col,WCHAR *format,...)
     va_end(args);
 }
 
-void TextOutSF(textdata_t *td,WCHAR *str,WCHAR *format,...)
+void TextOutSF(textdata_t *td,const WCHAR *str,const WCHAR *format,...)
 {
     WCHAR buffer[BUFLEN];
     va_list args;
@@ -1679,7 +1679,7 @@ int isvalidcat(hwidmatch_t *hwidmatch,state_t *state)
 {
     CHAR bufa[BUFLEN];
     int n=pickcat(hwidmatch,state);
-    char *s=getdrp_drvcat(hwidmatch,n);
+    const char *s=getdrp_drvcat(hwidmatch,n);
 
     sprintf(bufa,"2:%d.%d",
             state->platform.dwMajorVersion,

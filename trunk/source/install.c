@@ -93,11 +93,17 @@ const wnddata_t clicktbl[NUM_CLICKDATA]=
 volatile int clicker_flag;
 //}
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void _7z_total(long long i)
 {
     ar_proceed=0;
     ar_total=i;
 }
+#ifdef __cplusplus
+}
+#endif
 
 #ifndef _WIN64
 #define S_OK    ((HRESULT)0x00000000L)
@@ -161,6 +167,10 @@ void updatecur()
         manager_g->items_list[itembar_act].percent=0;
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int _7z_setcomplited(long long i)
 {
     if(statemode==STATEMODE_EXIT)return S_OK;
@@ -173,6 +183,10 @@ int _7z_setcomplited(long long i)
     redrawfield();
     return S_OK;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 void driver_install(WCHAR *hwid,WCHAR *inf,int *ret,int *needrb)
 {

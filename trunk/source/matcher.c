@@ -134,30 +134,30 @@ const markers_t markers[NUM_MARKERS]=
 
 char marker[BUFLEN];
 
-WCHAR *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",0};
-WCHAR *Filter_2[]={L"Apple",L"apple",0};
-WCHAR *Filter_3[]={L"Asus",L"asus",0};
-WCHAR *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",0};
-WCHAR *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",0};
-WCHAR *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",0};
-WCHAR *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",0};
-WCHAR *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",0};
-WCHAR *Filter_9[]={L"OEM",L"intel",L"wistron",0};
-WCHAR *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",0};
-WCHAR *Filter_11[]={L"LG",L"lg",0};
-WCHAR *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",0};
-WCHAR *Filter_13[]={L"MSI",L"msi",L"micro-star",0};
-WCHAR *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",0};
-WCHAR *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",0};
-WCHAR *Filter_16[]={L"OEM",L"pegatron",L"medion",0};
-WCHAR *Filter_17[]={L"Samsung",L"samsung",0};
-WCHAR *Filter_18[]={L"Gigabyte",L"gigabyte",0};
-WCHAR *Filter_19[]={L"Sony",L"sony",L"vaio",0};
-WCHAR *Filter_20[]={L"Toshiba",L"toshiba",0};
-WCHAR *Filter_21[]={L"OEM",L"twinhead",L"durabook",0};
-WCHAR *Filter_22[]={L"NEC",L"Nec_brand",L"nec",0};
+const WCHAR *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",0};
+const WCHAR *Filter_2[]={L"Apple",L"apple",0};
+const WCHAR *Filter_3[]={L"Asus",L"asus",0};
+const WCHAR *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",0};
+const WCHAR *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",0};
+const WCHAR *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",0};
+const WCHAR *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",0};
+const WCHAR *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",0};
+const WCHAR *Filter_9[]={L"OEM",L"intel",L"wistron",0};
+const WCHAR *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",0};
+const WCHAR *Filter_11[]={L"LG",L"lg",0};
+const WCHAR *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",0};
+const WCHAR *Filter_13[]={L"MSI",L"msi",L"micro-star",0};
+const WCHAR *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",0};
+const WCHAR *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",0};
+const WCHAR *Filter_16[]={L"OEM",L"pegatron",L"medion",0};
+const WCHAR *Filter_17[]={L"Samsung",L"samsung",0};
+const WCHAR *Filter_18[]={L"Gigabyte",L"gigabyte",0};
+const WCHAR *Filter_19[]={L"Sony",L"sony",L"vaio",0};
+const WCHAR *Filter_20[]={L"Toshiba",L"toshiba",0};
+const WCHAR *Filter_21[]={L"OEM",L"twinhead",L"durabook",0};
+const WCHAR *Filter_22[]={L"NEC",L"Nec_brand",L"nec",0};
 
-WCHAR **filter_list[]=
+const WCHAR **filter_list[]=
 {
     Filter_1, Filter_2, Filter_3, Filter_4, Filter_5, Filter_6, Filter_7,
     Filter_8, Filter_9, Filter_10,Filter_11,Filter_12,Filter_13,Filter_14,
@@ -327,13 +327,13 @@ int calc_markerscore(state_t *state,char *path)
     return score;
 }
 
-intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,state_t *state,WCHAR *str)
+intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *str)
 {
     //log_con("Intel USB3.0 HUB '%ws'\n",state->text+hwidmatch->devicematch->device->HardwareID);
     return (intptr_t)StrStrI((WCHAR *)(state->text+hwidmatch->devicematch->device->HardwareID),str);
 }
 
-int isblacklisted(hwidmatch_t *hwidmatch,state_t *state,WCHAR *hwid,char *section)
+int isblacklisted(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *hwid,const char *section)
 {
     char buf[BUFLEN];
 
@@ -925,7 +925,7 @@ char *getdrp_infname(hwidmatch_t *hwidmatch)
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->text+drp->inffile[inffile_index].inffilename;
 }
-char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n)
+const char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n)
 {
     driverpack_t *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
@@ -934,7 +934,7 @@ char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n)
     if(!drp->inffile[inffile_index].fields[n])return "";
     return drp->text+drp->inffile[inffile_index].fields[n];
 }
-char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n)
+const char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n)
 {
     driverpack_t *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;

@@ -139,6 +139,9 @@ char *memcpy_alloc(const char *s,int sz);
 
 // 7-zip
 void registerall();
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern int  Extract7z(WCHAR *str);
 extern void registercrc();
 extern void register7z();
@@ -151,6 +154,9 @@ extern void registerLZMA2();
 extern void registerPPMD();
 extern void registerDelta();
 extern void registerByteSwap();
+#ifdef __cplusplus
+}
+#endif
 
 // Hash
 unsigned hash_getcode(const char *s,int sz);
@@ -162,8 +168,8 @@ void hash_stats(hashtable_t *t);
 char *hash_save(hashtable_t *t,char *p);
 char *hash_load(hashtable_t *t,char *p);
 void hash_add(hashtable_t *t,const char *s,int s_sz,intptr_t key,int mode);
-intptr_t  hash_find(hashtable_t *t,char *s,int sz,int *isfound);
-intptr_t  hash_find_str(hashtable_t *t, char *s);
+intptr_t  hash_find(hashtable_t *t,const char *s,int sz,int *isfound);
+intptr_t  hash_find_str(hashtable_t *t,const char *s);
 int  hash_findnext_rec(hashtable_t *t,const char *s);
 int  hash_findnext_b(hashtable_t *t,int *isfound);
 intptr_t  hash_findnext(hashtable_t *t);

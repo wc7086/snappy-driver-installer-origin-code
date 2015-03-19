@@ -531,11 +531,11 @@ void hash_add(hashtable_t *t,const char *s,int s_sz,intptr_t key,int mode)
     if(previ>=0)(&t->items[previ])->next=curi;
 }
 
-intptr_t hash_find(hashtable_t *t,char *s,int sz,int *isfound)
+intptr_t hash_find(hashtable_t *t,const char *s,int sz,int *isfound)
 {
     hashitem_t *cur;
     char buf[BUFLEN];
-    char *os=s;
+    const char *os=s;
     int curi;
 
     if((t->flags&HASH_FLAG_STR_TO_LOWER))
@@ -598,7 +598,7 @@ intptr_t hash_find(hashtable_t *t,char *s,int sz,int *isfound)
     return 0;
 }
 
-intptr_t hash_find_str(hashtable_t *t,char *s)
+intptr_t hash_find_str(hashtable_t *t,const char *s)
 {
     int b;
     return hash_find(t,s,strlen(s),&b);

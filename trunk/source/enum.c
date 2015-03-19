@@ -942,7 +942,7 @@ void state_scandevices(state_t *state)
                     cur_driver->cat=opencatfile(state,cur_driver);
 
                     //log_file("Added '%ws',%d\n",filename,inf_pos);
-                    infdata=malloc(sizeof(infdata_t));
+                    infdata=(infdata_t *)malloc(sizeof(infdata_t));
                     infdata->catalogfile=cur_driver->catalogfile;
                     infdata->feature=cur_driver->feature;
                     infdata->cat=cur_driver->cat;

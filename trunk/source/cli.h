@@ -13,7 +13,7 @@ typedef struct _CommandLineParam_t
     //WCHAR HWIDFileName;
 } CommandLineParam_t;
 
- CommandLineParam_t CLIParam;
+extern CommandLineParam_t CLIParam;
 
 void init_CLIParam();
 

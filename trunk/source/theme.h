@@ -24,7 +24,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct _entry_t
 {
-    WCHAR *name;
+    const WCHAR *name;
     intptr_t val;
     int init;
 }entry_t;
@@ -44,7 +44,7 @@ extern vault_t vLang,vTheme;
 extern int monitor_pause;
 
 // Monitor
-typedef void (CALLBACK *FileChangeCallback)(LPTSTR,DWORD,LPARAM);
+typedef void (CALLBACK *FileChangeCallback)(const WCHAR *,DWORD,LPARAM);
 typedef struct _monitor_t
 {
 	OVERLAPPED ol;
@@ -76,12 +76,12 @@ void vault_loadfromfile(vault_t *v,WCHAR *filename);
 void vault_loadfromres(vault_t *v,int id);
 
 // Lang/theme
-int  lang_enum(HWND hwnd,WCHAR *path,int locale);
-void theme_enum(HWND hwnd,WCHAR *path);
+int  lang_enum(HWND hwnd,const WCHAR *path,int locale);
+void theme_enum(HWND hwnd,const WCHAR *path);
 void lang_set(int i);
 void theme_set(int i);
-void CALLBACK lang_callback(LPTSTR szFile,DWORD action,LPARAM lParam);
-void CALLBACK theme_callback(LPTSTR szFile,DWORD action,LPARAM lParam);
+void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
+void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
 
 // Monitor
 monitor_t      monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);

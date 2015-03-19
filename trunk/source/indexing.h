@@ -202,8 +202,8 @@ typedef struct _data_HWID_t // 8
 typedef struct _collection_t
 {
     WCHAR *driverpack_dir;
-    WCHAR *index_bin_dir;
-    WCHAR *index_linear_dir;
+    const WCHAR *index_bin_dir;
+    const WCHAR *index_linear_dir;
     int flags;
 
     driverpack_t *driverpack_list;
@@ -236,10 +236,15 @@ int  encode(char *dest,int dest_sz,char *src,int src_sz);
 int  decode(char *dest,int dest_sz,char *src,int src_sz);
 int  checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);
 void hash_clearfiles(hashtable_t *t);
+#ifdef __cplusplus
+extern "C" {
+#endif
 WCHAR *finddrp(WCHAR *s);
-
+#ifdef __cplusplus
+}
+#endif
 // Collection
-void collection_init(collection_t *col,WCHAR *driverpacks_dir,WCHAR *index_bin_dir,WCHAR *index_linear_dir,int flags);
+void collection_init(collection_t *col,WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
 void collection_free(collection_t *col);
 void collection_save(collection_t *col);
 void collection_updatedindexes(collection_t *col);
@@ -255,7 +260,7 @@ void driverpack_free(driverpack_t *drp);
 void driverpack_saveindex(driverpack_t *drp);
 int  driverpack_checkindex(driverpack_t *drp);
 int  driverpack_loadindex(driverpack_t *drp);
-void driverpack_getindexfilename(driverpack_t *drp,WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
+void driverpack_getindexfilename(driverpack_t *drp,const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
 void driverpack_print(driverpack_t *drp);
 void collection_printstates(collection_t *col);
 void driverpack_genhashes(driverpack_t *drp);
