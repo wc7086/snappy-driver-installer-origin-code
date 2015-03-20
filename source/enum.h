@@ -149,11 +149,8 @@ public:
     heap_t profile_handle;
     int profile_current;*/
 
-    Device *devices_list;
-    heap_t drivers_handle;
-
-    Driver *drivers_list;
-    heap_t devices_handle;
+    std::vector<Device> Devices_list;
+    std::vector<Driver> Drivers_list;
 
     char *text;
     heap_t text_handle_st;
@@ -188,6 +185,10 @@ int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
 void isnotebook_a(State *state);
+template <class T> char *vector_save(std::vector<T> *v,char *p);
+template <class T> char *vector_load(std::vector<T> *v,char *p);
+void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,driverpack_t *unpacked_drp,int &inf_pos);
+void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,driverpack_t *unpacked_drp);
 
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);

@@ -524,7 +524,7 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 			pNotify=(PFILE_NOTIFY_INFORMATION)&pMonitor->buffer[offset];
 			offset+=pNotify->NextEntryOffset;
 
-            lstrcpynW(szFile,pNotify->FileName,min(MAX_PATH,pNotify->FileNameLength/sizeof(WCHAR)+1));
+            lstrcpynW(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(WCHAR)+1);
 
 			{
                 FILE *f;
