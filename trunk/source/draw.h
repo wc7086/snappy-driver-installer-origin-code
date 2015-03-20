@@ -19,27 +19,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define PAN_ENT          18
 
 //{ Structs
-typedef struct _img_t
-{
-    BYTE *big;
-    HBITMAP bitmap;
-    HDC dc;
-    int sx,sy;
-    int index;
-    int iscopy;
-    int hasalpha;
-}img_t;
-
-typedef struct _canvas_t
-{
-    int x,y;
-    HDC hdcMem,localDC;
-    HBITMAP bitmap,oldbitmap;
-    HRGN clipping;
-    PAINTSTRUCT ps;
-    HWND hwnd;
-}canvas_t;
-
 typedef struct _panelitem_t
 {
     int type;
@@ -47,6 +26,47 @@ typedef struct _panelitem_t
     int action_id;
     int checked;
 }panelitem_t;
+
+class Image
+{
+private:
+    HBITMAP bitmap;
+    HGDIOBJ oldbitmap;
+    HDC ldc;
+    int sx,sy,hasalpha;
+    int iscopy;
+
+    void readFromFile(WCHAR *filename);
+    void readFromRes(int id);
+    void createBitmap(BYTE *data,int sz);
+
+public:
+    Image():bitmap(0),oldbitmap(0),ldc(0),sx(0),sy(0),hasalpha(0),iscopy(0){}
+    void release();
+    void makecopy(Image &t);
+    void load(int i);
+    bool isLoaded(){return ldc;}
+    void draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
+};
+
+class Canvas
+{
+private:
+    int x,y;
+    HDC localDC;
+    HDC hdcMem;
+    HBITMAP bitmap,oldbitmap;
+    PAINTSTRUCT ps;
+    HWND hwnd;
+    HRGN clipping;
+
+public:
+    void init();
+    void free();
+    HDC getDC(){return hdcMem;}
+    void begin(HWND hwnd,int x,int y);
+    void end();
+};
 
 typedef struct _panel_t
 {
@@ -57,8 +77,8 @@ typedef struct _panel_t
 //}
 
 //{ Global vars
-extern img_t box[BOX_NUM];
-extern img_t icon[ICON_NUM];
+extern Image box[BOX_NUM];
+extern Image icon[ICON_NUM];
 
 extern panelitem_t panel3[];
 extern panelitem_t panel3_w[];
@@ -81,16 +101,6 @@ int Yg(int y);
 int XG(int x,int o);
 int YG(int y,int o);
 
-// Image
-void box_init(img_t *img,int i);
-void box_free(img_t *img);
-void icon_init(img_t *img,int i);
-void icon_free(img_t *img);
-void image_load(img_t *img,BYTE *data,int sz);
-void image_loadFile(img_t *img,WCHAR *filename);
-void image_loadRes(img_t *img,int id);
-void image_draw(HDC dc,img_t *img,int x1,int y1,int x2,int y2,int anchor,int fill);
-
 // Draw
 void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);
 void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int i);
@@ -98,12 +108,6 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
 void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
-
-// Canvas
-void canvas_init(canvas_t *canvas);
-void canvas_free(canvas_t *canvas);
-void canvas_begin(canvas_t *canvas,HWND hwnd,int x,int y);
-void canvas_end(canvas_t *canvas);
 
 // Panel
 void panel_setfilters(panel_t *panel);
