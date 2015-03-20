@@ -261,8 +261,6 @@ void Driver::print(State *state)
 void State::init()
 {
     memset(this,0,sizeof(State));
-    heap_init(&devices_handle,ID_STATE_DEVICES,(void **)&devices_list,0,sizeof(Device));
-    heap_init(&drivers_handle,ID_STATE_DRIVERS,(void **)&drivers_list,0,sizeof(Driver));
     heap_init(&text_handle_st,ID_STATE_TEXT,(void **)&text,0,1);
     heap_alloc(&text_handle_st,2);
     text[0]=0;
@@ -274,9 +272,37 @@ void State::init()
 
 void State::release()
 {
-    heap_free(&devices_handle);
-    heap_free(&drivers_handle);
+    Devices_list.clear();
+    Drivers_list.clear();
     heap_free(&text_handle_st);
+}
+
+template <class T>
+char *vector_save(std::vector<T> *v,char *p)
+{
+    int used=v->size()*sizeof(T);
+    int val;
+
+    memcpy(p,&used,sizeof(int));p+=sizeof(int);
+
+    val=v->size();
+    memcpy(p,&val,sizeof(int));p+=sizeof(int);
+
+    memcpy(p,&v->front(),used);p+=used;
+    return p;
+}
+
+template <class T>
+char *vector_load(std::vector<T> *v,char *p)
+{
+    int sz,num;
+
+    memcpy(&sz,p,sizeof(int));p+=sizeof(int);
+    memcpy(&num,p,sizeof(int));p+=sizeof(int);
+    v->resize(num);
+    log_con("SZ %d,%d\n",num,v->size());
+    memcpy(v->data(),p,sz);p+=sz;
+    return p;
 }
 
 void State::save(const WCHAR *filename)
@@ -302,8 +328,8 @@ void State::save(const WCHAR *filename)
 
     sz=
         sizeof(state_m_t)+
-        drivers_handle.used+
-        devices_handle.used+
+        Drivers_list.size()*sizeof(Device)+
+        Devices_list.size()*sizeof(Device)+
         text_handle_st.used+
         2*3*sizeof(int);  // 3 heaps
 
@@ -313,8 +339,8 @@ void State::save(const WCHAR *filename)
     fwrite(&version,sizeof(int),1,f);
 
     memcpy(p,this,sizeof(state_m_t));p+=sizeof(state_m_t);
-    p=heap_save(&devices_handle,p);
-    p=heap_save(&drivers_handle,p);
+    p=vector_save(&Devices_list,p);
+    p=vector_save(&Drivers_list,p);
     p=heap_save(&text_handle_st,p);
 
     if(1)
@@ -381,8 +407,8 @@ int  State::load(const WCHAR *filename)
     }
 
     memcpy(this,p,sizeof(state_m_t));p+=sizeof(state_m_t);
-    p=heap_load(&devices_handle,p);
-    p=heap_load(&drivers_handle,p);
+    p=vector_load(&Devices_list,p);
+    p=vector_load(&Drivers_list,p);
     p=heap_load(&text_handle_st,p);
 
     fakeOSversion();
@@ -407,7 +433,8 @@ void State::fakeOSversion()
 
 void State::print()
 {
-    int i,x,y;
+    int x,y;
+    unsigned i;
     Device *cur_device;
     WCHAR *buf;
     SYSTEM_POWER_STATUS *batteryloc;
@@ -489,15 +516,15 @@ void State::print()
     }
 
     if(log_verbose&LOG_VERBOSE_DEVICES)
-    for(i=0;i<devices_handle.items;i++)
+    for(i=0;i<Devices_list.size();i++)
     {
-        cur_device=&devices_list[i];
+        cur_device=&Devices_list[i];
 
         cur_device->print(this);
 
         log_file("DriverInfo\n",cur_device->getIndex());
         if(cur_device->getIndex()>=0)
-            drivers_list[cur_device->getIndex()].print(this);
+            Drivers_list[cur_device->getIndex()].print(this);
         else
             log_file("##NoDriver\n");
 
@@ -679,7 +706,7 @@ int device_readprop(HDEVINFO hDevInfo,State *state,Device *cur_device,int i)
     {
         r=GetLastError();
         if(r==ERROR_NO_MORE_ITEMS)
-            heap_freelastitem(&state->devices_handle);
+            state->Devices_list.pop_back();
         else
             print_error(r,L"SetupDiEnumDeviceInfo()");
         return 1;
@@ -838,7 +865,7 @@ void state_scandevices(State *state)
     collection_init(&collection,(WCHAR *)(state->text+state->windir),L"",L"",0);
     driverpack_init(&unpacked_drp,L"",L"windir.7z",&collection);
     hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
-    heap_reset(&state->devices_handle,0);
+    state->Devices_list.clear();
 
     hDevInfo=SetupDiGetClassDevs(0,0,0,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
@@ -852,7 +879,8 @@ void state_scandevices(State *state)
     {
         //log_file("%d,%d/%d\n",i,state->text_handle.used,state->text_handle.allocated);
         heap_refresh(&state->text_handle_st);
-        Device *cur_device=(Device *)heap_allocitem_ptr(&state->devices_handle);
+        state->Devices_list.push_back(Device());
+        Device *cur_device=&state->Devices_list.back();
 
         if(device_readprop(hDevInfo,state,cur_device,i))break;
 
@@ -875,8 +903,9 @@ void state_scandevices(State *state)
         }
         else if(lr==ERROR_SUCCESS)
         {
-            cur_device->driver_index=heap_allocitem_i(&state->drivers_handle);
-            cur_driver=&state->drivers_list[cur_device->driver_index];
+            cur_device->driver_index=state->Drivers_list.size();
+            state->Drivers_list.push_back(Driver());
+            cur_driver=&state->Drivers_list.back();
 
             driver_read(cur_driver,state,cur_device,hkey,&inf_list,&unpacked_drp);
         }
@@ -1015,7 +1044,7 @@ int iswide(int x,int y)
 */
 void isnotebook_a(State *state)
 {
-    int i;
+    unsigned int i;
     int x,y;
     int min_v=99,min_x=0,min_y=0;
     int diag;
@@ -1052,9 +1081,9 @@ void isnotebook_a(State *state)
         }
     }
 
-    for(i=0;i<state->devices_handle.items;i++)
+    for(i=0;i<state->Devices_list.size();i++)
     {
-        cur_device=&state->devices_list[i];
+        cur_device=&state->Devices_list[i];
         WCHAR *p;
         char *s=state->text;
 

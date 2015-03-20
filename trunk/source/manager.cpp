@@ -1720,7 +1720,7 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
     if(devicematch_f->device->driver_index>=0)
     {
         int i;
-        cur_driver=&manager->matcher->state->drivers_list[devicematch_f->device->driver_index];
+        cur_driver=&manager->matcher->state->Drivers_list[devicematch_f->device->driver_index];
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
         for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
     }

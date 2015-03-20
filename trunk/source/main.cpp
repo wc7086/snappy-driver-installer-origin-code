@@ -1779,7 +1779,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         WCHAR buf[BUFLEN];
 
                         devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
-                        Driver *cur_driver=&manager_g->matcher->state->drivers_list[devicematch_f->device->driver_index];
+                        Driver *cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
                                manager_g->matcher->state->text+manager_g->matcher->state->windir,
@@ -2056,7 +2056,7 @@ void contextmenu(int x,int y)
     Driver *cur_driver=0;
     WCHAR *p;
     char *t=manager_g->matcher->state->text;
-    if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->state->drivers_list[devicematch_f->device->driver_index];
+    if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
     int flags3=cur_driver?0:MF_GRAYED;
     WCHAR buf[512];
 

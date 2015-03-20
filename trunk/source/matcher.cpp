@@ -480,7 +480,7 @@ void findHWID_in_list(char *s,int list,int str,int *dev_pos)
 
 void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos)
 {
-    Driver *cur_driver=&state->drivers_list[cur_device->driver_index];
+    Driver *cur_driver=&state->Drivers_list[cur_device->driver_index];
 
     *ishw=1;
     findHWID_in_list(state->text,cur_device->HardwareID,cur_driver->MatchingDeviceId,dev_pos);
@@ -738,18 +738,18 @@ void matcher_populate(matcher_t *matcher)
     char *s=state->text;
     char buf[BUFLEN];
     int dev_pos;
-    int i;
+    unsigned int i;
 
     time_matcher=GetTickCount();
-    cur_device=state->devices_list;
-    heap_reset(&matcher->devicematch_handle,0);
+    cur_device=&state->Devices_list[0];
+  heap_reset(&matcher->devicematch_handle,0);
     heap_reset(&matcher->hwidmatch_handle,0);
 
     state->genmarker();
-    for(i=0;i<state->devices_handle.items;i++,cur_device++)
+    for(i=0;i<state->Devices_list.size();i++,cur_device++)
     {
         cur_driver=0;
-        if(cur_device->driver_index>=0)cur_driver=&matcher->state->drivers_list[cur_device->driver_index];
+        if(cur_device->driver_index>=0)cur_driver=&matcher->state->Drivers_list[cur_device->driver_index];
         devicematch=(devicematch_t *)heap_allocitem_ptr(&matcher->devicematch_handle);
         devicematch_init(devicematch,cur_device,cur_driver,matcher->hwidmatch_handle.items);
         if(cur_device->HardwareID)
