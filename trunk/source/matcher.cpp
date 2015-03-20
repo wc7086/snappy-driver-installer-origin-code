@@ -245,7 +245,7 @@ unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
         return calc_signature(catalogfile,state,isnt)+rank;
 }
 
-unsigned calc_score_h(driver_t *driver,State *state)
+unsigned calc_score_h(Driver *driver,State *state)
 {
     return calc_score(driver->catalogfile,driver->feature,driver->identifierscore,
         state,StrStrI((WCHAR *)(state->text+driver->InfSectionExt),L".nt")?1:0);
@@ -418,7 +418,7 @@ int calc_altsectscore(hwidmatch_t *hwidmatch,State *state,int curscore)
     return isvalidcat(hwidmatch,state)?2:1;
 }
 
-int isMissing(Device *device,driver_t *driver,State *state)
+int isMissing(Device *device,Driver *driver,State *state)
 {
     if(device->problem==CM_PROB_DISABLED)return 0;
     if(driver)
@@ -436,7 +436,7 @@ int calc_status(hwidmatch_t *hwidmatch,State *state)
 {
     int r=0,res;
     int score;
-    driver_t *cur_driver=hwidmatch->devicematch->driver;
+    Driver *cur_driver=hwidmatch->devicematch->driver;
 
     if(isMissing(hwidmatch->devicematch->device,cur_driver,state))return STATUS_MISSING;
 
@@ -480,7 +480,7 @@ void findHWID_in_list(char *s,int list,int str,int *dev_pos)
 
 void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos)
 {
-    driver_t *cur_driver=&state->drivers_list[cur_device->driver_index];
+    Driver *cur_driver=&state->drivers_list[cur_device->driver_index];
 
     *ishw=1;
     findHWID_in_list(state->text,cur_device->HardwareID,cur_driver->MatchingDeviceId,dev_pos);
@@ -538,7 +538,7 @@ int cmpversion(version_t *t1,version_t *t2)
 
 }
 
-void devicematch_init(devicematch_t *devicematch,Device *cur_device,driver_t *driver,int items)
+void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driver,int items)
 {
     devicematch->device=cur_device;
     devicematch->driver=driver;
@@ -732,7 +732,7 @@ void matcher_populate(matcher_t *matcher)
 {
     devicematch_t *devicematch;
     State *state=matcher->state;
-    driver_t *cur_driver;
+    Driver *cur_driver;
     Device *cur_device;
     WCHAR *p;
     char *s=state->text;
@@ -870,10 +870,10 @@ void matcher_print(matcher_t *matcher)
     for(i=0;i<matcher->devicematch_handle.items;i++,devicematch++)
     {
         cur_device=devicematch->device;
-        cur_device->device_print(matcher->state);
+        cur_device->print(matcher->state);
         log_file("DriverInfo\n");
         if(devicematch->driver)
-            driver_print(devicematch->driver,matcher->state);
+            devicematch->driver->print(matcher->state);
         else
             log_file("##NoDriver\n");
 

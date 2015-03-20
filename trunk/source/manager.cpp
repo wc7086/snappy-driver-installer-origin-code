@@ -342,13 +342,13 @@ void manager_print_hr(manager_t *manager)
             log_file("\n$%04d, %ws\n",k,buf);
             if(itembar->devicematch->device)
             {
-                itembar->devicematch->device->device_print(manager->matcher->state);
+                itembar->devicematch->device->print(manager->matcher->state);
                 //device_printHWIDS(itembar->devicematch->device,manager->matcher->state);
             }
             if(itembar->devicematch->driver)
             {
                 log_file("Installed driver\n");
-                driver_print(itembar->devicematch->driver,manager->matcher->state);
+                itembar->devicematch->driver->print(manager->matcher->state);
             }
 
             if(itembar->hwidmatch)
@@ -1426,7 +1426,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
                 hwidmatch_print_tbl(itembar_new->hwidmatch,limits);
             }
             else
-                itembar_new->devicematch->device->device_print(manager_new->matcher->state);
+                itembar_new->devicematch->device->print(manager_new->matcher->state);
         }
     }
 
@@ -1446,7 +1446,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
                 hwidmatch_print_tbl(itembar_old->hwidmatch,limits);
             }
             else
-                itembar_old->devicematch->device->device_print(manager_old->matcher->state);
+                itembar_old->devicematch->device->print(manager_old->matcher->state);
 
         }
     }
@@ -1589,7 +1589,7 @@ void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i)
     td.mode=1;
 
     int group=manager->items_list[i].index;
-    driver_t *cur_driver=manager->items_list[i].devicematch->driver;
+    Driver *cur_driver=manager->items_list[i].devicematch->driver;
     char *t=manager->matcher->state->text;
 
     memset(limits,0,sizeof(limits));
@@ -1699,7 +1699,7 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
     WCHAR *p;
     devicematch_t *devicematch_f=0;
     hwidmatch_t *hwidmatch_f=0;
-    driver_t *cur_driver=0;
+    Driver *cur_driver=0;
     textdata_t td;
     version_t *a_v=0;
     unsigned score=0;
