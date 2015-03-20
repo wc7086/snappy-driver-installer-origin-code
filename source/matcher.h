@@ -44,7 +44,7 @@ typedef struct _markers_t
 typedef struct _devicematch_t
 {
     Device *device;
-    driver_t *driver;
+    Driver *driver;
     int start_matches;
     int num_matches;
     int status;
@@ -74,12 +74,12 @@ typedef struct _matcher_t
 
 // Calc
 void genmarker(State *state);
-int isMissing(Device *device,driver_t *driver,State *state);
+int isMissing(Device *device,Driver *driver,State *state);
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
 int calc_catalogfile(hwidmatch_t *hwidmatch);
 int calc_signature(int catalogfile,State *state,int isnt);
 unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
-unsigned calc_score_h(driver_t *driver,State *state);
+unsigned calc_score_h(Driver *driver,State *state);
 int calc_secttype(const char *s);
 int calc_decorscore(int id,State *state);
 int calc_markerscore(State *state,char *path);
@@ -96,7 +96,7 @@ void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos);
 int  cmpunsigned(unsigned a,unsigned b);
 int  cmpdate(version_t *t1,version_t *t2);
 int  cmpversion(version_t *t1,version_t *t2);
-void devicematch_init(devicematch_t *devicematch,Device *cur_device,driver_t *driver,int items);
+void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driver,int items);
 
 // hwidmatch
 void minlen(CHAR *s,int *len);

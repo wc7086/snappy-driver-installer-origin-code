@@ -44,9 +44,9 @@ typedef struct _SP_DEVINFO_DATA32
     int       Reserved;
 } SP_DEVINFO_DATA_32, *PSP_DEVINFO_DATA_32;
 
-//typedef struct _driver_t driver_t;
-typedef struct _driver_t
+class Driver
 {
+public:
     ofst DriverDesc;
     ofst ProviderName;
     ofst DriverDate;
@@ -62,9 +62,9 @@ typedef struct _driver_t
     int feature;
     int identifierscore;
 
-    //SP_DRVINSTALL_PARAMS drvparams;
-    //SP_DRVINFO_DETAIL_DATA drvdet;
-}driver_t;
+public:
+    void print(State *state);
+};
 
 typedef struct _state_m_t
 {
@@ -113,9 +113,11 @@ public:
     SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
 
 public:
-    int print_status();
-    void device_print(State *state);
-    void device_printHWIDS(State *state);
+    int getIndex(){return driver_index;}
+
+    int  print_status();
+    void print(State *state);
+    void printHWIDS(State *state);
 };
 
 class State
@@ -150,11 +152,11 @@ public:
     Device *devices_list;
     heap_t drivers_handle;
 
-    driver_t *drivers_list;
+    Driver *drivers_list;
     heap_t devices_handle;
 
     char *text;
-    heap_t text_handle;
+    heap_t text_handle_st;
 
 public:
     void init();
@@ -170,13 +172,12 @@ public:
     void getsysinfo_fast();
     void getsysinfo_slow();
 //    void state_scandevices();
-    int opencatfile(driver_t *cur_driver);
+    int opencatfile(Driver *cur_driver);
     void genmarker();
 };
 extern const char *deviceststus_str[];
 
-
-void driver_print(driver_t *cur_driver,State *state);
+int device_readprop(HDEVINFO hDevInfo,State *state,Device *cur_device,int i);
 void state_scandevices(State *state);
 
 void print_guid(GUID *g);
