@@ -26,6 +26,8 @@ extern int isLaptop;
 #define DISPLAY_DEVICE_ATTACHED       2
 #endif
 
+class State;
+
 typedef struct _infdata_t
 {
     int catalogfile;
@@ -109,43 +111,6 @@ typedef struct _state_m_t
 //    driverpack_t windirinf;
 }state_m_t;
 
-typedef struct _state_t
-{
-    OSVERSIONINFOEX platform;
-    int locale;
-    int architecture;
-
-    ofst manuf;
-    ofst model;
-    ofst product;
-    ofst monitors;
-    ofst battery;
-
-    ofst windir;
-    ofst temp;
-
-    ofst cs_manuf;
-    ofst cs_model;
-    int ChassisType;
-    int revision;
-    char reserved[1024];
-
-    char reserved1[676];
-//    driverpack_t windirinf;
-
-/*    ofst *profile_list;
-    heap_t profile_handle;
-    int profile_current;*/
-
-    device_t *devices_list;
-    heap_t drivers_handle;
-
-    driver_t *drivers_list;
-    heap_t devices_handle;
-
-    char *text;
-    heap_t text_handle;
-}state_t;
 //}
 
 class Device
@@ -170,8 +135,8 @@ public:
 
 public:
     int print_status(device_t *device);
-    void device_print(device_t *cur_device,state_t *state);
-    void device_printHWIDS(device_t *cur_device,state_t *state);
+    void device_print(device_t *cur_device,State *state);
+    void device_printHWIDS(device_t *cur_device,State *state);
 };
 
 class State
@@ -213,51 +178,41 @@ public:
     heap_t text_handle;
 
 public:
-    void state_init();
-    void state_free();
-    void state_save(const WCHAR *filename);
-    int  state_load(const WCHAR *filename);
-    void state_fakeOSversion();
+    void init();
+    void release();
+    void save(const WCHAR *filename);
+    int  load(const WCHAR *filename);
+    void fakeOSversion();
     void log_add(CHAR const *format,...);
-    void state_print);
-    WCHAR *state_getproduct();
-    WCHAR *state_getmanuf();
-    WCHAR *state_getmodel();
-    void state_getsysinfo_fast);
-    void state_getsysinfo_slow();
-    void state_scandevices();
+    void print();
+    WCHAR *getProduct();
+    WCHAR *getManuf();
+    WCHAR *getModel();
+    void getsysinfo_fast();
+    void getsysinfo_slow();
+//    void state_scandevices();
+    int opencatfile(driver_t *cur_driver);
+    void genmarker();
 };
 extern const char *deviceststus_str[];
 void print_guid(GUID *g);
 int print_status(device_t *device);
 void print_appinfo();
 
-void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,state_t *state,int id,ofst *val);
-void read_reg_val(HKEY hkey,state_t *state,const WCHAR *key,ofst *val);
+void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val);
+void read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val);
 
-void device_print(device_t *cur_device,state_t *state);
-void device_printHWIDS(device_t *cur_device,state_t *state);
-void driver_print(driver_t *cur_driver,state_t *state);
+void device_print(device_t *cur_device,State *state);
+void device_printHWIDS(device_t *cur_device,State *state);
+void driver_print(driver_t *cur_driver,State *state);
 
-void state_init(state_t *state);
-void state_free(state_t *state);
-void state_save(state_t *state,const WCHAR *filename);
-int  state_load(state_t *state,const WCHAR *filename);
-void state_fakeOSversion(state_t *state);
-void log_add(CHAR const *format,...);
-void state_print(state_t *state);
-WCHAR *state_getproduct(state_t *state);
-WCHAR *state_getmanuf(state_t *state);
-WCHAR *state_getmodel(state_t *state);
-void state_getsysinfo_fast(state_t *state);
-void state_getsysinfo_slow(state_t *state);
-void state_scandevices(state_t *state);
+void state_scandevices(State *state);
 
 int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
-int opencatfile(state_t *state,driver_t *cur_driver);
-void isnotebook_a(state_t *state);
+//int opencatfile(State *state,driver_t *cur_driver);
+void isnotebook_a(State *state);
 
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);

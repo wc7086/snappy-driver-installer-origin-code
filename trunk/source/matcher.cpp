@@ -167,14 +167,14 @@ const WCHAR **filter_list[]=
 //}
 
 //{ Calc
-void genmarker(state_t *state)
+void State::genmarker()
 {
     int i,j;
     WCHAR *str;
 
     *marker=0;
 
-    str=state_getmanuf(state);
+    str=getManuf();
     if(!str)return;
 
     //log_con("Manuf '%ws'\n",str);
@@ -221,7 +221,7 @@ int calc_catalogfile(hwidmatch_t *hwidmatch)
     return r;
 }
 
-int calc_signature(int catalogfile,state_t *state,int isnt)
+int calc_signature(int catalogfile,State *state,int isnt)
 {
     if(state->architecture)
     {
@@ -237,7 +237,7 @@ int calc_signature(int catalogfile,state_t *state,int isnt)
     return 0xC000;
 }
 
-unsigned calc_score(int catalogfile,int feature,int rank,state_t *state,int isnt)
+unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
 {
     if(state->platform.dwMajorVersion>=6)
         return (calc_signature(catalogfile,state,isnt)<<16)+(feature<<16)+rank;
@@ -245,7 +245,7 @@ unsigned calc_score(int catalogfile,int feature,int rank,state_t *state,int isnt
         return calc_signature(catalogfile,state,isnt)+rank;
 }
 
-unsigned calc_score_h(driver_t *driver,state_t *state)
+unsigned calc_score_h(driver_t *driver,State *state)
 {
     return calc_score(driver->catalogfile,driver->feature,driver->identifierscore,
         state,StrStrI((WCHAR *)(state->text+driver->InfSectionExt),L".nt")?1:0);
@@ -279,7 +279,7 @@ int calc_secttype(const char *s)
     return -1;
 }
 
-int calc_decorscore(int id,state_t *state)
+int calc_decorscore(int id,State *state)
 {
     int major=state->platform.dwMajorVersion,
         minor=state->platform.dwMinorVersion,
@@ -294,7 +294,7 @@ int calc_decorscore(int id,state_t *state)
     return nts_score[id];
 }
 
-int calc_markerscore(state_t *state,char *path)
+int calc_markerscore(State *state,char *path)
 {
     char buf[BUFLEN];
     int majver=state->platform.dwMajorVersion,
@@ -327,13 +327,13 @@ int calc_markerscore(state_t *state,char *path)
     return score;
 }
 
-intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *str)
+intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,State *state,const WCHAR *str)
 {
     //log_con("Intel USB3.0 HUB '%ws'\n",state->text+hwidmatch->devicematch->device->HardwareID);
     return (intptr_t)StrStrI((WCHAR *)(state->text+hwidmatch->devicematch->device->HardwareID),str);
 }
 
-int isblacklisted(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *hwid,const char *section)
+int isblacklisted(hwidmatch_t *hwidmatch,State *state,const WCHAR *hwid,const char *section)
 {
     char buf[BUFLEN];
 
@@ -345,7 +345,7 @@ int isblacklisted(hwidmatch_t *hwidmatch,state_t *state,const WCHAR *hwid,const 
     return 0;
 }
 
-int isvalid_ver(hwidmatch_t *hwidmatch,state_t *state)
+int isvalid_ver(hwidmatch_t *hwidmatch,State *state)
 {
     version_t *v;
     int major=state->platform.dwMajorVersion;
@@ -374,7 +374,7 @@ int calc_notebook(hwidmatch_t *hwidmatch)
     return 1;
 }
 
-int calc_altsectscore(hwidmatch_t *hwidmatch,state_t *state,int curscore)
+int calc_altsectscore(hwidmatch_t *hwidmatch,State *state,int curscore)
 {
     char buf[BUFLEN];
     int pos;
@@ -418,7 +418,7 @@ int calc_altsectscore(hwidmatch_t *hwidmatch,state_t *state,int curscore)
     return isvalidcat(hwidmatch,state)?2:1;
 }
 
-int isMissing(device_t *device,driver_t *driver,state_t *state)
+int isMissing(device_t *device,driver_t *driver,State *state)
 {
     if(device->problem==CM_PROB_DISABLED)return 0;
     if(driver)
@@ -432,7 +432,7 @@ int isMissing(device_t *device,driver_t *driver,state_t *state)
     return 0;
 }
 
-int calc_status(hwidmatch_t *hwidmatch,state_t *state)
+int calc_status(hwidmatch_t *hwidmatch,State *state)
 {
     int r=0,res;
     int score;
@@ -478,7 +478,7 @@ void findHWID_in_list(char *s,int list,int str,int *dev_pos)
     *dev_pos=-1;
 }
 
-void getdd(device_t *cur_device,state_t *state,int *ishw,int *dev_pos)
+void getdd(device_t *cur_device,State *state,int *ishw,int *dev_pos)
 {
     driver_t *cur_driver=&state->drivers_list[cur_device->driver_index];
 
@@ -548,7 +548,7 @@ void devicematch_init(devicematch_t *devicematch,device_t *cur_device,driver_t *
 //}
 
 //{ hwidmatch
-void hwidmatch_init(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index,int dev_pos,int ishw,state_t *state,devicematch_t *devicematch)
+void hwidmatch_init(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch)
 {
     char buf[BUFLEN];
 
@@ -686,7 +686,7 @@ int hwidmatch_cmp(hwidmatch_t *match1,hwidmatch_t *match2)
 //}
 
 //{ Matcher
-void matcher_init(matcher_t *matcher,state_t *state,collection_t *col)
+void matcher_init(matcher_t *matcher,State *state,collection_t *col)
 {
     matcher->state=state;
     matcher->col=col;
@@ -731,7 +731,7 @@ void matcher_findHWIDs(matcher_t *matcher,devicematch_t *devicematch,char *hwid,
 void matcher_populate(matcher_t *matcher)
 {
     devicematch_t *devicematch;
-    state_t *state=matcher->state;
+    State *state=matcher->state;
     driver_t *cur_driver;
     device_t *cur_device;
     WCHAR *p;
@@ -745,7 +745,7 @@ void matcher_populate(matcher_t *matcher)
     heap_reset(&matcher->devicematch_handle,0);
     heap_reset(&matcher->hwidmatch_handle,0);
 
-    genmarker(state);
+    state->genmarker();
     for(i=0;i<state->devices_handle.items;i++,cur_device++)
     {
         cur_driver=0;

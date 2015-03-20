@@ -707,7 +707,7 @@ void panel_draw(HDC hdc,panel_t *panel)
             SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf,wcslen(buf));
 
-            wsprintf(buf,L"%s",state_getproduct(manager_g->matcher->state));
+            wsprintf(buf,L"%s",manager_g->matcher->state->getProduct());
             SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
 
@@ -722,7 +722,7 @@ void panel_draw(HDC hdc,panel_t *panel)
         if(i==3&&panel->index==0)
         {
             if(XP(panel)<10+SYSINFO_COL1)
-                wsprintf(buf,L"%s",state_getproduct(manager_g->matcher->state));
+                wsprintf(buf,L"%s",manager_g->matcher->state->getProduct());
             else
                 wsprintf(buf,L"%s",manager_g->matcher->state->platform.szCSDVersion);
 

@@ -118,7 +118,7 @@ int print_status(device_t *device)
 //}
 
 //{ Device/driver
-void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,state_t *state,int id,ofst *val)
+void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val)
 {
     DWORD buffersize=0;
     int lr;
@@ -160,7 +160,7 @@ void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,stat
     memcpy(p,buf,buffersize);
 }
 
-void read_reg_val(HKEY hkey,state_t *state,const WCHAR *key,ofst *val)
+void read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
 {
     DWORD dwType,dwSize=0;
     int lr;
@@ -184,7 +184,7 @@ void read_reg_val(HKEY hkey,state_t *state,const WCHAR *key,ofst *val)
     }
 }
 
-void device_print(device_t *cur_device,state_t *state)
+void device_print(device_t *cur_device,State *state)
 {
     /*log_file("Device[%d]\n",i);
     log_file("  InstanceID:'%ws'\n",state->text+cur_device->InstanceId);
@@ -205,7 +205,7 @@ void device_print(device_t *cur_device,state_t *state)
     log_file("##Capabilities:#%d\n", cur_device->Capabilities);
 }
 
-void device_printHWIDS(device_t *cur_device,state_t *state)
+void device_printHWIDS(device_t *cur_device,State *state)
 {
     WCHAR *p;
     char *s=state->text;
@@ -237,7 +237,7 @@ void device_printHWIDS(device_t *cur_device,state_t *state)
     }
 }
 
-void driver_print(driver_t *cur_driver,state_t *state)
+void driver_print(driver_t *cur_driver,State *state)
 {
     char *s=state->text;
     WCHAR buf[BUFLEN];
@@ -258,28 +258,28 @@ void driver_print(driver_t *cur_driver,state_t *state)
 //}
 
 //{ State
-void state_init(state_t *state)
+void State::init()
 {
-    memset(state,0,sizeof(state_t));
-    heap_init(&state->devices_handle,ID_STATE_DEVICES,(void **)&state->devices_list,0,sizeof(device_t));
-    heap_init(&state->drivers_handle,ID_STATE_DRIVERS,(void **)&state->drivers_list,0,sizeof(driver_t));
-    heap_init(&state->text_handle,ID_STATE_TEXT,(void **)&state->text,0,1);
-    heap_alloc(&state->text_handle,2);
-    state->text[0]=0;
-    state->text[1]=0;
-    state->revision=SVN_REV;
+    memset(this,0,sizeof(State));
+    heap_init(&devices_handle,ID_STATE_DEVICES,(void **)&devices_list,0,sizeof(device_t));
+    heap_init(&drivers_handle,ID_STATE_DRIVERS,(void **)&drivers_list,0,sizeof(driver_t));
+    heap_init(&text_handle,ID_STATE_TEXT,(void **)&text,0,1);
+    heap_alloc(&text_handle,2);
+    text[0]=0;
+    text[1]=0;
+    revision=SVN_REV;
 
     //log_file("sizeof(device_t)=%d\nsizeof(driver_t)=%d\n\n",sizeof(device_t),sizeof(driver_t));
 }
 
-void state_free(state_t *state)
+void State::release()
 {
-    heap_free(&state->devices_handle);
-    heap_free(&state->drivers_handle);
-    heap_free(&state->text_handle);
+    heap_free(&devices_handle);
+    heap_free(&drivers_handle);
+    heap_free(&text_handle);
 }
 
-void state_save(state_t *state,const WCHAR *filename)
+void State::save(const WCHAR *filename)
 {
     FILE *f;
     int sz;
@@ -302,9 +302,9 @@ void state_save(state_t *state,const WCHAR *filename)
 
     sz=
         sizeof(state_m_t)+
-        state->drivers_handle.used+
-        state->devices_handle.used+
-        state->text_handle.used+
+        drivers_handle.used+
+        devices_handle.used+
+        text_handle.used+
         2*3*sizeof(int);  // 3 heaps
 
     p=mem=(char *)malloc(sz);
@@ -312,10 +312,10 @@ void state_save(state_t *state,const WCHAR *filename)
     fwrite(VER_MARKER,3,1,f);
     fwrite(&version,sizeof(int),1,f);
 
-    memcpy(p,state,sizeof(state_m_t));p+=sizeof(state_m_t);
-    p=heap_save(&state->devices_handle,p);
-    p=heap_save(&state->drivers_handle,p);
-    p=heap_save(&state->text_handle,p);
+    memcpy(p,this,sizeof(state_m_t));p+=sizeof(state_m_t);
+    p=heap_save(&devices_handle,p);
+    p=heap_save(&drivers_handle,p);
+    p=heap_save(&text_handle,p);
 
     if(1)
     {
@@ -331,7 +331,7 @@ void state_save(state_t *state,const WCHAR *filename)
     log_con("OK\n");
 }
 
-int  state_load(state_t *state,const WCHAR *filename)
+int  State::load(const WCHAR *filename)
 {
     char buf[BUFLEN];
     //WCHAR txt2[256];
@@ -380,12 +380,12 @@ int  state_load(state_t *state,const WCHAR *filename)
         p=mem_unpack;
     }
 
-    memcpy(state,p,sizeof(state_m_t));p+=sizeof(state_m_t);
-    p=heap_load(&state->devices_handle,p);
-    p=heap_load(&state->drivers_handle,p);
-    p=heap_load(&state->text_handle,p);
+    memcpy(this,p,sizeof(state_m_t));p+=sizeof(state_m_t);
+    p=heap_load(&devices_handle,p);
+    p=heap_load(&drivers_handle,p);
+    p=heap_load(&text_handle,p);
 
-    state_fakeOSversion(state);
+    fakeOSversion();
 
     free(mem);
     if(mem_unpack)free(mem_unpack);
@@ -394,68 +394,68 @@ int  state_load(state_t *state,const WCHAR *filename)
     return 1;
 }
 
-void state_fakeOSversion(state_t *state)
+void State::fakeOSversion()
 {
-    if(virtual_arch_type==32)state->architecture=0;
-    if(virtual_arch_type==64)state->architecture=1;
+    if(virtual_arch_type==32)architecture=0;
+    if(virtual_arch_type==64)architecture=1;
     if(virtual_os_version)
     {
-        state->platform.dwMajorVersion=virtual_os_version/10;
-        state->platform.dwMinorVersion=virtual_os_version%10;
+        platform.dwMajorVersion=virtual_os_version/10;
+        platform.dwMinorVersion=virtual_os_version%10;
     }
 }
 
-void state_print(state_t *state)
+void State::print()
 {
     int i,x,y;
     device_t *cur_device;
     WCHAR *buf;
-    SYSTEM_POWER_STATUS *battery;
+    SYSTEM_POWER_STATUS *batteryloc;
 
     if(log_verbose&LOG_VERBOSE_SYSINFO&&log_verbose&LOG_VERBOSE_BATCH)
     {
-        log_file("%ws (%d.%d.%d), ",get_winverstr(manager_g),state->platform.dwMajorVersion,state->platform.dwMinorVersion,state->platform.dwBuildNumber);
-        log_file("%s\n",state->architecture?"64-bit":"32-bit");
+        log_file("%ws (%d.%d.%d), ",get_winverstr(manager_g),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+        log_file("%s\n",architecture?"64-bit":"32-bit");
         log_file("%s, ",isLaptop?"Laptop":"Desktop");
-        log_file("Product='%ws', ",state->text+state->product);
-        log_file("Model='%ws', ",state->text+state->model);
-        log_file("Manuf='%ws'\n",state->text+state->manuf);
+        log_file("Product='%ws', ",text+product);
+        log_file("Model='%ws', ",text+model);
+        log_file("Manuf='%ws'\n",text+manuf);
     }else
     if(log_verbose&LOG_VERBOSE_SYSINFO)
     {
         log_file("Windows\n");
-        log_file("  Version:     %ws (%d.%d.%d)\n",get_winverstr(manager_g),state->platform.dwMajorVersion,state->platform.dwMinorVersion,state->platform.dwBuildNumber);
-        log_file("  PlatformId:  %d\n",state->platform.dwPlatformId);
-        log_file("  Update:      %ws\n",state->platform.szCSDVersion);
-        if(state->platform.dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
+        log_file("  Version:     %ws (%d.%d.%d)\n",get_winverstr(manager_g),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+        log_file("  PlatformId:  %d\n",platform.dwPlatformId);
+        log_file("  Update:      %ws\n",platform.szCSDVersion);
+        if(platform.dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
         {
-            log_file("  ServicePack: %d.%d\n",state->platform.wServicePackMajor,state->platform.wServicePackMinor);
-            log_file("  SuiteMask:   %d\n",state->platform.wSuiteMask);
-            log_file("  ProductType: %d\n",state->platform.wProductType);
+            log_file("  ServicePack: %d.%d\n",platform.wServicePackMajor,platform.wServicePackMinor);
+            log_file("  SuiteMask:   %d\n",platform.wSuiteMask);
+            log_file("  ProductType: %d\n",platform.wProductType);
         }
         log_file("\nEnvironment\n");
-        log_file("  windir:      %ws\n",state->text+state->windir);
-        log_file("  temp:        %ws\n",state->text+state->temp);
+        log_file("  windir:      %ws\n",text+windir);
+        log_file("  temp:        %ws\n",text+temp);
 
         log_file("\nMotherboard\n");
-        log_file("  Product:     %ws\n",state->text+state->product);
-        log_file("  Model:       %ws\n",state->text+state->model);
-        log_file("  Manuf:       %ws\n",state->text+state->manuf);
-        log_file("  cs_Model:    %ws\n",state->text+state->cs_model);
-        log_file("  cs_Manuf:    %ws\n",state->text+state->cs_manuf);
-        log_file("  Chassis:     %d\n",state->ChassisType);
+        log_file("  Product:     %ws\n",text+product);
+        log_file("  Model:       %ws\n",text+model);
+        log_file("  Manuf:       %ws\n",text+manuf);
+        log_file("  cs_Model:    %ws\n",text+cs_model);
+        log_file("  cs_Manuf:    %ws\n",text+cs_manuf);
+        log_file("  Chassis:     %d\n",ChassisType);
 
         log_file("\nBattery\n");
-        battery=(SYSTEM_POWER_STATUS *)(state->text+state->battery);
+        batteryloc=(SYSTEM_POWER_STATUS *)(text+battery);
         log_file("  AC_Status:   ");
-        switch(battery->ACLineStatus)
+        switch(batteryloc->ACLineStatus)
         {
             case 0:log_file("Offline\n");break;
             case 1:log_file("Online\n");break;
             default:
             case 255:log_file("Unknown\n");break;
         }
-        i=battery->BatteryFlag;
+        i=batteryloc->BatteryFlag;
         log_file("  Flags:       %d",i);
         if(i&1)log_file("[high]");
         if(i&2)log_file("[low]");
@@ -464,14 +464,14 @@ void state_print(state_t *state)
         if(i&128)log_file("[no battery]");
         if(i==255)log_file("[unknown]");
         log_file("\n");
-        if(battery->BatteryLifePercent!=255)
-            log_file("  Charged:      %d\n",battery->BatteryLifePercent);
-        if(battery->BatteryLifeTime!=0xFFFFFFFF)
-            log_file("  LifeTime:     %d mins\n",battery->BatteryLifeTime/60);
-        if(battery->BatteryFullLifeTime!=0xFFFFFFFF)
-            log_file("  FullLifeTime: %d mins\n",battery->BatteryFullLifeTime/60);
+        if(batteryloc->BatteryLifePercent!=255)
+            log_file("  Charged:      %d\n",batteryloc->BatteryLifePercent);
+        if(batteryloc->BatteryLifeTime!=0xFFFFFFFF)
+            log_file("  LifeTime:     %d mins\n",batteryloc->BatteryLifeTime/60);
+        if(batteryloc->BatteryFullLifeTime!=0xFFFFFFFF)
+            log_file("  FullLifeTime: %d mins\n",batteryloc->BatteryFullLifeTime/60);
 
-        buf=(WCHAR *)(state->text+state->monitors);
+        buf=(WCHAR *)(text+monitors);
         log_file("\nMonitors\n");
         for(i=0;i<buf[0];i++)
         {
@@ -482,45 +482,45 @@ void state_print(state_t *state)
 
         log_file("\nMisc\n");
         log_file("  Type:        %s\n",isLaptop?"Laptop":"Desktop");
-        log_file("  Locale:      %X\n",state->locale);
-        log_file("  CPU_Arch:    %s\n",state->architecture?"64-bit":"32-bit");
+        log_file("  Locale:      %X\n",locale);
+        log_file("  CPU_Arch:    %s\n",architecture?"64-bit":"32-bit");
         log_file("\n");
 
     }
 
     if(log_verbose&LOG_VERBOSE_DEVICES)
-    for(i=0;i<state->devices_handle.items;i++)
+    for(i=0;i<devices_handle.items;i++)
     {
-        cur_device=&state->devices_list[i];
+        cur_device=&devices_list[i];
 
-        device_print(cur_device,state);
+        device_print(cur_device,this);
 
         log_file("DriverInfo\n",cur_device->driver_index);
         if(cur_device->driver_index>=0)
-            driver_print(&state->drivers_list[cur_device->driver_index],state);
+            driver_print(&drivers_list[cur_device->driver_index],this);
         else
             log_file("##NoDriver\n");
 
-        device_printHWIDS(cur_device,state);
+        device_printHWIDS(cur_device,this);
         log_file("\n\n");
     }
     //log_file("Errors: %d\n",error_count);
 }
 
-void state_getsysinfo_fast(state_t *state)
+void State::getsysinfo_fast()
 {
-    SYSTEM_POWER_STATUS *battery;
+    SYSTEM_POWER_STATUS *batteryloc;
     DISPLAY_DEVICE DispDev;
     int x,y,i=0;
     WCHAR buf[BUFLEN];
 
     time_test=GetTickCount();
 
-    heap_reset(&state->text_handle,2);
+    heap_reset(&text_handle,2);
     // Battery
-    state->battery=heap_alloc(&state->text_handle,sizeof(SYSTEM_POWER_STATUS));
-    battery=(SYSTEM_POWER_STATUS *)(state->text+state->battery);
-    GetSystemPowerStatus(battery);
+    battery=heap_alloc(&text_handle,sizeof(SYSTEM_POWER_STATUS));
+    batteryloc=(SYSTEM_POWER_STATUS *)(text+battery);
+    GetSystemPowerStatus(batteryloc);
 
     // Monitors
     memset(&DispDev,0,sizeof(DispDev));
@@ -537,91 +537,91 @@ void state_getsysinfo_fast(state_t *state)
         }
         i++;
     }
-    state->monitors=heap_memcpy(&state->text_handle,buf,(1+buf[0]*2)*2);
+    monitors=heap_memcpy(&text_handle,buf,(1+buf[0]*2)*2);
 
     // Windows version
-    state->platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
-    if(!(GetVersionEx((OSVERSIONINFO*)&state->platform)))
+    platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
+    if(!(GetVersionEx((OSVERSIONINFO*)&platform)))
     {
-        state->platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
-        if(!GetVersionEx((OSVERSIONINFO*)&state->platform))
+        platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+        if(!GetVersionEx((OSVERSIONINFO*)&platform))
         print_error(GetLastError(),L"GetVersionEx()");
     }
-    state->locale=GetUserDefaultLCID();
+    locale=GetUserDefaultLCID();
 
     // Environment
     GetEnvironmentVariable(L"windir",buf,BUFLEN);
     wcscat(buf,L"\\inf\\");
-    state->windir=heap_memcpy(&state->text_handle,buf,wcslen(buf)*2+2);
+    windir=heap_memcpy(&text_handle,buf,wcslen(buf)*2+2);
 
     GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
-    state->temp=heap_memcpy(&state->text_handle,buf,wcslen(buf)*2+2);
+    temp=heap_memcpy(&text_handle,buf,wcslen(buf)*2+2);
 
     // 64-bit detection
-    state->architecture=0;
+    architecture=0;
     *buf=0;
     GetEnvironmentVariable(L"PROCESSOR_ARCHITECTURE",buf,BUFLEN);
-    if(!lstrcmpi(buf,L"AMD64"))state->architecture=1;
+    if(!lstrcmpi(buf,L"AMD64"))architecture=1;
     *buf=0;
     GetEnvironmentVariable(L"PROCESSOR_ARCHITEW6432",buf,BUFLEN);
-    if(*buf)state->architecture=1;
+    if(*buf)architecture=1;
 
-    state_fakeOSversion(state);
+    fakeOSversion();
 }
 
-WCHAR *state_getproduct(state_t *state)
+WCHAR *State::getProduct()
 {
-    WCHAR *s=(WCHAR *)(state->text+state->product);
+    WCHAR *s=(WCHAR *)(text+product);
 
-    if(StrStrIW(s,L"Product"))return (WCHAR *)(state->text+state->cs_model);
+    if(StrStrIW(s,L"Product"))return (WCHAR *)(text+cs_model);
     return s;
 }
 
-WCHAR *state_getmanuf(state_t *state)
+WCHAR *State::getManuf()
 {
-    WCHAR *s=(WCHAR *)(state->text+state->manuf);
+    WCHAR *s=(WCHAR *)(text+manuf);
 
-    if(StrStrIW(s,L"Vendor"))return (WCHAR *)(state->text+state->cs_manuf);
+    if(StrStrIW(s,L"Vendor"))return (WCHAR *)(text+cs_manuf);
     return s;
 }
 
-WCHAR *state_getmodel(state_t *state)
+WCHAR *State::getModel()
 {
-    WCHAR *s=(WCHAR *)(state->text+state->model);
+    WCHAR *s=(WCHAR *)(text+model);
 
-    if(!*s)return (WCHAR *)(state->text+state->cs_model);
+    if(!*s)return (WCHAR *)(text+cs_model);
     return s;
 }
 
-void state_getsysinfo_slow(state_t *state)
+void State::getsysinfo_slow()
 {
-    WCHAR manuf[BUFLEN];
-    WCHAR model[BUFLEN];
-    WCHAR product[BUFLEN];
-    WCHAR cs_manuf[BUFLEN];
-    WCHAR cs_model[BUFLEN];
+    WCHAR smanuf[BUFLEN];
+    WCHAR smodel[BUFLEN];
+    WCHAR sproduct[BUFLEN];
+    WCHAR scs_manuf[BUFLEN];
+    WCHAR scs_model[BUFLEN];
 
     time_sysinfo=GetTickCount();
 
-    getbaseboard(manuf,model,product,cs_manuf,cs_model,&state->ChassisType);
-    state->manuf=heap_memcpy(&state->text_handle,manuf,wcslen(manuf)*2+2);
-    state->product=heap_memcpy(&state->text_handle,product,wcslen(product)*2+2);
-    state->model=heap_memcpy(&state->text_handle,model,wcslen(model)*2+2);
-    state->cs_manuf=heap_memcpy(&state->text_handle,cs_manuf,wcslen(cs_manuf)*2+2);
-    state->cs_model=heap_memcpy(&state->text_handle,cs_model,wcslen(cs_model)*2+2);
+    getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
+    manuf=heap_memcpy(&text_handle,smanuf,wcslen(smanuf)*2+2);
+    product=heap_memcpy(&text_handle,sproduct,wcslen(sproduct)*2+2);
+    model=heap_memcpy(&text_handle,smodel,wcslen(smodel)*2+2);
+    cs_manuf=heap_memcpy(&text_handle,scs_manuf,wcslen(scs_manuf)*2+2);
+    cs_model=heap_memcpy(&text_handle,scs_model,wcslen(scs_model)*2+2);
 
     time_sysinfo=GetTickCount()-time_sysinfo;
 }
 
-int opencatfile(state_t *state,driver_t *cur_driver)
+int State::opencatfile(driver_t *cur_driver)
 {
     WCHAR filename[BUFLEN];
     CHAR bufa[BUFLEN];
 
-    wcscpy(filename,(WCHAR *)(state->text+state->windir));
+    wcscpy(filename,(WCHAR *)(text+windir));
     wsprintf(filename+wcslen(filename)-4,
              L"system32\\CatRoot\\{F750E6C3-38EE-11D1-85E5-00C04FC295EE}\\%ws",
-             (WCHAR *)(state->text+cur_driver->InfPath));
+             (WCHAR *)(text+cur_driver->InfPath));
 
     wcscpy(filename+wcslen(filename)-3,L"cat");
     {
@@ -662,10 +662,10 @@ int opencatfile(state_t *state,driver_t *cur_driver)
         }
     }
 
-    return *bufa?heap_strcpy(&state->text_handle,bufa):0;
+    return *bufa?heap_strcpy(&text_handle,bufa):0;
 }
 
-int device_readprop(HDEVINFO hDevInfo,state_t *state,device_t *cur_device,int i)
+int device_readprop(HDEVINFO hDevInfo,State *state,device_t *cur_device,int i)
 {
     DWORD buffersize;
     SP_DEVINFO_DATA *DeviceInfoData;
@@ -705,7 +705,7 @@ int device_readprop(HDEVINFO hDevInfo,state_t *state,device_t *cur_device,int i)
     }
     return 0;
 }
-void state_scandevices(state_t *state)
+void state_scandevices(State *state)
 {
     HDEVINFO hDevInfo;
     HKEY   hkey;
@@ -844,7 +844,7 @@ void state_scandevices(state_t *state)
                     if(inf_pos==-1)
                         log_err("ERROR: not found '%s'\n",sect);
 
-                    cur_driver->cat=opencatfile(state,cur_driver);
+                    cur_driver->cat=state->opencatfile(cur_driver);
 
                     //log_file("Added '%ws',%d\n",filename,inf_pos);
                     infdata=(infdata_t *)malloc(sizeof(infdata_t));
@@ -1001,7 +1001,7 @@ int iswide(int x,int y)
 11   +/-, 15..18, Widescreen  ->  assume laptop
 12   +/-, 18..XX, Widescreen  ->  assume desktop
 */
-void isnotebook_a(state_t *state)
+void isnotebook_a(State *state)
 {
     int i;
     int x,y;

@@ -515,12 +515,12 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 unsigned int __stdcall thread_scandevices(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
-    state_t *state=&bundle->state;
+    State *state=&bundle->state;
     //log_con("{thread_scandevices\n");
     if(statemode==0)
         state_scandevices(state);else
     if(statemode==STATEMODE_LOAD)
-        state_load(state,state_file);
+        state->load(state_file);
     //log_con("}thread_scandevices\n");
     return 0;
 }
@@ -542,10 +542,10 @@ unsigned int __stdcall thread_loadindexes(void *arg)
 unsigned int __stdcall thread_getsysinfo(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
-    state_t *state=&bundle->state;
+    State *state=&bundle->state;
 
     //log_con("{thread_getsysinfo\n");
-    if(statemode!=STATEMODE_LOAD)state_getsysinfo_slow(state);
+    if(statemode!=STATEMODE_LOAD)state->getsysinfo_slow();
     //log_con("}thread_getsysinfo\n");
     return 0;
 }
@@ -615,21 +615,21 @@ unsigned int __stdcall thread_loadall(void *arg)
 //{ Bundle
 void bundle_init(bundle_t *bundle)
 {
-    state_init(&bundle->state);
+    bundle->state.init();
     collection_init(&bundle->collection,drp_dir,index_dir,output_dir,flags);
     matcher_init(&bundle->matcher,&bundle->state,&bundle->collection);
 }
 
 void bundle_prep(bundle_t *bundle)
 {
-    state_getsysinfo_fast(&bundle->state);
+    bundle->state.getsysinfo_fast();
 }
 
 void bundle_free(bundle_t *bundle)
 {
     collection_free(&bundle->collection);
     matcher_free(&bundle->matcher);
-    state_free(&bundle->state);
+    bundle->state.release();
 }
 
 void bundle_load(bundle_t *bundle)
@@ -658,7 +658,7 @@ void bundle_lowprioirity(bundle_t *bundle)
 
     collection_printstates(&bundle->collection);
     //collection_finddrp(&bundle->collection,L"");
-    state_print(&bundle->state);
+    bundle->state.print();
     matcher_print(&bundle->matcher);
     manager_print_hr(manager_g);
 
@@ -672,7 +672,7 @@ void bundle_lowprioirity(bundle_t *bundle)
     collection_save(&bundle->collection);
     gen_timestamp();
     wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
-    state_save(&bundle->state,filename);
+    bundle->state.save(filename);
 
     if(flags&COLLECTION_PRINT_INDEX)
     {
