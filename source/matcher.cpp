@@ -418,7 +418,7 @@ int calc_altsectscore(hwidmatch_t *hwidmatch,State *state,int curscore)
     return isvalidcat(hwidmatch,state)?2:1;
 }
 
-int isMissing(device_t *device,driver_t *driver,State *state)
+int isMissing(Device *device,driver_t *driver,State *state)
 {
     if(device->problem==CM_PROB_DISABLED)return 0;
     if(driver)
@@ -478,7 +478,7 @@ void findHWID_in_list(char *s,int list,int str,int *dev_pos)
     *dev_pos=-1;
 }
 
-void getdd(device_t *cur_device,State *state,int *ishw,int *dev_pos)
+void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos)
 {
     driver_t *cur_driver=&state->drivers_list[cur_device->driver_index];
 
@@ -538,7 +538,7 @@ int cmpversion(version_t *t1,version_t *t2)
 
 }
 
-void devicematch_init(devicematch_t *devicematch,device_t *cur_device,driver_t *driver,int items)
+void devicematch_init(devicematch_t *devicematch,Device *cur_device,driver_t *driver,int items)
 {
     devicematch->device=cur_device;
     devicematch->driver=driver;
@@ -733,7 +733,7 @@ void matcher_populate(matcher_t *matcher)
     devicematch_t *devicematch;
     State *state=matcher->state;
     driver_t *cur_driver;
-    device_t *cur_device;
+    Device *cur_device;
     WCHAR *p;
     char *s=state->text;
     char buf[BUFLEN];
@@ -859,7 +859,7 @@ void matcher_sort(matcher_t *matcher)
 void matcher_print(matcher_t *matcher)
 {
     devicematch_t *devicematch;
-    device_t *cur_device;
+    Device *cur_device;
     hwidmatch_t *hwidmatch;
     int limits[7];
     int i,j;
@@ -870,7 +870,7 @@ void matcher_print(matcher_t *matcher)
     for(i=0;i<matcher->devicematch_handle.items;i++,devicematch++)
     {
         cur_device=devicematch->device;
-        device_print(cur_device,matcher->state);
+        cur_device->device_print(matcher->state);
         log_file("DriverInfo\n");
         if(devicematch->driver)
             driver_print(devicematch->driver,matcher->state);

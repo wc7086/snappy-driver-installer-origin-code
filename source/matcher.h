@@ -43,7 +43,7 @@ typedef struct _markers_t
 
 typedef struct _devicematch_t
 {
-    device_t *device;
+    Device *device;
     driver_t *driver;
     int start_matches;
     int num_matches;
@@ -74,7 +74,7 @@ typedef struct _matcher_t
 
 // Calc
 void genmarker(State *state);
-int isMissing(device_t *device,driver_t *driver,State *state);
+int isMissing(Device *device,driver_t *driver,State *state);
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
 int calc_catalogfile(hwidmatch_t *hwidmatch);
 int calc_signature(int catalogfile,State *state,int isnt);
@@ -92,11 +92,11 @@ int calc_status(hwidmatch_t *hwidmatch,State *state);
 
 // Misc
 void findHWID_in_list(char *s,int list,int str,int *dev_pos);
-void getdd(device_t *cur_device,State *state,int *ishw,int *dev_pos);
+void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos);
 int  cmpunsigned(unsigned a,unsigned b);
 int  cmpdate(version_t *t1,version_t *t2);
 int  cmpversion(version_t *t1,version_t *t2);
-void devicematch_init(devicematch_t *devicematch,device_t *cur_device,driver_t *driver,int items);
+void devicematch_init(devicematch_t *devicematch,Device *cur_device,driver_t *driver,int items);
 
 // hwidmatch
 void minlen(CHAR *s,int *len);
