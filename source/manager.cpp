@@ -1655,7 +1655,7 @@ void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i)
     popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
 }
 
-int pickcat(hwidmatch_t *hwidmatch,state_t *state)
+int pickcat(hwidmatch_t *hwidmatch,State *state)
 {
     if(state->architecture==1&&*getdrp_drvcat(hwidmatch,CatalogFile_ntamd64))
     {
@@ -1675,7 +1675,7 @@ int pickcat(hwidmatch_t *hwidmatch,state_t *state)
     return 0;
 }
 
-int isvalidcat(hwidmatch_t *hwidmatch,state_t *state)
+int isvalidcat(hwidmatch_t *hwidmatch,State *state)
 {
     CHAR bufa[BUFLEN];
     int n=pickcat(hwidmatch,state);
@@ -1883,7 +1883,7 @@ void popup_sysinfo(manager_t *manager,HDC hdcMem)
 {
     WCHAR bufw[BUFLEN];
     textdata_t td;
-    state_t *state=manager->matcher->state;
+    State *state=manager->matcher->state;
     SYSTEM_POWER_STATUS *battery;
     WCHAR *buf;
     int i,x,y;
@@ -1916,9 +1916,9 @@ void popup_sysinfo(manager_t *manager,HDC hdcMem)
 
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_MOTHERBOARD));td.x=p1;
-    TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",state_getproduct(state));
-    TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",state_getmodel(state));
-    TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",state_getmanuf(state));
+    TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",state->getProduct());
+    TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",state->getModel());
+    TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",state->getManuf());
     TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),state->ChassisType);
 
     td.x=p0;
