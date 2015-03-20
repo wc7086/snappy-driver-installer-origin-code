@@ -18,8 +18,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global vars
-img_t box[BOX_NUM];
-img_t icon[ICON_NUM];
+Image box[BOX_NUM];
+Image icon[ICON_NUM];
 
 panelitem_t panel1[]=
 {
@@ -192,137 +192,48 @@ int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
 int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
 
 //{ Image
-void box_init(img_t *img,int i)
-{
-    WCHAR *filename;
-    int j,r;
 
-    if(img->big&&!img->iscopy)
+void Image::makecopy(Image &t)
+{
+    release();
+    bitmap=t.bitmap;
+    ldc=t.ldc;
+    sx=t.sx;
+    sy=t.sy;
+    hasalpha=t.hasalpha;
+    iscopy=1;
+}
+
+void Image::load(int i)
+{
+    WCHAR *filename=(WCHAR *)D(i);
+
+    release();
+
+    if(wcsstr(filename,L"RES_"))
+        readFromRes(_wtoi(filename+4));
+    else
+        readFromFile(filename);
+}
+
+void Image::release()
+{
+    int r;
+
+    if(bitmap&&!iscopy)
     {
-        r=DeleteObject(img->bitmap);
-            if(!r)log_err("ERROR in box_init(): failed DeleteObject\n");
-        r=DeleteDC(img->dc);
+        SelectObject(ldc,oldbitmap);
+        r=DeleteDC(ldc);
             if(!r)log_err("ERROR in box_init(): failed DeleteDC\n");
-        free(img->big);
+        r=DeleteObject(bitmap);
+            if(!r)log_err("ERROR in box_init(): failed DeleteObject\n");
     }
-    memset(img,0,sizeof(img_t));
-
-    img->index=boxindex[i];
-    filename=(WCHAR *)D(img->index+4);
-    if(!*filename)return;
-
-    for(j=0;j<i;j++)
-        if(box[j].index&&j!=i)
-            if(!wcscmp(filename,(WCHAR *)D(box[j].index+4)))
-    {
-        //printf("Match %d,'%ws'\n",j,D(box[j].index+4));
-        img->big=box[j].big;
-        img->bitmap=box[j].bitmap;
-        img->hasalpha=box[j].hasalpha;
-        img->dc=box[j].dc;
-        img->sx=box[j].sx;
-        img->sy=box[j].sy;
-        img->iscopy=1;
-        return;
-    }
-
-    if(wcsstr(filename,L"RES_"))
-        image_loadRes(img,_wtoi(filename+4));
-    else
-        image_loadFile(img,filename);
+    bitmap=0;
+    ldc=0;
+    iscopy=0;
 }
 
-void box_free(img_t *img)
-{
-    if(img->big&&!img->iscopy)free(img->big);
-}
-
-void icon_init(img_t *img,int i)
-{
-    WCHAR *filename;
-
-    if(img->big&&!img->iscopy)
-    {
-        int r;
-        r=DeleteObject(img->bitmap);
-            if(!r)log_err("ERROR in icon_init(): failed DeleteObject\n");
-        free(img->big);
-
-    }
-    memset(img,0,sizeof(img_t));
-
-    filename=(WCHAR *)D(i);
-    if(wcsstr(filename,L"RES_"))
-        image_loadRes(img,_wtoi(filename+4));
-    else
-        image_loadFile(img,filename);
-}
-
-void icon_free(img_t *img)
-{
-    if(img->big&&!img->iscopy)free(img->big);
-}
-//}
-
-//{ Draw
-void image_load(img_t *img,BYTE *data,int sz)
-{
-    BYTE *bits,*p1,*p2;
-    BITMAPINFO bmi;
-    int ret;
-    int i;
-
-    img->hasalpha=img->sx=img->sy=0;
-#ifdef CONSOLE_MODE
-    return;
-#else
-    ret=WebPGetInfo((PBYTE)data,sz,&img->sx,&img->sy);
-    if(!ret)
-    {
-        log_err("ERROR in image_load(): failed WebPGetInfo\n");
-        return;
-    }
-    img->big=WebPDecodeBGRA((PBYTE)data,sz,&img->sx,&img->sy);
-    if(!img->big)
-    {
-        log_err("ERROR in image_load(): failed WebPDecodeBGRA\n");
-        return;
-    }
-#endif
-
-    ZeroMemory(&bmi,sizeof(BITMAPINFO));
-    bmi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
-    bmi.bmiHeader.biWidth=img->sx;
-    bmi.bmiHeader.biHeight=-img->sy;
-    bmi.bmiHeader.biPlanes=1;
-    bmi.bmiHeader.biBitCount=32;
-    bmi.bmiHeader.biCompression=BI_RGB;
-    bmi.bmiHeader.biSizeImage=img->sx*img->sy*4;
-
-    img->dc=CreateCompatibleDC(0);
-    img->bitmap=CreateDIBSection(img->dc,&bmi,DIB_RGB_COLORS,(void **)&bits,0,0);
-    SelectObject(img->dc,img->bitmap);
-
-    p1=bits;p2=img->big;
-    for(i=0;i<img->sx*img->sy;i++)
-    {
-        BYTE B,G,R,A;
-        B=*p2++;
-        G=*p2++;
-        R=*p2++;
-        A=*p2++;
-        double dA=A/255.;
-        if(A!=255)img->hasalpha=1;
-
-        *p1++=(BYTE)(B*dA);
-        *p1++=(BYTE)(G*dA);
-        *p1++=(BYTE)(R*dA);
-        *p1++=A;
-    }
-    //log_con("%dx%d:%d,%d\n",img->sx,img->sy,img->hasalpha,img->index);
-}
-
-void image_loadFile(img_t *img,WCHAR *filename)
+void Image::readFromFile(WCHAR *filename)
 {
     WCHAR buf[BUFLEN];
     FILE *f;
@@ -341,7 +252,7 @@ void image_loadFile(img_t *img,WCHAR *filename)
     fseek(f,0,SEEK_END);
     sz=ftell(f);
     fseek(f,0,SEEK_SET);
-    imgbuf=(BYTE *)malloc(sz);
+    imgbuf=new BYTE[sz];
 
     sz=fread(imgbuf,1,sz,f);
     if(!sz)
@@ -350,11 +261,11 @@ void image_loadFile(img_t *img,WCHAR *filename)
         return;
     }
     fclose(f);
-    image_load(img,imgbuf,sz);
-    free(imgbuf);
+    createBitmap(imgbuf,sz);
+    delete imgbuf;
 }
 
-void image_loadRes(img_t *img,int id)
+void Image::readFromRes(int id)
 {
     int sz;
     HGLOBAL myResourceData;
@@ -365,9 +276,115 @@ void image_loadRes(img_t *img,int id)
         log_err("ERROR in image_loadRes(): failed get_resource\n");
         return;
     }
-    image_load(img,(BYTE *)myResourceData,sz);
+    createBitmap((BYTE *)myResourceData,sz);
 }
 
+void Image::createBitmap(BYTE *data,int sz)
+{
+    BITMAPINFO bmi;
+    BYTE *bits;
+    BYTE *big;
+    BYTE *p1,*p2;
+    int ret;
+    int i;
+
+    hasalpha=sx=sy=0;
+    ldc=0;
+#ifdef CONSOLE_MODE
+    return;
+#else
+    ret=WebPGetInfo((PBYTE)data,sz,&sx,&sy);
+    if(!ret)
+    {
+        log_err("ERROR in image_load(): failed WebPGetInfo\n");
+        return;
+    }
+    big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);
+    if(!big)
+    {
+        log_err("ERROR in image_load(): failed WebPDecodeBGRA\n");
+        return;
+    }
+#endif
+    ZeroMemory(&bmi,sizeof(BITMAPINFO));
+    bmi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth=sx;
+    bmi.bmiHeader.biHeight=-sy;
+    bmi.bmiHeader.biPlanes=1;
+    bmi.bmiHeader.biBitCount=32;
+    bmi.bmiHeader.biCompression=BI_RGB;
+    bmi.bmiHeader.biSizeImage=sx*sy*4;
+
+    ldc=CreateCompatibleDC(0);
+    bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,0,0);
+
+    p1=bits;p2=big;
+    for(i=0;i<sx*sy;i++)
+    {
+        BYTE B,G,R,A;
+        B=*p2++;
+        G=*p2++;
+        R=*p2++;
+        A=*p2++;
+        double dA=A/255.;
+        if(A!=255)hasalpha=1;
+
+        *p1++=(BYTE)(B*dA);
+        *p1++=(BYTE)(G*dA);
+        *p1++=(BYTE)(R*dA);
+        *p1++=A;
+    }
+    SelectObject(ldc,bitmap);
+    free(big);
+//    log_con("%dx%d:%d,%d\n",sx,sy,hasalpha,index);
+}
+
+void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
+{
+    BLENDFUNCTION blend={AC_SRC_OVER,0,255,AC_SRC_ALPHA};
+    int xi,yi,wx,wy,wx1,wy1,wx2,wy2;
+
+    if(!sx)return;
+
+    wx=(fill&HSTR)?x2-x1:sx;
+    wy=(fill&VSTR)?y2-y1:sy;
+    if(fill&ASPECT)
+    {
+        if(fill&HSTR)wy=sy*((double)wx/sx);
+        if(fill&VSTR)wx=sx*((double)wy/sy);
+    }
+
+    for(xi=0;xi<x2;xi+=wx)
+    {
+        for(yi=0;yi<y2;yi+=wy)
+        {
+            int x=x1+xi,y=y1+yi;
+            if(anchor&ALIGN_RIGHT)  x=x2-xi-wx;
+            if(anchor&ALIGN_BOTTOM) y=y2-yi-wy;
+            if(anchor&ALIGN_HCENTER)x=(x2-x1-wx)/2;
+            if(anchor&ALIGN_VCENTER)y=(y2-y1-wy)/2;
+
+            wx1=(x+wx>x2)?x2-x:wx;
+            wy1=(y+wy>y2)?y2-y:wy;
+            wx2=(x+wx>x2)?wx1:sx;
+            wy2=(y+wy>y2)?wy1:sy;
+
+            if(hasalpha)
+                AlphaBlend(dc,x,y,wx1,wy1,ldc,0,0,wx2,wy2,blend);
+            else if(wx==wx2&&wy==wy2)
+                BitBlt(dc,x,y,wx1,wy1,ldc,0,0,SRCCOPY);
+            else
+                StretchBlt(dc,x,y,wx1,wy1,ldc,0,0,wx2,wy2,SRCCOPY);
+
+            if((fill&VTILE)==0)break;
+        }
+        if((fill&HTILE)==0)break;
+    }
+    //drawrect(dc,x1,y1,x2,y2,0xFF000000,0xFF00,1,0);
+}
+//}
+
+//{ Draw
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
@@ -426,7 +443,8 @@ void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
 
 void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int id)
 {
-    int i=box[id].index;
+    //int i=box[id].index;
+    int i=boxindex[id];
 
     if(id<0||id>=BOX_NUM)
     {
@@ -439,55 +457,7 @@ void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int id)
         return;
     }
     drawrect(hdc,x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
-    if(box[id].big)
-        image_draw(hdc,&box[id],x1,y1,x2,y2,D(i+5),D(i+6));
-/*    else
-        drawrect(hdc,x1,y1,x2,y2,0xFF,D(i+2),D(i+2),D(i+3));*/
-}
-
-void image_draw(HDC dc,img_t *img,int x1,int y1,int x2,int y2,int anchor,int fill)
-{
-    BLENDFUNCTION blend={AC_SRC_OVER,0,255,AC_SRC_ALPHA};
-    int xi,yi,wx,wy,wx1,wy1,wx2,wy2;
-
-    if(!img)return;
-
-    wx=(fill&HSTR)?x2-x1:img->sx;
-    wy=(fill&VSTR)?y2-y1:img->sy;
-    if(fill&ASPECT)
-    {
-        if(fill&HSTR)wy=img->sy*((double)wx/img->sx);
-        if(fill&VSTR)wx=img->sx*((double)wy/img->sy);
-    }
-
-
-    for(xi=0;xi<x2;xi+=wx)
-    {
-        for(yi=0;yi<y2;yi+=wy)
-        {
-            int x=x1+xi,y=y1+yi;
-            if(anchor&ALIGN_RIGHT)  x=x2-xi-wx;
-            if(anchor&ALIGN_BOTTOM) y=y2-yi-wy;
-            if(anchor&ALIGN_HCENTER)x=(x2-x1-wx)/2;
-            if(anchor&ALIGN_VCENTER)y=(y2-y1-wy)/2;
-
-            wx1=(x+wx>x2)?x2-x:wx;
-            wy1=(y+wy>y2)?y2-y:wy;
-            wx2=(x+wx>x2)?wx1:img->sx;
-            wy2=(y+wy>y2)?wy1:img->sy;
-
-            if(img->hasalpha)
-                AlphaBlend(dc,x,y,wx1,wy1,img->dc,0,0,wx2,wy2,blend);
-            else if(wx==wx2&&wy==wy2)
-                BitBlt(dc,x,y,wx1,wy1,img->dc,0,0,SRCCOPY);
-            else
-                StretchBlt(dc,x,y,wx1,wy1,img->dc,0,0,wx2,wy2,SRCCOPY);
-
-            if((fill&VTILE)==0)break;
-        }
-        if((fill&HTILE)==0)break;
-    }
-    //drawrect(dc,x1,y1,x2,y2,0xFF000000,0xFF00,1,0);
+    box[id].draw(hdc,x1,y1,x2,y2,D(i+5),D(i+6));
 }
 
 void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
@@ -500,8 +470,8 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
     rect.right=x+wx;
     rect.bottom=y+wy;
 
-    if(icon[i].bitmap)
-        image_draw(hdc,&icon[i],x,y,x+wx,y+wy,0,HSTR|VSTR);
+    if(icon[i].isLoaded())
+        icon[i].draw(hdc,x,y,x+wx,y+wy,0,HSTR|VSTR);
     else
         DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
 }
@@ -553,84 +523,86 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
 //}
 
 //{ Canvas
-void canvas_init(canvas_t *canvas)
+void Canvas::init()
 {
     int r;
 
-    canvas->hdcMem=CreateCompatibleDC(0);
-    if(!canvas->hdcMem)log_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
-    r=SetBkMode(canvas->hdcMem,TRANSPARENT);
+    hdcMem=CreateCompatibleDC(0);
+    if(!hdcMem)log_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
+    r=SetBkMode(hdcMem,TRANSPARENT);
     if(!r)log_err("ERROR in canvas_init(): failed SetBkMode\n");
-    canvas->bitmap=0;
-    canvas->x=0;
-    canvas->y=0;
+    bitmap=0;
+    x=0;
+    y=0;
 }
 
-void canvas_free(canvas_t *canvas)
+void Canvas::free()
 {
     int r;
 
-    if(canvas->hdcMem)
+    if(hdcMem)
     {
-        r=DeleteDC(canvas->hdcMem);
+        r=DeleteDC(hdcMem);
         if(!r)log_err("ERROR in canvas_free(): failed DeleteDC\n");
+        hdcMem=0;
     }
 
-    if(canvas->bitmap)
+    if(bitmap)
     {
-        //r=(int)SelectObject(canvas->hdcMem,canvas->oldbitmap);
+        //r=(int)SelectObject(hdcMem,oldbitmap);
         //if(!r)log_err("ERROR in canvas_free(): failed SelectObject\n");
-        r=DeleteObject(canvas->bitmap);
+        r=DeleteObject(bitmap);
         if(!r)log_err("ERROR in canvas_free(): failed DeleteObject\n");
+        bitmap=0;
     }
 }
 
-void canvas_begin(canvas_t *canvas,HWND hwnd,int x,int y)
+void Canvas::begin(HWND nhwnd,int nx,int ny)
 {
     HGDIOBJ r;
     unsigned r32;
 
-    canvas->hwnd=hwnd;
-    canvas->localDC=BeginPaint(hwnd,&canvas->ps);
-    if(!canvas->localDC)log_err("ERROR in canvas_begin(): failed BeginPaint\n");
+    hwnd=nhwnd;
+    localDC=BeginPaint(hwnd,&ps);
+    if(!localDC)log_err("ERROR in canvas_begin(): failed BeginPaint\n");
 
-    if(canvas->x!=x||canvas->y!=y)
+    if(x!=nx||y!=ny)
     {
-        canvas->x=x;
-        canvas->y=y;
-        if(canvas->bitmap)
+        x=nx;
+        y=ny;
+        if(bitmap)
         {
-            r=SelectObject(canvas->hdcMem,canvas->oldbitmap);
+            r=SelectObject(hdcMem,oldbitmap);
             if(!r)log_err("ERROR in canvas_begin(): failed SelectObject(oldbitmap)\n");
-            r32=DeleteObject(canvas->bitmap);
+            r32=DeleteObject(bitmap);
             if(!r32)log_err("ERROR in canvas_begin(): failed DeleteObject\n");
         }
-        canvas->bitmap=CreateCompatibleBitmap(canvas->localDC,x,y);
-        if(!canvas->bitmap)log_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
-        canvas->oldbitmap=(HBITMAP)SelectObject(canvas->hdcMem,canvas->bitmap);
-        if(!canvas->oldbitmap)log_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
+        bitmap=CreateCompatibleBitmap(localDC,x,y);
+        if(!bitmap)log_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
+        oldbitmap=(HBITMAP)SelectObject(hdcMem,bitmap);
+        if(!oldbitmap)log_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
     }
-    canvas->clipping=CreateRectRgnIndirect(&canvas->ps.rcPaint);
-    if(!canvas->clipping)log_err("ERROR in canvas_begin(): failed BeginPaint\n");
-    SetStretchBltMode(canvas->hdcMem,HALFTONE);
-    r32=SelectClipRgn(canvas->hdcMem,canvas->clipping);
+    clipping=CreateRectRgnIndirect(&ps.rcPaint);
+    if(!clipping)log_err("ERROR in canvas_begin(): failed BeginPaint\n");
+    SetStretchBltMode(hdcMem,HALFTONE);
+    r32=SelectClipRgn(hdcMem,clipping);
     if(!r32)log_err("ERROR in canvas_begin(): failed SelectClipRgn\n");
 }
 
-void canvas_end(canvas_t *canvas)
+void Canvas::end()
 {
     int r;
 
-    r=BitBlt(canvas->localDC,
-            canvas->ps.rcPaint.left,canvas->ps.rcPaint.top,canvas->ps.rcPaint.right,canvas->ps.rcPaint.bottom,
-            canvas->hdcMem,
-            canvas->ps.rcPaint.left,canvas->ps.rcPaint.top,
+    r=BitBlt(localDC,
+            ps.rcPaint.left,ps.rcPaint.top,ps.rcPaint.right,ps.rcPaint.bottom,
+            hdcMem,
+            ps.rcPaint.left,ps.rcPaint.top,
             SRCCOPY);
-    SelectClipRgn(canvas->hdcMem,0);
+    SelectClipRgn(hdcMem,0);
     if(!r)log_err("ERROR in canvas_end(): failed BitBlt\n");
-    r=DeleteObject(canvas->clipping);
+    r=DeleteObject(clipping);
     if(!r)log_err("ERROR in canvas_end(): failed DeleteObject\n");
-    EndPaint(canvas->hwnd,&canvas->ps);
+    EndPaint(hwnd,&ps);
 }
 //}
 

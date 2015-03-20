@@ -74,8 +74,8 @@ void vault_free()
 {
     int i;
 
-    for(i=0;i<BOX_NUM;i++)box_free(&box[i]);
-    for(i=0;i<ICON_NUM;i++)icon_free(&icon[i]);
+    for(i=0;i<BOX_NUM;i++)box[i].release();
+    for(i=0;i<ICON_NUM;i++)icon[i].release();
 
     vault_free1(&vLang);
     vault_free1(&vTheme);
@@ -337,15 +337,40 @@ void theme_set(int i)
     vault_loadfromres(&vTheme,IDR_THEME);
     vault_loadfromfile(&vTheme,vTheme.namelist[i]);
 
-    for(i=0;i<BOX_NUM;i++)box_init(&box[i],i);
-    icon_init(&icon[0],ITEM_EXPAND_UP);
-    icon_init(&icon[1],ITEM_EXPAND_UP_H);
-    icon_init(&icon[2],ITEM_EXPAND_DOWN);
-    icon_init(&icon[3],ITEM_EXPAND_DOWN_H);
-    icon_init(&icon[4],BUTTON_BITMAP_UNCHECKED);
-    icon_init(&icon[5],BUTTON_BITMAP_UNCHECKED_H);
-    icon_init(&icon[6],BUTTON_BITMAP_CHECKED);
-    icon_init(&icon[7],BUTTON_BITMAP_CHECKED_H);
+    for(i=0;i<BOX_NUM;i++)
+    {
+        WCHAR *str=(WCHAR *)D(boxindex[i]+4);
+        int j;
+        for(j=0;j<i;j++)
+            if(!wcscmp(str,(WCHAR *)D(boxindex[j]+4)))
+        {
+            box[i].makecopy(box[j]);
+            //log_con("%d Copy %ws %d\n",i,str,j);
+            break;
+        }
+        if(i==j)
+        {
+            box[i].load(boxindex[i]+4);
+            //log_con("%d New  %ws\n",i,str);
+        }
+    }
+    for(i=0;i<ICON_NUM;i++)
+    {
+        WCHAR *str=(WCHAR *)D(iconindex[i]);
+        int j;
+        for(j=0;j<i;j++)
+            if(!wcscmp(str,(WCHAR *)D(iconindex[j])))
+        {
+            icon[i].makecopy(icon[j]);
+            //log_con("%d Copy %ws %d\n",i,str,j);
+            break;
+        }
+        if(i==j)
+        {
+            icon[i].load(iconindex[i]);
+            //log_con("%d New  %ws\n",i,str);
+        }
+    }
 }
 
 int lang_enum(HWND hwnd,const WCHAR *path,int locale)

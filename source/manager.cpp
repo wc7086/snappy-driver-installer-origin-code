@@ -945,7 +945,7 @@ int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int
     HRGN hrgn=0,hrgn2;
     int x=Xg(D(DRVITEM_OFSX));
     int wx=XG(D(DRVITEM_WX),x);
-    int r=D(box[box_status(index)].index+3);
+    int r=D(boxindex[box_status(index)]+3);
     int intend=0;
     int oldstyle=flags&FLAG_SHOWDRPNAMES1||flags&FLAG_OLDSTYLE;
 
@@ -1243,7 +1243,7 @@ int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int
             if(groupsize(manager,itembar->index)>1&&itembar->first&1)
             {
                 int xo=x+wx-D(ITEM_ICON_SIZE)*2+10;
-                image_draw(hdc,&icon[(itembar->isactive&2?0:2)+(zone==2?1:0)],xo,pos,xo+32,pos+32,0,HSTR|VSTR);
+                icon[(itembar->isactive&2?0:2)+(zone==2?1:0)].draw(hdc,xo,pos,xo+32,pos+32,0,HSTR|VSTR);
             }
             break;
 

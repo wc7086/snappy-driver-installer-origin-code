@@ -1003,3 +1003,4 @@ enum
 };
 
 extern const int boxindex[BOX_NUM];
+extern const int iconindex[ICON_NUM];
