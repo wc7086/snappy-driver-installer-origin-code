@@ -44,27 +44,7 @@ typedef struct _SP_DEVINFO_DATA32
     int       Reserved;
 } SP_DEVINFO_DATA_32, *PSP_DEVINFO_DATA_32;
 
-typedef struct _device_t
-{
-    int driver_index;
-
-    ofst Devicedesc;
-    ofst HardwareID;
-    ofst CompatibleIDs;
-    ofst Driver;
-    ofst Mfg;
-    ofst FriendlyName;
-    int Capabilities;
-    int ConfigFlags;
-
-    ofst InstanceId;
-    ULONG status,problem;
-    int ret;
-
-    SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
-}device_t;
-
-typedef struct _driver_t driver_t;
+//typedef struct _driver_t driver_t;
 typedef struct _driver_t
 {
     ofst DriverDesc;
@@ -112,7 +92,6 @@ typedef struct _state_m_t
 }state_m_t;
 
 //}
-
 class Device
 {
 public:
@@ -134,9 +113,9 @@ public:
     SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
 
 public:
-    int print_status(device_t *device);
-    void device_print(device_t *cur_device,State *state);
-    void device_printHWIDS(device_t *cur_device,State *state);
+    int print_status();
+    void device_print(State *state);
+    void device_printHWIDS(State *state);
 };
 
 class State
@@ -168,7 +147,7 @@ public:
     heap_t profile_handle;
     int profile_current;*/
 
-    device_t *devices_list;
+    Device *devices_list;
     heap_t drivers_handle;
 
     driver_t *drivers_list;
@@ -195,23 +174,18 @@ public:
     void genmarker();
 };
 extern const char *deviceststus_str[];
-void print_guid(GUID *g);
-int print_status(device_t *device);
-void print_appinfo();
 
-void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val);
-void read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val);
 
-void device_print(device_t *cur_device,State *state);
-void device_printHWIDS(device_t *cur_device,State *state);
 void driver_print(driver_t *cur_driver,State *state);
-
 void state_scandevices(State *state);
 
+void print_guid(GUID *g);
+void print_appinfo();
+void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val);
+void read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val);
 int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
-//int opencatfile(State *state,driver_t *cur_driver);
 void isnotebook_a(State *state);
 
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);

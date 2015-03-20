@@ -342,7 +342,7 @@ void manager_print_hr(manager_t *manager)
             log_file("\n$%04d, %ws\n",k,buf);
             if(itembar->devicematch->device)
             {
-                device_print(itembar->devicematch->device,manager->matcher->state);
+                itembar->devicematch->device->device_print(manager->matcher->state);
                 //device_printHWIDS(itembar->devicematch->device,manager->matcher->state);
             }
             if(itembar->devicematch->driver)
@@ -1426,7 +1426,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
                 hwidmatch_print_tbl(itembar_new->hwidmatch,limits);
             }
             else
-                device_print(itembar_new->devicematch->device,manager_new->matcher->state);
+                itembar_new->devicematch->device->device_print(manager_new->matcher->state);
         }
     }
 
@@ -1446,7 +1446,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
                 hwidmatch_print_tbl(itembar_old->hwidmatch,limits);
             }
             else
-                device_print(itembar_old->devicematch->device,manager_old->matcher->state);
+                itembar_old->devicematch->device->device_print(manager_old->matcher->state);
 
         }
     }
@@ -1764,7 +1764,7 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
     TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
     TextOutF(&td,c0,L"%s",bufw);
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->Driver);
-    wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+print_status(devicematch_f->device)),devicematch_f->device->problem);
+    wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
     TextOutF(&td,c0,L"%s",bufw);
 
     maxln=td.y;
