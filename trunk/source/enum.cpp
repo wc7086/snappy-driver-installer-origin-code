@@ -191,49 +191,6 @@ void device_print(device_t *cur_device,state_t *state)
     log_file("  ClassGuid:");printguid(&cur_device->DeviceInfoData.ClassGuid);
     log_file("  DevInst: %d\n",cur_device->DeviceInfoData.DevInst);*/
 
-#ifdef STORE_PROPS
-    WCHAR *buffer;
-    int DataT;
-    int buffersize;
-    int j;
-
-    for(j=0;j<NUM_PROPS;j++)
-    {
-        break;
-        if(!cur_device->PropertiesSize[j])continue;
-        buffer=(WCHAR *)(state->text+cur_device->Properties[j]);
-        DataT=cur_device->PropertiesType[j];
-        buffersize=cur_device->PropertiesSize[j];
-        log_file("%s:",devtbl[j].name);
-        switch(DataT)
-        {
-            case REG_NONE:
-                log_file("REG_NONE\n",buffer);
-                break;
-            case REG_SZ:
-                log_file("REG_SZ:\n  %ws\n",buffer);
-                break;
-            case REG_BINARY:
-                log_file("REG_BINARY:\n  %d'%.*s'\n",buffersize,buffersize,buffer);
-                break;
-            case REG_DWORD:
-                log_file("REG_DWORD:\n  %d,%08X\n",*buffer,*buffer);
-                break;
-            case REG_MULTI_SZ:
-                p=buffer;
-                log_file("REG_MULTI_SZ\n");
-                while(*p)
-                {
-                    log_file("  %ws\n",p);
-                    p+=lstrlen(p)+1;
-                }
-                break;
-            default:
-                log_file("Def: %d\n",DataT);
-        }
-    }
-#endif
-
     char *s=state->text;
 
     log_file("DeviceInfo\n");
@@ -708,20 +665,57 @@ int opencatfile(state_t *state,driver_t *cur_driver)
     return *bufa?heap_strcpy(&state->text_handle,bufa):0;
 }
 
+int device_readprop(HDEVINFO hDevInfo,state_t *state,device_t *cur_device,int i)
+{
+    DWORD buffersize;
+    SP_DEVINFO_DATA *DeviceInfoData;
+    int r;
+
+    DeviceInfoData=(SP_DEVINFO_DATA *)&cur_device->DeviceInfoData;
+    memset(DeviceInfoData,0,sizeof(SP_DEVINFO_DATA));
+    DeviceInfoData->cbSize=sizeof(SP_DEVINFO_DATA);
+
+    if(!SetupDiEnumDeviceInfo(hDevInfo,i,DeviceInfoData))
+    {
+        r=GetLastError();
+        if(r==ERROR_NO_MORE_ITEMS)
+            heap_freelastitem(&state->devices_handle);
+        else
+            print_error(r,L"SetupDiEnumDeviceInfo()");
+        return 1;
+    }
+
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,0,0,&buffersize);
+    cur_device->InstanceId=heap_alloc(&state->text_handle,buffersize);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,(WCHAR *)(state->text+cur_device->InstanceId),BUFLEN,0);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_DEVICEDESC,    &cur_device->Devicedesc);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_HARDWAREID,    &cur_device->HardwareID);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_COMPATIBLEIDS, &cur_device->CompatibleIDs);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_DRIVER,        &cur_device->Driver);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_MFG,           &cur_device->Mfg);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_FRIENDLYNAME,  &cur_device->FriendlyName);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_CAPABILITIES,  &cur_device->Capabilities);
+    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_CONFIGFLAGS,   &cur_device->ConfigFlags);
+
+    r=CM_Get_DevNode_Status(&cur_device->status,&cur_device->problem,cur_device->DeviceInfoData.DevInst,0);
+    cur_device->ret=r;
+    if(r!=CR_SUCCESS)
+    {
+        log_file("Error %d with CM_Get_DevNode_Status()\n",r);
+    }
+    return 0;
+}
 void state_scandevices(state_t *state)
 {
     HDEVINFO hDevInfo;
     HKEY   hkey;
-    SP_DEVINFO_DATA *DeviceInfoData;
     WCHAR buf[BUFLEN];
-    DWORD buffersize;
     driver_t *cur_driver;
     collection_t collection;
     driverpack_t unpacked_drp;
     hashtable_t inf_list;
     infdata_t *infdata;
     unsigned i;
-    int r;
     int lr;
 
     time_devicescan=GetTickCount();
@@ -743,84 +737,9 @@ void state_scandevices(state_t *state)
         //log_file("%d,%d/%d\n",i,state->text_handle.used,state->text_handle.allocated);
         heap_refresh(&state->text_handle);
         device_t *cur_device=(device_t *)heap_allocitem_ptr(&state->devices_handle);
-        DeviceInfoData=(SP_DEVINFO_DATA *)&cur_device->DeviceInfoData;
-        memset(DeviceInfoData,0,sizeof(SP_DEVINFO_DATA));
-        DeviceInfoData->cbSize=sizeof(SP_DEVINFO_DATA);
 
-        if(!SetupDiEnumDeviceInfo(hDevInfo,i,DeviceInfoData))
-        {
-            r=GetLastError();
-            if(r==ERROR_NO_MORE_ITEMS)
-                heap_freelastitem(&state->devices_handle);
-            else
-                print_error(r,L"SetupDiEnumDeviceInfo()");
-            break;
-        }
+        if(device_readprop(hDevInfo,state,cur_device,i))break;
 
-        SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,0,0,&buffersize);
-        cur_device->InstanceId=heap_alloc(&state->text_handle,buffersize);
-        SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,(WCHAR *)(state->text+cur_device->InstanceId),BUFLEN,0);
-
-/*
-        SP_DEVINSTALL_PARAMS  devdt;
-        devdt.cbSize=sizeof(SP_DEVINSTALL_PARAMS);
-        lr=SetupDiGetDeviceInstallParams(hDevInfo,DeviceInfoData,&devdt);
-        log_file("%dDriverPath '%s'\n",lr,devdt.DriverPath);*/
-
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_DEVICEDESC,    &cur_device->Devicedesc);
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_HARDWAREID,    &cur_device->HardwareID);
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_COMPATIBLEIDS, &cur_device->CompatibleIDs);
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_DRIVER,        &cur_device->Driver);
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_MFG,           &cur_device->Mfg);
-        //if(i!=102&&i!=103&&i!=104&&i!=105&&i!=106&&i!=107&&i!=108&&i!=109&&i!=110&&
-            /*i!=111&&i!=112&&i!=113&&i!=114&&i!=115&&*/
-        //    i!=116&&i!=117&&i!=118&&i!=119&&i!=120&&i!=121&&i!=122)
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_FRIENDLYNAME,  &cur_device->FriendlyName);
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_CAPABILITIES,  &cur_device->Capabilities);
-        read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_CONFIGFLAGS,   &cur_device->ConfigFlags);
-
-#ifdef STORE_PROPS
-        WCHAR *buffer;
-        DWORD DataT;
-        int j;
-
-        for(j=0;j<NUM_PROPS;j++)
-        {
-            lr=0;
-            buffersize=0;
-            buffer=0;
-            while(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoData,devtbl[j].id,&DataT,(PBYTE)buffer,buffersize,&buffersize))
-            {
-                lr=GetLastError();
-                if(lr==ERROR_INSUFFICIENT_BUFFER)
-                {
-                    cur_device->Properties[j]=heap_alloc(&state->text_handle,buffersize);
-                    buffer=(WCHAR *)(state->text+cur_device->Properties[j]);
-                    lr=0;
-                }else
-                if(lr==ERROR_INVALID_DATA)
-                {
-                    break;
-                }else
-                {
-                    log_file("Property (%d)'%s'\n",devtbl[j].id,devtbl[j].name);
-                    print_error(lr,L"SetupDiGetDeviceRegistryProperty()");
-                    break;
-                }
-            }
-            if(lr==ERROR_INVALID_DATA)continue;
-
-            cur_device->PropertiesSize[j]=buffersize;
-            cur_device->PropertiesType[j]=DataT;
-        }
-#endif
-
-        lr=CM_Get_DevNode_Status(&cur_device->status,&cur_device->problem,cur_device->DeviceInfoData.DevInst,0);
-        cur_device->ret=lr;
-        if(lr!=CR_SUCCESS)
-        {
-            log_file("Error %d with CM_Get_DevNode_Status()\n",lr);
-        }
 
         // Driver
         cur_device->driver_index=-1;
