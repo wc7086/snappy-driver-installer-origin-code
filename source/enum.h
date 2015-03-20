@@ -26,45 +26,6 @@ extern int isLaptop;
 #define DISPLAY_DEVICE_ATTACHED       2
 #endif
 
-//#define STORE_PROPS
-#ifdef STORE_PROPS
-enum
-{
-/**/PROP_DEVICEDESC=0,
-/**/PROP_HARDWAREID,
-/**/PROP_COMPATIBLEIDS,
-//   PROP_UNUSED0,           3
-    PROP_SERVICE,
-//   PROP_UNUSED1,           5
-//   PROP_UNUSED2,           6
-    PROP_CLASS,
-    PROP_CLASSGUID,
-/**/PROP_DRIVER,
-    PROP_CONFIGFLAGS,
-/**/PROP_MFG,
-/**/PROP_FRIENDLYNAME,
-    PROP_LOCATION_INFORMATION,
-    PROP_PHYSICAL_DEVICE_OBJECT_NAME,
-    PROP_CAPABILITIES,
-    PROP_UI_NUMBER,
-//   PROP_UPPERFILTERS,      17
-//   PROP_LOWERFILTERS,      18
-    PROP_BUSTYPEGUID,
-    PROP_LEGACYBUSTYPE,
-    PROP_BUSNUMBER,
-    PROP_ENUMERATOR_NAME,
-//   PROP_SECURITY,          23
-//   PROP_SECURITY_SDS,      24
-//   PROP_DEVTYPE,           25
-//   PROP_EXCLUSIVE,         26
-//   PROP_CHARACTERISTICS,   27
-    PROP_ADDRESS,
-//                           29
-    PROP_UI_NUMBER_DESC_FORMAT,
-    NUM_PROPS
-};
-#endif // STORE_PROPS
-
 typedef struct _infdata_t
 {
     int catalogfile;
@@ -97,12 +58,6 @@ typedef struct _device_t
     ofst InstanceId;
     ULONG status,problem;
     int ret;
-
-#ifdef STORE_PROPS
-    ofst Properties[NUM_PROPS];
-    int  PropertiesSize[NUM_PROPS];
-    int  PropertiesType[NUM_PROPS];
-#endif
 
     SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
 }device_t;
@@ -193,6 +148,85 @@ typedef struct _state_t
 }state_t;
 //}
 
+class Device
+{
+public:
+    int driver_index;
+
+    ofst Devicedesc;
+    ofst HardwareID;
+    ofst CompatibleIDs;
+    ofst Driver;
+    ofst Mfg;
+    ofst FriendlyName;
+    int Capabilities;
+    int ConfigFlags;
+
+    ofst InstanceId;
+    ULONG status,problem;
+    int ret;
+
+    SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
+
+public:
+    int print_status(device_t *device);
+    void device_print(device_t *cur_device,state_t *state);
+    void device_printHWIDS(device_t *cur_device,state_t *state);
+};
+
+class State
+{
+public:
+    OSVERSIONINFOEX platform;
+    int locale;
+    int architecture;
+
+    ofst manuf;
+    ofst model;
+    ofst product;
+    ofst monitors;
+    ofst battery;
+
+    ofst windir;
+    ofst temp;
+
+    ofst cs_manuf;
+    ofst cs_model;
+    int ChassisType;
+    int revision;
+    char reserved[1024];
+
+    char reserved1[676];
+//    driverpack_t windirinf;
+
+/*    ofst *profile_list;
+    heap_t profile_handle;
+    int profile_current;*/
+
+    device_t *devices_list;
+    heap_t drivers_handle;
+
+    driver_t *drivers_list;
+    heap_t devices_handle;
+
+    char *text;
+    heap_t text_handle;
+
+public:
+    void state_init();
+    void state_free();
+    void state_save(const WCHAR *filename);
+    int  state_load(const WCHAR *filename);
+    void state_fakeOSversion();
+    void log_add(CHAR const *format,...);
+    void state_print);
+    WCHAR *state_getproduct();
+    WCHAR *state_getmanuf();
+    WCHAR *state_getmodel();
+    void state_getsysinfo_fast);
+    void state_getsysinfo_slow();
+    void state_scandevices();
+};
 extern const char *deviceststus_str[];
 void print_guid(GUID *g);
 int print_status(device_t *device);
