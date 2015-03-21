@@ -14,16 +14,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <vector>
 #define STR_LN 4096
 #define ofst int
 //#define MERGE_FINDER
-
-//typedef struct _driverpack_t driverpack_t;
-typedef struct _data_inffile_t data_inffile_t;
-typedef struct _data_manufacturer_t data_manufacturer_t;
-typedef struct _data_desc_t data_desc_t;
-typedef struct _data_HWID_t data_HWID_t;
 
 #define COLLECTION_FORCE_REINDEXING  0x00000001
 #define COLLECTION_USE_LZMA          0x00000002
@@ -56,6 +50,10 @@ typedef struct _data_HWID_t data_HWID_t;
 
 class Collection;
 class Driverpack;
+class data_manufacturer_t;
+class data_inffile_t;
+class data_desc_t;
+class data_HWID_t;
 
 enum
 {
@@ -119,6 +117,14 @@ typedef struct _version_t
 #define DRIVERPACK_TYPE_EMPTY           3
 
 //{ Indexing strucures
+class Txt
+{
+private:
+    std::vector<char> text;
+public:
+    //char *get(ofst offset){return text;}
+};
+
 class Driverpack
 {
 private:
@@ -134,17 +140,11 @@ public:
     hashtable_t indexes;
     hashtable_t cat_list;
 
-    data_inffile_t *inffile;
-    heap_t inffile_handle;
-
-    data_manufacturer_t *manufacturer_list;
-    heap_t manufacturer_handle;
-
-    data_desc_t *desc_list;
-    heap_t desc_list_handle;
-
-    data_HWID_t *HWID_list;
-    heap_t HWID_list_handle;
+    std::vector<data_inffile_t> inffile;
+    std::vector<data_manufacturer_t> manufacturer_list;
+    std::vector<data_desc_t> desc_list;
+    std::vector<data_HWID_t> HWID_list;
+    Txt texta;
 
     char *text;
     heap_t text_handle;
@@ -164,8 +164,9 @@ public:
     void driverpack_indexinf(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
 };
 
-typedef struct _data_inffile_t // 80
+class data_inffile_t // 80
 {
+public:
     ofst infpath;
     ofst inffilename;
     ofst fields[NUM_VER_NAMES];
@@ -173,35 +174,38 @@ typedef struct _data_inffile_t // 80
     version_t version;
     int infsize;
     int infcrc;
-}data_inffile_t;
+};
 
-typedef struct _data_manufacturer_t // 16
+class data_manufacturer_t // 16
 {
-    int inffile_index;
+public:
+    unsigned inffile_index;
 
     ofst manufacturer;
     ofst sections;
     int sections_n;
-}data_manufacturer_t;
+};
 
-typedef struct _data_desc_t // 12+1
+class data_desc_t // 12+1
 {
-    int manufacturer_index;
+public:
+    unsigned manufacturer_index;
     int sect_pos;
 
     ofst desc;
     ofst install;
     ofst install_picked;
     char feature;
-}data_desc_t;
+};
 
-typedef struct _data_HWID_t // 8
+class data_HWID_t // 8
 {
-    int desc_index;
+public:
+    unsigned desc_index;
     short inf_pos;
 
     ofst HWID;
-}data_HWID_t;
+};
 
 class Collection
 {
@@ -251,6 +255,7 @@ private:
     char *strEnd;
 
     void str_sub();
+    void trimtoken();
     void parseWhitespace(bool eatnewline);
 
 public:

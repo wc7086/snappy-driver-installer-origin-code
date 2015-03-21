@@ -80,6 +80,13 @@ void Parser_str::parseWhitespace(bool eatnewline=false)
     }
 }
 
+void Parser_str::trimtoken()
+{
+    while(strEnd>strBeg&&(strEnd[-1]==32||strEnd[-1]=='\t')&&strEnd[-1]!='\"')strEnd--;
+    if(*strBeg=='\"')strBeg++;
+    if(*(strEnd-1)=='\"')strEnd--;
+}
+
 int Parser_str::parseItem()
 {
     parseWhitespace(true);
@@ -94,8 +101,7 @@ int Parser_str::parseItem()
             case '=':               // Item found
                 blockBeg=p;
                 strEnd=p;
-                while((strEnd[-1]==32||strEnd[-1]=='\t')&&strEnd[-1]!='\"')strEnd--; // trim spaces
-                if(*strBeg=='\"'){strBeg++;strEnd--;}
+                trimtoken();
                 str_sub();
                 return 1;
 
@@ -161,8 +167,8 @@ int Parser_str::parseField()
                 case ';':
                 case ',':
                     strEnd=p;
-                    blockBeg=strEnd;
-                    while(strEnd>strBeg&&(strEnd[-1]==32||strEnd[-1]=='\t'))strEnd--; // trim spaces
+                    blockBeg=p;
+                    trimtoken();
                     str_sub();
                     return strEnd!=strBeg||*p==',';
 
@@ -178,7 +184,7 @@ int Parser_str::readNumber()
 {
     int n=atoi(strBeg);
 
-    while(*strBeg>='0'&&*strBeg<='9'&&strBeg<strEnd)strBeg++;
+    while(strBeg<strEnd&&*strBeg>='0'&&*strBeg<='9')strBeg++;
     if(strBeg<strEnd)strBeg++;
     return n;
 }
@@ -187,7 +193,7 @@ int Parser_str::readHex()
 {
     int val=0;
 
-    while((*strBeg=='0'||*strBeg=='x')&&strBeg<strEnd)strBeg++;
+    while(strBeg<strEnd&&(*strBeg=='0'||*strBeg=='x'))strBeg++;
     if(strBeg<strEnd)
         val=toupper(*strBeg)-(*strBeg<='9'?'0':'A'-10);
 
@@ -204,7 +210,7 @@ int Parser_str::readDate(version_t *t)
 {
     int flag=0;
 
-    while(!(*strBeg>='0'&&*strBeg<='9')&&strBeg<strEnd)strBeg++;
+    while(strBeg<strEnd&&!(*strBeg>='0'&&*strBeg<='9'))strBeg++;
     t->m=readNumber();
     t->d=readNumber();
     t->y=readNumber();
@@ -276,6 +282,7 @@ void Parser_str::str_sub()
 
     if(*v1b=='%'/*&&v1e[-1]=='%'*/)
     {
+        //log_file("String '%.*s' %c\n",v1e-v1b,v1b,v1e[-1]);
         v1b++;
         vers_len=v1e-v1b-1;
         if(v1e[-1]!='%')vers_len++;
@@ -295,6 +302,7 @@ void Parser_str::str_sub()
             //return;
         }
     }
+
     char *p,*p_s=static_buf;
     v1b=strBeg;
     int flag=0;
@@ -628,8 +636,8 @@ void Collection::collection_printstates()
     {
         drp=&driverpack_list[i];
         s=(WCHAR *)drp->text;
-        log_file("  %6d  %ws\\%ws\n",drp->HWID_list_handle.items,s+drp->drppath,(WCHAR *)(drp->text+drp->drpfilename));
-        sum+=drp->HWID_list_handle.items;
+        log_file("  %6d  %ws\\%ws\n",drp->HWID_list.size(),s+drp->drppath,(WCHAR *)(drp->text+drp->drpfilename));
+        sum+=drp->HWID_list.size();
     }
     log_file("  Sum: %d\n\n",sum);
 }
@@ -757,10 +765,8 @@ void Driverpack::driverpack_init(WCHAR const *driverpack_path,WCHAR const *drive
 
     col=col_v;
 
-    heap_init(&inffile_handle,ID_DRIVERPACK_inffile,(void **)&inffile,0,sizeof(data_inffile_t));
-    heap_init(&manufacturer_handle,ID_DRIVERPACK_manufacturer,(void **)&manufacturer_list,0,sizeof(data_manufacturer_t));
-    heap_init(&desc_list_handle,ID_DRIVERPACK_desc_list,(void **)&desc_list,0,sizeof(data_desc_t));
-    heap_init(&HWID_list_handle,ID_DRIVERPACK_HWID_list,(void **)&HWID_list,0,sizeof(data_HWID_t));
+    //heap_init(&desc_list_handle,ID_DRIVERPACK_desc_list,(void **)&desc_list,0,sizeof(data_desc_t));
+    //heap_init(&HWID_list_handle,ID_DRIVERPACK_HWID_list,(void **)&HWID_list,0,sizeof(data_HWID_t));
     heap_init(&text_handle,ID_DRIVERPACK_text,(void **)&text,0,1);
 
     hash_init(&string_list,ID_STRINGS,1024,HASH_FLAG_KEYS_ARE_POINTERS|HASH_FLAG_STR_TO_LOWER);
@@ -777,10 +783,10 @@ void Driverpack::driverpack_init(WCHAR const *driverpack_path,WCHAR const *drive
 
 void Driverpack::driverpack_free()
 {
-    heap_free(&inffile_handle);
-    heap_free(&manufacturer_handle);
-    heap_free(&desc_list_handle);
-    heap_free(&HWID_list_handle);
+    inffile.clear();
+    manufacturer_list.clear();
+    desc_list.clear();
+    HWID_list.clear();
     heap_free(&text_handle);
 
     hash_free(&string_list);
@@ -807,10 +813,10 @@ void Driverpack::driverpack_saveindex()
     f=_wfopen(filename,L"wb");
 
     sz=
-        inffile_handle.used+
-        manufacturer_handle.used+
-        desc_list_handle.used+
-        HWID_list_handle.used+
+        inffile.size()*sizeof(data_inffile_t)+
+        manufacturer_list.size()*sizeof(data_manufacturer_t)+
+        desc_list.size()*sizeof(data_desc_t)+
+        HWID_list.size()*sizeof(data_HWID_t)+
         text_handle.used+
         indexes.items_handle.used+sizeof(int)+
         6*sizeof(int)*2;
@@ -820,10 +826,10 @@ void Driverpack::driverpack_saveindex()
     fwrite("SDW",3,1,f);
     fwrite(&version,sizeof(int),1,f);
 
-    p=heap_save(&inffile_handle,p);
-    p=heap_save(&manufacturer_handle,p);
-    p=heap_save(&desc_list_handle,p);
-    p=heap_save(&HWID_list_handle,p);
+    p=vector_save(&inffile,p);
+    p=vector_save(&manufacturer_list,p);
+    p=vector_save(&desc_list,p);
+    p=vector_save(&HWID_list,p);
     p=heap_save(&text_handle,p);
     p=hash_save(&indexes,p);
     /*log_con("Sz:(%d,%d,%d,%d,%d,%d)=%d\n",
@@ -912,10 +918,10 @@ int Driverpack::driverpack_loadindex()
         p=mem_unpack;
     }
 
-    p=heap_load(&inffile_handle,p);
-    p=heap_load(&manufacturer_handle,p);
-    p=heap_load(&desc_list_handle,p);
-    p=heap_load(&HWID_list_handle,p);
+    p=vector_load(&inffile,p);
+    p=vector_load(&manufacturer_list,p);
+    p=vector_load(&desc_list,p);
+    p=vector_load(&HWID_list,p);
     p=heap_load(&text_handle,p);
     p=hash_load(&indexes,p);
 
@@ -947,8 +953,8 @@ void Driverpack::driverpack_getindexfilename(const WCHAR *dir,const WCHAR *ext,W
 
 void Driverpack::driverpack_print()
 {
-    int inffile_index,manuf_index,pos,desc_index,HWID_index;
-    int n=inffile_handle.items;
+    int inffile_index,pos,manuf_index,desc_index,HWID_index;
+    int n=inffile.size();
     version_t *t;
     data_inffile_t *d_i;
     hwidmatch_t hwidmatch;
@@ -983,7 +989,7 @@ void Driverpack::driverpack_print()
             }
 
         memset(cnts,-1,sizeof(cnts));plain=0;
-        for(manuf_index=manuf_index_last;manuf_index<manufacturer_handle.items;manuf_index++)
+        for(manuf_index=manuf_index_last;manuf_index<manufacturer_list.size();manuf_index++)
             if(manufacturer_list[manuf_index].inffile_index==inffile_index)
         {
             manuf_index_last=manuf_index;
@@ -998,11 +1004,11 @@ void Driverpack::driverpack_print()
                 if(i<0&&pos>0)fprintf(f,"!!![%s]\n",buf);
                 fprintf(f,"        [%s]\n",buf);
 //                strcpy(buf+1000,buf);
-                for(desc_index=0;desc_index<desc_list_handle.items;desc_index++)
+                for(desc_index=0;desc_index<desc_list.size();desc_index++)
                     if(desc_list[desc_index].manufacturer_index==manuf_index&&
                        desc_list[desc_index].sect_pos==pos)
                 {
-                    for(HWID_index=HWID_index_last;HWID_index<HWID_list_handle.items;HWID_index++)
+                    for(HWID_index=HWID_index_last;HWID_index<HWID_list.size();HWID_index++)
                         if(HWID_list[HWID_index].desc_index==desc_index)
                     {
                         if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%d,%d\n",HWID_index_last,HWID_index);
@@ -1044,7 +1050,7 @@ void Driverpack::driverpack_print()
         }
         fprintf(f,"\n");
     }
-    fprintf(f,"  HWIDS:%d/%d\n",HWID_index_last+1,HWID_list_handle.items);
+    fprintf(f,"  HWIDS:%d/%d\n",HWID_index_last+1,HWID_list.size());
 
     //hash_stats(&indexes);
 /*    for(i=0;i<indexes.items_handle.items;i++)
@@ -1057,13 +1063,14 @@ void Driverpack::driverpack_print()
 void Driverpack::driverpack_genhashes()
 {
     char filename[BUFLEN];
-    int i,j,r;
+    int j,r;
+    unsigned i;
 
 
-    hash_init(&indexes,ID_INDEXES,HWID_list_handle.items/2,HASH_FLAG_STRS_ARE_INTS);
+    hash_init(&indexes,ID_INDEXES,HWID_list.size()/2,HASH_FLAG_STRS_ARE_INTS);
     //heap_expand(&t->indexes.strs_handle,64*1024);
     //log_file("Items: %d\n",pack->HWID_list_handle.items);
-    for(i=0;i<inffile_handle.items;i++)
+    for(i=0;i<inffile.size();i++)
     {
         sprintf(filename,"%s%s",text+inffile[i].infpath,text+inffile[i].inffilename);
         strtolower(filename,strlen(filename));
@@ -1088,7 +1095,7 @@ void Driverpack::driverpack_genhashes()
     }
     //hash_stats(&cat_list);
 
-    for(i=0;i<HWID_list_handle.items;i++)
+    for(i=0;i<HWID_list.size();i++)
     {
         int val=0;
         char *vv=text+HWID_list[i].HWID;
@@ -1564,7 +1571,8 @@ void Driverpack::driverpack_indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffi
     char *p2,*sectnmend;
     char *lnk_s=0;
 
-    cur_inffile_index=heap_allocitem_i(&inffile_handle);
+    cur_inffile_index=inffile.size();
+    inffile.resize(cur_inffile_index+1);
     cur_inffile=&inffile[cur_inffile_index];
     sprintf(line,"%ws",drpdir);
     cur_inffile->infpath=heap_strcpy(&text_handle,line);
@@ -1727,7 +1735,8 @@ void Driverpack::driverpack_indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffi
             char *s1b,*s1e;
             parse_info.readStr(&s1b,&s1e);
 
-            cur_manuf_index=heap_allocitem_i(&manufacturer_handle);
+            cur_manuf_index=manufacturer_list.size();
+            manufacturer_list.resize(cur_manuf_index+1);
             cur_manuf=&manufacturer_list[cur_manuf_index];
             cur_manuf->inffile_index=cur_inffile_index;
             cur_manuf->manufacturer=heap_memcpyz(&text_handle,s1b,s1e-s1b);
@@ -1758,7 +1767,8 @@ void Driverpack::driverpack_indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffi
                         {
                             parse_info2.readStr(&s1b,&s1e);
 
-                            cur_desc_index=heap_allocitem_i(&desc_list_handle);
+                            cur_desc_index=desc_list.size();
+                            desc_list.resize(cur_desc_index+1);
                             cur_desc=&desc_list[cur_desc_index];
                             cur_desc->manufacturer_index=cur_manuf_index;
                             cur_desc->sect_pos=manufacturer_list[cur_manuf_index].sections_n-1;
@@ -1869,7 +1879,8 @@ void Driverpack::driverpack_indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffi
                                 if(s1b>=s1e)continue;
                                 strtoupper(s1b,s1e-s1b);
 
-                                cur_HWID_index=heap_allocitem_i(&HWID_list_handle);
+                                cur_HWID_index=HWID_list.size();
+                                HWID_list.resize(cur_HWID_index+1);
                                 cur_HWID=&HWID_list[cur_HWID_index];
                                 cur_HWID->desc_index=cur_desc_index;
                                 cur_HWID->HWID=heap_memcpyz_dup(&text_handle,s1b,s1e-s1b);
