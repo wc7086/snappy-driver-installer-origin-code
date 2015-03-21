@@ -196,3 +196,31 @@ void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,ha
 
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
+
+template <class T>
+char *vector_save(std::vector<T> *v,char *p)
+{
+    int used=v->size()*sizeof(T);
+    int val;
+
+    memcpy(p,&used,sizeof(int));p+=sizeof(int);
+
+    val=v->size();
+    memcpy(p,&val,sizeof(int));p+=sizeof(int);
+
+    memcpy(p,&v->front(),used);p+=used;
+    return p;
+}
+
+template <class T>
+char *vector_load(std::vector<T> *v,char *p)
+{
+    int sz,num;
+
+    memcpy(&sz,p,sizeof(int));p+=sizeof(int);
+    memcpy(&num,p,sizeof(int));p+=sizeof(int);
+    v->resize(num);
+    log_con("SZ %d,%d\n",num,v->size());
+    memcpy(v->data(),p,sz);p+=sz;
+    return p;
+}

@@ -277,34 +277,6 @@ void State::release()
     heap_free(&text_handle_st);
 }
 
-template <class T>
-char *vector_save(std::vector<T> *v,char *p)
-{
-    int used=v->size()*sizeof(T);
-    int val;
-
-    memcpy(p,&used,sizeof(int));p+=sizeof(int);
-
-    val=v->size();
-    memcpy(p,&val,sizeof(int));p+=sizeof(int);
-
-    memcpy(p,&v->front(),used);p+=used;
-    return p;
-}
-
-template <class T>
-char *vector_load(std::vector<T> *v,char *p)
-{
-    int sz,num;
-
-    memcpy(&sz,p,sizeof(int));p+=sizeof(int);
-    memcpy(&num,p,sizeof(int));p+=sizeof(int);
-    v->resize(num);
-    log_con("SZ %d,%d\n",num,v->size());
-    memcpy(v->data(),p,sz);p+=sz;
-    return p;
-}
-
 void State::save(const WCHAR *filename)
 {
     FILE *f;
@@ -743,7 +715,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
     FILE *f;
     char *buft;
     int len;
-    int HWID_index;
+    unsigned HWID_index;
 
     wsprintf(filename,L"%s%s",state->text+state->windir,state->text+cur_driver->InfPath);
 
@@ -787,7 +759,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
         char sect[BUFLEN];
         sprintf(sect,"%ws%ws",state->text+cur_driver->InfSection,state->text+cur_driver->InfSectionExt);
         sprintf(bufa,"%ws",state->text+cur_driver->MatchingDeviceId);
-        for(HWID_index=0;HWID_index<unpacked_drp->HWID_list_handle.items;HWID_index++)
+        for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
         if(!strcmpi(unpacked_drp->text+unpacked_drp->HWID_list[HWID_index].HWID,bufa))
         {
             hwidmatch_t hwidmatch;

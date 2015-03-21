@@ -107,7 +107,8 @@ WCHAR finish_upd[BUFLEN]=L"";
 WCHAR finish_rb [BUFLEN]=L"";
 WCHAR HWIDs     [BUFLEN]=L"";
 
-int flags=COLLECTION_USE_LZMA;
+//int flags=COLLECTION_USE_LZMA;
+int flags=0;
 int statemode=0;
 int expertmode=0;
 int license=0;
