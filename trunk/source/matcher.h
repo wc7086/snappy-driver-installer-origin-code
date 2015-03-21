@@ -63,7 +63,7 @@ typedef struct _hwidmatch_t
 typedef struct _matcher_t
 {
     State *state;
-    collection_t *col;
+    Collection *col;
 
     devicematch_t *devicematch_list;
     heap_t devicematch_handle;
@@ -108,7 +108,7 @@ void hwidmatch_print_hr(hwidmatch_t *hwidmatch);
 int  hwidmatch_cmp(hwidmatch_t *match1,hwidmatch_t *match2);
 
 // Matcher
-void matcher_init(matcher_t *matcher,State *state,collection_t *col);
+void matcher_init(matcher_t *matcher,State *state,Collection *col);
 void matcher_free(matcher_t *matcher);
 void matcher_findHWIDs(matcher_t *matcher,devicematch_t *device_match,char *hwid,int dev_pos,int ishw);
 void matcher_populate(matcher_t *matcher);

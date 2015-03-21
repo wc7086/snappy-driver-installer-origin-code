@@ -247,7 +247,7 @@ extern int virtual_arch_type;
 typedef struct _bundle_t
 {
     State state;
-    collection_t collection;
+    Collection collection;
     matcher_t matcher;
 }bundle_t;
 //}

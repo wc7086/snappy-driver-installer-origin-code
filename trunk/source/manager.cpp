@@ -1062,7 +1062,7 @@ int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int
             break;
 
         case SLOT_NODRIVERS:
-            drawbutton(hdc,x,pos,index,STR(STR_EMPTYDRP),manager->matcher->col->driverpack_dir);
+            drawbutton(hdc,x,pos,index,STR(STR_EMPTYDRP),manager->matcher->col->getDriverpack_dir());
             break;
 
         case SLOT_NOUPDATES:
@@ -1191,7 +1191,7 @@ int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int
 
                 if(flags&FLAG_SHOWDRPNAMES1)
                 {
-                    int len=wcslen(manager->matcher->col->driverpack_dir);
+                    int len=wcslen(manager->matcher->col->getDriverpack_dir());
                     int lnn=len-wcslen(getdrp_packpath(itembar->hwidmatch));
 
                     SetTextColor(hdc,0);// todo: color

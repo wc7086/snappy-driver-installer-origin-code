@@ -855,14 +855,14 @@ void State::state_scandevices()
     HKEY   hkey;
     WCHAR buf[BUFLEN];
     Driver *cur_driver;
-    collection_t collection;
+    Collection collection;
     driverpack_t unpacked_drp;
     hashtable_t inf_list;
     unsigned i;
     int lr;
 
     time_devicescan=GetTickCount();
-    collection_init(&collection,(WCHAR *)(text+windir),L"",L"",0);
+    collection.collection_init((WCHAR *)(text+windir),L"",L"",0);
     driverpack_init(&unpacked_drp,L"",L"windir.7z",&collection);
     hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
     Devices_list.clear();
@@ -927,7 +927,7 @@ void State::state_scandevices()
         FileTimeToSystemTime(&drvinfo.DriverDate,&t);
     }*/
     //driverpack_print(&unpacked_drp);
-    collection_free(&collection);
+    collection.collection_free();
     hash_free(&inf_list);
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;

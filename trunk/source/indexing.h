@@ -25,7 +25,8 @@ typedef struct _data_manufacturer_t data_manufacturer_t;
 typedef struct _data_desc_t data_desc_t;
 typedef struct _data_HWID_t data_HWID_t;
 
-typedef struct _collection_t collection_t;
+//typedef struct _collection_t collection_t;
+class Collection;
 
 enum
 {
@@ -95,7 +96,7 @@ typedef struct _driverpack_t
     ofst drpfilename;
     int type;
 
-    collection_t *col;
+    Collection *col;
 
     hashtable_t section_list;
     hashtable_t string_list;
@@ -186,8 +187,9 @@ typedef struct _data_HWID_t // 8
 #define FLAG_FILTERSP                0x04000000
 #define FLAG_OLDSTYLE                0x08000000
 
-typedef struct _collection_t
+class Collection
 {
+public:
     WCHAR *driverpack_dir;
     const WCHAR *index_bin_dir;
     const WCHAR *index_linear_dir;
@@ -198,7 +200,30 @@ typedef struct _collection_t
 
     inflist_t *inflist;
     int pos_in,pos_out;
-}collection_t;
+
+public:
+    friend unsigned int __stdcall thread_indexinf(void *arg);
+    friend void driverpack_indexinf_async(driverpack_t *drp,Collection *col,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+
+    WCHAR *getDriverpack_dir(){return driverpack_dir;}
+    const WCHAR *getIndex_bin_dir(){return index_bin_dir;}
+    const WCHAR *getIndex_linear_dir(){return index_linear_dir;}
+    int getFlags(){return flags;}
+
+    void collection_init(WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
+    void collection_free();
+    void collection_save();
+    void collection_updatedindexes();
+    void collection_load();
+    void collection_print();
+    WCHAR *collection_finddrp(WCHAR *s);
+    void collection_printstates();
+    void collection_scanfolder(const WCHAR *path);
+    int  collection_scanfolder_count(const WCHAR *path);
+};
+unsigned int __stdcall thread_indexinf(void *arg);
+void driverpack_indexinf_async(driverpack_t *drp,Collection *col,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+
 //}
 
 // Parse
@@ -243,28 +268,16 @@ void hash_clearfiles(hashtable_t *t);
 WCHAR *finddrp(WCHAR *s);
 
 // Collection
-void collection_init(collection_t *col,WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
-void collection_free(collection_t *col);
-void collection_save(collection_t *col);
-void collection_updatedindexes(collection_t *col);
-void collection_load(collection_t *col);
-void collection_print(collection_t *col);
-WCHAR *collection_finddrp(collection_t *col,WCHAR *s);
-void collection_scanfolder(collection_t *col,const WCHAR *path);
-int  collection_scanfolder_count(collection_t *col,const WCHAR *path);
 
 // Driverpack
-void driverpack_init(driverpack_t *drp,WCHAR const *driverpack_path,WCHAR const *driverpack_filename,collection_t *col);
+void driverpack_init(driverpack_t *drp,WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
 void driverpack_free(driverpack_t *drp);
 void driverpack_saveindex(driverpack_t *drp);
 int  driverpack_checkindex(driverpack_t *drp);
 int  driverpack_loadindex(driverpack_t *drp);
 void driverpack_getindexfilename(driverpack_t *drp,const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
 void driverpack_print(driverpack_t *drp);
-void collection_printstates(collection_t *col);
 void driverpack_genhashes(driverpack_t *drp);
-unsigned int __stdcall thread_indexinf(void *arg);
-void driverpack_indexinf_async(driverpack_t *drp,collection_t *col,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
 void driverpack_parsecat(driverpack_t *drp,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
 int  driverpack_genindex(driverpack_t *drp);
 void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);

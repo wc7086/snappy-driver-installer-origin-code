@@ -528,13 +528,13 @@ unsigned int __stdcall thread_scandevices(void *arg)
 unsigned int __stdcall thread_loadindexes(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
-    collection_t *collection=&bundle->collection;
+    Collection *collection=&bundle->collection;
 
     //log_con("{thread_loadindexes\n");
     if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
     collection->driverpack_dir=*drpext_dir?drpext_dir:drp_dir;
     //printf("'%ws'\n",collection->driverpack_dir);
-    collection_load(collection);
+    collection->collection_load();
     //log_con("}thread_loadindexes\n");
     return 0;
 }
@@ -616,7 +616,7 @@ unsigned int __stdcall thread_loadall(void *arg)
 void bundle_init(bundle_t *bundle)
 {
     bundle->state.init();
-    collection_init(&bundle->collection,drp_dir,index_dir,output_dir,flags);
+    bundle->collection.collection_init(drp_dir,index_dir,output_dir,flags);
     matcher_init(&bundle->matcher,&bundle->state,&bundle->collection);
 }
 
@@ -627,7 +627,7 @@ void bundle_prep(bundle_t *bundle)
 
 void bundle_free(bundle_t *bundle)
 {
-    collection_free(&bundle->collection);
+    bundle->collection.collection_free();
     matcher_free(&bundle->matcher);
     bundle->state.release();
 }
@@ -656,7 +656,7 @@ void bundle_lowprioirity(bundle_t *bundle)
 
     redrawmainwnd();
 
-    collection_printstates(&bundle->collection);
+    bundle->collection.collection_printstates();
     //collection_finddrp(&bundle->collection,L"");
     bundle->state.print();
     matcher_print(&bundle->matcher);
@@ -669,7 +669,7 @@ void bundle_lowprioirity(bundle_t *bundle)
         SetEvent(downloadmangar_event);
     }
 #endif
-    collection_save(&bundle->collection);
+    bundle->collection.collection_save();
     gen_timestamp();
     wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
     bundle->state.save(filename);
@@ -677,7 +677,7 @@ void bundle_lowprioirity(bundle_t *bundle)
     if(flags&COLLECTION_PRINT_INDEX)
     {
         log_con("Saving humanreadable indexes...");
-        collection_print(&bundle->collection);
+        bundle->collection.collection_print();
         flags&=~COLLECTION_PRINT_INDEX;
         log_con("DONE\n");
     }
