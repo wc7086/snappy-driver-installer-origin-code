@@ -686,7 +686,7 @@ int hwidmatch_cmp(hwidmatch_t *match1,hwidmatch_t *match2)
 //}
 
 //{ Matcher
-void matcher_init(matcher_t *matcher,State *state,collection_t *col)
+void matcher_init(matcher_t *matcher,State *state,Collection *col)
 {
     matcher->state=state;
     matcher->col=col;
