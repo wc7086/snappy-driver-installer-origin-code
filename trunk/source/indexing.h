@@ -76,19 +76,6 @@ typedef struct _tbl_t
     int sz;
 }tbl_t;
 
-typedef struct _parse_info_t
-{
-    char *start;
-    char *strend;
-    char *sb;
-    char *se;
-
-    heap_t strings;
-    char *text;
-
-    driverpack_t *pack;
-}parse_info_t;
-
 typedef struct _version_t
 {
     int d,m,y;
@@ -215,19 +202,36 @@ typedef struct _collection_t
 //}
 
 // Parse
-void read_whitespace(parse_info_t *parse_info);
-int  read_item(parse_info_t *parse_info);
-int  read_field(parse_info_t *parse_info);
-int  read_number(char **en,char *v1e);
-int  read_hex(parse_info_t *parse_info);
-int  read_date(parse_info_t *parse_info,version_t *t);
-void read_version(parse_info_t *parse_info,version_t *t);
+class Parser_str
+{
+private:
+    driverpack_t *pack;
+    heap_t strings;
+    char *text;
 
-void parse_init(parse_info_t *parse_info,driverpack_t *drp);
-void parse_free(parse_info_t *parse_info);
-void parse_set(parse_info_t *parse_info,char *inf_base,sect_data_t *lnk);
-void parse_getstr(parse_info_t *parse_info,char **vb,char **ve);
-void str_sub(parse_info_t *parse_info);
+    char *blockBeg;
+    char *blockEnd;
+    char *strBeg;
+    char *strEnd;
+
+    void str_sub();
+    void parseWhitespace(bool eatnewline);
+
+public:
+    int  parseItem();
+    int  parseField();
+
+    int  readNumber();
+    int  readHex();
+    int  readDate(version_t *t);
+    void readVersion(version_t *t);
+    void readStr(char **vb,char **ve);
+
+    void init(driverpack_t *drp);
+    void release();
+    void setRange(char *inf_base,sect_data_t *lnk);
+    void setRange(char *vb,char *ve){strBeg=vb;strEnd=ve;}
+};
 
 // Misc
 int  unicode2ansi(char *s,char *out,int size);

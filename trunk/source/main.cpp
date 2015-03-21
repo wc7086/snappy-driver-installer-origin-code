@@ -518,7 +518,7 @@ unsigned int __stdcall thread_scandevices(void *arg)
     State *state=&bundle->state;
     //log_con("{thread_scandevices\n");
     if(statemode==0)
-        state_scandevices(state);else
+        state->state_scandevices();else
     if(statemode==STATEMODE_LOAD)
         state->load(state_file);
     //log_con("}thread_scandevices\n");
@@ -644,7 +644,7 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
-    isnotebook_a(&bundle->state);
+    bundle->state.isnotebook_a();
     matcher_populate(&bundle->matcher);
     matcher_sort(&bundle->matcher);
 }

@@ -1328,15 +1328,15 @@ int itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb)
         if(a->hwidmatch->HWID_index==b->hwidmatch->HWID_index)return 3;
         return 0;
     }
-    if(wcslen((WCHAR*)(ta+a->devicematch->device->Driver))>0)
+    if(wcslen((WCHAR*)(ta+a->devicematch->device->getDriver()))>0)
     {
-        if(!wcscmp((WCHAR*)(ta+a->devicematch->device->Driver),(WCHAR*)(tb+b->devicematch->device->Driver)))return wcslen((WCHAR*)(ta+a->devicematch->device->Driver))+10;
+        if(!wcscmp((WCHAR*)(ta+a->devicematch->device->getDriver()),(WCHAR*)(tb+b->devicematch->device->getDriver())))return wcslen((WCHAR*)(ta+a->devicematch->device->getDriver()))+10;
     }
     else
     {
-        if(wcslen((WCHAR*)(ta+a->devicematch->device->Devicedesc))>0)
+        if(wcslen((WCHAR*)(ta+a->devicematch->device->getDescr()))>0)
         {
-            if(!wcscmp((WCHAR*)(ta+a->devicematch->device->Devicedesc),(WCHAR*)(tb+b->devicematch->device->Devicedesc)))return 100+wcslen((WCHAR*)(ta+a->devicematch->device->Devicedesc));
+            if(!wcscmp((WCHAR*)(ta+a->devicematch->device->getDescr()),(WCHAR*)(tb+b->devicematch->device->getDescr())))return 100+wcslen((WCHAR*)(ta+a->devicematch->device->getDescr()));
         }
     }
 
@@ -1437,7 +1437,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
         if(itembar_old->isactive!=9)
         {
             log_con("\nDeleted $%04d|%ws|%ws|",j,t_old+itembar_old->devicematch->device->Driver,
-                    t_old+itembar_old->devicematch->device->Devicedesc);
+                    t_old+itembar_old->devicematch->device->getDescr());
             if(itembar_old->hwidmatch)
             {
                 int limits[7];
@@ -1717,10 +1717,10 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
     td.hdcMem=hdcMem;
     td.maxsz=0;
 
-    if(devicematch_f->device->driver_index>=0)
+    if(devicematch_f->device->getDriverIndex()>=0)
     {
         int i;
-        cur_driver=&manager->matcher->state->Drivers_list[devicematch_f->device->driver_index];
+        cur_driver=&manager->matcher->state->Drivers_list[devicematch_f->device->getDriverIndex()];
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
         for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
     }
@@ -1760,7 +1760,7 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
     SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,0);
 
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
-    TextOutF(&td,c0,L"%s",t+devicematch_f->device->Devicedesc);
+    TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
     TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
     TextOutF(&td,c0,L"%s",bufw);
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->Driver);
