@@ -19,14 +19,43 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define ofst int
 //#define MERGE_FINDER
 
-typedef struct _driverpack_t driverpack_t;
+//typedef struct _driverpack_t driverpack_t;
 typedef struct _data_inffile_t data_inffile_t;
 typedef struct _data_manufacturer_t data_manufacturer_t;
 typedef struct _data_desc_t data_desc_t;
 typedef struct _data_HWID_t data_HWID_t;
 
-//typedef struct _collection_t collection_t;
+#define COLLECTION_FORCE_REINDEXING  0x00000001
+#define COLLECTION_USE_LZMA          0x00000002
+#define COLLECTION_PRINT_INDEX       0x00000004
+#define FLAG_NOGUI                   0x00000010
+#define FLAG_CHECKUPDATES            0x00000020
+#define FLAG_DISABLEINSTALL          0x00000040
+#define FLAG_AUTOINSTALL             0x00000080
+#define FLAG_FAILSAFE                0x00000100
+#define FLAG_AUTOCLOSE               0x00000200
+#define FLAG_NORESTOREPOINT          0x00000400
+#define FLAG_NOLOGFILE               0x00000800
+#define FLAG_NOSNAPSHOT              0x00001000
+#define FLAG_NOSTAMP                 0x00002000
+//#define FLAG_NOFEATURESCORE          0x00004000
+#define FLAG_PRESERVECFG             0x00008000
+
+#define FLAG_EXTRACTONLY             0x00010000
+#define FLAG_KEEPUNPACKINDEX         0x00020000
+#define FLAG_KEEPTEMPFILES           0x00040000
+#define FLAG_SHOWDRPNAMES1           0x00080000
+#define FLAG_DPINSTMODE              0x00100000
+#define FLAG_SHOWCONSOLE             0x00200000
+#define FLAG_DELEXTRAINFS            0x00400000
+#define FLAG_SHOWDRPNAMES2           0x00800000
+#define FLAG_ONLYUPDATES             0x01000000
+#define FLAG_AUTOUPDATE              0x02000000
+#define FLAG_FILTERSP                0x04000000
+#define FLAG_OLDSTYLE                0x08000000
+
 class Collection;
+class Driverpack;
 
 enum
 {
@@ -48,7 +77,7 @@ enum
 #define LSTCNT 1000
 typedef struct _inflist_t
 {
-    driverpack_t *drp;
+    Driverpack *drp;
     WCHAR pathinf[BUFLEN];
     WCHAR inffile[BUFLEN];
     char *adr;
@@ -90,8 +119,10 @@ typedef struct _version_t
 #define DRIVERPACK_TYPE_EMPTY           3
 
 //{ Indexing strucures
-typedef struct _driverpack_t
+class Driverpack
 {
+private:
+public:
     ofst drppath;
     ofst drpfilename;
     int type;
@@ -117,7 +148,21 @@ typedef struct _driverpack_t
 
     char *text;
     heap_t text_handle;
-}driverpack_t;
+
+public:
+    void driverpack_init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
+    void driverpack_free();
+    void driverpack_saveindex();
+    int  driverpack_checkindex();
+    int  driverpack_loadindex();
+    void driverpack_getindexfilename(const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
+    void driverpack_print();
+    void driverpack_genhashes();
+    void driverpack_parsecat(WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+    int  driverpack_genindex();
+    void driverpack_indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
+    void driverpack_indexinf(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
+};
 
 typedef struct _data_inffile_t // 80
 {
@@ -158,35 +203,6 @@ typedef struct _data_HWID_t // 8
     ofst HWID;
 }data_HWID_t;
 
-#define COLLECTION_FORCE_REINDEXING  0x00000001
-#define COLLECTION_USE_LZMA          0x00000002
-#define COLLECTION_PRINT_INDEX       0x00000004
-#define FLAG_NOGUI                   0x00000010
-#define FLAG_CHECKUPDATES            0x00000020
-#define FLAG_DISABLEINSTALL          0x00000040
-#define FLAG_AUTOINSTALL             0x00000080
-#define FLAG_FAILSAFE                0x00000100
-#define FLAG_AUTOCLOSE               0x00000200
-#define FLAG_NORESTOREPOINT          0x00000400
-#define FLAG_NOLOGFILE               0x00000800
-#define FLAG_NOSNAPSHOT              0x00001000
-#define FLAG_NOSTAMP                 0x00002000
-//#define FLAG_NOFEATURESCORE          0x00004000
-#define FLAG_PRESERVECFG             0x00008000
-
-#define FLAG_EXTRACTONLY             0x00010000
-#define FLAG_KEEPUNPACKINDEX         0x00020000
-#define FLAG_KEEPTEMPFILES           0x00040000
-#define FLAG_SHOWDRPNAMES1           0x00080000
-#define FLAG_DPINSTMODE              0x00100000
-#define FLAG_SHOWCONSOLE             0x00200000
-#define FLAG_DELEXTRAINFS            0x00400000
-#define FLAG_SHOWDRPNAMES2           0x00800000
-#define FLAG_ONLYUPDATES             0x01000000
-#define FLAG_AUTOUPDATE              0x02000000
-#define FLAG_FILTERSP                0x04000000
-#define FLAG_OLDSTYLE                0x08000000
-
 class Collection
 {
 public:
@@ -195,7 +211,7 @@ public:
     const WCHAR *index_linear_dir;
     int flags;
 
-    driverpack_t *driverpack_list;
+    Driverpack *driverpack_list;
     heap_t driverpack_handle;
 
     inflist_t *inflist;
@@ -203,7 +219,7 @@ public:
 
 public:
     friend unsigned int __stdcall thread_indexinf(void *arg);
-    friend void driverpack_indexinf_async(driverpack_t *drp,Collection *col,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+    friend void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
 
     WCHAR *getDriverpack_dir(){return driverpack_dir;}
     const WCHAR *getIndex_bin_dir(){return index_bin_dir;}
@@ -221,16 +237,11 @@ public:
     void collection_scanfolder(const WCHAR *path);
     int  collection_scanfolder_count(const WCHAR *path);
 };
-unsigned int __stdcall thread_indexinf(void *arg);
-void driverpack_indexinf_async(driverpack_t *drp,Collection *col,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
 
-//}
-
-// Parse
 class Parser_str
 {
 private:
-    driverpack_t *pack;
+    Driverpack *pack;
     heap_t strings;
     char *text;
 
@@ -252,7 +263,7 @@ public:
     void readVersion(version_t *t);
     void readStr(char **vb,char **ve);
 
-    void init(driverpack_t *drp);
+    void init(Driverpack *drp);
     void release();
     void setRange(char *inf_base,sect_data_t *lnk);
     void setRange(char *vb,char *ve){strBeg=vb;strEnd=ve;}
@@ -267,18 +278,5 @@ int  checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hasht
 void hash_clearfiles(hashtable_t *t);
 WCHAR *finddrp(WCHAR *s);
 
-// Collection
-
-// Driverpack
-void driverpack_init(driverpack_t *drp,WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
-void driverpack_free(driverpack_t *drp);
-void driverpack_saveindex(driverpack_t *drp);
-int  driverpack_checkindex(driverpack_t *drp);
-int  driverpack_loadindex(driverpack_t *drp);
-void driverpack_getindexfilename(driverpack_t *drp,const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
-void driverpack_print(driverpack_t *drp);
-void driverpack_genhashes(driverpack_t *drp);
-void driverpack_parsecat(driverpack_t *drp,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
-int  driverpack_genindex(driverpack_t *drp);
-void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
-void driverpack_indexinf(driverpack_t *drp,WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
+void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+unsigned int __stdcall thread_indexinf(void *arg);

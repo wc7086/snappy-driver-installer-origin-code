@@ -52,7 +52,7 @@ typedef struct _devicematch_t
 
 typedef struct _hwidmatch_t
 {
-    driverpack_t *drp;
+    Driverpack *drp;
     int HWID_index;
 
     devicematch_t *devicematch;
@@ -100,8 +100,8 @@ void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driv
 
 // hwidmatch
 void minlen(CHAR *s,int *len);
-void hwidmatch_init(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
-void hwidmatch_initbriefly(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index);
+void hwidmatch_init(hwidmatch_t *hwidmatch,Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
+void hwidmatch_initbriefly(hwidmatch_t *hwidmatch,Driverpack *drp,int HWID_index);
 void hwidmatch_calclen(hwidmatch_t *hwidmatch,int *limits);
 void hwidmatch_print_tbl(hwidmatch_t *hwidmatch,int *limits);
 void hwidmatch_print_hr(hwidmatch_t *hwidmatch);
@@ -129,7 +129,7 @@ int   getdrp_infsize(hwidmatch_t *hwidmatch);
 int   getdrp_infcrc(hwidmatch_t *hwidmatch);
 //manufacturer
 char *getdrp_drvmanufacturer(hwidmatch_t *hwidmatch);
-void  getdrp_drvsectionAtPos(driverpack_t *drp,char *buf,int pos,int manuf_index);
+void  getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
 void  getdrp_drvsection(hwidmatch_t *hwidmatch,char *buf);
 //desc
 char *getdrp_drvdesc(hwidmatch_t *hwidmatch);
