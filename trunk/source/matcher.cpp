@@ -379,7 +379,7 @@ int calc_altsectscore(hwidmatch_t *hwidmatch,State *state,int curscore)
     char buf[BUFLEN];
     int pos;
     int desc_index,manufacturer_index;
-    driverpack_t *drp;
+    Driverpack *drp;
 
     drp=hwidmatch->drp;
     desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
@@ -548,7 +548,7 @@ void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driv
 //}
 
 //{ hwidmatch
-void hwidmatch_init(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch)
+void hwidmatch_init(hwidmatch_t *hwidmatch,Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch)
 {
     char buf[BUFLEN];
 
@@ -567,7 +567,7 @@ void hwidmatch_init(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index,int 
     hwidmatch->status=calc_status(hwidmatch,state);
 }
 
-void hwidmatch_initbriefly(hwidmatch_t *hwidmatch,driverpack_t *drp,int HWID_index)
+void hwidmatch_initbriefly(hwidmatch_t *hwidmatch,Driverpack *drp,int HWID_index)
 {
     hwidmatch->drp=drp;
     hwidmatch->HWID_index=HWID_index;
@@ -703,7 +703,7 @@ void matcher_free(matcher_t *matcher)
 
 void matcher_findHWIDs(matcher_t *matcher,devicematch_t *devicematch,char *hwid,int dev_pos,int ishw)
 {
-    driverpack_t *drp;
+    Driverpack *drp;
     hwidmatch_t *hwidmatch;
     int i;
     int code;
@@ -895,12 +895,12 @@ void matcher_print(matcher_t *matcher)
 //driverpack
 WCHAR *getdrp_packpath(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     return (WCHAR*)(drp->text+drp->drppath);
 }
 WCHAR *getdrp_packname(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     return (WCHAR*)(drp->text+drp->drpfilename);
 }
 int getdrp_packontorrent(hwidmatch_t *hwidmatch)
@@ -911,7 +911,7 @@ int getdrp_packontorrent(hwidmatch_t *hwidmatch)
 //inffile
 char *getdrp_infpath(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -919,7 +919,7 @@ char *getdrp_infpath(hwidmatch_t *hwidmatch)
 }
 char *getdrp_infname(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -927,7 +927,7 @@ char *getdrp_infname(hwidmatch_t *hwidmatch)
 }
 const char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -936,7 +936,7 @@ const char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n)
 }
 const char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -945,7 +945,7 @@ const char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n)
 }
 version_t *getdrp_drvversion(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -953,7 +953,7 @@ version_t *getdrp_drvversion(hwidmatch_t *hwidmatch)
 }
 int getdrp_infsize(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -961,7 +961,7 @@ int getdrp_infsize(hwidmatch_t *hwidmatch)
 }
 int getdrp_infcrc(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
@@ -971,12 +971,12 @@ int getdrp_infcrc(hwidmatch_t *hwidmatch)
 //manufacturer
 char *getdrp_drvmanufacturer(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     return drp->text+drp->manufacturer_list[manufacturer_index].manufacturer;
 }
-void getdrp_drvsectionAtPos(driverpack_t *drp,char *buf,int pos,int manuf_index)
+void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index)
 {
     intptr_t rr=(intptr_t)drp->text+drp->manufacturer_list[manuf_index].sections;
     if(pos)
@@ -989,7 +989,7 @@ void getdrp_drvsectionAtPos(driverpack_t *drp,char *buf,int pos,int manuf_index)
 }
 void getdrp_drvsection(hwidmatch_t *hwidmatch,char *buf)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     getdrp_drvsectionAtPos(drp,buf,drp->desc_list[desc_index].sect_pos,manufacturer_index);
@@ -998,19 +998,19 @@ void getdrp_drvsection(hwidmatch_t *hwidmatch,char *buf)
 //desc
 char *getdrp_drvdesc(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     return drp->text+drp->desc_list[desc_index].desc;
 }
 char *getdrp_drvinstall(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     return drp->text+drp->desc_list[desc_index].install;
 }
 char *getdrp_drvinstallPicked(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     return drp->text+drp->desc_list[desc_index].install_picked;
 }
@@ -1020,7 +1020,7 @@ int getdrp_drvfeature(hwidmatch_t *hwidmatch)
     p=StrStrIA(getdrp_infpath(hwidmatch),"feature_");
     if(p)return atoi(p+8);
 
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     int desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
     return drp->desc_list[desc_index].feature&0xFF;
 }
@@ -1028,12 +1028,12 @@ int getdrp_drvfeature(hwidmatch_t *hwidmatch)
 //HWID
 short getdrp_drvinfpos(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     return drp->HWID_list[hwidmatch->HWID_index].inf_pos;
 }
 char *getdrp_drvHWID(hwidmatch_t *hwidmatch)
 {
-    driverpack_t *drp=hwidmatch->drp;
+    Driverpack *drp=hwidmatch->drp;
     return drp->text+drp->HWID_list[hwidmatch->HWID_index].HWID;
 }
 //}

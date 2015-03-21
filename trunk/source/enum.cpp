@@ -733,7 +733,7 @@ int Device::device_readprop(HDEVINFO hDevInfo,State *state,int i)
     return 0;
 }
 
-void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,driverpack_t *unpacked_drp,int &inf_pos)
+void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *unpacked_drp,int &inf_pos)
 {
     WCHAR filename[BUFLEN];
     infdata_t *infdata;
@@ -781,7 +781,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,driverpack_t 
 
         wsprintf(buf,L"%ws",state->text+state->windir);
         if(len>0)
-        driverpack_indexinf(unpacked_drp,buf,(WCHAR *)(state->text+cur_driver->InfPath),buft,len);
+        unpacked_drp->driverpack_indexinf(buf,(WCHAR *)(state->text+cur_driver->InfPath),buft,len);
         free(buft);
 
         char sect[BUFLEN];
@@ -816,7 +816,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,driverpack_t 
     }
 }
 
-void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,driverpack_t *unpacked_drp)
+void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,Driverpack *unpacked_drp)
 {
     char bufa[BUFLEN];
     int dev_pos,ishw,inf_pos=-1;
@@ -856,14 +856,14 @@ void State::state_scandevices()
     WCHAR buf[BUFLEN];
     Driver *cur_driver;
     Collection collection;
-    driverpack_t unpacked_drp;
+    Driverpack unpacked_drp;
     hashtable_t inf_list;
     unsigned i;
     int lr;
 
     time_devicescan=GetTickCount();
     collection.collection_init((WCHAR *)(text+windir),L"",L"",0);
-    driverpack_init(&unpacked_drp,L"",L"windir.7z",&collection);
+    unpacked_drp.driverpack_init(L"",L"windir.7z",&collection);
     hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
     Devices_list.clear();
 
