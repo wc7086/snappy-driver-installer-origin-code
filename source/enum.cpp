@@ -328,7 +328,7 @@ void State::save(const WCHAR *filename)
 
     sz=
         sizeof(state_m_t)+
-        Drivers_list.size()*sizeof(Device)+
+        Drivers_list.size()*sizeof(Driver)+
         Devices_list.size()*sizeof(Device)+
         text_handle_st.used+
         2*3*sizeof(int);  // 3 heaps
@@ -522,9 +522,9 @@ void State::print()
 
         cur_device->print(this);
 
-        log_file("DriverInfo\n",cur_device->getIndex());
-        if(cur_device->getIndex()>=0)
-            Drivers_list[cur_device->getIndex()].print(this);
+        log_file("DriverInfo\n",cur_device->getDriverIndex());
+        if(cur_device->getDriverIndex()>=0)
+            Drivers_list[cur_device->getDriverIndex()].print(this);
         else
             log_file("##NoDriver\n");
 
@@ -692,17 +692,17 @@ int State::opencatfile(Driver *cur_driver)
     return *bufa?heap_strcpy(&text_handle_st,bufa):0;
 }
 
-int device_readprop(HDEVINFO hDevInfo,State *state,Device *cur_device,int i)
+int Device::device_readprop(HDEVINFO hDevInfo,State *state,int i)
 {
     DWORD buffersize;
-    SP_DEVINFO_DATA *DeviceInfoData;
+    SP_DEVINFO_DATA *DeviceInfoDataloc;
     int r;
 
-    DeviceInfoData=(SP_DEVINFO_DATA *)&cur_device->DeviceInfoData;
-    memset(DeviceInfoData,0,sizeof(SP_DEVINFO_DATA));
-    DeviceInfoData->cbSize=sizeof(SP_DEVINFO_DATA);
+    DeviceInfoDataloc=(SP_DEVINFO_DATA *)&DeviceInfoData;
+    memset(&DeviceInfoData,0,sizeof(SP_DEVINFO_DATA));
+    DeviceInfoData.cbSize=sizeof(SP_DEVINFO_DATA);
 
-    if(!SetupDiEnumDeviceInfo(hDevInfo,i,DeviceInfoData))
+    if(!SetupDiEnumDeviceInfo(hDevInfo,i,DeviceInfoDataloc))
     {
         r=GetLastError();
         if(r==ERROR_NO_MORE_ITEMS)
@@ -712,20 +712,20 @@ int device_readprop(HDEVINFO hDevInfo,State *state,Device *cur_device,int i)
         return 1;
     }
 
-    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,0,0,&buffersize);
-    cur_device->InstanceId=heap_alloc(&state->text_handle_st,buffersize);
-    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoData,(WCHAR *)(state->text+cur_device->InstanceId),BUFLEN,0);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_DEVICEDESC,    &cur_device->Devicedesc);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_HARDWAREID,    &cur_device->HardwareID);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_COMPATIBLEIDS, &cur_device->CompatibleIDs);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_DRIVER,        &cur_device->Driver);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_MFG,           &cur_device->Mfg);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_FRIENDLYNAME,  &cur_device->FriendlyName);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_CAPABILITIES,  &cur_device->Capabilities);
-    read_device_property(hDevInfo,DeviceInfoData,state,SPDRP_CONFIGFLAGS,   &cur_device->ConfigFlags);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,0,0,&buffersize);
+    InstanceId=heap_alloc(&state->text_handle_st,buffersize);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,(WCHAR *)(state->text+InstanceId),BUFLEN,0);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_DEVICEDESC,    &Devicedesc);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_HARDWAREID,    &HardwareID);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_COMPATIBLEIDS, &CompatibleIDs);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_DRIVER,        &Driver);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_MFG,           &Mfg);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_FRIENDLYNAME,  &FriendlyName);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_CAPABILITIES,  &Capabilities);
+    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_CONFIGFLAGS,   &ConfigFlags);
 
-    r=CM_Get_DevNode_Status(&cur_device->status,&cur_device->problem,cur_device->DeviceInfoData.DevInst,0);
-    cur_device->ret=r;
+    r=CM_Get_DevNode_Status(&status,&problem,DeviceInfoDataloc->DevInst,0);
+    ret=r;
     if(r!=CR_SUCCESS)
     {
         log_file("Error %d with CM_Get_DevNode_Status()\n",r);
@@ -820,7 +820,7 @@ void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,ha
 {
     char bufa[BUFLEN];
     int dev_pos,ishw,inf_pos=-1;
-    parse_info_t pi;
+    Parser_str pi;
 
     read_reg_val(hkey,state,L"DriverDesc",         &cur_driver->DriverDesc);
     read_reg_val(hkey,state,L"ProviderName",       &cur_driver->ProviderName);
@@ -840,16 +840,16 @@ void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,ha
     cur_driver->identifierscore=calc_identifierscore(dev_pos,ishw,inf_pos);
     //log_file("%d,%d,%d\n",dev_pos,ishw,inf_pos);
 
-    pi.sb=bufa;
     sprintf(bufa,"%ws",state->text+cur_driver->DriverDate);
-    pi.se=bufa+strlen(bufa);
-    read_date(&pi,&cur_driver->version);
+    pi.setRange(bufa,bufa+strlen(bufa));
+    pi.readDate(&cur_driver->version);
+
     sprintf(bufa,"%ws",state->text+cur_driver->DriverVersion);
-    pi.se=bufa+strlen(bufa);
-    read_version(&pi,&cur_driver->version);
+    pi.setRange(bufa,bufa+strlen(bufa));
+    pi.readVersion(&cur_driver->version);
 }
 
-void state_scandevices(State *state)
+void State::state_scandevices()
 {
     HDEVINFO hDevInfo;
     HKEY   hkey;
@@ -862,10 +862,10 @@ void state_scandevices(State *state)
     int lr;
 
     time_devicescan=GetTickCount();
-    collection_init(&collection,(WCHAR *)(state->text+state->windir),L"",L"",0);
+    collection_init(&collection,(WCHAR *)(text+windir),L"",L"",0);
     driverpack_init(&unpacked_drp,L"",L"windir.7z",&collection);
     hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
-    state->Devices_list.clear();
+    Devices_list.clear();
 
     hDevInfo=SetupDiGetClassDevs(0,0,0,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
@@ -877,20 +877,19 @@ void state_scandevices(State *state)
     i=0;
     while(1)
     {
-        //log_file("%d,%d/%d\n",i,state->text_handle.used,state->text_handle.allocated);
-        heap_refresh(&state->text_handle_st);
-        state->Devices_list.push_back(Device());
-        Device *cur_device=&state->Devices_list.back();
+        //log_file("%d,%d/%d\n",i,text_handle.used,text_handle.allocated);
+        heap_refresh(&text_handle_st);
+        Devices_list.push_back(Device());
+        Device *cur_device=&Devices_list.back();
 
-        if(device_readprop(hDevInfo,state,cur_device,i))break;
+        if(cur_device->device_readprop(hDevInfo,this,i))break;
 
 
         // Driver
-        cur_device->driver_index=-1;
-        if(!cur_device->Driver){i++;continue;}
-        wsprintf(buf,
-             L"SYSTEM\\CurrentControlSet\\Control\\Class\\%s",
-             (WCHAR *)(state->text+cur_device->Driver));
+        cur_device->setDriverIndex(-1);
+        if(!cur_device->getDriver()){i++;continue;}
+        wsprintf(buf,L"SYSTEM\\CurrentControlSet\\Control\\Class\\%s",
+             (WCHAR *)(text+cur_device->getDriver()));
 
         lr=RegOpenKeyEx(HKEY_LOCAL_MACHINE,buf,0,KEY_QUERY_VALUE,&hkey);
         if(lr==ERROR_FILE_NOT_FOUND)
@@ -903,11 +902,11 @@ void state_scandevices(State *state)
         }
         else if(lr==ERROR_SUCCESS)
         {
-            cur_device->driver_index=state->Drivers_list.size();
-            state->Drivers_list.push_back(Driver());
-            cur_driver=&state->Drivers_list.back();
+            cur_device->setDriverIndex(Drivers_list.size());
+            Drivers_list.push_back(Driver());
+            cur_driver=&Drivers_list.back();
 
-            driver_read(cur_driver,state,cur_device,hkey,&inf_list,&unpacked_drp);
+            driver_read(cur_driver,this,cur_device,hkey,&inf_list,&unpacked_drp);
         }
         i++;
     }
@@ -1042,7 +1041,7 @@ int iswide(int x,int y)
 11   +/-, 15..18, Widescreen  ->  assume laptop
 12   +/-, 18..XX, Widescreen  ->  assume desktop
 */
-void isnotebook_a(State *state)
+void State::isnotebook_a()
 {
     unsigned int i;
     int x,y;
@@ -1050,18 +1049,18 @@ void isnotebook_a(State *state)
     int diag;
     int batdev=0;
     WCHAR *buf;
-    SYSTEM_POWER_STATUS *battery;
+    SYSTEM_POWER_STATUS *batteryloc;
     Device *cur_device;
 
-    buf=(WCHAR *)(state->text+state->monitors);
-    battery=(SYSTEM_POWER_STATUS *)(state->text+state->battery);
+    buf=(WCHAR *)(text+monitors);
+    batteryloc=(SYSTEM_POWER_STATUS *)(text+battery);
 
-    if(state->ChassisType==3)
+    if(ChassisType==3)
     {
         isLaptop=0;
         return;
     }
-    if(state->ChassisType==10)
+    if(ChassisType==10)
     {
         isLaptop=1;
         return;
@@ -1081,15 +1080,15 @@ void isnotebook_a(State *state)
         }
     }
 
-    for(i=0;i<state->Devices_list.size();i++)
+    for(i=0;i<Devices_list.size();i++)
     {
-        cur_device=&state->Devices_list[i];
+        cur_device=&Devices_list[i];
         WCHAR *p;
-        char *s=state->text;
+        char *s=text;
 
-        if(cur_device->HardwareID)
+        if(cur_device->getHardwareID())
         {
-            p=(WCHAR *)(s+cur_device->HardwareID);
+            p=(WCHAR *)(s+cur_device->getHardwareID());
             while(*p)
             {
                 if(StrStrI(p,L"*ACPI0003"))batdev=1;
@@ -1098,7 +1097,7 @@ void isnotebook_a(State *state)
         }
     }
 
-    if((battery->BatteryFlag&128)==0||batdev)
+    if((batteryloc->BatteryFlag&128)==0||batdev)
     {
         if(!buf[0])
             isLaptop=1;

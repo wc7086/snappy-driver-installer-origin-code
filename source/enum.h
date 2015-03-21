@@ -113,11 +113,17 @@ public:
     SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
 
 public:
-    int getIndex(){return driver_index;}
+    void setDriverIndex(int v){driver_index=v;}
+
+    int getDriverIndex(){return driver_index;}
+    ofst getHardwareID(){return HardwareID;}
+    ofst getDriver(){return Driver;}
+    ofst getDescr(){return Devicedesc;}
 
     int  print_status();
     void print(State *state);
     void printHWIDS(State *state);
+    int device_readprop(HDEVINFO hDevInfo,State *state,int i);
 };
 
 class State
@@ -168,23 +174,21 @@ public:
     WCHAR *getModel();
     void getsysinfo_fast();
     void getsysinfo_slow();
-//    void state_scandevices();
     int opencatfile(Driver *cur_driver);
     void genmarker();
+    void state_scandevices();
+    void isnotebook_a();
 };
 extern const char *deviceststus_str[];
 
-int device_readprop(HDEVINFO hDevInfo,State *state,Device *cur_device,int i);
-void state_scandevices(State *state);
 
 void print_guid(GUID *g);
 void print_appinfo();
-void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val);
 void read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val);
+void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val);
 int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
-void isnotebook_a(State *state);
 template <class T> char *vector_save(std::vector<T> *v,char *p);
 template <class T> char *vector_load(std::vector<T> *v,char *p);
 void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,driverpack_t *unpacked_drp,int &inf_pos);

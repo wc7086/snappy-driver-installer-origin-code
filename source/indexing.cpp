@@ -48,113 +48,104 @@ const WCHAR *olddrps[]=
 //}
 
 //{ Parse
-void read_whitespace(parse_info_t *parse_info)
+void Parser_str::parseWhitespace(bool eatnewline=false)
 {
-    char *p=parse_info->start;
-    while(p<parse_info->strend)
+    while(blockBeg<blockEnd)
     {
-        switch(*p)
+        switch(*blockBeg)
         {
-            case 32:case '\t':
-                p++;
+//            case 0x1A:
+            case '\n':
+            case '\r':
+                if(eatnewline==false)return;
+                blockBeg++;
                 break;
-            case '\\':
-                p++;
-                while(*p=='\r'&&*p=='\n'&&p<parse_info->strend)p++;
+
+            case 32:  // space
+            case '\t':// tab
+                blockBeg++;
                 break;
+
+            case ';': // comment
+                blockBeg++;
+                while(blockBeg<blockEnd&&*blockBeg!='\n'&&*blockBeg!='\r')blockBeg++;
+                break;
+
+            case '\\': // continue line
+                if(blockBeg+3<blockEnd&&blockBeg[1]=='\r'&&blockBeg[2]=='\n'){blockBeg+=3;break;}
+
             default:
-                parse_info->start=p;
                 return;
         }
     }
-    parse_info->start=p;
 }
 
-int read_item(parse_info_t *parse_info)
+int Parser_str::parseItem()
 {
-    char *strend=parse_info->strend;
-    char *p=parse_info->start,*s1b=p,*s1e;
+    parseWhitespace(true);
+    strBeg=blockBeg;
 
-    parse_info->sb=0;
-    parse_info->se=0;
-    while(p<strend)
+    char *p=blockBeg;
+
+    while(p<blockEnd)
     {
         switch(*p)
         {
-            case ' ':case '\t':case '\n':case '\r':case 0x1A:case '\\':
+            case '=':               // Item found
+                blockBeg=p+1;
+                strEnd=p;
+                while((strEnd[-1]==32||strEnd[-1]=='\t')&&strEnd[-1]!='\"')strEnd--; // trim spaces
+                if(*strBeg=='\"'){strBeg++;strEnd--;}
+                str_sub();
+                return 1;
+
+            case '\n':case '\r':    // No item found
                 p++;
-                break;
-            case ';':
-                p++;
-                while(p<strend&&*p!='\n'&&*p!='\r')p++;
+                blockBeg=p;
+                strBeg=blockBeg;
+#ifdef DEBUG_EXTRACHECKS
+                log_file("ERR1 '%.*s'\n",30,s1b);
+#endif
                 break;
             default:
-                s1b=p;
-
-                while(p<strend)
-                {
-                    switch(*p)
-                    {
-                        case '=':
-                            parse_info->start=p+1;
-                            s1e=p;
-                            while(s1e[-1]==32||s1e[-1]=='\t')s1e--; // trim spaces
-                            if(*s1b=='\"'){s1b++;s1e--;}
-                            parse_info->sb=s1b;
-                            parse_info->se=s1e;
-                            str_sub(parse_info);
-                            return 1;
-                        case '\n':case '\r':
-                            p++;
-                            s1b=p;
-#ifdef DEBUG_EXTRACHECKS
-                            log_file("ERR1 '%.*s'\n",30,s1b);
-#endif
-                            break;
-                        case ';':
-                            while(*p!='\r'&&*p!='\n'&&p<strend)p++;
-                            break;
-                        default:
-                            p++;
-                    }
-                }
+                p++;
         }
     }
+    strBeg=0;
+    strEnd=0;
     return 0;
 }
 
-int read_field(parse_info_t *parse_info)
+int Parser_str::parseField()
 {
-    char *strend=parse_info->strend;
-    char *p=parse_info->start,*s1b,*s1e;
+    if(blockBeg[-1]!='='&&blockBeg[-1]!=',')return 0;
+    parseWhitespace();
+
+    char *p=blockBeg;
     int flag=0;
 
-    parse_info->sb=parse_info->se=p;
-    if(p[-1]!='='&&p[-1]!=',')return 0;
-    read_whitespace(parse_info);
-    p=parse_info->start;
-    s1b=p;
-    if(*p=='\"')
+    strBeg=strEnd=p;
+
+    if(*p=='\"')    // "str"
     {
-        s1b++;
+        strBeg++;
         p++;
-        while(p<strend)
+        while(p<blockEnd)
         {
             switch(*p)
             {
-                case '\r':case '\n':
+                case '\r':case '\n': // no closing "
                     p++;
 #ifdef DEBUG_EXTRACHECKS
                     log_file("ERR2 '%.*s'\n",30,s1b-1);
 #endif
-                case '\"':
-                    s1e=p;
+                case '\"':          // "str"
+                    strEnd=p;
                     p++;
-                    parse_info->start=p+1;
-                    parse_info->sb=s1b;
-                    parse_info->se=s1e;
-                    str_sub(parse_info);
+                    blockBeg=p+1;
+                    str_sub();
                     return 1;
+
                 default:
                     p++;
             }
@@ -162,80 +153,70 @@ int read_field(parse_info_t *parse_info)
     }
     else
     {
-        while(p<strend&&!flag)
+        while(p<blockEnd&&!flag)
         {
             switch(*p)
             {
                 case ',':
-                    s1e=p;
-                    while(s1e[-1]==32||s1e[-1]=='\t')s1e--; // trim spaces
-                    parse_info->start=p+1;
-                    parse_info->sb=s1b;
-                    parse_info->se=s1e;
-                    str_sub(parse_info);
+                    strEnd=p;
+                    while(strEnd[-1]==32||strEnd[-1]=='\t')strEnd--; // trim spaces
+                    blockBeg=p+1;
+                    str_sub();
                     return 1;
+
                 case '\n':case '\r':
                 case ';':
-                    s1e=p;
-                    while((s1e[-1]==32||s1e[-1]=='\t')&&s1e>s1b)s1e--; // trim spaces
-                    parse_info->start=p;
-                    parse_info->sb=s1b;
-                    parse_info->se=s1e;
-                    str_sub(parse_info);
-                    return s1e!=s1b;
+                    strEnd=p;
+                    while((strEnd[-1]==32||strEnd[-1]=='\t')&&strEnd>strBeg)strEnd--; // trim spaces
+                    blockBeg=p;
+                    strBeg=strBeg;
+                    strEnd=strEnd;
+                    str_sub();
+                    //parseWhitespace();
+                    return strEnd!=strBeg;
                 default:
                     p++;
             }
         }
     }
+    parseWhitespace();
     return 0;
 }
 
-int read_number(char **en,char *v1e)
+int Parser_str::readNumber()
 {
-    char *v1b=*en;
-    int n=atoi(*en);
+    int n=atoi(strBeg);
 
-    while(*v1b>='0'&&*v1b<='9'&&v1b<v1e)v1b++;
-    if(v1b<v1e)v1b++;
-    *en=v1b;
+    while(*strBeg>='0'&&*strBeg<='9'&&strBeg<strEnd)strBeg++;
+    if(strBeg<strEnd)strBeg++;
     return n;
 }
 
-int read_hex(parse_info_t *parse_info)
+int Parser_str::readHex()
 {
     int val=0;
-    char *v1b,*v1e;
 
-    v1b=parse_info->sb;
-    v1e=parse_info->se;
+    while((*strBeg=='0'||*strBeg=='x')&&strBeg<strEnd)strBeg++;
+    if(strBeg<strEnd)
+        val=toupper(*strBeg)-(*strBeg<='9'?'0':'A'-10);
 
-    while((*v1b=='0'||*v1b=='x')&&v1b<v1e)v1b++;
-    if(v1b<v1e)
-    {
-        val=toupper(*v1b)-(*v1b<='9'?'0':'A'-10);
-    }
-    v1b++;
-    if(v1b<v1e)
+    strBeg++;
+    if(strBeg<strEnd)
     {
         val<<=4;
-        val+=toupper(*v1b)-(*v1b<='9'?'0':'A'-10);
+        val+=toupper(*strBeg)-(*strBeg<='9'?'0':'A'-10);
     }
     return val;
 }
 
-int read_date(parse_info_t *parse_info,version_t *t)
+int Parser_str::readDate(version_t *t)
 {
     int flag=0;
-    char *v1b,*v1e;
 
-    v1b=parse_info->sb;
-    v1e=parse_info->se;
-
-    while(!(*v1b>='0'&&*v1b<='9')&&v1b<v1e)v1b++;
-    t->m=read_number(&v1b,v1e);
-    t->d=read_number(&v1b,v1e);
-    t->y=read_number(&v1b,v1e);
+    while(!(*strBeg>='0'&&*strBeg<='9')&&strBeg<strEnd)strBeg++;
+    t->m=readNumber();
+    t->d=readNumber();
+    t->y=readNumber();
     if(t->y<100)t->y+=1900;
 
     if(t->y<1990)flag=1;
@@ -257,44 +238,39 @@ int read_date(parse_info_t *parse_info,version_t *t)
     return flag;
 }
 
-void read_version(parse_info_t *parse_info,version_t *t)
+void Parser_str::readVersion(version_t *t)
 {
-    char *v1b,*v1e;
-
-    v1b=parse_info->sb;
-    v1e=parse_info->se;
-
-    t->v1=read_number(&v1b,v1e);
-    t->v2=read_number(&v1b,v1e);
-    t->v3=read_number(&v1b,v1e);
-    t->v4=read_number(&v1b,v1e);
+    t->v1=readNumber();
+    t->v2=readNumber();
+    t->v3=readNumber();
+    t->v4=readNumber();
 }
 
-void parse_init(parse_info_t *parse_info,driverpack_t *drp)
+void Parser_str::init(driverpack_t *drp)
 {
-    parse_info->pack=drp;
-    heap_init(&parse_info->strings,ID_PARSE,(void **)&parse_info->text,1024*64,1);
+    pack=drp;
+    heap_init(&strings,ID_PARSE,(void **)&text,1024*64,1);
 }
 
-void parse_free(parse_info_t *parse_info)
+void Parser_str::release()
 {
-    if(parse_info->strings.used)log_file("Parse_used %d\n",parse_info->strings.used);
-    heap_free(&parse_info->strings);
+    if(strings.used)log_file("Parse_used %d\n",strings.used);
+    heap_free(&strings);
 }
 
-void parse_set(parse_info_t *parse_info,char *inf_base,sect_data_t *lnk)
+void Parser_str::setRange(char *inf_base,sect_data_t *lnk)
 {
-    parse_info->start=inf_base+lnk->ofs;
-    parse_info->strend=inf_base+lnk->len;
+    blockBeg=inf_base+lnk->ofs;
+    blockEnd=inf_base+lnk->len;
 }
 
-void parse_getstr(parse_info_t *parse_info,char **vb,char **ve)
+void Parser_str::readStr(char **vb,char **ve)
 {
-    *vb=parse_info->sb;
-    *ve=parse_info->se;
+    *vb=strBeg;
+    *ve=strEnd;
 }
 
-void str_sub(parse_info_t *parse_info)
+void Parser_str::str_sub()
 {
     static char static_buf[BUFLEN];
     int vers_len;
@@ -302,10 +278,10 @@ void str_sub(parse_info_t *parse_info)
     char *res;
     int isfound;
 
-    v1b=parse_info->sb;
-    v1e=parse_info->se;
+    v1b=strBeg;
+    v1e=strEnd;
 
-    parse_info->se=v1e;
+    strEnd=v1e;
 
     if(*v1b=='%'/*&&v1e[-1]=='%'*/)
     {
@@ -315,11 +291,11 @@ void str_sub(parse_info_t *parse_info)
         if(vers_len<0)vers_len=0;
 
         strtolower(v1b,vers_len);
-        res=(char *)hash_find(&parse_info->pack->string_list,v1b,vers_len,&isfound);
+        res=(char *)hash_find(&pack->string_list,v1b,vers_len,&isfound);
         if(isfound)
         {
-            parse_info->sb=res;
-            parse_info->se=res+strlen(res);
+            strBeg=res;
+            strEnd=res+strlen(res);
             return;
         }else
         {
@@ -329,7 +305,7 @@ void str_sub(parse_info_t *parse_info)
         }
     }
     char *p,*p_s=static_buf;
-    v1b=parse_info->sb;
+    v1b=strBeg;
     int flag=0;
     while(v1b<v1e)
     {
@@ -342,7 +318,7 @@ void str_sub(parse_info_t *parse_info)
             if(*p=='%')
             {
                 strtolower(v1b+1,p-v1b-1);
-                res=(char *)hash_find(&parse_info->pack->string_list,v1b+1,p-v1b-1,&isfound);
+                res=(char *)hash_find(&pack->string_list,v1b+1,p-v1b-1,&isfound);
                 if(isfound)
                 {
                     strcpy(p_s,res);
@@ -359,11 +335,11 @@ void str_sub(parse_info_t *parse_info)
     *p_s++=0;*p_s=0;
     p_s=static_buf;
 
-    p_s=parse_info->text+heap_alloc(&parse_info->strings,strlen(p_s)+1);
+    p_s=text+heap_alloc(&strings,strlen(p_s)+1);
     strcpy(p_s,static_buf);
 
-    parse_info->sb=p_s;
-    parse_info->se=p_s+strlen(p_s);
+    strBeg=p_s;
+    strEnd=p_s+strlen(p_s);
 }
 //}
 
@@ -1583,16 +1559,15 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
     char line[2048];
     int  strs[16];
 
-    parse_info_t parse_info,parse_info2;
-    parse_info_t parse_info3;
+    Parser_str parse_info,parse_info2,parse_info3;
     sect_data_t *lnk,*lnk2;
 
     hashtable_t *string_list=&drp->string_list;
     hashtable_t *section_list=&drp->section_list;
 
-    parse_init(&parse_info,drp);
-    parse_init(&parse_info2,drp);
-    parse_init(&parse_info3,drp);
+    parse_info.init(drp);
+    parse_info2.init(drp);
+    parse_info3.init(drp);
 
     char *p=inf_base,*strend=inf_base+inf_len;
     char *p2,*sectnmend;
@@ -1674,12 +1649,12 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
     {
         char *s1b,*s1e,*s2b,*s2e;
 
-        parse_set(&parse_info,inf_base,lnk);
-        while(read_item(&parse_info))
+        parse_info.setRange(inf_base,lnk);
+        while(parse_info.parseItem())
         {
-            parse_getstr(&parse_info,&s1b,&s1e);
-            read_field(&parse_info);
-            parse_getstr(&parse_info,&s2b,&s2e);
+            parse_info.readStr(&s1b,&s1e);
+            parse_info.parseField();
+            parse_info.readStr(&s2b,&s2e);
             hash_add(string_list,s1b,s1e-s1b,(intptr_t)memcpy_alloc(s2b,s2e-s2b),HASH_MODE_INTACT);
         }
         lnk=(sect_data_t *)hash_findnext(section_list);
@@ -1699,10 +1674,10 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
     {
         char *s1b,*s1e;
 
-        parse_set(&parse_info,inf_base,lnk);
-        while(read_item(&parse_info))
+        parse_info.setRange(inf_base,lnk);
+        while(parse_info.parseItem())
         {
-            parse_getstr(&parse_info,&s1b,&s1e);
+            parse_info.readStr(&s1b,&s1e);
             strtolower(s1b,s1e-s1b);
 
             int i,sz=s1e-s1b;
@@ -1712,34 +1687,34 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
                 if(i==DriverVer)
                 {
                         // date
-                        read_field(&parse_info);
-                        i=read_date(&parse_info,cur_ver);
+                        parse_info.parseField();
+                        i=parse_info.readDate(cur_ver);
                         if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %ws%ws\n",
                                  cur_ver->d,cur_ver->m,cur_ver->y,i,drpdir,inffile);
 
                         sprintf(date_s,"%02d/%02d/%04d",cur_ver->m,cur_ver->d,cur_ver->y);
 
                         // version
-                        if(read_field(&parse_info))
+                        if(parse_info.parseField())
                         {
-                            read_version(&parse_info,cur_ver);
+                            parse_info.readVersion(cur_ver);
                         }
                         sprintf(build_s,"%d.%d.%d.%d",cur_ver->v1,cur_ver->v2,cur_ver->v3,cur_ver->v4);
 
                 }else
                 {
-                    read_field(&parse_info);
-                    parse_getstr(&parse_info,&s1b,&s1e);
+                    parse_info.parseField();
+                    parse_info.readStr(&s1b,&s1e);
                     cur_inffile->fields[i]=heap_memcpyz(&drp->text_handle,s1b,s1e-s1b);
                 }
                 break;
             }
             if(i==NUM_VER_NAMES)
             {
-                s1e=parse_info.se;
+                //s1e=parse_info.se;
                 //log_file("QQ '%.*s'\n",s1e-s1b,s1b);
             }
-            while(read_field(&parse_info));
+            while(parse_info.parseField());
         }
         lnk=(sect_data_t *)hash_findnext(section_list);
         if(lnk)log_index("NOTE:  multiple [version] in %ws%ws\n",drpdir,inffile);
@@ -1755,11 +1730,11 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
     if(!lnk)log_index("ERROR: missing [manufacturer] in %ws%ws\n",drpdir,inffile);
     while(lnk)
     {
-        parse_set(&parse_info,inf_base,lnk);
-        while(read_item(&parse_info))
+        parse_info.setRange(inf_base,lnk);
+        while(parse_info.parseItem())
         {
             char *s1b,*s1e;
-            parse_getstr(&parse_info,&s1b,&s1e);
+            parse_info.readStr(&s1b,&s1e);
 
             cur_manuf_index=heap_allocitem_i(&drp->manufacturer_handle);
             cur_manuf=&drp->manufacturer_list[cur_manuf_index];
@@ -1767,9 +1742,9 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
             cur_manuf->manufacturer=heap_memcpyz(&drp->text_handle,s1b,s1e-s1b);
             cur_manuf->sections_n=0;
 
-            if(read_field(&parse_info))
+            if(parse_info.parseField())
             {
-                parse_getstr(&parse_info,&s1b,&s1e);
+                parse_info.readStr(&s1b,&s1e);
                 strtolower(s1b,s1e-s1b);
                 strs[cur_manuf->sections_n++]=heap_memcpyz(&drp->text_handle,s1b,s1e-s1b);
                 while(1)
@@ -1787,10 +1762,10 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
                     if(!lnk2&&cur_manuf->sections_n>1)log_index("ERROR: missing [%s] in %ws%ws\n",secttry,drpdir,inffile);
                     while(lnk2)
                     {
-                        parse_set(&parse_info2,inf_base,lnk2);
-                        while(read_item(&parse_info2))
+                        parse_info2.setRange(inf_base,lnk2);
+                        while(parse_info2.parseItem())
                         {
-                            parse_getstr(&parse_info2,&s1b,&s1e);
+                            parse_info2.readStr(&s1b,&s1e);
 
                             cur_desc_index=heap_allocitem_i(&drp->desc_list_handle);
                             cur_desc=&drp->desc_list[cur_desc_index];
@@ -1805,8 +1780,8 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
                             //parse_info3.pack=drp;
                             find_t savedfind;
 
-                            read_field(&parse_info2);
-                            parse_getstr(&parse_info2,&s1b,&s1e);
+                            parse_info2.parseField();
+                            parse_info2.readStr(&s1b,&s1e);
                             cur_desc->install=heap_memcpyz_dup(&drp->text_handle,s1b,s1e-s1b);
 
                             memcpy(&savedfind,&section_list->finddata,sizeof(find_t));
@@ -1872,26 +1847,24 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
 
                             while(lnk3)
                             {
-                                parse_info3.start=inf_base+lnk3->ofs;
-                                parse_info3.strend=inf_base+lnk3->len;
+                                parse_info3.setRange(inf_base,lnk3);
                                 if(!strcmp(secttry,installsection))
                                 {
                                     log_index("ERROR: [%s] refers to itself in %ws%ws\n",installsection,drpdir,inffile);
                                     break;
                                 }
 
-                                while(read_item(&parse_info3))
+                                while(parse_info3.parseItem())
                                 {
-                                    s1b=parse_info3.sb;
-                                    s1e=parse_info3.se;
+                                    parse_info3.readStr(&s1b,&s1e);
                                     strtolower(s1b,s1e-s1b);
                                     int sz=s1e-s1b;
                                     if(sz==12&&!memcmp(s1b,"featurescore",sz))
                                     {
-                                        read_field(&parse_info3);
-                                        cur_desc->feature=read_hex(&parse_info3);
+                                        parse_info3.parseField();
+                                        cur_desc->feature=parse_info3.readHex();
                                     }
-                                    while(read_field(&parse_info3));
+                                    while(parse_info3.parseField());
                                 }
                                 lnk3=(sect_data_t *)hash_findnext(section_list);
                             }
@@ -1899,9 +1872,9 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
                             //} feature
 
                             int hwid_pos=0;
-                            while(read_field(&parse_info2))
+                            while(parse_info2.parseField())
                             {
-                                parse_getstr(&parse_info2,&s1b,&s1e);
+                                parse_info2.readStr(&s1b,&s1e);
                                 if(s1b>=s1e)continue;
                                 strtoupper(s1b,s1e-s1b);
 
@@ -1924,8 +1897,8 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
                     }
                     memcpy(&section_list->finddata,&savedfind0,sizeof(find_t));
 
-                    if(!read_field(&parse_info))break;
-                    parse_getstr(&parse_info,&s1b,&s1e);
+                    if(!parse_info.parseField())break;
+                    parse_info.readStr(&s1b,&s1e);
                     if(s1b>s1e)break;
                     strtolower(s1b,s1e-s1b);
                     strs[cur_manuf->sections_n++]=heap_memcpyz(&drp->text_handle,s1b,s1e-s1b);
@@ -1941,9 +1914,9 @@ void driverpack_indexinf_ansi(driverpack_t *drp,WCHAR const *drpdir,WCHAR const 
     //hash_stats(section_list);
     //hash_stats(dup_list);
 
-    parse_free(&parse_info);
-    parse_free(&parse_info2);
-    parse_free(&parse_info3);
+    parse_info.release();
+    parse_info2.release();
+    parse_info3.release();
 
     hash_clear(string_list,1);
     hash_clear(section_list,1);
