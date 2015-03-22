@@ -18,20 +18,23 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define NUM_DECS 11*4
 #define NUM_MARKERS 31
 
-#define STATUS_BETTER       0x001
-#define STATUS_SAME         0x002
-#define STATUS_WORSE        0x004
-#define STATUS_INVALID      0x008
+enum DRIVER_STATUS
+{
+    STATUS_BETTER      = 0x001,
+    STATUS_SAME        = 0x002,
+    STATUS_WORSE       = 0x004,
+    STATUS_INVALID     = 0x008,
 
-#define STATUS_MISSING      0x010
-#define STATUS_NEW          0x020
-#define STATUS_CURRENT      0x040
-#define STATUS_OLD          0x080
+    STATUS_MISSING     = 0x010,
+    STATUS_NEW         = 0x020,
+    STATUS_CURRENT     = 0x040,
+    STATUS_OLD         = 0x080,
 
-#define STATUS_NF_MISSING   0x100
-#define STATUS_NF_UNKNOWN   0x200
-#define STATUS_NF_STANDARD  0x400
-#define STATUS_DUP          0x800
+    STATUS_NF_MISSING  = 0x100,
+    STATUS_NF_UNKNOWN  = 0x200,
+    STATUS_NF_STANDARD = 0x400,
+    STATUS_DUP         = 0x800,
+};
 
 extern const char *nts[NUM_DECS];
 
@@ -50,18 +53,52 @@ typedef struct _devicematch_t
     int status;
 }devicematch_t;
 
-typedef struct _hwidmatch_t
+class hwidmatch_t
 {
+public:
     Driverpack *drp;
     int HWID_index;
 
     devicematch_t *devicematch;
     int identifierscore,decorscore,markerscore,altsectscore,status;
     unsigned score;
-}hwidmatch_t;
 
-typedef struct _matcher_t
+public:
+//driverpack
+WCHAR *getdrp_packpath();
+WCHAR *getdrp_packname();
+int   getdrp_packontorrent();
+//inffile
+char *getdrp_infpath();
+char *getdrp_infname();
+const char *getdrp_drvfield(int n);
+const char *getdrp_drvcat(int n);
+version_t *getdrp_drvversion();
+int   getdrp_infsize();
+int   getdrp_infcrc();
+//manufacturer
+char *getdrp_drvmanufacturer();
+void  getdrp_drvsection(char *buf);
+//desc
+char *getdrp_drvdesc();
+char *getdrp_drvinstall();
+char *getdrp_drvinstallPicked();
+int   getdrp_drvfeature();
+//HWID
+short getdrp_drvinfpos();
+char *getdrp_drvHWID();
+
+    void hwidmatch_init(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
+    void hwidmatch_initbriefly(Driverpack *drp,int HWID_index);
+    void hwidmatch_calclen(int *limits);
+    void hwidmatch_print_tbl(int *limits);
+    void hwidmatch_print_hr();
+    int  hwidmatch_cmp(hwidmatch_t *match2);
+};
+
+class matcher_t
 {
+public:
     State *state;
     Collection *col;
 
@@ -70,13 +107,20 @@ typedef struct _matcher_t
 
     hwidmatch_t *hwidmatch_list;
     heap_t hwidmatch_handle;
-}matcher_t;
+
+public:
+    void matcher_init(State *state,Collection *col);
+    void matcher_free();
+    void matcher_findHWIDs(devicematch_t *device_match,char *hwid,int dev_pos,int ishw);
+    void matcher_populate();
+    void matcher_sort();
+    void matcher_print();
+};
 
 // Calc
 void genmarker(State *state);
 int isMissing(Device *device,Driver *driver,State *state);
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
-int calc_catalogfile(hwidmatch_t *hwidmatch);
 int calc_signature(int catalogfile,State *state,int isnt);
 unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
 unsigned calc_score_h(Driver *driver,State *state);
@@ -100,42 +144,8 @@ void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driv
 
 // hwidmatch
 void minlen(CHAR *s,int *len);
-void hwidmatch_init(hwidmatch_t *hwidmatch,Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
-void hwidmatch_initbriefly(hwidmatch_t *hwidmatch,Driverpack *drp,int HWID_index);
-void hwidmatch_calclen(hwidmatch_t *hwidmatch,int *limits);
-void hwidmatch_print_tbl(hwidmatch_t *hwidmatch,int *limits);
-void hwidmatch_print_hr(hwidmatch_t *hwidmatch);
-int  hwidmatch_cmp(hwidmatch_t *match1,hwidmatch_t *match2);
 
 // Matcher
-void matcher_init(matcher_t *matcher,State *state,Collection *col);
-void matcher_free(matcher_t *matcher);
-void matcher_findHWIDs(matcher_t *matcher,devicematch_t *device_match,char *hwid,int dev_pos,int ishw);
-void matcher_populate(matcher_t *matcher);
-void matcher_sort(matcher_t *matcher);
-void matcher_print(matcher_t *matcher);
-
-//driverpack
-WCHAR *getdrp_packpath(hwidmatch_t *hwidmatch);
-WCHAR *getdrp_packname(hwidmatch_t *hwidmatch);
-int   getdrp_packontorrent(hwidmatch_t *hwidmatch);
-//inffile
-char *getdrp_infpath(hwidmatch_t *hwidmatch);
-char *getdrp_infname(hwidmatch_t *hwidmatch);
-const char *getdrp_drvfield(hwidmatch_t *hwidmatch,int n);
-const char *getdrp_drvcat(hwidmatch_t *hwidmatch,int n);
-version_t *getdrp_drvversion(hwidmatch_t *hwidmatch);
-int   getdrp_infsize(hwidmatch_t *hwidmatch);
-int   getdrp_infcrc(hwidmatch_t *hwidmatch);
-//manufacturer
-char *getdrp_drvmanufacturer(hwidmatch_t *hwidmatch);
 void  getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
-void  getdrp_drvsection(hwidmatch_t *hwidmatch,char *buf);
-//desc
-char *getdrp_drvdesc(hwidmatch_t *hwidmatch);
-char *getdrp_drvinstall(hwidmatch_t *hwidmatch);
-char *getdrp_drvinstallPicked(hwidmatch_t *hwidmatch);
-int   getdrp_drvfeature(hwidmatch_t *hwidmatch);
-//HWID
-short getdrp_drvinfpos(hwidmatch_t *hwidmatch);
-char *getdrp_drvHWID(hwidmatch_t *hwidmatch);
+int calc_catalogfile(hwidmatch_t *hwidmatch);
+

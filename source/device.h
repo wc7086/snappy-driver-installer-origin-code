@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifdef _WIN64
+#include <cfgmgr32.h>
 #include <cfg.h>
 #include <newdev.h>
 #define CR_SUCCESS (0x00000000)

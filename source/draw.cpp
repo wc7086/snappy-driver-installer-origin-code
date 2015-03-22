@@ -359,10 +359,10 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
         for(yi=0;yi<y2;yi+=wy)
         {
             int x=x1+xi,y=y1+yi;
-            if(anchor&ALIGN_RIGHT)  x=x2-xi-wx;
-            if(anchor&ALIGN_BOTTOM) y=y2-yi-wy;
-            if(anchor&ALIGN_HCENTER)x=(x2-x1-wx)/2;
-            if(anchor&ALIGN_VCENTER)y=(y2-y1-wy)/2;
+            if(anchor&RIGHT)  x=x2-xi-wx;
+            if(anchor&BOTTOM) y=y2-yi-wy;
+            if(anchor&HCENTER)x=(x2-x1-wx)/2;
+            if(anchor&VCENTER)y=(y2-y1-wy)/2;
 
             wx1=(x+wx>x2)?x2-x:wx;
             wy1=(y+wy>y2)?y2-y:wy;
@@ -471,7 +471,7 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
     rect.bottom=y+wy;
 
     if(icon[i].isLoaded())
-        icon[i].draw(hdc,x,y,x+wx,y+wy,0,HSTR|VSTR);
+        icon[i].draw(hdc,x,y,x+wx,y+wy,0,Image::HSTR|Image::VSTR);
     else
         DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
 }

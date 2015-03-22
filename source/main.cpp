@@ -618,7 +618,7 @@ void bundle_init(bundle_t *bundle)
 {
     bundle->state.init();
     bundle->collection.collection_init(drp_dir,index_dir,output_dir,flags);
-    matcher_init(&bundle->matcher,&bundle->state,&bundle->collection);
+    bundle->matcher.matcher_init(&bundle->state,&bundle->collection);
 }
 
 void bundle_prep(bundle_t *bundle)
@@ -629,7 +629,7 @@ void bundle_prep(bundle_t *bundle)
 void bundle_free(bundle_t *bundle)
 {
     bundle->collection.collection_free();
-    matcher_free(&bundle->matcher);
+    bundle->matcher.matcher_free();
     bundle->state.release();
 }
 
@@ -646,8 +646,8 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
     bundle->state.isnotebook_a();
-    matcher_populate(&bundle->matcher);
-    matcher_sort(&bundle->matcher);
+    bundle->matcher.matcher_populate();
+    bundle->matcher.matcher_sort();
 }
 
 void bundle_lowprioirity(bundle_t *bundle)
@@ -660,7 +660,7 @@ void bundle_lowprioirity(bundle_t *bundle)
     bundle->collection.collection_printstates();
     //collection_finddrp(&bundle->collection,L"");
     bundle->state.print();
-    matcher_print(&bundle->matcher);
+    bundle->matcher.matcher_print();
     manager_print_hr(manager_g);
 
 #ifdef USE_TORRENT

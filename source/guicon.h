@@ -14,19 +14,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#define LOG_VERBOSE_ARGS       0x0001
-#define LOG_VERBOSE_SYSINFO    0x0002
-#define LOG_VERBOSE_DEVICES    0x0004
-#define LOG_VERBOSE_MATCHER    0x0008
-#define LOG_VERBOSE_MANAGER    0x0010
-#define LOG_VERBOSE_DRP        0x0020
-#define LOG_VERBOSE_TIMES      0x0040
-#define LOG_VERBOSE_LOG_ERR    0x0080
-#define LOG_VERBOSE_LOG_CON    0x0100
-#define LOG_VERBOSE_LAGCOUNTER 0x0200
-#define LOG_VERBOSE_DEVSYNC    0x0400
-#define LOG_VERBOSE_BATCH      0x0800
+enum LOG_VERBOSE
+{
+    LOG_VERBOSE_ARGS      = 0x0001,
+    LOG_VERBOSE_SYSINFO   = 0x0002,
+    LOG_VERBOSE_DEVICES   = 0x0004,
+    LOG_VERBOSE_MATCHER   = 0x0008,
+    LOG_VERBOSE_MANAGER   = 0x0010,
+    LOG_VERBOSE_DRP       = 0x0020,
+    LOG_VERBOSE_TIMES     = 0x0040,
+    LOG_VERBOSE_LOG_ERR   = 0x0080,
+    LOG_VERBOSE_LOG_CON   = 0x0100,
+    LOG_VERBOSE_LAGCOUNTER= 0x0200,
+    LOG_VERBOSE_DEVSYNC   = 0x0400,
+    LOG_VERBOSE_BATCH     = 0x0800,
+};
 
 extern int log_verbose;
 extern int log_console;

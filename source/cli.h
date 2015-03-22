@@ -3,21 +3,17 @@
 
 typedef struct _CommandLineParam_t
 {
-    BOOL ShowHelp; //показывать подсказку по параметрам командной строки
-    //
-    BOOL SaveInstalledHWD; //Сохранять установленные HWID в файл
-    WCHAR SaveInstalledFileName[BUFLEN]; //Имя файла для сохранения HWID
-    //
-    BOOL HWIDInstalled; //Проверка что драйвер был установлен в предыдущем сеансе работы
-    WCHAR HWIDSTR[BUFLEN]; //идентификатор драйвера для проверки
-    //WCHAR HWIDFileName;
+    BOOL ShowHelp;
+    BOOL SaveInstalledHWD;
+    WCHAR SaveInstalledFileName[BUFLEN];
+    BOOL HWIDInstalled;
+    WCHAR HWIDSTR[BUFLEN];
 } CommandLineParam_t;
 
 extern CommandLineParam_t CLIParam;
 
 void init_CLIParam();
 
-//параметры командной строки
 #define SAVE_INSTALLED_ID_DEF   L"-save-installed-id"
 #define HWIDINSTALLED_DEF       L"-HWIDInstalled:"
 #define GFG_DEF                 L"-cfg:"

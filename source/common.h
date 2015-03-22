@@ -14,10 +14,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#define HASH_FLAG_KEYS_ARE_POINTERS 1
-#define HASH_FLAG_STR_TO_LOWER 2
-#define HASH_FLAG_STRS_ARE_INTS 4
+enum hash_flags
+{
+    HASH_FLAG_KEYS_ARE_POINTERS= 1,
+    HASH_FLAG_STR_TO_LOWER = 2,
+    HASH_FLAG_STRS_ARE_INTS = 4,
+};
 
 extern int trap_mode;
 typedef struct _hashtable_t hashtable_t;
