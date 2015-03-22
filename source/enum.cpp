@@ -649,7 +649,7 @@ int State::opencatfile(Driver *cur_driver)
                     {
                         if(!*bufa||bufal<wcslen((WCHAR *)(p+19)))
                         {
-                            sprintf(bufa,"%ws",p+19);
+                            wsprintfA(bufa,"%ws",p+19);
                             bufal=strlen(bufa);
                         }
                     }
@@ -720,7 +720,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
     wsprintf(filename,L"%s%s",state->text+state->windir,state->text+cur_driver->InfPath);
 
     int isfound;
-    sprintf(bufa,"%ws%ws",filename,state->text+cur_driver->MatchingDeviceId);
+    wsprintfA(bufa,"%ws%ws",filename,state->text+cur_driver->MatchingDeviceId);
     infdata=(infdata_t *)hash_find(inf_list,bufa,strlen(bufa),&isfound);
     if(flags&FLAG_FAILSAFE)
     {
@@ -757,10 +757,10 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
         free(buft);
 
         char sect[BUFLEN];
-        sprintf(sect,"%ws%ws",state->text+cur_driver->InfSection,state->text+cur_driver->InfSectionExt);
-        sprintf(bufa,"%ws",state->text+cur_driver->MatchingDeviceId);
+        wsprintfA(sect,"%ws%ws",state->text+cur_driver->InfSection,state->text+cur_driver->InfSectionExt);
+        wsprintfA(bufa,"%ws",state->text+cur_driver->MatchingDeviceId);
         for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
-        if(!strcmpi(unpacked_drp->text+unpacked_drp->HWID_list[HWID_index].HWID,bufa))
+        if(!StrCmpIA(unpacked_drp->text+unpacked_drp->HWID_list[HWID_index].HWID,bufa))
         {
             Hwidmatch hwidmatch;
 
@@ -783,7 +783,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
         infdata->feature=cur_driver->feature;
         infdata->cat=cur_driver->cat;
         infdata->inf_pos=inf_pos;
-        sprintf(bufa,"%ws%ws",filename,state->text+cur_driver->MatchingDeviceId);
+        wsprintfA(bufa,"%ws%ws",filename,state->text+cur_driver->MatchingDeviceId);
         hash_add(inf_list,bufa,strlen(bufa),(intptr_t)infdata,HASH_MODE_INTACT);
     }
 }
@@ -812,11 +812,11 @@ void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,ha
     cur_driver->identifierscore=calc_identifierscore(dev_pos,ishw,inf_pos);
     //log_file("%d,%d,%d\n",dev_pos,ishw,inf_pos);
 
-    sprintf(bufa,"%ws",state->text+cur_driver->DriverDate);
+    wsprintfA(bufa,"%ws",state->text+cur_driver->DriverDate);
     pi.setRange(bufa,bufa+strlen(bufa));
     pi.readDate(&cur_driver->version);
 
-    sprintf(bufa,"%ws",state->text+cur_driver->DriverVersion);
+    wsprintfA(bufa,"%ws",state->text+cur_driver->DriverVersion);
     pi.setRange(bufa,bufa+strlen(bufa));
     pi.readVersion(&cur_driver->version);
 }

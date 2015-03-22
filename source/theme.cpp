@@ -52,7 +52,7 @@ void vault_init1(vault_t *v,entry_t *entry,int num)
     hash_init(&v->strs,ID_INF_LIST,num*4,0);
     for(i=0;i<num;i++)
     {
-        sprintf(buf,"%S",v->entry[i].name);
+        wsprintfA(buf,"%S",v->entry[i].name);
         hash_add(&v->strs,buf,strlen(buf),(int)i+1,HASH_MODE_INTACT);
     }
 }
@@ -125,7 +125,7 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
     {
         data1=malloc(*sz+2);
         fread(data,*sz,1,f);
-        _swab((char *)data,(char *)data1,*sz);
+        //_swab((char *)data,(char *)data1,*sz); // FIXME
         free(data);
         *sz>>=1;(*sz)--;
         fclose(f);
@@ -164,7 +164,7 @@ int vault_findvar(hashtable_t *t,WCHAR *str)
     c=*p;
     *p=0;
 
-    sprintf(buf,"%ws",str);
+    wsprintfA(buf,"%ws",str);
     i=hash_find_str(t,buf);
     i--;
     *p=c;
@@ -176,7 +176,7 @@ int vault_readvalue(const WCHAR *str)
     WCHAR *p;
 
     p=wcsstr(str,L"0x");
-    return p?wcstol(str,0,16):_wtoi(str);
+    return p?wcstol(str,0,16):_wtoi_my(str);
 }
 
 intptr_t vault_findstr(WCHAR *str)
@@ -222,7 +222,7 @@ void vault_parse(vault_t *val,WCHAR *data)
         r=vault_findvar(&val->strs,lhs);
         if(r<0)
         {
-            //printf("Error: unknown var '%ws'\n",lhs);
+            printf("Error: unknown var '%ws'\n",lhs);
         }else
         {
             intptr_t v,r1,r2;

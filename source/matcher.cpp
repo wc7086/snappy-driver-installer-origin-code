@@ -190,7 +190,7 @@ void State::genmarker()
             }
         }
     }
-    if(!*marker)sprintf(marker,"OEM_nb");
+    if(!*marker)wsprintfA(marker,"OEM_nb");
     log_con("Marker: '%s'\n",marker);
 }
 
@@ -274,7 +274,7 @@ int calc_secttype(const char *s)
     if((p=strchr(p,'.')))
         if((p=strchr(p+1,'.')))
             if((p=strchr(p+1,'.')))*p=0;
-    for(i=0;i<NUM_DECS;i++)if(!strcmpi(buf,nts[i]))return i;
+    for(i=0;i<NUM_DECS;i++)if(!StrCmpIA(buf,nts[i]))return i;
 //log_file("'%s'\n",buf);
     return -1;
 }
@@ -421,7 +421,7 @@ int isMissing(Device *device,Driver *driver,State *state)
     if(device->problem==CM_PROB_DISABLED)return 0;
     if(driver)
     {
-        if(!_wcsicmp((WCHAR*)(state->text+driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
+        if(!StrCmpIW((WCHAR*)(state->text+driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
         if(device->problem&&device->HardwareID)return 1;
     }else
     {
@@ -469,7 +469,7 @@ void findHWID_in_list(char *s,int list,int str,int *dev_pos)
     WCHAR *p=(WCHAR *)(s+list);
     while(*p)
     {
-        if(!wcsicmp(p,(WCHAR *)(s+str)))return;
+        if(!StrCmpIW(p,(WCHAR *)(s+str)))return;
         p+=lstrlen(p)+1;
         (*dev_pos)++;
     }
@@ -593,13 +593,13 @@ void Hwidmatch::calclen(int *limits)
 
     getdrp_drvsection(buf);
     minlen(buf,&limits[0]);
-    sprintf(buf,"%ws%ws",getdrp_packpath(),getdrp_packname());
+    wsprintfA(buf,"%ws%ws",getdrp_packpath(),getdrp_packname());
     minlen(buf,&limits[1]);
     sprintf(buf,"%s%s",getdrp_infpath(),getdrp_infname());
     minlen(buf,&limits[2]);
     minlen(getdrp_drvmanufacturer(),&limits[3]);
     v=getdrp_drvversion();
-    sprintf(buf,"%d.%d.%d.%d",v->v1,v->v2,v->v3,v->v4);
+    wsprintfA(buf,"%d.%d.%d.%d",v->v1,v->v2,v->v3,v->v4);
     minlen(buf,&limits[4]);
     minlen(getdrp_drvHWID(),&limits[5]);
     minlen(getdrp_drvdesc(),&limits[6]);
@@ -620,13 +620,13 @@ void Hwidmatch::print_tbl(int *limits)
                                 getdrp_drvsection(buf);
     log_file(" %-*s |",limits[0],buf);
 
-    sprintf(buf,"%ws\\%ws",       getdrp_packpath(),getdrp_packname());
+    wsprintfA(buf,"%ws\\%ws",       getdrp_packpath(),getdrp_packname());
     log_file(" %-*s |",limits[1],buf);
     log_file(" %8X% |",              getdrp_infcrc());
     sprintf(buf,"%s%s",         getdrp_infpath(),getdrp_infname());
     log_file(" %-*s |",limits[2],buf);
     log_file(" %-*s |",limits[3],    getdrp_drvmanufacturer());
-    sprintf(buf,"%d.%d.%d.%d",  v->v1,v->v2,v->v3,v->v4);
+    wsprintfA(buf,"%d.%d.%d.%d",  v->v1,v->v2,v->v3,v->v4);
     log_file(" %*s |",limits[4],buf);
     log_file(" %-*s |",limits[5],    getdrp_drvHWID());
     log_file(" %-*s",limits[6],      getdrp_drvdesc());
@@ -712,7 +712,7 @@ void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int is
     strtoupper(hwid,sz);
     code=hash_getcode(hwid,sz);
 
-    for(i=0;i<col->driverpack_handle.items;i++)
+    for(i=0;i<col->driverpack_list.size();i++)
     {
         drp=&col->driverpack_list[i];
         int val=hash_find(&drp->indexes,(char *)&code,4,&isfound);
@@ -755,7 +755,7 @@ void Matcher::populate()
             dev_pos=0;
             while(*p)
             {
-                sprintf(buf,"%ws",p);
+                wsprintfA(buf,"%ws",p);
                 findHWIDs(devicematch,buf,dev_pos,1);
                 p+=lstrlen(p)+1;
                 dev_pos++;
@@ -768,7 +768,7 @@ void Matcher::populate()
             dev_pos=0;
             while(*p)
             {
-                sprintf(buf,"%ws",p);
+                wsprintfA(buf,"%ws",p);
                 findHWIDs(devicematch,buf,dev_pos,0);
                 p+=lstrlen(p)+1;
                 dev_pos++;

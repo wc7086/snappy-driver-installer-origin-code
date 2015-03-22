@@ -211,7 +211,7 @@ void Image::load(int i)
     release();
 
     if(wcsstr(filename,L"RES_"))
-        readFromRes(_wtoi(filename+4));
+        readFromRes(_wtoi_my(filename+4));
     else
         readFromFile(filename);
 }

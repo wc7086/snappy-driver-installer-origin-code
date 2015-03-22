@@ -732,7 +732,7 @@ void upddlg_setpriorities_driverpack(const WCHAR *name,int pri)
     int i;
     char buf[BUFLEN];
 
-    sprintf(buf,"%ws",name);
+    wsprintfA(buf,"%ws",name);
     //log_con("<%s> %d\n",buf,pri);
     for(i=0;i<numfiles;i++)
     if(StrStrIA(updatehandle.torrent_file()->file_at(i).path.c_str(),buf))
