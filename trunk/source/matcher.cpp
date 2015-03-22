@@ -209,12 +209,12 @@ int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
         return 0x3000+dev_pos+0x100*inf_pos;
 }
 
-int calc_catalogfile(hwidmatch_t *hwidmatch)
+int Hwidmatch::calc_catalogfile()
 {
     int r=0,i;
 
     for(i=CatalogFile;i<=CatalogFile_ntamd64;i++)
-        if(*hwidmatch->getdrp_drvfield(i))r+=1<<i;
+        if(*getdrp_drvfield(i))r+=1<<i;
 
     //if(!isvalidcat(hwidmatch,state))r=0;
     //r=0;
@@ -327,31 +327,31 @@ int calc_markerscore(State *state,char *path)
     return score;
 }
 
-intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,State *state,const WCHAR *str)
+intptr_t Hwidmatch::isvalid_usb30hub(State *state,const WCHAR *str)
 {
     //log_con("Intel USB3.0 HUB '%ws'\n",state->text+hwidmatch->devicematch->device->HardwareID);
-    return (intptr_t)StrStrI((WCHAR *)(state->text+hwidmatch->devicematch->device->HardwareID),str);
+    return (intptr_t)StrStrI((WCHAR *)(state->text+devicematch->device->HardwareID),str);
 }
 
-int isblacklisted(hwidmatch_t *hwidmatch,State *state,const WCHAR *hwid,const char *section)
+int Hwidmatch::isblacklisted(State *state,const WCHAR *hwid,const char *section)
 {
     char buf[BUFLEN];
 
-    if(StrStrI((WCHAR *)(state->text+hwidmatch->devicematch->device->HardwareID),hwid))
+    if(StrStrI((WCHAR *)(state->text+devicematch->device->HardwareID),hwid))
     {
-        hwidmatch->getdrp_drvsection(buf);
+        getdrp_drvsection(buf);
         if(StrStrIA(buf,section))return 1;
     }
     return 0;
 }
 
-int isvalid_ver(hwidmatch_t *hwidmatch,State *state)
+int Hwidmatch::isvalid_ver(State *state)
 {
     version_t *v;
     int major=state->platform.dwMajorVersion;
     int minor=state->platform.dwMinorVersion;
 
-    v=hwidmatch->getdrp_drvversion();
+    v=getdrp_drvversion();
     switch(v->v1)
     {
         case 5:if(major!=5)return 0;break;
@@ -362,60 +362,58 @@ int isvalid_ver(hwidmatch_t *hwidmatch,State *state)
     return 1;
 }
 
-int calc_notebook(hwidmatch_t *hwidmatch)
+int Hwidmatch::calc_notebook()
 {
-    if(StrStrIA(hwidmatch->getdrp_infpath(),"_nb\\")||
-       StrStrIA(hwidmatch->getdrp_infpath(),"Touchpad_Mouse\\"))
+    if(StrStrIA(getdrp_infpath(),"_nb\\")||
+       StrStrIA(getdrp_infpath(),"Touchpad_Mouse\\"))
     {
         if(!isLaptop)return 0;
         if(!*marker)return 0;
-        if(!StrStrIA(hwidmatch->getdrp_infpath(),marker))return 0;
+        if(!StrStrIA(getdrp_infpath(),marker))return 0;
     }
     return 1;
 }
 
-int calc_altsectscore(hwidmatch_t *hwidmatch,State *state,int curscore)
+int Hwidmatch::calc_altsectscore(State *state,int curscore)
 {
     char buf[BUFLEN];
     int pos;
     int desc_index,manufacturer_index;
-    Driverpack *drp;
 
-    drp=hwidmatch->drp;
-    desc_index=drp->HWID_list[hwidmatch->HWID_index].desc_index;
+    desc_index=drp->HWID_list[HWID_index].desc_index;
     manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
 
-    for(pos=0;pos<hwidmatch->drp->manufacturer_list[manufacturer_index].sections_n;pos++)
+    for(pos=0;pos<drp->manufacturer_list[manufacturer_index].sections_n;pos++)
     {
-        getdrp_drvsectionAtPos(hwidmatch->drp,buf,pos,manufacturer_index);
+        getdrp_drvsectionAtPos(drp,buf,pos,manufacturer_index);
         if(calc_decorscore(calc_secttype(buf),state)>curscore)return 0;
     }
 
-    if(!calc_notebook(hwidmatch))return 0;
+    if(!calc_notebook())return 0;
 
-    if(StrStrIA(hwidmatch->getdrp_infpath(),"intel_2nd\\"))
-        if(!isvalid_usb30hub(hwidmatch,state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_1E31"))return 0;
+    if(StrStrIA(getdrp_infpath(),"intel_2nd\\"))
+        if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_1E31"))return 0;
 
-    if(StrStrIA(hwidmatch->getdrp_infpath(),"intel_4th\\"))
-        if(!isvalid_usb30hub(hwidmatch,state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C31")&&
-           !isvalid_usb30hub(hwidmatch,state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9C31")&&
-           !isvalid_usb30hub(hwidmatch,state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_0F35")&&
+    if(StrStrIA(getdrp_infpath(),"intel_4th\\"))
+        if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C31")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9C31")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_0F35")&&
 //           !isvalid_usb30hub(hwidmatch,state,L"pnp0a08")&&
-           !isvalid_usb30hub(hwidmatch,state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8CB1"))return 0;
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8CB1"))return 0;
 
-    if(StrStrIA(hwidmatch->getdrp_infpath(),"matchver\\")||
-       StrStrIA(hwidmatch->getdrp_infpath(),"L\\Realtek\\")||
-       StrStrIA(hwidmatch->getdrp_infpath(),"L\\R\\"))
-        if(!isvalid_ver(hwidmatch,state))return 0;
+    if(StrStrIA(getdrp_infpath(),"matchver\\")||
+       StrStrIA(getdrp_infpath(),"L\\Realtek\\")||
+       StrStrIA(getdrp_infpath(),"L\\R\\"))
+        if(!isvalid_ver(state))return 0;
 
-    if(isblacklisted(hwidmatch,state,L"VEN_168C&DEV_002B&SUBSYS_30A117AA","Realtek"))return 0;
+    if(isblacklisted(state,L"VEN_168C&DEV_002B&SUBSYS_30A117AA","Realtek"))return 0;
 
-    if(StrStrIA(hwidmatch->getdrp_infpath(),"matchmarker\\"))
-        if((calc_markerscore(state,hwidmatch->getdrp_infpath())&7)!=7)return 0;
+    if(StrStrIA(getdrp_infpath(),"matchmarker\\"))
+        if((calc_markerscore(state,getdrp_infpath())&7)!=7)return 0;
 
     //log_file("Sc:%d\n\n",curscore);
     if(flags&FLAG_FILTERSP)return 2;
-    return isvalidcat(hwidmatch,state)?2:1;
+    return isvalidcat(this,state)?2:1;
 }
 
 int isMissing(Device *device,Driver *driver,State *state)
@@ -432,26 +430,26 @@ int isMissing(Device *device,Driver *driver,State *state)
     return 0;
 }
 
-int calc_status(hwidmatch_t *hwidmatch,State *state)
+int Hwidmatch::calc_status(State *state)
 {
     int r=0,res;
-    int score;
-    Driver *cur_driver=hwidmatch->devicematch->driver;
+    int scorev;
+    Driver *cur_driver=devicematch->driver;
 
-    if(isMissing(hwidmatch->devicematch->device,cur_driver,state))return STATUS_MISSING;
+    if(isMissing(devicematch->device,cur_driver,state))return STATUS_MISSING;
 
-    if(hwidmatch->devicematch->driver)
+    if(devicematch->driver)
     {
-        if(hwidmatch->getdrp_drvversion())
+        if(getdrp_drvversion())
         {
-            res=cmpdate(&hwidmatch->devicematch->driver->version,hwidmatch->getdrp_drvversion());
+            res=cmpdate(&devicematch->driver->version,getdrp_drvversion());
             if(res<0)r+=STATUS_NEW;else
             if(res>0)r+=STATUS_OLD;else
                 r+=STATUS_CURRENT;
         }
 
-        score=calc_score_h(cur_driver,state);
-        res=cmpunsigned(score,hwidmatch->score);
+        scorev=calc_score_h(cur_driver,state);
+        res=cmpunsigned(scorev,score);
         if(res>0)r+=STATUS_BETTER;else
         if(res<0)r+=STATUS_WORSE;else
             r+=STATUS_SAME;
@@ -459,7 +457,7 @@ int calc_status(hwidmatch_t *hwidmatch,State *state)
     else
         r+=STATUS_BETTER;
 
-    if(!hwidmatch->altsectscore)r+=STATUS_INVALID;
+    if(!altsectscore)r+=STATUS_INVALID;
     return r;
 }
 //}
@@ -548,7 +546,7 @@ void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driv
 //}
 
 //{ hwidmatch
-void hwidmatch_t::hwidmatch_init(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State *state,devicematch_t *devicematch1)
+void Hwidmatch::init(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State *state,devicematch_t *devicematch1)
 {
     char buf[BUFLEN];
 
@@ -561,13 +559,13 @@ void hwidmatch_t::hwidmatch_init(Driverpack *drp1,int HWID_index1,int dev_pos,in
     identifierscore=calc_identifierscore(dev_pos,ishw,drp->HWID_list[HWID_index].inf_pos);
     decorscore=calc_decorscore(calc_secttype(buf),state);
     markerscore=calc_markerscore(state,getdrp_infpath());
-    altsectscore=calc_altsectscore(this,state,decorscore);
-    score=calc_score(calc_catalogfile(this),getdrp_drvfeature(),
+    altsectscore=calc_altsectscore(state,decorscore);
+    score=calc_score(calc_catalogfile(),getdrp_drvfeature(),
         identifierscore,state,strstr(getdrp_drvinstallPicked(),".nt")?1:0);
-    status=calc_status(this,state);
+    status=calc_status(state);
 }
 
-void hwidmatch_t::hwidmatch_initbriefly(Driverpack *drp1,int HWID_index1)
+void Hwidmatch::initbriefly(Driverpack *drp1,int HWID_index1)
 {
     drp=drp1;
     HWID_index=HWID_index1;
@@ -588,7 +586,7 @@ void minlen(CHAR *s,int *len)
     if(*len<l)*len=l;
 }
 
-void hwidmatch_t::hwidmatch_calclen(int *limits)
+void Hwidmatch::calclen(int *limits)
 {
     char buf[BUFLEN];
     version_t *v;
@@ -607,7 +605,7 @@ void hwidmatch_t::hwidmatch_calclen(int *limits)
     minlen(getdrp_drvdesc(),&limits[6]);
 }
 
-void hwidmatch_t::hwidmatch_print_tbl(int *limits)
+void Hwidmatch::print_tbl(int *limits)
 {
     CHAR buf[BUFLEN];
     version_t *v;
@@ -635,7 +633,7 @@ void hwidmatch_t::hwidmatch_print_tbl(int *limits)
     log_file("\n");
 }
 
-void hwidmatch_t::hwidmatch_print_hr()
+void Hwidmatch::print_hr()
 {
     CHAR buf[BUFLEN];
     version_t *v;
@@ -659,7 +657,7 @@ void hwidmatch_t::hwidmatch_print_hr()
     log_file("\n");
 }
 
-int hwidmatch_t::hwidmatch_cmp(hwidmatch_t *match2)
+int Hwidmatch::cmp(Hwidmatch *match2)
 {
     int res;
 
@@ -686,25 +684,25 @@ int hwidmatch_t::hwidmatch_cmp(hwidmatch_t *match2)
 //}
 
 //{ Matcher
-void matcher_t::matcher_init(State *state1,Collection *col1)
+void Matcher::init(State *state1,Collection *col1)
 {
     state=state1;
     col=col1;
 
     heap_init(&devicematch_handle,ID_MATCHER,(void **)&devicematch_list,0,sizeof(devicematch_t));
-    heap_init(&hwidmatch_handle,ID_MATCHER,(void **)&hwidmatch_list,0,sizeof(hwidmatch_t));
+    heap_init(&hwidmatch_handle,ID_MATCHER,(void **)&hwidmatch_list,0,sizeof(Hwidmatch));
 }
 
-void matcher_t::matcher_free()
+void Matcher::release()
 {
     heap_free(&devicematch_handle);
     heap_free(&hwidmatch_handle);
 }
 
-void matcher_t::matcher_findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int ishw)
+void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int ishw)
 {
     Driverpack *drp;
-    hwidmatch_t *hwidmatch;
+    Hwidmatch *hwidmatch;
     int i;
     int code;
     int sz;
@@ -720,15 +718,15 @@ void matcher_t::matcher_findHWIDs(devicematch_t *devicematch,char *hwid,int dev_
         int val=hash_find(&drp->indexes,(char *)&code,4,&isfound);
         while(isfound)
         {
-            hwidmatch=(hwidmatch_t *)heap_allocitem_ptr(&hwidmatch_handle);
-            hwidmatch->hwidmatch_init(drp,val,dev_pos,ishw,state,devicematch);
+            hwidmatch=(Hwidmatch *)heap_allocitem_ptr(&hwidmatch_handle);
+            hwidmatch->init(drp,val,dev_pos,ishw,state,devicematch);
             devicematch->num_matches++;
             val=hash_findnext_b(&drp->indexes,&isfound);
         }
     }
 }
 
-void matcher_t::matcher_populate()
+void Matcher::populate()
 {
     devicematch_t *devicematch;
     Driver *cur_driver;
@@ -758,7 +756,7 @@ void matcher_t::matcher_populate()
             while(*p)
             {
                 sprintf(buf,"%ws",p);
-                matcher_findHWIDs(devicematch,buf,dev_pos,1);
+                findHWIDs(devicematch,buf,dev_pos,1);
                 p+=lstrlen(p)+1;
                 dev_pos++;
             }
@@ -771,7 +769,7 @@ void matcher_t::matcher_populate()
             while(*p)
             {
                 sprintf(buf,"%ws",p);
-                matcher_findHWIDs(devicematch,buf,dev_pos,0);
+                findHWIDs(devicematch,buf,dev_pos,0);
                 p+=lstrlen(p)+1;
                 dev_pos++;
             }
@@ -805,11 +803,11 @@ void matcher_t::matcher_populate()
     }
 }
 
-void matcher_t::matcher_sort()
+void Matcher::sort()
 {
     devicematch_t *devicematch;
-    hwidmatch_t *match1,*match2,*bestmatch;
-    hwidmatch_t matchtmp;
+    Hwidmatch *match1,*match2,*bestmatch;
+    Hwidmatch matchtmp;
     char sect1[BUFLEN],sect2[BUFLEN];
     int k,i,j;
 
@@ -823,13 +821,13 @@ void matcher_t::matcher_sort()
             match2=&hwidmatch_list[devicematch->start_matches+i+1];
             bestmatch=match1;
             for(j=i+1;j<devicematch->num_matches;j++,match2++)
-                if(bestmatch->hwidmatch_cmp(match2)<0)bestmatch=match2;
+                if(bestmatch->cmp(match2)<0)bestmatch=match2;
 
             if(bestmatch!=match1)
             {
-                memcpy(&matchtmp,match1,sizeof(hwidmatch_t));
-                memcpy(match1,bestmatch,sizeof(hwidmatch_t));
-                memcpy(bestmatch,&matchtmp,sizeof(hwidmatch_t));
+                memcpy(&matchtmp,match1,sizeof(Hwidmatch));
+                memcpy(match1,bestmatch,sizeof(Hwidmatch));
+                memcpy(bestmatch,&matchtmp,sizeof(Hwidmatch));
             }
 
         }
@@ -855,11 +853,11 @@ void matcher_t::matcher_sort()
     time_matcher=GetTickCount()-time_matcher;
 }
 
-void matcher_t::matcher_print()
+void Matcher::print()
 {
     devicematch_t *devicematch;
     Device *cur_device;
-    hwidmatch_t *hwidmatch;
+    Hwidmatch *hwidmatch;
     int limits[7];
     int i,j;
 
@@ -879,11 +877,11 @@ void matcher_t::matcher_print()
         memset(limits,0,sizeof(limits));
         hwidmatch=&hwidmatch_list[devicematch->start_matches];
         for(j=0;j<devicematch_list[i].num_matches;j++,hwidmatch++)
-            hwidmatch->hwidmatch_calclen(limits);
+            hwidmatch->calclen(limits);
 
         hwidmatch=&hwidmatch_list[devicematch->start_matches];
         for(j=0;j<devicematch_list[i].num_matches;j++,hwidmatch++)
-            hwidmatch->hwidmatch_print_tbl(limits);
+            hwidmatch->print_tbl(limits);
         log_file("\n");
     }
     log_file("}matcher_print\n\n");
@@ -892,35 +890,35 @@ void matcher_t::matcher_print()
 
 //{ Getters
 //driverpack
-WCHAR *hwidmatch_t::getdrp_packpath()
+WCHAR *Hwidmatch::getdrp_packpath()
 {
     return (WCHAR*)(drp->text+drp->drppath);
 }
-WCHAR *hwidmatch_t::getdrp_packname()
+WCHAR *Hwidmatch::getdrp_packname()
 {
     return (WCHAR*)(drp->text+drp->drpfilename);
 }
-int hwidmatch_t::getdrp_packontorrent()
+int Hwidmatch::getdrp_packontorrent()
 {
     return drp->type==DRIVERPACK_TYPE_UPDATE;
 }
 
 //inffile
-char *hwidmatch_t::getdrp_infpath()
+char *Hwidmatch::getdrp_infpath()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->text+drp->inffile[inffile_index].infpath;
 }
-char *hwidmatch_t::getdrp_infname()
+char *Hwidmatch::getdrp_infname()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->text+drp->inffile[inffile_index].inffilename;
 }
-const char *hwidmatch_t::getdrp_drvfield(int n)
+const char *Hwidmatch::getdrp_drvfield(int n)
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
@@ -928,7 +926,7 @@ const char *hwidmatch_t::getdrp_drvfield(int n)
     if(!drp->inffile[inffile_index].fields[n])return "";
     return drp->text+drp->inffile[inffile_index].fields[n];
 }
-const char *hwidmatch_t::getdrp_drvcat(int n)
+const char *Hwidmatch::getdrp_drvcat(int n)
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
@@ -936,21 +934,21 @@ const char *hwidmatch_t::getdrp_drvcat(int n)
     if(!drp->inffile[inffile_index].cats[n])return "";
     return drp->text+drp->inffile[inffile_index].cats[n];
 }
-version_t *hwidmatch_t::getdrp_drvversion()
+version_t *Hwidmatch::getdrp_drvversion()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return &drp->inffile[inffile_index].version;
 }
-int hwidmatch_t::getdrp_infsize()
+int Hwidmatch::getdrp_infsize()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->inffile[inffile_index].infsize;
 }
-int hwidmatch_t::getdrp_infcrc()
+int Hwidmatch::getdrp_infcrc()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
@@ -959,7 +957,7 @@ int hwidmatch_t::getdrp_infcrc()
 }
 
 //manufacturer
-char *hwidmatch_t::getdrp_drvmanufacturer()
+char *Hwidmatch::getdrp_drvmanufacturer()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
@@ -976,7 +974,7 @@ void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index)
     else
         sprintf(buf,"%s",drp->text+((int *)rr)[pos]);
 }
-void hwidmatch_t::getdrp_drvsection(char *buf)
+void Hwidmatch::getdrp_drvsection(char *buf)
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
@@ -984,22 +982,22 @@ void hwidmatch_t::getdrp_drvsection(char *buf)
 }
 
 //desc
-char *hwidmatch_t::getdrp_drvdesc()
+char *Hwidmatch::getdrp_drvdesc()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->text+drp->desc_list[desc_index].desc;
 }
-char *hwidmatch_t::getdrp_drvinstall()
+char *Hwidmatch::getdrp_drvinstall()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->text+drp->desc_list[desc_index].install;
 }
-char *hwidmatch_t::getdrp_drvinstallPicked()
+char *Hwidmatch::getdrp_drvinstallPicked()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->text+drp->desc_list[desc_index].install_picked;
 }
-int hwidmatch_t::getdrp_drvfeature()
+int Hwidmatch::getdrp_drvfeature()
 {
     char *p;
     p=StrStrIA(getdrp_infpath(),"feature_");
@@ -1010,11 +1008,11 @@ int hwidmatch_t::getdrp_drvfeature()
 }
 
 //HWID
-short hwidmatch_t::getdrp_drvinfpos()
+short Hwidmatch::getdrp_drvinfpos()
 {
     return drp->HWID_list[HWID_index].inf_pos;
 }
-char *hwidmatch_t::getdrp_drvHWID()
+char *Hwidmatch::getdrp_drvHWID()
 {
     return drp->text+drp->HWID_list[HWID_index].HWID;
 }

@@ -30,7 +30,7 @@ const status_t statustnl[NUM_STATUS]=
 //}
 
 //{ Manager
-void manager_init(manager_t *manager,matcher_t *matcher)
+void manager_init(manager_t *manager,Matcher *matcher)
 {
     itembar_t *itembar;
     int i;
@@ -50,10 +50,10 @@ void manager_free(manager_t *manager)
     heap_free(&manager->items_handle);
 }
 
-void manager_sorta(matcher_t *m,int *v)
+void manager_sorta(Matcher *m,int *v)
 {
     devicematch_t *devicematch_i,*devicematch_j;
-    hwidmatch_t *hwidmatch_i,*hwidmatch_j;
+    Hwidmatch *hwidmatch_i,*hwidmatch_j;
     int i,j,num;
 
     num=m->devicematch_handle.items;
@@ -115,9 +115,9 @@ int  manager_drplive(WCHAR *s)
 
 void manager_populate(manager_t *manager)
 {
-    matcher_t *matcher=manager->matcher;
+    Matcher *matcher=manager->matcher;
     devicematch_t *devicematch;
-    hwidmatch_t *hwidmatch;
+    Hwidmatch *hwidmatch;
     int i,j,id=RES_SLOTS;
     int remap[1024];
 
@@ -304,7 +304,7 @@ void manager_print_tbl(manager_t *manager)
     itembar=&manager->items_list[RES_SLOTS];
     for(k=RES_SLOTS;k<manager->items_handle.items;k++,itembar++)
         if(itembar->isactive&&itembar->hwidmatch)
-            itembar->hwidmatch->hwidmatch_calclen(limits);
+            itembar->hwidmatch->calclen(limits);
 
     itembar=&manager->items_list[RES_SLOTS];
     for(k=RES_SLOTS;k<manager->items_handle.items;k++,itembar++)
@@ -312,7 +312,7 @@ void manager_print_tbl(manager_t *manager)
         {
             log_file("$%04d|",k);
             if(itembar->hwidmatch)
-                itembar->hwidmatch->hwidmatch_print_tbl(limits);
+                itembar->hwidmatch->print_tbl(limits);
             else
                 log_file("'%ws'\n",manager->matcher->state->text+itembar->devicematch->device->Devicedesc);
             act++;
@@ -354,7 +354,7 @@ void manager_print_hr(manager_t *manager)
             if(itembar->hwidmatch)
             {
                 log_file("Available driver\n");
-                itembar->hwidmatch->hwidmatch_print_hr();
+                itembar->hwidmatch->print_hr();
             }
 
             act++;
@@ -613,7 +613,7 @@ void manager_selectall(manager_t *manager)
 //}
 
 //{ Helpers
-void itembar_init(itembar_t *item,devicematch_t *devicematch,hwidmatch_t *hwidmatch,int groupindex,int rm,int first)
+void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *hwidmatch,int groupindex,int rm,int first)
 {
     memset(item,0,sizeof(itembar_t));
     item->devicematch=devicematch;
@@ -647,7 +647,7 @@ void itembar_setpos(itembar_t *itembar,int *pos,int *cnt)
     if(itembar->accel==0)itembar->accel=(itembar->tagpos<itembar->curpos)?500:-500;
 }
 
-int isdrivervalid(hwidmatch_t *hwidmatch)
+int isdrivervalid(Hwidmatch *hwidmatch)
 {
     if(hwidmatch->altsectscore>0&&hwidmatch->decorscore>0)return 1;
     return 0;
@@ -1423,7 +1423,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
                 int limits[7];
                 memset(limits,0,sizeof(limits));
                 log_con("%d|\n",itembar_new->hwidmatch->HWID_index);
-                itembar_new->hwidmatch->hwidmatch_print_tbl(limits);
+                itembar_new->hwidmatch->print_tbl(limits);
             }
             else
                 itembar_new->devicematch->device->print(manager_new->matcher->state);
@@ -1443,7 +1443,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
                 int limits[7];
                 memset(limits,0,sizeof(limits));
                 log_con("%d|\n",itembar_old->hwidmatch->HWID_index);
-                itembar_old->hwidmatch->hwidmatch_print_tbl(limits);
+                itembar_old->hwidmatch->print_tbl(limits);
             }
             else
                 itembar_old->devicematch->device->print(manager_old->matcher->state);
@@ -1521,7 +1521,7 @@ void popup_resize(int x,int y)
     }
 }
 
-void popup_driverline(hwidmatch_t *hwidmatch,int *limits,HDC hdcMem,int y,int mode,int index)
+void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode,int index)
 {
     version_t *v;
     char buf[BUFLEN];
@@ -1655,7 +1655,7 @@ void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i)
     popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
 }
 
-int pickcat(hwidmatch_t *hwidmatch,State *state)
+int pickcat(Hwidmatch *hwidmatch,State *state)
 {
     if(state->architecture==1&&*hwidmatch->getdrp_drvcat(CatalogFile_ntamd64))
     {
@@ -1675,7 +1675,7 @@ int pickcat(hwidmatch_t *hwidmatch,State *state)
     return 0;
 }
 
-int isvalidcat(hwidmatch_t *hwidmatch,State *state)
+int isvalidcat(Hwidmatch *hwidmatch,State *state)
 {
     CHAR bufa[BUFLEN];
     int n=pickcat(hwidmatch,state);
@@ -1698,7 +1698,7 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
     int bolder=rect.right/2;
     WCHAR *p;
     devicematch_t *devicematch_f=0;
-    hwidmatch_t *hwidmatch_f=0;
+    Hwidmatch *hwidmatch_f=0;
     Driver *cur_driver=0;
     textdata_t td;
     version_t *a_v=0;
@@ -1753,7 +1753,7 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
 
         td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
         TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
-        TextOutF(&td,calc_notebook(hwidmatch_f)?c0:D(POPUP_CMP_INVALID_COLOR)
+        TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
     }
 

@@ -155,18 +155,18 @@ public:
     heap_t text_handle;
 
 public:
-    void driverpack_init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
-    void driverpack_free();
-    void driverpack_saveindex();
-    int  driverpack_checkindex();
-    int  driverpack_loadindex();
-    void driverpack_getindexfilename(const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
-    void driverpack_print();
-    void driverpack_genhashes();
-    void driverpack_parsecat(WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
-    int  driverpack_genindex();
-    void driverpack_indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
-    void driverpack_indexinf(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
+    void init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
+    void release();
+    void saveindex();
+    int  checkindex();
+    int  loadindex();
+    void getindexfilename(const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
+    void print();
+    void genhashes();
+    void parsecat(WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+    int  genindex();
+    void indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
+    void indexinf(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
 };
 
 class data_inffile_t // 80
@@ -235,16 +235,16 @@ public:
     const WCHAR *getIndex_linear_dir(){return index_linear_dir;}
     int getFlags(){return flags;}
 
-    void collection_init(WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
-    void collection_free();
-    void collection_save();
-    void collection_updatedindexes();
-    void collection_load();
-    void collection_print();
-    WCHAR *collection_finddrp(WCHAR *s);
-    void collection_printstates();
-    void collection_scanfolder(const WCHAR *path);
-    int  collection_scanfolder_count(const WCHAR *path);
+    void init(WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
+    void release();
+    void save();
+    void updatedindexes();
+    void load();
+    void print();
+    WCHAR *finddrp(WCHAR *s);
+    void printstates();
+    void scanfolder(const WCHAR *path);
+    int  scanfolder_count(const WCHAR *path);
 };
 
 class Parser_str

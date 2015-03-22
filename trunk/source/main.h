@@ -39,7 +39,9 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <process.h>
 #include <direct.h>
 #include <locale.h>
+
 #include <vector>
+#include <exception>
 
 #include "svnrev.h"
 #include "resources.h"
@@ -189,7 +191,7 @@ typedef struct _bundle_t
 {
     State state;
     Collection collection;
-    matcher_t matcher;
+    Matcher matcher;
 }bundle_t;
 //}
 

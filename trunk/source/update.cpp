@@ -98,7 +98,7 @@ int getcurver(const char *ptr)
             while(*s)
             {
                 if(*s==L'_'&&s[1]>=L'0'&&s[1]<=L'9')
-                    return _wtoi(s+1);
+                    return _wtoi_my(s+1);
 
                 s++;
             }
@@ -665,6 +665,12 @@ void update_resume()
     torrenttime=GetTickCount();
 }
 
+int _wtoi_my(const WCHAR *str)
+{
+    int val;
+    swscanf(str,L"%d",&val);
+    return val;
+}
 void upddlg_calctotalsize(HWND hList)
 {
     WCHAR buf[BUFLEN];
@@ -675,7 +681,7 @@ void upddlg_calctotalsize(HWND hList)
     if(ListView_GetCheckState(hList,i))
     {
         ListView_GetItemText(hList,i,1,buf,32);
-        totalsize+=_wtoi(buf);
+        totalsize+=_wtoi_my(buf);
     }
 }
 

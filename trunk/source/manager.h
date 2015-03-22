@@ -124,7 +124,7 @@ typedef struct _status_t
 typedef struct _itembar_t
 {
     devicematch_t *devicematch;
-    hwidmatch_t *hwidmatch;
+    Hwidmatch *hwidmatch;
 
     WCHAR txt1[1024];
     int install_status;
@@ -143,7 +143,7 @@ typedef struct _itembar_t
 
 typedef struct _manager_t
 {
-    matcher_t *matcher;
+    Matcher *matcher;
 
     itembar_t *items_list;
     heap_t items_handle;
@@ -169,13 +169,13 @@ extern WCHAR extractdir[BUFLEN];
 //}
 
 // Manager
-void manager_init(manager_t *manager,matcher_t *matcher);
+void manager_init(manager_t *manager,Matcher *matcher);
 void manager_free(manager_t *manager);
 void manager_populate(manager_t *manager);
 void manager_filter(manager_t *manager,int options);
 void manager_print_tbl(manager_t *manager);
 void manager_print_hr(manager_t *manager);
-void manager_sorta(matcher_t *m,int *v);
+void manager_sorta(Matcher *m,int *v);
 int  manager_drplive(WCHAR *s);
 
 // User interaction
@@ -190,11 +190,11 @@ void manager_selectall(manager_t *manager);
 
 // Helpers
 int groupsize(manager_t *manager,int index);
-void itembar_init(itembar_t *item,devicematch_t *devicematch,hwidmatch_t *match,int groupindex,int rm,int first);
+void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
 void itembar_settext(manager_t *manager,int i,const WCHAR *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
 int  itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb);
-int  isdrivervalid(hwidmatch_t *hwidmatch);
+int  isdrivervalid(Hwidmatch *hwidmatch);
 void str_status(WCHAR *buf,itembar_t *itembar);
 int  box_status(int index);
 void str_date(version_t *v,WCHAR *buf);
@@ -220,10 +220,10 @@ void TextOutSF(textdata_t *td,const WCHAR *str,const WCHAR *format,...);
 void format_size(WCHAR *buf,long long val,int isspeed);
 void format_time(WCHAR *buf,long long val);
 void popup_resize(int x,int y);
-void popup_driverline(hwidmatch_t *hwidmatch,int *limits,HDC hdcMem,int ln,int mode,int index);
+void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int ln,int mode,int index);
 void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i);
-int  pickcat(hwidmatch_t *hwidmatch,State *state);
-int  isvalidcat(hwidmatch_t *hwidmatch,State *state);
+int  pickcat(Hwidmatch *hwidmatch,State *state);
+int  isvalidcat(Hwidmatch *hwidmatch,State *state);
 void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int i);
 void popup_about(HDC hdcMem);
 void popup_sysinfo(manager_t *manager,HDC hdcMem);
