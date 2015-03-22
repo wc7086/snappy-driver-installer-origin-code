@@ -285,7 +285,7 @@ unsigned int __stdcall thread_install(void *arg)
 #ifdef USE_TORRENT
     itembar=&manager_g->items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<manager_g->items_handle.items&&installmode==MODE_INSTALLING;i++,itembar++)
-        if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&getdrp_packontorrent(itembar->hwidmatch))
+        if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
     {
         if(!istorrentready())
         {
@@ -302,7 +302,7 @@ unsigned int __stdcall thread_install(void *arg)
             }
             if(!istorrentready())break;
         }
-        upddlg_setpriorities_driverpack(getdrp_packname(itembar->hwidmatch),1);
+        upddlg_setpriorities_driverpack(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)
@@ -380,8 +380,8 @@ goaround:
         ar_proceed=0;
         hwidmatch_t *hwidmatch=itembar->hwidmatch;
         log_con("Installing $%04d\n",i);
-        hwidmatch_print_hr(hwidmatch);
-        wsprintf(cmd,L"%s\\%S",extractdir,getdrp_infpath(hwidmatch));
+        hwidmatch->hwidmatch_print_hr();
+        wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
         SetTimer(hMain,1,1000/60,0);
         manager_g->animstart=GetTickCount();
@@ -390,9 +390,9 @@ goaround:
         // Extract
         extracttime=GetTickCount();
         wsprintf(inf,L"%s\\%S%S",
-                unpacked?getdrp_packpath(hwidmatch):extractdir,
-                getdrp_infpath(hwidmatch),
-                getdrp_infname(hwidmatch));
+                unpacked?hwidmatch->getdrp_packpath():extractdir,
+                hwidmatch->getdrp_infpath(),
+                hwidmatch->getdrp_infname());
         if(PathFileExists(inf))
         {
             log_con("Already unpacked(%ws)\n",inf);
@@ -401,9 +401,9 @@ goaround:
             redrawfield();
         }
         else
-        if(wcsstr(getdrp_packname(hwidmatch),L"unpacked.7z"))
+        if(wcsstr(hwidmatch->getdrp_packname(),L"unpacked.7z"))
         {
-            log_con("Unpacked '%ws'\n",getdrp_packpath(hwidmatch));
+            log_con("Unpacked '%ws'\n",hwidmatch->getdrp_packpath());
             unpacked=1;
             _7z_total(100);
             _7z_setcomplited(100);
@@ -411,17 +411,17 @@ goaround:
         }
         else
         {
-            wsprintf(cmd,L"app x -y \"%s\\%s\" -o\"%s\"",getdrp_packpath(hwidmatch),getdrp_packname(hwidmatch),
+            wsprintf(cmd,L"app x -y \"%s\\%s\" -o\"%s\"",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname(),
                     extractdir,
-                    getdrp_infpath(hwidmatch));
+                    hwidmatch->getdrp_infpath());
 
             itembar1=itembar;
             for(j=i;j<manager_g->items_handle.items;j++,itembar1++)
                 if(itembar1->checked&&
-                   !wcscmp(getdrp_packpath(hwidmatch),getdrp_packpath(itembar1->hwidmatch))&&
-                   !wcscmp(getdrp_packname(hwidmatch),getdrp_packname(itembar1->hwidmatch)))
+                   !wcscmp(hwidmatch->getdrp_packpath(),itembar1->hwidmatch->getdrp_packpath())&&
+                   !wcscmp(hwidmatch->getdrp_packname(),itembar1->hwidmatch->getdrp_packname()))
             {
-                wsprintf(buf,L" \"%S\"",getdrp_infpath(itembar1->hwidmatch));
+                wsprintf(buf,L" \"%S\"",itembar1->hwidmatch->getdrp_infpath());
                 if(!wcsstr(cmd,buf))wcscat(cmd,buf);
             }
             log_con("Extracting via '%ws'\n",cmd);
@@ -438,7 +438,7 @@ goaround:
                 if(r==2)
                 {
                     log_con("Error, checking for driverpack availability...");
-                    if(PathFileExists(getdrp_packpath(hwidmatch)))break;
+                    if(PathFileExists(hwidmatch->getdrp_packpath()))break;
                     log_con("Waiting for driverpacks to become available.");
                     do
                     {
@@ -446,10 +446,10 @@ goaround:
                         Sleep(1000);
                         tries++;
                         if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                    }while(!PathFileExists(getdrp_packpath(hwidmatch))&&!getdrp_packontorrent(hwidmatch));
+                    }while(!PathFileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
                     log_con("OK\n");
                 }
-            }while(r&&!getdrp_packontorrent(hwidmatch));
+            }while(r&&!hwidmatch->getdrp_packontorrent());
             if(installmode==MODE_STOPPING)
             {
                 manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
@@ -477,10 +477,10 @@ goaround:
         {
             int needrb=0,ret=1;
             wsprintf(inf,L"%s\\%S%S",
-                   unpacked?getdrp_packpath(hwidmatch):extractdir,
-                   getdrp_infpath(hwidmatch),
-                   getdrp_infname(hwidmatch));
-            wsprintf(hwid,L"%S",getdrp_drvHWID(hwidmatch));
+                   unpacked?hwidmatch->getdrp_packpath():extractdir,
+                   hwidmatch->getdrp_infpath(),
+                   hwidmatch->getdrp_infname());
+            wsprintf(hwid,L"%S",hwidmatch->getdrp_drvHWID());
             log_con("Install32 '%ws','%ws'\n",hwid,inf);
             itembar->install_status=STR_INST_INSTALL;
             redrawfield();

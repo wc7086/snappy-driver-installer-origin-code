@@ -1023,18 +1023,18 @@ void Driverpack::driverpack_print()
                         if(i>=0)cnts[i]++;
                         if(pos==0&&i<0)plain++;
 
-                        if(getdrp_drvinfpos(&hwidmatch))
-                            sprintf(buf,"%-2d",getdrp_drvinfpos(&hwidmatch));
+                        if(hwidmatch.getdrp_drvinfpos())
+                            sprintf(buf,"%-2d",hwidmatch.getdrp_drvinfpos());
                         else
                             sprintf(buf,"  ");
 
                         fprintf(f,"       %s %-50s%-20s\t%s\n",buf,
-                            getdrp_drvHWID(&hwidmatch),
-                            getdrp_drvinstall(&hwidmatch),
-                            getdrp_drvdesc(&hwidmatch));
+                            hwidmatch.getdrp_drvHWID(),
+                            hwidmatch.getdrp_drvinstall(),
+                            hwidmatch.getdrp_drvdesc());
                         fprintf(f,"          feature:%-42hX%-20s\n\n",
-                            getdrp_drvfeature(&hwidmatch)&0xFF,
-                            getdrp_drvinstallPicked(&hwidmatch));
+                            hwidmatch.getdrp_drvfeature()&0xFF,
+                            hwidmatch.getdrp_drvinstallPicked());
                     }
                     else if(HWID_index!=HWID_index_last)break;
                 }

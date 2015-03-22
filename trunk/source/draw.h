@@ -29,6 +29,23 @@ typedef struct _panelitem_t
 
 class Image
 {
+public:
+    enum align
+    {
+        RIGHT   = 1,
+        BOTTOM  = 2,
+        HCENTER = 4,
+        VCENTER = 8,
+    };
+    enum fillmode
+    {
+        HTILE   =  1,
+        VTILE   =  2,
+        HSTR    =  4,
+        VSTR    =  8,
+        ASPECT  = 16,
+    };
+
 private:
     HBITMAP bitmap;
     HGDIOBJ oldbitmap;
@@ -41,6 +58,7 @@ private:
     void createBitmap(BYTE *data,int sz);
 
 public:
+
     Image():bitmap(0),oldbitmap(0),ldc(0),sx(0),sy(0),hasalpha(0),iscopy(0){}
     void release();
     void makecopy(Image &t);

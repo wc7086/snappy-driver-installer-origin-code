@@ -82,119 +82,60 @@ extern "C"
 #define STATEMODE_EXIT      3
 
 // Popup window
-#define FLOATING_NONE       0
-#define FLOATING_TOOLTIP    1
-#define FLOATING_SYSINFO    2
-#define FLOATING_CMPDRIVER  3
-#define FLOATING_DRIVERLST  4
-#define FLOATING_ABOUT      5
-#define FLOATING_DOWNLOAD   6
+enum FLOATING_TYPE
+{
+    FLOATING_NONE       =0,
+    FLOATING_TOOLTIP    =1,
+    FLOATING_SYSINFO    =2,
+    FLOATING_CMPDRIVER  =3,
+    FLOATING_DRIVERLST  =4,
+    FLOATING_ABOUT      =5,
+    FLOATING_DOWNLOAD   =6,
+};
 
 // kb panels
-#define KB_NONE             0
-#define KB_FIELD            1
-#define KB_INSTALL          2
-#define KB_LANG             3
-#define KB_THEME            4
-#define KB_EXPERT           5
-#define KB_ACTIONS          6
-#define KB_PANEL1           7
-#define KB_PANEL2           8
-#define KB_PANEL3           9
-#define KB_PANEL_CHK       10
+enum KB_ID
+{
+    KB_NONE           =  0,
+    KB_FIELD          =  1,
+    KB_INSTALL        =  2,
+    KB_LANG           =  3,
+    KB_THEME          =  4,
+    KB_EXPERT         =  5,
+    KB_ACTIONS        =  6,
+    KB_PANEL1         =  7,
+    KB_PANEL2         =  8,
+    KB_PANEL3         =  9,
+    KB_PANEL_CHK      = 10,
+};
 
 // Left panel types
-#define TYPE_GROUP          1
-#define TYPE_TEXT           2
-#define TYPE_CHECKBOX       3
-#define TYPE_BUTTON         4
-#define TYPE_GROUP_BREAK    5
-
-// Align
-#define ALIGN_RIGHT   1
-#define ALIGN_BOTTOM  2
-#define ALIGN_HCENTER 4
-#define ALIGN_VCENTER 8
-
-// fill mode
-#define HTILE         1
-#define VTILE         2
-#define HSTR          4
-#define VSTR          8
-#define ASPECT       16
+enum panel_type
+{
+    TYPE_GROUP         = 1,
+    TYPE_TEXT          = 2,
+    TYPE_CHECKBOX      = 3,
+    TYPE_BUTTON        = 4,
+    TYPE_GROUP_BREAK   = 5,
+};
 
 // Messages
-#define WM_BUNDLEREADY      WM_APP+1
-#define WM_UPDATELANG       WM_APP+2
-#define WM_UPDATETHEME      WM_APP+3
+enum MessagesWND
+{
+    WM_BUNDLEREADY     = WM_APP+1,
+    WM_UPDATELANG      = WM_APP+2,
+    WM_UPDATETHEME     = WM_APP+3,
+};
 
 // Left panel IDs
-#define ID_SHOW_MISSING     1
-#define ID_SHOW_NEWER       2
-#define ID_SHOW_CURRENT     3
-#define ID_SHOW_OLD         4
-#define ID_SHOW_BETTER      5
-#define ID_SHOW_WORSE_RANK  6
+enum install_mode
+{
+    MODE_NONE          = 0,
+    MODE_INSTALLING    = 1,
+    MODE_STOPPING      = 2,
+    MODE_SCANNING      = 3,
+};
 
-#define ID_SHOW_NF_MISSING  7
-#define ID_SHOW_NF_UNKNOWN  8
-#define ID_SHOW_NF_STANDARD 9
-
-#define ID_SHOW_ONE        10
-#define ID_SHOW_DUP        11
-#define ID_SHOW_INVALID    12
-
-#define ID_INSTALL         13
-#define ID_SELECT_ALL      14
-#define ID_SELECT_NONE     15
-#define ID_EXPERT_MODE     16
-
-#define ID_LANG            17
-#define ID_THEME           18
-
-#define ID_OPENLOGS        19
-#define ID_SNAPSHOT        20
-#define ID_EXTRACT         21
-#define ID_DRVDIR          22
-
-#define ID_SCHEDULE        23
-#define ID_SHOWALT         24
-#define ID_OPENINF         25
-#define ID_LOCATEINF       26
-
-#define ID_EMU_32          27
-#define ID_EMU_64          28
-#define ID_DEVICEMNG       29
-#define ID_DIS_INSTALL     30
-#define ID_DIS_RESTPNT     31
-
-#define ID_WIN_2000        32
-#define ID_WIN_XP          33
-#define ID_WIN_VISTA       34
-#define ID_WIN_7           35
-#define ID_WIN_8           36
-#define ID_WIN_81          37
-#define ID_WIN_10          38
-
-#define ID_RESTPNT         39
-#define ID_REBOOT          40
-
-#define ID_URL0            41
-#define ID_URL1            42
-#define ID_URL2            43
-#define ID_URL3            44
-#define ID_URL4            45
-
-#define ID_HWID_CLIP      100
-#define ID_HWID_WEB       200
-
-#define MODE_NONE           0
-#define MODE_INSTALLING     1
-#define MODE_STOPPING       2
-#define MODE_SCANNING       3
-
-#define UF_DRPS          0x01
-#define UF_DEVICES       0x02
 //}
 
 //{ Global variables

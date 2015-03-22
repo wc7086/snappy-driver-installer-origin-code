@@ -16,37 +16,39 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <vector>
 #define STR_LN 4096
-#define ofst int
+typedef int ofst;
 //#define MERGE_FINDER
 
-#define COLLECTION_FORCE_REINDEXING  0x00000001
-#define COLLECTION_USE_LZMA          0x00000002
-#define COLLECTION_PRINT_INDEX       0x00000004
-#define FLAG_NOGUI                   0x00000010
-#define FLAG_CHECKUPDATES            0x00000020
-#define FLAG_DISABLEINSTALL          0x00000040
-#define FLAG_AUTOINSTALL             0x00000080
-#define FLAG_FAILSAFE                0x00000100
-#define FLAG_AUTOCLOSE               0x00000200
-#define FLAG_NORESTOREPOINT          0x00000400
-#define FLAG_NOLOGFILE               0x00000800
-#define FLAG_NOSNAPSHOT              0x00001000
-#define FLAG_NOSTAMP                 0x00002000
-//#define FLAG_NOFEATURESCORE          0x00004000
-#define FLAG_PRESERVECFG             0x00008000
-
-#define FLAG_EXTRACTONLY             0x00010000
-#define FLAG_KEEPUNPACKINDEX         0x00020000
-#define FLAG_KEEPTEMPFILES           0x00040000
-#define FLAG_SHOWDRPNAMES1           0x00080000
-#define FLAG_DPINSTMODE              0x00100000
-#define FLAG_SHOWCONSOLE             0x00200000
-#define FLAG_DELEXTRAINFS            0x00400000
-#define FLAG_SHOWDRPNAMES2           0x00800000
-#define FLAG_ONLYUPDATES             0x01000000
-#define FLAG_AUTOUPDATE              0x02000000
-#define FLAG_FILTERSP                0x04000000
-#define FLAG_OLDSTYLE                0x08000000
+enum FLAG
+{
+    COLLECTION_FORCE_REINDEXING = 0x00000001,
+    COLLECTION_USE_LZMA         = 0x00000002,
+    COLLECTION_PRINT_INDEX      = 0x00000004,
+    FLAG_NOGUI                  = 0x00000010,
+    FLAG_CHECKUPDATES           = 0x00000020,
+    FLAG_DISABLEINSTALL         = 0x00000040,
+    FLAG_AUTOINSTALL            = 0x00000080,
+    FLAG_FAILSAFE               = 0x00000100,
+    FLAG_AUTOCLOSE              = 0x00000200,
+    FLAG_NORESTOREPOINT         = 0x00000400,
+    FLAG_NOLOGFILE              = 0x00000800,
+    FLAG_NOSNAPSHOT             = 0x00001000,
+    FLAG_NOSTAMP                = 0x00002000,
+    // FLAG_NOFEATURESCORE       =   0x00004000
+    FLAG_PRESERVECFG            = 0x00008000,
+    FLAG_EXTRACTONLY            = 0x00010000,
+    FLAG_KEEPUNPACKINDEX        = 0x00020000,
+    FLAG_KEEPTEMPFILES          = 0x00040000,
+    FLAG_SHOWDRPNAMES1          = 0x00080000,
+    FLAG_DPINSTMODE             = 0x00100000,
+    FLAG_SHOWCONSOLE            = 0x00200000,
+    FLAG_DELEXTRAINFS           = 0x00400000,
+    FLAG_SHOWDRPNAMES2          = 0x00800000,
+    FLAG_ONLYUPDATES            = 0x01000000,
+    FLAG_AUTOUPDATE             = 0x02000000,
+    FLAG_FILTERSP               = 0x04000000,
+    FLAG_OLDSTYLE               = 0x08000000,
+};
 
 class Collection;
 class Driverpack;
@@ -111,10 +113,13 @@ typedef struct _version_t
 }version_t;
 //}
 
-#define DRIVERPACK_TYPE_PENDING_SAVE    0
-#define DRIVERPACK_TYPE_INDEXED         1
-#define DRIVERPACK_TYPE_UPDATE          2
-#define DRIVERPACK_TYPE_EMPTY           3
+enum DRIVERPACK_TYPE
+{
+    DRIVERPACK_TYPE_PENDING_SAVE   = 0,
+    DRIVERPACK_TYPE_INDEXED        = 1,
+    DRIVERPACK_TYPE_UPDATE         = 2,
+    DRIVERPACK_TYPE_EMPTY          = 3,
+};
 
 //{ Indexing strucures
 class Txt

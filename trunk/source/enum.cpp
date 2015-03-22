@@ -764,12 +764,12 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
         {
             hwidmatch_t hwidmatch;
 
-            hwidmatch_initbriefly(&hwidmatch,unpacked_drp,HWID_index);
-            if(StrStrIA(sect,getdrp_drvinstall(&hwidmatch)))
+            hwidmatch.hwidmatch_initbriefly(unpacked_drp,HWID_index);
+            if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
             {
-                cur_driver->feature=getdrp_drvfeature(&hwidmatch);
+                cur_driver->feature=hwidmatch.getdrp_drvfeature();
                 cur_driver->catalogfile=calc_catalogfile(&hwidmatch);
-                if(inf_pos<0||inf_pos>getdrp_drvinfpos(&hwidmatch))inf_pos=getdrp_drvinfpos(&hwidmatch);
+                if(inf_pos<0||inf_pos>hwidmatch.getdrp_drvinfpos())inf_pos=hwidmatch.getdrp_drvinfpos();
             }
         }
         if(inf_pos==-1)
