@@ -39,7 +39,7 @@ WCHAR *menu3url[]=
     L"http://driveroff.net/sam",
     L"http://driverpacks.net",
 };*/
-
+#define _wcsicmp StrCmpIW
 // Manager
 manager_t manager_v[2];
 manager_t *manager_g=&manager_v[0];
@@ -182,11 +182,11 @@ void settings_parse(const WCHAR *str,int ind)
         if( wcsstr(pr,L"-lang:"))        wcscpy(curlang,pr+6);else
         if( wcsstr(pr,L"-theme:"))       wcscpy(curtheme,pr+7);else
         if(!wcscmp(pr,L"-expertmode"))   expertmode=1;else
-        if( wcsstr(pr,L"-hintdelay:"))   hintdelay=_wtoi(pr+11);else
-        if( wcsstr(pr,L"-port:"))        torrentport=_wtoi(pr+6);else
-        if( wcsstr(pr,L"-downlimit:"))   downlimit=_wtoi(pr+11);else
-        if( wcsstr(pr,L"-uplimit:"))     uplimit=_wtoi(pr+9);else
-        if( wcsstr(pr,L"-filters:"))     filters=_wtoi(pr+9);else
+        if( wcsstr(pr,L"-hintdelay:"))   hintdelay=_wtoi_my(pr+11);else
+        if( wcsstr(pr,L"-port:"))        torrentport=_wtoi_my(pr+6);else
+        if( wcsstr(pr,L"-downlimit:"))   downlimit=_wtoi_my(pr+11);else
+        if( wcsstr(pr,L"-uplimit:"))     uplimit=_wtoi_my(pr+9);else
+        if( wcsstr(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
         if(!wcscmp(pr,L"-license"))      license=1;else
         if(!wcscmp(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
         if(!wcscmp(pr,L"-showdrpnames1"))flags|=FLAG_SHOWDRPNAMES1;else
@@ -248,18 +248,18 @@ void settings_parse(const WCHAR *str,int ind)
         if(!wcscmp(pr,L"-disableinstall"))flags|=FLAG_DISABLEINSTALL;else
         if(!wcscmp(pr,L"-failsafe"))     flags|=FLAG_FAILSAFE;else
         if(!wcscmp(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
-        if( wcsstr(pr,L"-verbose:"))     log_verbose=_wtoi(pr+9);else
+        if( wcsstr(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
         if( wcsstr(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
         if( wcsstr(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_LOAD;}else
         if(!wcscmp(pr,L"-a:32"))         virtual_arch_type=32;else
         if(!wcscmp(pr,L"-a:64"))         virtual_arch_type=64;else
-        if( wcsstr(pr,L"-v:"))           virtual_os_version=_wtoi(pr+3);else
-        if(_wcsnicmp(pr,SAVE_INSTALLED_ID_DEF,wcslen(SAVE_INSTALLED_ID_DEF))==0)
+        if( wcsstr(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
+        if(StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)
             Parse_save_installed_id_swith(pr);else
         if(wcsstr(pr,L"-?"))CLIParam.ShowHelp=TRUE;else
-        if(_wcsnicmp(pr,HWIDINSTALLED_DEF,wcslen(HWIDINSTALLED_DEF))==0)
+        if(StrCmpIW(pr,HWIDINSTALLED_DEF)==0)
             Parse_HWID_installed_swith(pr); else
-        if(_wcsnicmp(pr,GFG_DEF,wcslen(GFG_DEF))==0)  continue;
+        if(StrCmpIW(pr,GFG_DEF)==0)  continue;
         else
             log_err("Unknown argument '%ws'\n",pr);
        if(statemode==STATEMODE_EXIT)break;

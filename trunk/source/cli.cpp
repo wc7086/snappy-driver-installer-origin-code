@@ -246,7 +246,7 @@ BOOL isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath)
     {
         pr=argv[i];
         if(pr[0]=='/')pr[0]='-';
-        if(_wcsnicmp(pr,GFG_DEF,wcslen(GFG_DEF))==0)
+        if(StrCmpIW(pr,GFG_DEF)==0)
         {
             wcscpy(cfgPath,pr+wcslen(GFG_DEF));
             return TRUE;

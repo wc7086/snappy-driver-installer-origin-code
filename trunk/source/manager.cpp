@@ -281,7 +281,7 @@ void manager_filter(manager_t *manager,int options)
 
     manager->items_list[SLOT_NOUPDATES].isactive=
         manager->items_handle.items==RES_SLOTS||
-        (i==0&&statemode==0&&manager->matcher->col->driverpack_handle.items>1)?1:0;
+        (i==0&&statemode==0&&manager->matcher->col->driverpack_list.size()>1)?1:0;
 
     manager->items_list[SLOT_RESTORE_POINT].isactive=statemode==
         STATEMODE_LOAD||i==0||(flags&FLAG_NORESTOREPOINT)?0:1;
@@ -1681,7 +1681,7 @@ int isvalidcat(Hwidmatch *hwidmatch,State *state)
     int n=pickcat(hwidmatch,state);
     const char *s=hwidmatch->getdrp_drvcat(n);
 
-    sprintf(bufa,"2:%d.%d",
+    wsprintfA(bufa,"2:%d.%d",
             state->platform.dwMajorVersion,
             state->platform.dwMinorVersion);
     if(!*s)return 0;
@@ -1776,8 +1776,8 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
         while(*p)
         {
             int pp=0;
-            if(!wcsicmp(i_hwid,p))pp|=1;
-            if(!wcsicmp(a_hwid,p))pp|=2;
+            if(!StrCmpIW(i_hwid,p))pp|=1;
+            if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=lstrlen(p)+1;
@@ -1790,8 +1790,8 @@ void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
         while(*p)
         {
             int pp=0;
-            if(!wcsicmp(i_hwid,p))pp|=1;
-            if(!wcsicmp(a_hwid,p))pp|=2;
+            if(!StrCmpIW(i_hwid,p))pp|=1;
+            if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=lstrlen(p)+1;
@@ -1979,10 +1979,10 @@ void popup_sysinfo(manager_t *manager,HDC hdcMem)
 void format_size(WCHAR *buf,long long val,int isspeed)
 {
 #ifdef USE_TORRENT
-    if(val<(1<<10))swprintf(buf,L"%d %s",    (int)val,STR(STR_UPD_BYTES));else
-    if(val<(1<<20))swprintf(buf,L"%.03f %s",(double)val/(1<<10),STR(STR_UPD_BYTES+1));else
-    if(val<(1<<30))swprintf(buf,L"%.03f %s",(double)val/(1<<20),STR(STR_UPD_BYTES+2));else
-    if(val<((long long)1<<40))swprintf(buf,L"%.03f %s",(double)val/(1<<30),STR(STR_UPD_BYTES+3));
+    if(val<(1<<10))wsprintf(buf,L"%d %s",    (int)val,STR(STR_UPD_BYTES));else
+    if(val<(1<<20))wsprintf(buf,L"%.03f %s",(double)val/(1<<10),STR(STR_UPD_BYTES+1));else
+    if(val<(1<<30))wsprintf(buf,L"%.03f %s",(double)val/(1<<20),STR(STR_UPD_BYTES+2));else
+    if(val<((long long)1<<40))wsprintf(buf,L"%.03f %s",(double)val/(1<<30),STR(STR_UPD_BYTES+3));
 #else
     buf[0]=0;
     UNREFERENCED_PARAMETER(val)

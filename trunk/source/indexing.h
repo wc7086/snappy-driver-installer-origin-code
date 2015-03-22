@@ -256,8 +256,10 @@ public:
     const WCHAR *index_linear_dir;
     int flags;
 
-    Driverpack *driverpack_list;
-    heap_t driverpack_handle;
+    std::vector<Driverpack> driverpack_list;
+
+//    Driverpack *driverpack_list;
+//    heap_t driverpack_handle;
 
     inflist_t *inflist;
     int pos_in,pos_out;
