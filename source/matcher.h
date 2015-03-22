@@ -53,7 +53,7 @@ typedef struct _devicematch_t
     int status;
 }devicematch_t;
 
-class hwidmatch_t
+class Hwidmatch
 {
 public:
     Driverpack *drp;
@@ -64,39 +64,47 @@ public:
     unsigned score;
 
 public:
-//driverpack
-WCHAR *getdrp_packpath();
-WCHAR *getdrp_packname();
-int   getdrp_packontorrent();
-//inffile
-char *getdrp_infpath();
-char *getdrp_infname();
-const char *getdrp_drvfield(int n);
-const char *getdrp_drvcat(int n);
-version_t *getdrp_drvversion();
-int   getdrp_infsize();
-int   getdrp_infcrc();
-//manufacturer
-char *getdrp_drvmanufacturer();
-void  getdrp_drvsection(char *buf);
-//desc
-char *getdrp_drvdesc();
-char *getdrp_drvinstall();
-char *getdrp_drvinstallPicked();
-int   getdrp_drvfeature();
-//HWID
-short getdrp_drvinfpos();
-char *getdrp_drvHWID();
+    //driverpack
+    WCHAR *getdrp_packpath();
+    WCHAR *getdrp_packname();
+    int   getdrp_packontorrent();
+    //inffile
+    char *getdrp_infpath();
+    char *getdrp_infname();
+    const char *getdrp_drvfield(int n);
+    const char *getdrp_drvcat(int n);
+    version_t *getdrp_drvversion();
+    int   getdrp_infsize();
+    int   getdrp_infcrc();
+    //manufacturer
+    char *getdrp_drvmanufacturer();
+    void  getdrp_drvsection(char *buf);
+    //desc
+    char *getdrp_drvdesc();
+    char *getdrp_drvinstall();
+    char *getdrp_drvinstallPicked();
+    int   getdrp_drvfeature();
+    //HWID
+    short getdrp_drvinfpos();
+    char *getdrp_drvHWID();
 
-    void hwidmatch_init(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
-    void hwidmatch_initbriefly(Driverpack *drp,int HWID_index);
-    void hwidmatch_calclen(int *limits);
-    void hwidmatch_print_tbl(int *limits);
-    void hwidmatch_print_hr();
-    int  hwidmatch_cmp(hwidmatch_t *match2);
+    intptr_t isvalid_usb30hub(State *state,const WCHAR *str);
+    int isblacklisted(State *state,const WCHAR *hwid,const char *section);
+    int isvalid_ver(State *state);
+    int calc_notebook();
+    int calc_altsectscore(State *state,int curscore);
+    int calc_status(State *state);
+    int calc_catalogfile();
+
+    void init(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
+    void initbriefly(Driverpack *drp,int HWID_index);
+    void calclen(int *limits);
+    void print_tbl(int *limits);
+    void print_hr();
+    int  cmp(Hwidmatch *match2);
 };
 
-class matcher_t
+class Matcher
 {
 public:
     State *state;
@@ -105,16 +113,16 @@ public:
     devicematch_t *devicematch_list;
     heap_t devicematch_handle;
 
-    hwidmatch_t *hwidmatch_list;
+    Hwidmatch *hwidmatch_list;
     heap_t hwidmatch_handle;
 
 public:
-    void matcher_init(State *state,Collection *col);
-    void matcher_free();
-    void matcher_findHWIDs(devicematch_t *device_match,char *hwid,int dev_pos,int ishw);
-    void matcher_populate();
-    void matcher_sort();
-    void matcher_print();
+    void init(State *state,Collection *col);
+    void release();
+    void findHWIDs(devicematch_t *device_match,char *hwid,int dev_pos,int ishw);
+    void populate();
+    void sort();
+    void print();
 };
 
 // Calc
@@ -127,12 +135,6 @@ unsigned calc_score_h(Driver *driver,State *state);
 int calc_secttype(const char *s);
 int calc_decorscore(int id,State *state);
 int calc_markerscore(State *state,char *path);
-intptr_t isvalid_usb30hub(hwidmatch_t *hwidmatch,State *state,const WCHAR *str);
-int isblacklisted(hwidmatch_t *hwidmatch,State *state,const WCHAR *hwid,const char *section);
-int isvalid_ver(hwidmatch_t *hwidmatch,State *state);
-int calc_notebook(hwidmatch_t *hwidmatch);
-int calc_altsectscore(hwidmatch_t *hwidmatch,State *state,int curscore);
-int calc_status(hwidmatch_t *hwidmatch,State *state);
 
 // Misc
 void findHWID_in_list(char *s,int list,int str,int *dev_pos);
@@ -147,5 +149,4 @@ void minlen(CHAR *s,int *len);
 
 // Matcher
 void  getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
-int calc_catalogfile(hwidmatch_t *hwidmatch);
 

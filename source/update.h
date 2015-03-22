@@ -64,3 +64,4 @@ void delolddrp(const char *ptr);
 void update_movefiles();
 unsigned int __stdcall thread_download(void *arg);
 
+int _wtoi_my(const WCHAR *str);

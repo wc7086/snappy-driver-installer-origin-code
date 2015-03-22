@@ -220,7 +220,7 @@ char *vector_load(std::vector<T> *v,char *p)
     memcpy(&sz,p,sizeof(int));p+=sizeof(int);
     memcpy(&num,p,sizeof(int));p+=sizeof(int);
     v->resize(num);
-    log_con("SZ %d,%d\n",num,v->size());
+//    log_con("SZ %d,%d\n",num,v->size());
     memcpy(v->data(),p,sz);p+=sz;
     return p;
 }

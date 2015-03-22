@@ -378,9 +378,9 @@ goaround:
         memset(limits,0,sizeof(limits));
         itembar_act=i;
         ar_proceed=0;
-        hwidmatch_t *hwidmatch=itembar->hwidmatch;
+        Hwidmatch *hwidmatch=itembar->hwidmatch;
         log_con("Installing $%04d\n",i);
-        hwidmatch->hwidmatch_print_hr();
+        hwidmatch->print_hr();
         wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
         SetTimer(hMain,1,1000/60,0);

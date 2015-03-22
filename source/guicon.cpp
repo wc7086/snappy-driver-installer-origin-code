@@ -86,11 +86,37 @@ void gen_timestamp()
              ti->tm_hour,ti->tm_min,ti->tm_sec,pcname);
 }
 
+void myterminate()
+{
+    log_con("ERROR(exception)\n");
+    log_save();
+    abort();
+}
+
+void myunexpected()
+{
+/*    std::exception_ptr p;
+    p=std::current_exception();
+
+    try
+    {
+        std::rethrow_exception (p);
+    }
+    catch(const std::exception& e)
+    {
+        log_con("ERROR(exception): %ws\n",e.what());
+        log_save();
+    }*/
+    myterminate();
+}
+
 void log_start(WCHAR *logdir)
 {
     WCHAR filename[BUFLEN];
 
     setlocale(LC_ALL,"");
+    std::set_unexpected(myunexpected);
+    std::set_terminate(myterminate);
     //system("chcp 1251");
 
     gen_timestamp();
@@ -123,6 +149,7 @@ void log_start(WCHAR *logdir)
     }
     if((log_verbose&LOG_VERBOSE_BATCH)==0)
         log_file("{start logging\n%s\n\n",SVN_REV_STR);
+    //throw 10;
 }
 
 void log_save()

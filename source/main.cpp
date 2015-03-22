@@ -535,7 +535,7 @@ unsigned int __stdcall thread_loadindexes(void *arg)
     if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
     collection->driverpack_dir=*drpext_dir?drpext_dir:drp_dir;
     //printf("'%ws'\n",collection->driverpack_dir);
-    collection->collection_load();
+    collection->load();
     //log_con("}thread_loadindexes\n");
     return 0;
 }
@@ -617,8 +617,8 @@ unsigned int __stdcall thread_loadall(void *arg)
 void bundle_init(bundle_t *bundle)
 {
     bundle->state.init();
-    bundle->collection.collection_init(drp_dir,index_dir,output_dir,flags);
-    bundle->matcher.matcher_init(&bundle->state,&bundle->collection);
+    bundle->collection.init(drp_dir,index_dir,output_dir,flags);
+    bundle->matcher.init(&bundle->state,&bundle->collection);
 }
 
 void bundle_prep(bundle_t *bundle)
@@ -628,8 +628,8 @@ void bundle_prep(bundle_t *bundle)
 
 void bundle_free(bundle_t *bundle)
 {
-    bundle->collection.collection_free();
-    bundle->matcher.matcher_free();
+    bundle->collection.release();
+    bundle->matcher.release();
     bundle->state.release();
 }
 
@@ -646,8 +646,8 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
     bundle->state.isnotebook_a();
-    bundle->matcher.matcher_populate();
-    bundle->matcher.matcher_sort();
+    bundle->matcher.populate();
+    bundle->matcher.sort();
 }
 
 void bundle_lowprioirity(bundle_t *bundle)
@@ -657,10 +657,10 @@ void bundle_lowprioirity(bundle_t *bundle)
 
     redrawmainwnd();
 
-    bundle->collection.collection_printstates();
+    bundle->collection.printstates();
     //collection_finddrp(&bundle->collection,L"");
     bundle->state.print();
-    bundle->matcher.matcher_print();
+    bundle->matcher.print();
     manager_print_hr(manager_g);
 
 #ifdef USE_TORRENT
@@ -670,7 +670,7 @@ void bundle_lowprioirity(bundle_t *bundle)
         SetEvent(downloadmangar_event);
     }
 #endif
-    bundle->collection.collection_save();
+    bundle->collection.save();
     gen_timestamp();
     wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
     bundle->state.save(filename);
@@ -678,7 +678,7 @@ void bundle_lowprioirity(bundle_t *bundle)
     if(flags&COLLECTION_PRINT_INDEX)
     {
         log_con("Saving humanreadable indexes...");
-        bundle->collection.collection_print();
+        bundle->collection.print();
         flags&=~COLLECTION_PRINT_INDEX;
         log_con("DONE\n");
     }

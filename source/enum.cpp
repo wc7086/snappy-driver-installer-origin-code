@@ -753,7 +753,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
 
         wsprintf(buf,L"%ws",state->text+state->windir);
         if(len>0)
-        unpacked_drp->driverpack_indexinf(buf,(WCHAR *)(state->text+cur_driver->InfPath),buft,len);
+        unpacked_drp->indexinf(buf,(WCHAR *)(state->text+cur_driver->InfPath),buft,len);
         free(buft);
 
         char sect[BUFLEN];
@@ -762,13 +762,13 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
         for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
         if(!strcmpi(unpacked_drp->text+unpacked_drp->HWID_list[HWID_index].HWID,bufa))
         {
-            hwidmatch_t hwidmatch;
+            Hwidmatch hwidmatch;
 
-            hwidmatch.hwidmatch_initbriefly(unpacked_drp,HWID_index);
+            hwidmatch.initbriefly(unpacked_drp,HWID_index);
             if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
             {
                 cur_driver->feature=hwidmatch.getdrp_drvfeature();
-                cur_driver->catalogfile=calc_catalogfile(&hwidmatch);
+                cur_driver->catalogfile=hwidmatch.calc_catalogfile();
                 if(inf_pos<0||inf_pos>hwidmatch.getdrp_drvinfpos())inf_pos=hwidmatch.getdrp_drvinfpos();
             }
         }
@@ -834,8 +834,8 @@ void State::state_scandevices()
     int lr;
 
     time_devicescan=GetTickCount();
-    collection.collection_init((WCHAR *)(text+windir),L"",L"",0);
-    unpacked_drp.driverpack_init(L"",L"windir.7z",&collection);
+    collection.init((WCHAR *)(text+windir),L"",L"",0);
+    unpacked_drp.init(L"",L"windir.7z",&collection);
     hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
     Devices_list.clear();
 
@@ -899,7 +899,7 @@ void State::state_scandevices()
         FileTimeToSystemTime(&drvinfo.DriverDate,&t);
     }*/
     //driverpack_print(&unpacked_drp);
-    collection.collection_free();
+    collection.release();
     hash_free(&inf_list);
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;
