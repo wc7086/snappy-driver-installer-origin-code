@@ -44,14 +44,15 @@ typedef struct _markers_t
     int major,minor,arch;
 }markers_t;
 
-typedef struct _devicematch_t
+class devicematch_t
 {
+public:
     Device *device;
     Driver *driver;
     int start_matches;
     int num_matches;
     int status;
-}devicematch_t;
+};
 
 class Hwidmatch
 {

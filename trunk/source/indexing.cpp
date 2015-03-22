@@ -774,9 +774,11 @@ void Driverpack::init(WCHAR const *driverpack_path,WCHAR const *driverpack_filen
     hash_init(&cat_list,ID_CAT_LIST,512*8,HASH_FLAG_STR_TO_LOWER);
 
     sprintf(buf,"%ws",driverpack_path);
+    //drppath=texta.addStr(driverpack_path);
     drppath=heap_memcpy(&text_handle,driverpack_path,wcslen(driverpack_path)*2+2);
 
     sprintf(buf,"%ws",driverpack_filename);
+    //drpfilename=texta.addStr(driverpack_filename);
     drpfilename=heap_memcpy(&text_handle,driverpack_filename,wcslen(driverpack_filename)*2+2);
     indexes.size=0;
 }
@@ -787,6 +789,7 @@ void Driverpack::release()
     manufacturer_list.clear();
     desc_list.clear();
     HWID_list.clear();
+    //texta.text.clear();
     heap_free(&text_handle);
 
     hash_free(&string_list);
@@ -1190,6 +1193,7 @@ void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *ad
     if(*bufa)
     {
         strtolower(filename,strlen(filename));
+        //hash_add(&cat_list,filename,strlen(filename),texta.addStr(bufa),HASH_MODE_INTACT);
         hash_add(&cat_list,filename,strlen(filename),heap_memcpyz_dup(&text_handle,bufa,strlen(bufa)),HASH_MODE_INTACT);
         //log_con("(%s)\n##%s\n",filename,bufa);
     }
@@ -1575,8 +1579,10 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
     inffile.resize(cur_inffile_index+1);
     cur_inffile=&inffile[cur_inffile_index];
     sprintf(line,"%ws",drpdir);
+    //cur_inffile->infpath=texta.addStr(line);
     cur_inffile->infpath=heap_strcpy(&text_handle,line);
     sprintf(line,"%ws",inffilename);
+    //cur_inffile->inffilename=texta.addStr(line);
     cur_inffile->inffilename=heap_strcpy(&text_handle,line);
     cur_inffile->infsize=inf_len;
     cur_inffile->infcrc=0;
@@ -1704,6 +1710,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
                 {
                     parse_info.parseField();
                     parse_info.readStr(&s1b,&s1e);
+                    //cur_inffile->fields[i]=texta.heap_memcpyz(s1b,s1e-s1b);
                     cur_inffile->fields[i]=heap_memcpyz(&text_handle,s1b,s1e-s1b);
                 }
                 break;
@@ -1739,6 +1746,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
             manufacturer_list.resize(cur_manuf_index+1);
             cur_manuf=&manufacturer_list[cur_manuf_index];
             cur_manuf->inffile_index=cur_inffile_index;
+            //cur_manuf->manufacturer=texta.heap_memcpyz(s1b,s1e-s1b);
             cur_manuf->manufacturer=heap_memcpyz(&text_handle,s1b,s1e-s1b);
             cur_manuf->sections_n=0;
 
@@ -1746,6 +1754,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
             {
                 parse_info.readStr(&s1b,&s1e);
                 strtolower(s1b,s1e-s1b);
+                //strs[cur_manuf->sections_n++]=texta.heap_memcpyz(s1b,s1e-s1b);
                 strs[cur_manuf->sections_n++]=heap_memcpyz(&text_handle,s1b,s1e-s1b);
                 while(1)
                 {
@@ -1772,6 +1781,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
                             cur_desc=&desc_list[cur_desc_index];
                             cur_desc->manufacturer_index=cur_manuf_index;
                             cur_desc->sect_pos=manufacturer_list[cur_manuf_index].sections_n-1;
+                            //cur_desc->desc=texta.heap_memcpyz(s1b,s1e-s1b);
                             cur_desc->desc=heap_memcpyz_dup(&text_handle,s1b,s1e-s1b);
 
                             //{ featurescore
@@ -1783,6 +1793,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
 
                             parse_info2.parseField();
                             parse_info2.readStr(&s1b,&s1e);
+                            //cur_desc->install=texta.heap_memcpyz(s1b,s1e-s1b);
                             cur_desc->install=heap_memcpyz_dup(&text_handle,s1b,s1e-s1b);
 
                             memcpy(&savedfind,&section_list.finddata,sizeof(find_t));
@@ -1839,10 +1850,12 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
                             if(lnk3)
                             {
                                 if(*iii)sprintf(installsection,"$%s",iii);
+                                //cur_desc->install_picked=texta.heap_memcpyz(installsection,strlen(installsection));
                                 cur_desc->install_picked=heap_memcpyz_dup(&text_handle,installsection,strlen(installsection));
                             }
                             else
                             {
+                                //cur_desc->install_picked=texta.heap_memcpyz("{missing}",9);
                                 cur_desc->install_picked=heap_memcpyz_dup(&text_handle,"{missing}",9);
                             }
 
@@ -1883,6 +1896,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
                                 HWID_list.resize(cur_HWID_index+1);
                                 cur_HWID=&HWID_list[cur_HWID_index];
                                 cur_HWID->desc_index=cur_desc_index;
+                                //cur_HWID->HWID=texta.heap_memcpyz(s1b,s1e-s1b);
                                 cur_HWID->HWID=heap_memcpyz_dup(&text_handle,s1b,s1e-s1b);
                                 cur_HWID->inf_pos=hwid_pos++;
 
@@ -1903,9 +1917,11 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
                     parse_info.readStr(&s1b,&s1e);
                     if(s1b>s1e)break;
                     strtolower(s1b,s1e-s1b);
+                    //strs[cur_manuf->sections_n++]=texta.heap_memcpyz(s1b,s1e-s1b);
                     strs[cur_manuf->sections_n++]=heap_memcpyz(&text_handle,s1b,s1e-s1b);
                 }
             }
+            //cur_manuf->sections=texta.heap_memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n);
             cur_manuf->sections=heap_memcpyz(&text_handle,strs,sizeof(int)*cur_manuf->sections_n);
 
         }
@@ -1924,3 +1940,5 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
     hash_clear(&section_list,1);
 }
 //}
+char *Txt::get(ofst offset){return (char *)(drp->text+offset);}
+WCHAR *Txt::getw(ofst offset){return (WCHAR *)(drp->text+offset);}

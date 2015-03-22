@@ -122,12 +122,48 @@ enum DRIVERPACK_TYPE
 };
 
 //{ Indexing strucures
+//#include <unordered_map>
+
 class Txt
 {
 private:
-    std::vector<char> text;
+//    typedef std::unordered_map<std::string,ofst> stringmap;
 public:
-    //char *get(ofst offset){return text;}
+    std::vector<char> text;
+    Driverpack *drp;
+//    stringmap dub;
+
+    char *get(ofst offset);
+    WCHAR *getw(ofst offset);
+//    char *get(ofst offset){return &text[offset];}
+//    WCHAR *getw(ofst offset){return (WCHAR *)&text[offset];}
+
+/*    ofst addStr(char *pb,char *pe)
+    {
+        int r=text.size();
+        text.insert(text.end(),pb,pe);
+
+        return r;
+    }
+    ofst heap_memcpyz(char *pb,int len)
+    {
+        int r=text.size();
+        text.insert(text.end(),pb,pb+len);
+        text.push_back(0);
+        return r;
+    }
+    ofst addStr(char *pb)
+    {
+        int r=text.size();
+        text.insert(text.end(),pb,pb+strlen(pb)+1);
+        return r;
+    }
+    ofst addStr(const WCHAR *pb)
+    {
+        int r=text.size();
+        text.insert(text.end(),pb,pb+wcslen(pb)*2+2);
+        return r;
+    }*/
 };
 
 class Driverpack
