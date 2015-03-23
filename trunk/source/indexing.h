@@ -59,7 +59,7 @@ class data_HWID_t;
 
 enum
 {
-    ClassGuid,
+    ClassGuid_,
     Class,
     Provider,
     CatalogFile,
@@ -122,7 +122,6 @@ enum DRIVERPACK_TYPE
 };
 
 //{ Indexing strucures
-//#include <unordered_map>
 
 class Txt
 {
@@ -268,10 +267,10 @@ public:
     friend unsigned int __stdcall thread_indexinf(void *arg);
     friend void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
 
-    WCHAR *getDriverpack_dir(){return driverpack_dir;}
-    const WCHAR *getIndex_bin_dir(){return index_bin_dir;}
-    const WCHAR *getIndex_linear_dir(){return index_linear_dir;}
-    int getFlags(){return flags;}
+    WCHAR *getDriverpack_dir()const{return driverpack_dir;}
+    const WCHAR *getIndex_bin_dir()const{return index_bin_dir;}
+    const WCHAR *getIndex_linear_dir()const{return index_linear_dir;}
+    int getFlags()const{return flags;}
 
     void init(WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
     void release();

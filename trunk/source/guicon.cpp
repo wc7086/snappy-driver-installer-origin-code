@@ -85,17 +85,11 @@ void gen_timestamp()
              1900+ti->tm_year,ti->tm_mon+1,ti->tm_mday,
              ti->tm_hour,ti->tm_min,ti->tm_sec,pcname);
 }
-
 void myterminate()
 {
-    log_con("ERROR(exception)\n");
-    log_save();
-    abort();
-}
+    WCHAR buf[BUFLEN];
 
-void myunexpected()
-{
-/*    std::exception_ptr p;
+    std::exception_ptr p;
     p=std::current_exception();
 
     try
@@ -104,9 +98,35 @@ void myunexpected()
     }
     catch(const std::exception& e)
     {
-        log_con("ERROR(exception): %S\n",e.what());
-        log_save();
-    }*/
+        wsprintfW(buf,L"Exception: %s\n",e.what());
+    }
+    catch(int i)
+    {
+        wsprintfW(buf,L"Exception: %d\n",i);
+    }
+    catch(char const*str)
+    {
+        wsprintfW(buf,L"Exception: %S\n",str);
+    }
+    catch(WCHAR const*str)
+    {
+        wsprintfW(buf,L"Exception: %s\n",str);
+    }
+    catch(...)
+    {
+        wsprintfW(buf,L"Exception: unknown");
+    }
+    log_con("ERROR: %S\n",buf);
+    log_save();
+    StrCatW(buf,L"\n\nThe program will self terminate now.");
+    MessageBox(hMain,buf,L"Exception",MB_ICONERROR);
+
+    abort();
+}
+
+void myunexpected()
+{
+    log_con("ERROR: myunexpected()\n");
     myterminate();
 }
 
@@ -149,7 +169,7 @@ void log_start(WCHAR *logdir)
     }
     if((log_verbose&LOG_VERBOSE_BATCH)==0)
         log_file("{start logging\n%s\n\n",SVN_REV_STR);
-    //throw 10;
+    //throw L"Test";
 }
 
 void log_save()
@@ -326,7 +346,7 @@ int canWrite(const WCHAR *path)
     else
         GetVolumeInformation(0,0,0,0,0,&flagsv,0,0);
 
-    return flagsv&FILE_READ_ONLY_VOLUME?0:1;
+    return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
 
 void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)

@@ -260,7 +260,7 @@ void Driver::print(State *state)
 //{ State
 void State::init()
 {
-    memset(this,0,sizeof(State));
+    //memset(this,0,sizeof(State));
     heap_init(&text_handle_st,ID_STATE_TEXT,(void **)&text,0,1);
     heap_alloc(&text_handle_st,2);
     text[0]=0;

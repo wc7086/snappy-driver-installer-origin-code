@@ -388,17 +388,15 @@ void Collection::init(WCHAR *driverpacks_dirv,const WCHAR *index_bin_dirv,const 
 
 void Collection::release()
 {
-    int i;
-
-    for(i=0;i<driverpack_list.size();i++)
-        driverpack_list[i].release();
+    for(auto drp:driverpack_list)
+        drp.release();
 
     driverpack_list.clear();
 }
 
 void Collection::save()
 {
-    HANDLE hFind = INVALID_HANDLE_VALUE;
+    HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     WCHAR buf1[BUFLEN];
     WCHAR buf2[BUFLEN];
@@ -485,7 +483,7 @@ void Collection::save()
 
 int Collection::scanfolder_count(const WCHAR *path)
 {
-    HANDLE hFind = INVALID_HANDLE_VALUE;
+    HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     WCHAR buf[BUFLEN];
     Driverpack drp;
@@ -529,7 +527,7 @@ int Collection::scanfolder_count(const WCHAR *path)
 
 void Collection::updatedindexes()
 {
-    HANDLE hFind = INVALID_HANDLE_VALUE;
+    HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     WCHAR buf[BUFLEN];
     WCHAR filename[BUFLEN];
@@ -613,49 +611,42 @@ void Collection::load()
 
 void Collection::print()
 {
-    int i;
-
     time_indexprint=GetTickCount();
 
-    for(i=0;i<driverpack_list.size();i++)
-        driverpack_list[i].print();
+    for(auto drp:driverpack_list)
+        drp.print();
 
     time_indexprint=GetTickCount()-time_indexprint;
 }
 
 void Collection::printstates()
 {
-    int i,sum=0;
-    Driverpack *drp;
+    int sum=0;
     WCHAR *s;
 
     if((log_verbose&LOG_VERBOSE_DRP)==0)return;
     log_file("Driverpacks\n");
-    for(i=0;i<driverpack_list.size();i++)
-    //for(auto drp:driverpack_list)
+
+    for(auto drp:driverpack_list)
     {
-        drp=&driverpack_list[i];
-        s=(WCHAR *)drp->text;
-        log_file("  %6d  %S\\%S\n",drp->HWID_list.size(),s+drp->drppath,(WCHAR *)(drp->text+drp->drpfilename));
-        sum+=drp->HWID_list.size();
+        s=(WCHAR *)drp.text;
+        log_file("  %6d  %S\\%S\n",drp.HWID_list.size(),s+drp.drppath,(WCHAR *)(drp.text+drp.drpfilename));
+        sum+=drp.HWID_list.size();
     }
     log_file("  Sum: %d\n\n",sum);
 }
 
 WCHAR *Collection::finddrp(WCHAR *fnd)
 {
-    int i,j,num;
-    Driverpack *drp;
+    int j;
     WCHAR *s,*d,*n_s;
 
-    num=driverpack_list.size();
     j=0;
     n_s=0;
-    for(i=0;i<num;i++)
+    for(auto drp:driverpack_list)
     {
-        drp=&driverpack_list[i];
-        s=(WCHAR *)(drp->text+drp->drpfilename);
-        if(StrStrIW(s,fnd)&&drp->type!=DRIVERPACK_TYPE_UPDATE)
+        s=(WCHAR *)(drp.text+drp.drpfilename);
+        if(StrStrIW(s,fnd)&&drp.type!=DRIVERPACK_TYPE_UPDATE)
         {
             d=s;
             while(*d)
@@ -678,7 +669,7 @@ WCHAR *Collection::finddrp(WCHAR *fnd)
 
 void Collection::scanfolder(const WCHAR *path)
 {
-    HANDLE hFind = INVALID_HANDLE_VALUE;
+    HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     WCHAR buf[1024];
     Driverpack *drp;
@@ -1055,7 +1046,7 @@ void Driverpack::print()
         }
         fprintf(f,"\n");
     }
-    fprintf(f,"  HWIDS:%d/%d\n",HWID_index_last+1,HWID_list.size());
+    fprintf(f,"  HWIDS:%d/%d\n",HWID_index_last+1,(int)HWID_list.size());
 
     //hash_stats(&indexes);
 /*    for(i=0;i<indexes.items_handle.items;i++)
