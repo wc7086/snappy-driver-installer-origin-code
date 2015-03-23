@@ -104,7 +104,7 @@ void myunexpected()
     }
     catch(const std::exception& e)
     {
-        log_con("ERROR(exception): %ws\n",e.what());
+        log_con("ERROR(exception): %S\n",e.what());
         log_save();
     }*/
     myterminate();
@@ -125,7 +125,7 @@ void log_start(WCHAR *logdir)
     wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
     if(!canWrite(filename))
     {
-        log_err("ERROR in log_start(): Write-protected,'%ws'\n",filename);
+        log_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
 //        GetEnvironmentVariable(L"HOMEDRIVE",log_dir,BUFLEN);
 //        GetEnvironmentVariable(L"HOMEPATH",log_dir+2,BUFLEN);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
@@ -138,7 +138,7 @@ void log_start(WCHAR *logdir)
     logfile=_wfopen(filename,L"wt");
     if(!logfile)
     {
-        log_err("ERROR in log_start(): Write-protected,'%ws'\n",filename);
+        log_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
 //        GetEnvironmentVariable(L"HOMEDRIVE",log_dir,BUFLEN);
 //        GetEnvironmentVariable(L"HOMEPATH",log_dir+2,BUFLEN);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
@@ -203,7 +203,7 @@ void log_con(CHAR const *format,...)
     if((log_verbose&LOG_VERBOSE_LOG_CON)==0)return;
     va_list args;
     va_start(args,format);
-    vsprintf(buffer,format,args);
+    wvsprintfA(buffer,format,args);
     while(*ptr){if(*ptr=='#')*ptr=' ';ptr++;}
     if(logfile)fputs(buffer,logfile);
     fputs(buffer,stdout);
@@ -267,7 +267,7 @@ void print_error(int r,const WCHAR *s)
     WCHAR buf[BUFLEN];
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
                     NULL,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPWSTR)&buf,BUFLEN,NULL);
-    log_err("ERROR with %ws:[%d]'%ws'\n",s,r,buf);
+    log_err("ERROR with %S:[%d]'%S'\n",s,r,buf);
     error_count++;
 }
 
@@ -283,7 +283,7 @@ DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait)
     ShExecInfo.lpParameters=cmd;
     ShExecInfo.nShow=show;
 
-    log_con("Run(%ws,%ws,%d,%d)\n",file,cmd,show,wait);
+    log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
     if(!wcscmp(file,L"open"))
     {
         ShellExecute(NULL, L"open", cmd, NULL, NULL, SW_SHOWNORMAL);
@@ -301,13 +301,13 @@ DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait)
 void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj)
 {
     if(!CloseHandle(h))
-        log_err("ERROR in %ws(): failed CloseHandle(%ws)\n",func,obj);
+        log_err("ERROR in %S(): failed CloseHandle(%S)\n",func,obj);
 }
 
 void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj)
 {
     if(!UnregisterClass(lpClassName,hInstance))
-        log_err("ERROR in %ws(): failed UnregisterClass(%ws)\n",func,obj);
+        log_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
 }
 
 
@@ -341,7 +341,6 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
     int type;
     int update=0;
 
-    printf("Change: %ws\n",szFile);
     type=GetDriveType(0);
 
     // autorun.inf
@@ -383,7 +382,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
             {
                 wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
                 if(PathFileExists(bufw))continue;
-                log_con("VIRUS_WARNING: hidden folder '%ws'\n",FindFileData.cFileName);
+                log_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
                 manager_g->items_list[SLOT_VIRUS_HIDDEN].isactive=update=1;
             }
         }

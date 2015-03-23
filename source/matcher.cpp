@@ -177,16 +177,16 @@ void State::genmarker()
     str=getManuf();
     if(!str)return;
 
-    //log_con("Manuf '%ws'\n",str);
+    //log_con("Manuf '%S'\n",str);
     for(i=0;i<21;i++)
     {
-        //log_con("%d: '%ws'\n",i+1,filter_list[i][0]);
+        //log_con("%d: '%S'\n",i+1,filter_list[i][0]);
         for(j=1;filter_list[i][j];j++)
         {
             if(StrStrI(str,filter_list[i][j]))
             {
-                sprintf(marker,"%ws_nb",filter_list[i][0]);
-                log_con("Matched marker: '%s'(%ws)\n",marker,filter_list[i][j]);
+                wsprintfA(marker,"%S_nb",filter_list[i][0]);
+                log_con("Matched marker: '%s'(%S)\n",marker,filter_list[i][j]);
             }
         }
     }
@@ -329,7 +329,7 @@ int calc_markerscore(State *state,char *path)
 
 intptr_t Hwidmatch::isvalid_usb30hub(State *state,const WCHAR *str)
 {
-    //log_con("Intel USB3.0 HUB '%ws'\n",state->text+hwidmatch->devicematch->device->HardwareID);
+    //log_con("Intel USB3.0 HUB '%S'\n",state->text+hwidmatch->devicematch->device->HardwareID);
     return (intptr_t)StrStrI((WCHAR *)(state->text+devicematch->device->HardwareID),str);
 }
 
@@ -595,7 +595,7 @@ void Hwidmatch::calclen(int *limits)
     minlen(buf,&limits[0]);
     wsprintfA(buf,"%ws%ws",getdrp_packpath(),getdrp_packname());
     minlen(buf,&limits[1]);
-    sprintf(buf,"%s%s",getdrp_infpath(),getdrp_infname());
+    wsprintfA(buf,"%s%s",getdrp_infpath(),getdrp_infname());
     minlen(buf,&limits[2]);
     minlen(getdrp_drvmanufacturer(),&limits[3]);
     v=getdrp_drvversion();
@@ -622,8 +622,8 @@ void Hwidmatch::print_tbl(int *limits)
 
     wsprintfA(buf,"%ws\\%ws",       getdrp_packpath(),getdrp_packname());
     log_file(" %-*s |",limits[1],buf);
-    log_file(" %8X% |",              getdrp_infcrc());
-    sprintf(buf,"%s%s",         getdrp_infpath(),getdrp_infname());
+    log_file(" %8X |",              getdrp_infcrc());
+    wsprintfA(buf,"%s%s",         getdrp_infpath(),getdrp_infname());
     log_file(" %-*s |",limits[2],buf);
     log_file(" %-*s |",limits[3],    getdrp_drvmanufacturer());
     wsprintfA(buf,"%d.%d.%d.%d",  v->v1,v->v2,v->v3,v->v4);
@@ -644,7 +644,7 @@ void Hwidmatch::print_hr()
     log_file("  CRC:  %8X%\n",              getdrp_infcrc(this));
     log_file("  Marker %d\n",                markerscore);
     log_file("  Status %3X\n",               status);*/
-    log_file("  Pack:     %ws\\%ws\n",       getdrp_packpath(),getdrp_packname());
+    log_file("  Pack:     %S\\%S\n",       getdrp_packpath(),getdrp_packname());
 
     log_file("  Name:     %s\n",getdrp_drvdesc());
     log_file("  Provider: %s\n",    getdrp_drvmanufacturer());
@@ -969,10 +969,10 @@ void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index)
     if(pos)
     {
         char *ext=drp->text+((int *)rr)[pos];
-        sprintf(buf,"%s.%s",drp->text+((int *)rr)[0],ext);
+        wsprintfA(buf,"%s.%s",drp->text+((int *)rr)[0],ext);
     }
     else
-        sprintf(buf,"%s",drp->text+((int *)rr)[pos]);
+        wsprintfA(buf,"%s",drp->text+((int *)rr)[pos]);
 }
 void Hwidmatch::getdrp_drvsection(char *buf)
 {

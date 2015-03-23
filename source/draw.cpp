@@ -242,11 +242,10 @@ void Image::readFromFile(WCHAR *filename)
 
     if(!filename||!*filename)return;
     wsprintf(buf,L"%s\\themes\\%s",data_dir,filename);
-    //printf("Loading '%ws'\n",buf);
     f=_wfopen(buf,L"rb");
     if(!f)
     {
-        log_err("ERROR in image_loadFile(): file '%ws' not found\n",buf);
+        log_err("ERROR in image_loadFile(): file '%S' not found\n",buf);
         return;
     }
     fseek(f,0,SEEK_END);
@@ -257,7 +256,7 @@ void Image::readFromFile(WCHAR *filename)
     sz=fread(imgbuf,1,sz,f);
     if(!sz)
     {
-        log_err("ERROR in image_loadFile(): cannnot read from file '%ws'\n",buf);
+        log_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",buf);
         return;
     }
     fclose(f);

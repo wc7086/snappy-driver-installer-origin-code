@@ -116,7 +116,7 @@ void delolddrp(const char *ptr)
     WCHAR *s=bffw;
 
     wsprintf(bffw,L"%S",ptr);
-    log_con("dep '%ws'\n",bffw);
+    log_con("dep '%S'\n",bffw);
     while(*s)
     {
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
@@ -125,7 +125,7 @@ void delolddrp(const char *ptr)
             s=finddrp(bffw);
             if(!s)return;
             wsprintf(buf,L"%ws\\%s",drp_dir,s);
-            log_con("'del %ws'\n",buf);
+            log_con("'del %S'\n",buf);
             _wremove(buf);
             return;
         }
@@ -213,14 +213,14 @@ void update_movefiles()
         }
         p=buf3;
         while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        //log_con("Complited '%s' [%ws][%ws]{%ws}\n",filename,buf1,buf2,buf3);
+        //log_con("Complited '%s' [%S][%S]{%S}\n",filename,buf1,buf2,buf3);
         if(p[-1]==L'\\')
         {
             *--p=0;
             mkdir_r(buf3);
         }
         //CopyFile(buf1,buf2,0);
-        log_con("File '%ws'\n",filenamefull_dst);
+        log_con("File '%S'\n",filenamefull_dst);
         if(!StrStrIA(filenamefull,"autorun.inf")&&
            !StrStrIA(filenamefull,".bat"))
         {
@@ -383,7 +383,7 @@ int upddlg_populatelist(HWND hList,int update)
             strsub(buf,L"indexes\\SDI",index_dir);
             if(!PathFileExists(buf))
             {
-                //log_con("Missing index: '%ws'\n",buf);
+                //log_con("Missing index: '%S'\n",buf);
                 missingindexes=1;
             }
         }
@@ -732,13 +732,13 @@ void upddlg_setpriorities_driverpack(const WCHAR *name,int pri)
     int i;
     char buf[BUFLEN];
 
-    wsprintfA(buf,"%ws",name);
+    wsprintfA(buf,"%S",name);
     //log_con("<%s> %d\n",buf,pri);
     for(i=0;i<numfiles;i++)
     if(StrStrIA(updatehandle.torrent_file()->file_at(i).path.c_str(),buf))
     {
         updatehandle.file_priority(i,pri);
-        log_con("%ws,%d\n",name,pri);
+        log_con("%S,%d\n",name,pri);
     }
 }
 

@@ -5,20 +5,7 @@ const WCHAR INSTALLEDVENFILENAMEDEFPATH[]=L"%temp%\\SDI2\\InstalledID.txt";
 HFONT CLIHelp_Font;
 CommandLineParam_t CLIParam;
 
-void SaveHWID(WCHAR *hwid)
-{
-    if(CLIParam.SaveInstalledHWD)
-    {
-        FILE *f=_wfopen(CLIParam.SaveInstalledFileName,L"a+");
-        if(!f)
-          log_err("Failed to create '%ws'\n",CLIParam.SaveInstalledFileName);
-        fwprintf(f,L"%s",hwid);
-        fwprintf(f,L"\n");
-        fclose(f);
-    }
-}
-
-void ExpandPath(WCHAR *Apath)
+static void ExpandPath(WCHAR *Apath)
 {
     #define INFO_BUFFER_SIZE 32767
     WCHAR infoBuf[INFO_BUFFER_SIZE];
@@ -27,6 +14,12 @@ void ExpandPath(WCHAR *Apath)
     ExpandEnvironmentStringsW(Apath,infoBuf,INFO_BUFFER_SIZE);
     wcscpy(Apath,infoBuf);
     #undef INFO_BUFFER_SIZE
+}
+
+static WCHAR *ltrim(WCHAR *s)
+{
+    while(iswspace(*s)) s++;
+    return s;
 }
 
 static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
@@ -76,10 +69,11 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
         break;
 
     default:
-        break;;
+        break;
     }
     return FALSE;
 }
+
 static void ShowHelp(HINSTANCE AhInst)
 {
     CLIHelp_Font=CreateFontA(-12,0,0,0,FW_NORMAL,0,0,0,
@@ -90,18 +84,23 @@ static void ShowHelp(HINSTANCE AhInst)
     DeleteObject(CLIHelp_Font);
 }
 
-void init_CLIParam()
+void SaveHWID(WCHAR *hwid)
 {
-    memset(&CLIParam,0,sizeof(CLIParam));
-    CLIParam.ShowHelp=FALSE;
-    CLIParam.SaveInstalledHWD=FALSE;
-    CLIParam.SaveInstalledFileName[0]=0;
-    CLIParam.HWIDInstalled=FALSE;
+    if(CLIParam.SaveInstalledHWD)
+    {
+        FILE *f=_wfopen(CLIParam.SaveInstalledFileName,L"a+");
+        if(!f)
+          log_err("Failed to create '%S'\n",CLIParam.SaveInstalledFileName);
+        fwprintf(f,L"%s",hwid);
+        fwprintf(f,L"\n");
+        fclose(f);
+    }
 }
 
 void Parse_save_installed_id_swith(const WCHAR *ParamStr)
 {
     unsigned tmpLen=wcslen(SAVE_INSTALLED_ID_DEF);
+
     if(wcslen(ParamStr)>tmpLen)
     {
         if(ParamStr[tmpLen]==L':')wcscpy(CLIParam.SaveInstalledFileName,ParamStr+tmpLen+1);else
@@ -110,7 +109,47 @@ void Parse_save_installed_id_swith(const WCHAR *ParamStr)
     }
     else
         wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
+
     CLIParam.SaveInstalledHWD=TRUE;
+}
+
+void Parse_HWID_installed_swith(const WCHAR *ParamStr)
+{
+    unsigned tmpLen=wcslen(HWIDINSTALLED_DEF);
+    if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
+    {
+        log_err("invalid parameter %S\n",ParamStr);
+        ret_global=ERROR_BAD_LENGTH;
+        statemode=STATEMODE_EXIT;
+        return;
+    }
+    else
+    {
+        WCHAR buf[BUFLEN];
+        wcscpy(buf,ParamStr+tmpLen);
+        WCHAR *chB;
+
+        chB=wcsrchr (buf,'=');
+        if (chB==NULL)
+            wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
+        else
+        {
+            tmpLen=chB-buf+1;
+            wcscpy(CLIParam.SaveInstalledFileName,buf+tmpLen);
+            buf [tmpLen-1]=0;
+        }
+        wcscpy(CLIParam.HWIDSTR, buf);
+        CLIParam.HWIDInstalled=TRUE;
+    }
+}
+
+void init_CLIParam()
+{
+    memset(&CLIParam,0,sizeof(CLIParam));
+    CLIParam.ShowHelp=FALSE;
+    CLIParam.SaveInstalledHWD=FALSE;
+    CLIParam.SaveInstalledFileName[0]=0;
+    CLIParam.HWIDInstalled=FALSE;
 }
 
 void RUN_CLI(CommandLineParam_t ACLIParam)
@@ -124,7 +163,7 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
         return;
     } else
     if(CLIParam.SaveInstalledHWD)
-    {   //Сохранять установленные HWID в файл
+    {
         ExpandPath(CLIParam.SaveInstalledFileName);
         wcscpy(buf, CLIParam.SaveInstalledFileName);
         PathRemoveFileSpec(buf);
@@ -138,104 +177,27 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
         FILE *f;
         WCHAR *RStr;
         f=_wfopen(CLIParam.SaveInstalledFileName,L"rt");
-        if(!f) log_err("Failed to open '%ws'\n",CLIParam.SaveInstalledFileName);
+        if(!f)log_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
         else
         {
             while(fgetws(buf,sizeof(buf),f))
             {
-                //log_con("'%ws'\n", buf);
-                RStr = wcsstr(buf, CLIParam.HWIDSTR);
-                if (RStr != NULL)
+                //log_con("'%S'\n", buf);
+                RStr=wcsstr(buf,CLIParam.HWIDSTR);
+                if (RStr!=NULL)
                 {
-                    ret_global = 1;
+                    ret_global=1;
                     break;
                 }
             }
             fclose(f);
         }
-        flags |= FLAG_AUTOCLOSE|FLAG_NOGUI;
-        statemode = STATEMODE_EXIT;
-    };
-}
-
-void Parse_HWID_installed_swith(const WCHAR *ParamStr)
-{
-    unsigned tmpLen=wcslen(HWIDINSTALLED_DEF);
-    if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
-    {
-        log_err("invalid parameter %ws\n",ParamStr);
-        ret_global=ERROR_BAD_LENGTH;
+        flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
         statemode=STATEMODE_EXIT;
-        return;
-    }
-    else
-    { //парсим параметр
-        WCHAR buf[BUFLEN];
-        wcscpy(buf,ParamStr+tmpLen);
-        WCHAR *chB;
-
-        chB = wcsrchr (buf,'=');
-        if (chB== NULL)
-        wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
-        else
-        {
-        tmpLen = chB-buf+1;
-        wcscpy(CLIParam.SaveInstalledFileName,buf+tmpLen);
-        buf [tmpLen-1] = 0;
-        }
-        wcscpy(CLIParam.HWIDSTR, buf);
-        CLIParam.HWIDInstalled=TRUE;
     }
 }
 
-WCHAR *ltrim(WCHAR *s)
-{
-    while(iswspace(*s)) s++;
-    return s;
-}
-
-
-void LoadCFGFile(const WCHAR *FileName,WCHAR *DestStr)
-{
-    WCHAR Buff[BUFLEN];
-    WCHAR BuffRes[BUFLEN];
-    memset( Buff, 0, sizeof(Buff) );
-    wcscpy(Buff, FileName);
-    ExpandPath(Buff);
-    FILE *f;
-    f=_wfopen(Buff,L"rt");
-    if(!f)
-    {
-        log_err("Failed to open '%ws'\n",Buff);
-        DestStr[0]= '\0';
-        return;
-    }
-    memset( Buff, 0, sizeof(Buff) );
-    memset( BuffRes, 0, sizeof(BuffRes) );
-    while(fgetws(Buff,sizeof(Buff),f))
-    {
-    //  log_con("'%ws'\n", Buff);
-        if (Buff[0] == '#') continue; //комментарий, не интересно.
-        if (Buff[0] == ';') continue; //комментарий, не интересно.
-
-        wcscpy(Buff, ltrim(Buff));
-
-        if (Buff[0] == '/') Buff[0]='-';
-        //исключаемые ключи начало
-        if( wcsstr(Buff,L"-?")) continue;
-
-
-        //исключаемые ключи конец
-        if(Buff[wcslen(Buff)-1] == '\n')
-        Buff[wcslen(Buff)-1] = '\0';
-        if(wcslen(Buff) == 0) continue; //пустая строка
-
-        wcscat(wcscat(BuffRes,Buff), L" ");
-    };
-    fclose(f);
-    wcscpy(DestStr,BuffRes);
-}
-BOOL isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath)
+bool isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath)
 {
     WCHAR **argv,*pr;
     int argc;
@@ -249,8 +211,40 @@ BOOL isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath)
         if(StrCmpIW(pr,GFG_DEF)==0)
         {
             wcscpy(cfgPath,pr+wcslen(GFG_DEF));
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
+
+bool LoadCFGFile(const WCHAR *FileName,WCHAR *DestStr)
+{
+    FILE *f;
+    WCHAR Buff[BUFLEN];
+
+    *DestStr=0;
+
+    ExpandEnvironmentStringsW(FileName,Buff,BUFLEN);
+    f=_wfopen(Buff,L"rt");
+    if(!f)
+    {
+        log_err("Failed to open '%S'\n",Buff);
+        return false;
+    }
+
+    while(fgetws(Buff,sizeof(Buff),f))
+    {
+        wcscpy(Buff,ltrim(Buff));       //  trim spaces
+        if(*Buff=='#')continue;         // comments
+        if(*Buff==';')continue;         // comments
+        if(*Buff=='/')*Buff='-';         // replace / with -
+        if(wcsstr(Buff,L"-?"))continue; // ignore -?
+        if(Buff[wcslen(Buff)-1]=='\n')Buff[wcslen(Buff)-1]='\0';
+        if(wcslen(Buff)==0)continue;
+
+        wcscat(wcscat(DestStr,Buff),L" ");
+    }
+    fclose(f);
+    return true;
+}
+

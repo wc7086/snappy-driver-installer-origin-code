@@ -91,7 +91,7 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
     f=_wfopen(filename,L"rb");
     if(!f)
     {
-        log_err("ERROR in loadfile(): failed _wfopen(%ws)\n",filename);
+        log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
         return 0;
     }
 
@@ -136,7 +136,7 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
         f=_wfopen(filename,L"rt");
         if(!f)
         {
-            log_err("ERROR in loadfile(): failed _wfopen(%ws)\n",filename);
+            log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
             free(data);
             return 0;
         }
@@ -222,7 +222,7 @@ void vault_parse(vault_t *val,WCHAR *data)
         r=vault_findvar(&val->strs,lhs);
         if(r<0)
         {
-            printf("Error: unknown var '%ws'\n",lhs);
+            printf("Error: unknown var '%S'\n",lhs);
         }else
         {
             intptr_t v,r1,r2;
@@ -264,9 +264,9 @@ void vault_parse(vault_t *val,WCHAR *data)
                 val->entry[r].init=2;
             }
 
-            //if(r2<0)printf("-RHS:'%ws'\n",L"",rhs);
-            //if(r2>=0)printf("+RHS:'%ws'\n",L"",rhs);
-            //log("%d,%d,%X,{%ws|%ws}\n",r2,v,v,lhs,rhs);
+            //if(r2<0)printf("-RHS:'%S'\n",L"",rhs);
+            //if(r2>=0)printf("+RHS:'%S'\n",L"",rhs);
+            //log("%d,%d,%X,{%S|%S}\n",r2,v,v,lhs,rhs);
             val->entry[r].val=v;
         }
         lhs=le+1;
@@ -282,13 +282,13 @@ void vault_loadfromfile(vault_t *v,WCHAR *filename)
     int sz,i;
 
     if(!filename[0])return;
-    //printf("{%ws\n",filename);
+    //printf("{%S\n",filename);
     //if(v->odata)free(v->odata);
     //v->odata=v->data;
     data=(WCHAR *)vault_loadfile(filename,&sz);
     if(!data)
     {
-        log_err("ERROR in vault_loadfromfile(): failed to load '%ws'\n",filename);
+        log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
         return;
     }
     data[sz]=0;
@@ -317,14 +317,14 @@ void vault_loadfromres(vault_t *v,int id)
     data[sz]=0;
     vault_parse(v,data);
     for(i=0;i<v->num;i++)
-        if(v->entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%ws'\n",v->entry[i].name);
+        if(v->entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",v->entry[i].name);
 }
 //}
 
 //{ Lang/theme
 void lang_set(int i)
 {
-    //printf("%d,'%ws'\n",i,langlist[i]);
+    //printf("%d,'%S'\n",i,langlist[i]);
     if(flags&FLAG_NOGUI)return;
     vault_loadfromres(&vLang,IDR_LANG);
     vault_loadfromfile(&vLang,vLang.namelist[i]);
@@ -332,7 +332,7 @@ void lang_set(int i)
 
 void theme_set(int i)
 {
-    //printf("%d,'%ws'\n",i,themelist[i]);
+    //printf("%d,'%S'\n",i,themelist[i]);
     if(flags&FLAG_NOGUI)return;
     vault_loadfromres(&vTheme,IDR_THEME);
     vault_loadfromfile(&vTheme,vTheme.namelist[i]);
@@ -345,13 +345,13 @@ void theme_set(int i)
             if(!wcscmp(str,(WCHAR *)D(boxindex[j]+4)))
         {
             box[i].makecopy(box[j]);
-            //log_con("%d Copy %ws %d\n",i,str,j);
+            //log_con("%d Copy %S %d\n",i,str,j);
             break;
         }
         if(i==j)
         {
             box[i].load(boxindex[i]+4);
-            //log_con("%d New  %ws\n",i,str);
+            //log_con("%d New  %S\n",i,str);
         }
     }
     for(i=0;i<ICON_NUM;i++)
@@ -362,13 +362,13 @@ void theme_set(int i)
             if(!wcscmp(str,(WCHAR *)D(iconindex[j])))
         {
             icon[i].makecopy(icon[j]);
-            //log_con("%d Copy %ws %d\n",i,str,j);
+            //log_con("%d Copy %S %d\n",i,str,j);
             break;
         }
         if(i==j)
         {
             icon[i].load(iconindex[i]);
-            //log_con("%d New  %ws\n",i,str);
+            //log_con("%d New  %S\n",i,str);
         }
     }
 }
@@ -458,7 +458,7 @@ void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    log_con("Change %ws\n",szFile);
+    log_con("Change %S\n",szFile);
     PostMessage(hMain,WM_UPDATELANG,0,0);
 }
 
@@ -467,7 +467,7 @@ void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    log_con("Change %ws\n",szFile);
+    log_con("Change %S\n",szFile);
     PostMessage(hMain,WM_UPDATETHEME,0,0);
 }
 //}
@@ -567,7 +567,7 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
                         (pNotify->Action==3&&m==2));
 
                 if(!monitor_pause)
-                    log_con("%cMONITOR: a:%d,m:%d,e:%02d,%9d,'%ws'\n",flag?'+':'-',pNotify->Action,m,errno,sz,buf);
+                    log_con("%cMONITOR: a:%d,m:%d,e:%02d,%9d,'%S'\n",flag?'+':'-',pNotify->Action,m,errno,sz,buf);
 
                 if(flag&&!monitor_pause)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
 			}
