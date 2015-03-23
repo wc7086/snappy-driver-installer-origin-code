@@ -314,7 +314,7 @@ void manager_print_tbl(manager_t *manager)
             if(itembar->hwidmatch)
                 itembar->hwidmatch->print_tbl(limits);
             else
-                log_file("'%ws'\n",manager->matcher->state->text+itembar->devicematch->device->Devicedesc);
+                log_file("'%S'\n",manager->matcher->state->text+itembar->devicematch->device->Devicedesc);
             act++;
         }else
         {
@@ -339,7 +339,7 @@ void manager_print_hr(manager_t *manager)
         {
             if(flags&FLAG_FILTERSP&&!isvalidcat(itembar->hwidmatch,manager->matcher->state))continue;
             str_status(buf,itembar);
-            log_file("\n$%04d, %ws\n",k,buf);
+            log_file("\n$%04d, %S\n",k,buf);
             if(itembar->devicematch->device)
             {
                 itembar->devicematch->device->print(manager->matcher->state);
@@ -1415,7 +1415,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
         if(show_changes)
         if(j==manager_old->items_handle.items)
         {
-            log_con("\nAdded   $%04d|%ws|%ws|",i,t_new+itembar_new->devicematch->device->Driver,
+            log_con("\nAdded   $%04d|%S|%S|",i,t_new+itembar_new->devicematch->device->Driver,
                     t_new+itembar_new->devicematch->device->Devicedesc);
 
             if(itembar_new->hwidmatch)
@@ -1436,7 +1436,7 @@ void manager_restorepos(manager_t *manager_new,manager_t *manager_old)
     {
         if(itembar_old->isactive!=9)
         {
-            log_con("\nDeleted $%04d|%ws|%ws|",j,t_old+itembar_old->devicematch->device->Driver,
+            log_con("\nDeleted $%04d|%S|%S|",j,t_old+itembar_old->devicematch->device->Driver,
                     t_old+itembar_old->devicematch->device->getDescr());
             if(itembar_old->hwidmatch)
             {

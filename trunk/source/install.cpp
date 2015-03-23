@@ -188,12 +188,12 @@ void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
     if(!PathFileExists(cmd))
     {
         mkdir_r(extractdir);
-        log_con("Dir: (%ws)\n",extractdir);
+        log_con("Dir: (%S)\n",extractdir);
         f=_wfopen(cmd,L"wb");
         if(f)
-            log_con("Created '%ws'\n",cmd);
+            log_con("Created '%S'\n",cmd);
         else
-            log_con("Failed to create '%ws'\n",cmd);
+            log_con("Failed to create '%S'\n",cmd);
         get_resource(IDR_INSTALL64,&install64bin,&size);
         fwrite(install64bin,1,size,f);
         fclose(f);
@@ -214,7 +214,7 @@ void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
     {
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
         wsprintf(cmd,L"%s\\install64.exe",extractdir);
-        log_con("'%ws %ws'\n",cmd,buf);
+        log_con("'%S %S'\n",cmd,buf);
         *ret=RunSilent(cmd,buf,SW_HIDE,1);
         if((*ret&0x7FFFFFFF)==1)
         {
@@ -246,9 +246,9 @@ void removeextrainfs(WCHAR *inf)
     {
         wcscpy(buf+(s-inf),FindFileData.cFileName);
         if(!StrStrIW(inf,FindFileData.cFileName))
-            log_con("deleting %ws (%d)\n",buf,DeleteFile(buf));
+            log_con("deleting %S (%d)\n",buf,DeleteFile(buf));
         else
-            log_con("keeping  %ws\n",buf);
+            log_con("keeping  %S\n",buf);
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
 }
@@ -395,7 +395,7 @@ goaround:
                 hwidmatch->getdrp_infname());
         if(PathFileExists(inf))
         {
-            log_con("Already unpacked(%ws)\n",inf);
+            log_con("Already unpacked(%S)\n",inf);
             _7z_total(100);
             _7z_setcomplited(100);
             redrawfield();
@@ -403,7 +403,7 @@ goaround:
         else
         if(wcsstr(hwidmatch->getdrp_packname(),L"unpacked.7z"))
         {
-            log_con("Unpacked '%ws'\n",hwidmatch->getdrp_packpath());
+            log_con("Unpacked '%S'\n",hwidmatch->getdrp_packpath());
             unpacked=1;
             _7z_total(100);
             _7z_setcomplited(100);
@@ -424,7 +424,7 @@ goaround:
                 wsprintf(buf,L" \"%S\"",itembar1->hwidmatch->getdrp_infpath());
                 if(!wcsstr(cmd,buf))wcscat(cmd,buf);
             }
-            log_con("Extracting via '%ws'\n",cmd);
+            log_con("Extracting via '%S'\n",cmd);
             itembar->install_status=instflag&INSTALLDRIVERS?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
             redrawfield();
             int tries=0;
@@ -481,7 +481,7 @@ goaround:
                    hwidmatch->getdrp_infpath(),
                    hwidmatch->getdrp_infname());
             wsprintf(hwid,L"%S",hwidmatch->getdrp_drvHWID());
-            log_con("Install32 '%ws','%ws'\n",hwid,inf);
+            log_con("Install32 '%S','%S'\n",hwid,inf);
             itembar->install_status=STR_INST_INSTALL;
             redrawfield();
 
@@ -542,7 +542,7 @@ goaround:
         WCHAR *p=extractdir+wcslen(extractdir);
         while(*(--p)!='\\');
         *p=0;
-        log_con("%ws\n",extractdir);
+        log_con("%S\n",extractdir);
         ShellExecute(0,L"explore",extractdir,0,0,SW_SHOW);
         manager_g->items_list[SLOT_EXTRACTING].isactive=0;
         manager_clear(manager_g);
@@ -636,11 +636,11 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
     if(lParam&2)
     {
         GetWindowText(hwnd,buf,BUFLEN);
-        log_file("Window %06X,%06X '%ws'\n",hwnd,GetParent(hwnd),buf);
+        log_file("Window %06X,%06X '%S'\n",hwnd,GetParent(hwnd),buf);
         GetClassName(hwnd,buf,BUFLEN);
-        log_file("Class: '%ws'\n",buf);
+        log_file("Class: '%S'\n",buf);
         RealGetWindowClass(hwnd,buf,BUFLEN);
-        log_file("RealClass: '%ws'\n",buf);
+        log_file("RealClass: '%S'\n",buf);
         log_file("\n");
     }
 

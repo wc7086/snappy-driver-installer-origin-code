@@ -156,6 +156,11 @@ void str_unicode2ansi(char *a)
     WCHAR *u=(WCHAR *)a;
     while((*a++=*u++));
 }
+void str_unicode2ansi(const WCHAR *s,char *d)
+{
+    while((*d++=*s++));
+}
+
 void settings_parse(const WCHAR *str,int ind)
 {
     WCHAR buf[BUFLEN];
@@ -163,7 +168,7 @@ void settings_parse(const WCHAR *str,int ind)
     int argc;
     int i;
 
-    log_con("Args:[%ws]\n",str);
+    log_con("Args:[%S]\n",str);
     argv=CommandLineToArgvW(str,&argc);
     for(i=ind;i<argc;i++)
     {
@@ -200,7 +205,7 @@ void settings_parse(const WCHAR *str,int ind)
         {
             WCHAR cmd[BUFLEN];
             wsprintf(cmd,L"7za.exe %s",wcsstr(GetCommandLineW(),L"-7z")+4);
-            log_con("Executing '%ws'\n",cmd);
+            log_con("Executing '%S'\n",cmd);
             registerall();
             statemode=STATEMODE_EXIT;
             ret_global=Extract7z(cmd);
@@ -218,7 +223,7 @@ void settings_parse(const WCHAR *str,int ind)
         else
         if(!wcscmp(pr,L"-install")&&argc-i==3)
         {
-            log_con("Install '%ws' '%s'\n",argv[i+1],argv[i+2]);
+            log_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
             GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
             wsprintf(extractdir,L"%s\\SDI",buf);
             installmode=MODE_INSTALLING;
@@ -261,7 +266,7 @@ void settings_parse(const WCHAR *str,int ind)
             Parse_HWID_installed_swith(pr); else
         if(StrCmpIW(pr,GFG_DEF)==0)  continue;
         else
-            log_err("Unknown argument '%ws'\n",pr);
+            log_err("Unknown argument '%S'\n",pr);
        if(statemode==STATEMODE_EXIT)break;
     }
     LocalFree(argv);
@@ -313,14 +318,10 @@ void settings_save()
 
 int  settings_load(const WCHAR *filename)
 {
-    FILE *f;
     WCHAR buf[BUFLEN];
 
-    f=_wfopen(filename,L"rt");
-    if(!f)return 0;
-    LoadCFGFile(filename,buf);
+    if(!LoadCFGFile(filename,buf))return 0;
     settings_parse(buf,0);
-    fclose(f);
     return 1;
 }
 
@@ -376,11 +377,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     ghInst=hInst;
     init_CLIParam();
     if (isCfgSwithExist(GetCommandLineW(),CLIParam.SaveInstalledFileName))
-    {
-      WCHAR buff[BUFLEN];
-      LoadCFGFile(CLIParam.SaveInstalledFileName, buff);
-      settings_parse(buff,0);
-    }
+        settings_load(CLIParam.SaveInstalledFileName);
     else
     if(!settings_load(L"sdi.cfg"))
         settings_load(L"tools\\SDI\\settings.cfg");
@@ -421,14 +418,14 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     if(log_verbose&LOG_VERBOSE_ARGS)
     {
         log_con("Settings\n");
-        log_con("  drp_dir='%ws'\n",drp_dir);
-        log_con("  index_dir='%ws'\n",index_dir);
-        log_con("  output_dir='%ws'\n",output_dir);
-        log_con("  data_dir='%ws'\n",data_dir);
-        log_con("  log_dir='%ws'\n",log_dir);
-        log_con("  extractdir='%ws'\n",extractdir);
-        log_con("  lang=%ws\n",curlang);
-        log_con("  theme=%ws\n",curtheme);
+        log_con("  drp_dir='%S'\n",drp_dir);
+        log_con("  index_dir='%S'\n",index_dir);
+        log_con("  output_dir='%S'\n",output_dir);
+        log_con("  data_dir='%S'\n",data_dir);
+        log_con("  log_dir='%S'\n",log_dir);
+        log_con("  extractdir='%S'\n",extractdir);
+        log_con("  lang=%S\n",curlang);
+        log_con("  theme=%S\n",curtheme);
         log_con("  expertmode=%d\n",expertmode);
         log_con("  filters=%d\n",filters);
         log_con("  autoinstall=%d\n",flags&FLAG_AUTOINSTALL?1:0);
@@ -439,7 +436,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         log_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
         log_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
         log_con("\n");
-        if(*state_file&&statemode)log_con("Virtual system system config '%ws'\n",state_file);
+        if(*state_file&&statemode)log_con("Virtual system system config '%S'\n",state_file);
         if(virtual_arch_type)log_con("Virtual Windows version: %d-bit\n",virtual_arch_type);
         if(virtual_os_version)log_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
         log_con("\n");
@@ -519,7 +516,7 @@ unsigned int __stdcall thread_scandevices(void *arg)
     State *state=&bundle->state;
     //log_con("{thread_scandevices\n");
     if(statemode==0)
-        state->state_scandevices();else
+        state->scanDevices();else
     if(statemode==STATEMODE_LOAD)
         state->load(state_file);
     //log_con("}thread_scandevices\n");
@@ -534,7 +531,7 @@ unsigned int __stdcall thread_loadindexes(void *arg)
     //log_con("{thread_loadindexes\n");
     if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
     collection->driverpack_dir=*drpext_dir?drpext_dir:drp_dir;
-    //printf("'%ws'\n",collection->driverpack_dir);
+    //printf("'%S'\n",collection->driverpack_dir);
     collection->load();
     //log_con("}thread_loadindexes\n");
     return 0;
@@ -603,7 +600,7 @@ unsigned int __stdcall thread_loadall(void *arg)
         if(snplist)
         {
             fgetws(state_file,BUFLEN,snplist);
-            log_con("SNP: '%ws'\n",state_file);
+            log_con("SNP: '%S'\n",state_file);
             deviceupdate_exitflag=feof(snplist);
         }
         //printf("%ld\n",GetTickCount()-t);
@@ -866,7 +863,7 @@ void mkdir_r(const WCHAR *path)
     if(path[1]==L':'&&path[2]==0)return;
     if(!canWrite(path))
     {
-        log_err("ERROR in mkdir_r(): Write-protected,'%ws'\n",path);
+        log_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
         return;
     }
     wcscpy(buf,path);
@@ -875,12 +872,12 @@ void mkdir_r(const WCHAR *path)
     {
         *p=0;
         if(_wmkdir(buf)<0&&errno!=EEXIST)
-            log_err("ERROR in mkdir_r(): failed _wmkdir(%ws,%d)\n",buf,errno);
+            log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
         *p=L'\\';
         p++;
     }
     if(_wmkdir(buf)<0&&errno!=EEXIST)
-        log_err("ERROR in mkdir_r(): failed _wmkdir(%ws,%d)\n",buf,errno);
+        log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 //}
 
@@ -919,7 +916,7 @@ void gui(int nCmd)
     wcx.hbrBackground=  (HBRUSH)(COLOR_WINDOW+1);
     if(!RegisterClassEx(&wcx))
     {
-        log_err("ERROR in gui(): failed to register '%ws' class\n",wcx.lpszClassName);
+        log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
         return;
     }
 
@@ -928,7 +925,7 @@ void gui(int nCmd)
     wcx.hIcon=0;
     if(!RegisterClassEx(&wcx))
     {
-        log_err("ERROR in gui(): failed to register '%ws' class\n",wcx.lpszClassName);
+        log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
         UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
         return;
     }
@@ -937,7 +934,7 @@ void gui(int nCmd)
     wcx.lpszClassName=classField;
     if(!RegisterClassEx(&wcx))
     {
-        log_err("ERROR in gui(): failed to register '%ws' class\n",wcx.lpszClassName);
+        log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
         UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
         UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
         return;
@@ -973,7 +970,7 @@ void gui(int nCmd)
                             0,0,ghInst,0);
         if(!hMain)
         {
-            log_err("ERROR in gui(): failed to create '%ws' window\n",classMain);
+            log_err("ERROR in gui(): failed to create '%S' window\n",classMain);
             return;
         }
 
@@ -1189,10 +1186,10 @@ void extractto()
         SHGetPathFromIDList(list,dir);
 
         argv=CommandLineToArgvW(GetCommandLineW(),&argc);
-        //printf("'%ws',%d\n",argv[0],argc);
+        //printf("'%S',%d\n",argv[0],argc);
         wsprintf(buf,L"%s\\drv.exe",dir);
         if(!CopyFile(argv[0],buf,0))
-            log_err("ERROR in extractto(): failed CopyFile(%ws,%ws)\n",argv[0],buf);
+            log_err("ERROR in extractto(): failed CopyFile(%S,%S)\n",argv[0],buf);
         LocalFree(argv);
 
         wcscat(dir,L"\\drivers");
@@ -1226,7 +1223,7 @@ void drvdir()
         SHGetPathFromIDList(list,drpext_dir);
         int len=wcslen(drpext_dir);
         drpext_dir[len]=0;
-//        printf("'%ws',%d\n",drpext_dir,len);
+//        printf("'%S',%d\n",drpext_dir,len);
         PostMessage(hMain,WM_DEVICECHANGE,7,2);
     }
 }
@@ -1288,7 +1285,7 @@ void escapeAmpUrl(WCHAR *buf,WCHAR *source)
 void checktimer(const WCHAR *str,long long t,int uMsg)
 {
     if(GetTickCount()-t>20&&log_verbose&LOG_VERBOSE_LAGCOUNTER)
-        log_con("GUI lag in %ws[%X]: %ld\n",str,uMsg,GetTickCount()-t);
+        log_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
@@ -1832,7 +1829,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
             {
                 int id=wp%100;
-                //printf("%ws\n",getHWIDby(floating_itembar,id));
+                //printf("%S\n",getHWIDby(floating_itembar,id));
 
                 if(wp>=ID_HWID_WEB)
                 {

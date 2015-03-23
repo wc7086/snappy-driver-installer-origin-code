@@ -166,18 +166,18 @@ public:
     void release();
     void save(const WCHAR *filename);
     int  load(const WCHAR *filename);
-    void fakeOSversion();
-    void log_add(CHAR const *format,...);
+    void scanDevices();
     void print();
+
+    void fakeOSversion();
     WCHAR *getProduct();
     WCHAR *getManuf();
     WCHAR *getModel();
+    int  opencatfile(Driver *cur_driver);
     void getsysinfo_fast();
     void getsysinfo_slow();
-    int opencatfile(Driver *cur_driver);
-    void genmarker();
-    void state_scandevices();
     void isnotebook_a();
+    void genmarker();
 };
 extern const char *deviceststus_str[];
 

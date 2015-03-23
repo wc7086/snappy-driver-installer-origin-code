@@ -249,6 +249,7 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
 
 //new
 void str_unicode2ansi(char *a);
+void str_unicode2ansi(const WCHAR *s,char *d);
 void set_rstpnt(int checked);
 void drvdir();
 const WCHAR *getHWIDby(int id,int num);
