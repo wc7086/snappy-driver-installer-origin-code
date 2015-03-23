@@ -257,11 +257,12 @@ void Image::readFromFile(WCHAR *filename)
     if(!sz)
     {
         log_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",buf);
+        delete[] imgbuf;
         return;
     }
     fclose(f);
     createBitmap(imgbuf,sz);
-    delete imgbuf;
+    delete[] imgbuf;
 }
 
 void Image::readFromRes(int id)
@@ -442,14 +443,13 @@ void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
 
 void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int id)
 {
-    //int i=box[id].index;
-    int i=boxindex[id];
 
     if(id<0||id>=BOX_NUM)
     {
         log_err("ERROR in box_draw(): invalid id=%d\n",id);
         return;
     }
+    int i=boxindex[id];
     if(i<0||i>=THEME_NM)
     {
         log_err("ERROR in box_draw(): invalid index=%d\n",i);
@@ -660,7 +660,7 @@ void panel_draw_inv(panel_t *panel)
     int ofsy=D(PNLITEM_OFSY);
     RECT rect;
 
-    if(!panel)return;
+//    if(!panel)return;
     rect.left=x;
     rect.top=y;
     rect.right=x+XP(panel);
