@@ -388,11 +388,15 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
-    HBRUSH oldbrush;
+    HBRUSH newbrush,oldbrush;
     HGDIOBJ r;
     unsigned r32;
 
-    oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
+    //oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
+    newbrush=CreateSolidBrush(color1);
+    oldbrush=(HBRUSH)SelectObject(hdc,newbrush);
+    if(color1&0xFF000000)(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
+
     if(!oldbrush)log_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
     r32=SetDCBrushColor(hdc,color1);
     if(r32==CLR_INVALID)log_err("ERROR in drawrect(): failed SetDCBrushColor\n");
@@ -412,7 +416,9 @@ void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,in
     r=SelectObject(hdc,oldbrush);
     if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
     r32=DeleteObject(newpen);
-    if(!r32)log_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
+    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
+    r32=DeleteObject(newbrush);
+    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
 }
 
 void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
@@ -764,7 +770,7 @@ void panel_draw(HDC hdc,panel_t *panel)
                     itembar_t *itembar;
 
                     itembar=&manager_g->items_list[RES_SLOTS];
-                    for(j=RES_SLOTS;j<manager_g->items_handle.items;j++,itembar++)
+                    for(j=RES_SLOTS;j<manager_g->items_list.size();j++,itembar++)
                     if(itembar->checked)cnt++;
 
                     wsprintf(buf,L"%s (%d)",STR(panel->items[i].str_id),cnt);

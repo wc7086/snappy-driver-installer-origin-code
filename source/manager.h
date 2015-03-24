@@ -145,10 +145,7 @@ class manager_t
 {
 public:
     Matcher *matcher;
-
-    itembar_t *items_list;
-    heap_t items_handle;
-
+    std::vector<itembar_t> items_list;
     long animstart;
 
 public:

@@ -413,6 +413,8 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
 
     //log_file("Sc:%d\n\n",curscore);
     if(flags&FLAG_FILTERSP)return 2;
+
+    if(StrStrIA(getdrp_infpath(),"tweak"))return 1;
     return isvalidcat(this,state)?2:1;
 }
 
