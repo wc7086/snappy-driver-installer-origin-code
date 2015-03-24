@@ -410,7 +410,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
     FindClose(hFind);
     if(update)
     {
-        manager_setpos(manager_g);
+        manager_g->manager_setpos();
         SetTimer(hMain,1,1000/60,0);
     }
 }
