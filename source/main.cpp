@@ -447,8 +447,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     vault_init();
     bundle_init(&bundle[0]);
     bundle_init(&bundle[1]);
-    manager_init(&manager_v[0],&bundle[bundle_display].matcher);
-    manager_init(&manager_v[1],&bundle[bundle_display].matcher);
+    manager_v[0].manager_init(&bundle[bundle_display].matcher);
+    manager_v[1].manager_init(&bundle[bundle_display].matcher);
 
     bundle_prep(&bundle[bundle_display]);
     vault_loadfromres(&vLang,IDR_LANG);
@@ -482,8 +482,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     bundle_free(&bundle[0]);
     bundle_free(&bundle[1]);
     vault_free();
-    manager_free(&manager_v[0]);
-    manager_free(&manager_v[1]);
+    manager_v[0].manager_free();
+    manager_v[1].manager_free();
 #ifndef CONSOLE_MODE
     settings_save();
 #endif
@@ -570,8 +570,8 @@ unsigned int __stdcall thread_loadall(void *arg)
             if((flags&FLAG_NOGUI||hMain==0)&&(flags&FLAG_AUTOINSTALL)==0)
             {
                 manager_g->matcher=&bundle[bundle_shadow].matcher;
-                manager_populate(manager_g);
-                manager_filter(manager_g,filters);
+                manager_g->manager_populate();
+                manager_g->manager_filter(filters);
             }
             else
                 SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
@@ -658,7 +658,7 @@ void bundle_lowprioirity(bundle_t *bundle)
     //collection_finddrp(&bundle->collection,L"");
     bundle->state.print();
     bundle->matcher.print();
-    manager_print_hr(manager_g);
+    manager_g->manager_print_hr();
 
 #ifdef USE_TORRENT
     if(flags&FLAG_CHECKUPDATES&&!time_chkupdate&&canWrite(L"update"))
@@ -1202,7 +1202,7 @@ void set_rstpnt(int checked)
 {
     manager_g->items_list[SLOT_RESTORE_POINT].checked=panels[11].items[2].checked=checked;
     //if(D(PANEL12_WY))manager_g->items_list[SLOT_RESTORE_POINT].isactive=checked;
-    manager_setpos(manager_g);
+    manager_g->manager_setpos();
     redrawfield();
 }
 
@@ -1328,9 +1328,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             vault_startmonitors();
             DragAcceptFiles(hwnd,1);
 
-            manager_populate(manager_g);
-            manager_filter(manager_g,filters);
-            manager_setpos(manager_g);
+            manager_g->manager_populate();
+            manager_g->manager_filter(filters);
+            manager_g->manager_setpos();
 
             GetWindowRect(GetDesktopWindow(),&rect);
             rect.left=(rect.right-D(MAINWND_WX))/2;
@@ -1396,13 +1396,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 manager_g->matcher=&bb->matcher;
                 memcpy(manager_g->items_list,manager_prev->items_list,sizeof(itembar_t)*RES_SLOTS);
-                manager_populate(manager_g);
-                manager_filter(manager_g,filters);
+                manager_g->manager_populate();
+                manager_g->manager_filter(filters);
                 manager_g->items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_LOAD?1:0;
                 manager_g->items_list[SLOT_DPRDIR].isactive=*drpext_dir?1:0;
-                manager_restorepos(manager_g,manager_prev);
+                manager_g->manager_restorepos(manager_prev);
                 viruscheck(L"",0,0);
-                manager_setpos(manager_g);
+                manager_g->manager_setpos();
                 log_con("}Sync\n");
                 LeaveCriticalSection(&sync);
 
@@ -1415,7 +1415,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     int cnt=0;
                     if(installmode==MODE_SCANNING)
                     {
-                        if(!panels[11].items[3].checked)manager_selectall(manager_g);
+                        if(!panels[11].items[3].checked)manager_g->manager_selectall();
                         itembar_t *itembar=&manager_g->items_list[RES_SLOTS];
                         for(i=RES_SLOTS;i<manager_g->items_handle.items;i++,itembar++)
                             if(itembar->checked)
@@ -1429,7 +1429,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                     if(installmode==MODE_NONE||(installmode==MODE_SCANNING&&cnt))
                     {
-                        if(!panels[11].items[3].checked)manager_selectall(manager_g);
+                        if(!panels[11].items[3].checked)manager_g->manager_selectall();
                         if((flags&FLAG_EXTRACTONLY)==0)
                         wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->text+manager_g->matcher->state->temp);
                         manager_install(INSTALLDRIVERS);
@@ -1574,8 +1574,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 PostMessage(hwnd,WM_DEVICECHANGE,7,2);
             if(wParam==VK_F6&&ctrl_down)
             {
-                manager_testitembars(manager_g);
-                manager_setpos(manager_g);
+                manager_g->manager_testitembars();
+                manager_g->manager_setpos();
                 redrawfield();
             }
             if(wParam==VK_F7)
@@ -1604,8 +1604,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         break;
                 }
                 //flags^=FLAG_SHOWDRPNAMES1;
-                manager_filter(manager_g,filters);
-                manager_setpos(manager_g);
+                manager_g->manager_filter(filters);
+                manager_g->manager_setpos();
                 redrawfield();
             }
             break;
@@ -1642,13 +1642,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             MoveWindow(hLang, Xp(&panels[2])+i,Yp(&panels[2])+j*D(PNLITEM_WY)-2+f,XP(&panels[2])-i-D(PNLITEM_OFSX),190*2,0);
             j=D(PANEL_LIST_OFSX)?1:3;
             MoveWindow(hTheme,Xp(&panels[2])+i,Yp(&panels[2])+j*D(PNLITEM_WY)-2+f,XP(&panels[2])-i-D(PNLITEM_OFSX),190*2,0);
-            manager_setpos(manager_g);
+            manager_g->manager_setpos();
 
             redrawmainwnd();
             break;
 
         case WM_TIMER:
-            if(manager_animate(manager_g))
+            if(manager_g->manager_animate())
                 redrawfield();
             else
                 KillTimer(hwnd,1);
@@ -1755,7 +1755,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(wp)
             {
                 case ID_SCHEDULE:
-                    manager_toggle(manager_g,floating_itembar);
+                    manager_g->manager_toggle(floating_itembar);
                     redrawfield();
                     break;
 
@@ -1767,7 +1767,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     }
                     else
                     {
-                        manager_expand(manager_g,floating_itembar);
+                        manager_g->manager_expand(floating_itembar);
                     }
                     break;
 
@@ -1811,7 +1811,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_DIS_RESTPNT:
                     flags^=FLAG_NORESTOREPOINT;
                     manager_g->items_list[SLOT_RESTORE_POINT].isactive=(flags&FLAG_NORESTOREPOINT)==0;
-                    manager_setpos(manager_g);
+                    manager_g->manager_setpos();
                     break;
 
                 default:
@@ -1886,13 +1886,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_SELECT_NONE:
-                    manager_selectnone(manager_g);
+                    manager_g->manager_selectnone();
                     redrawmainwnd();
                     redrawfield();
                     break;
 
                 case ID_SELECT_ALL:
-                    manager_selectall(manager_g);
+                    manager_g->manager_selectall();
                     redrawmainwnd();
                     redrawfield();
                     break;
@@ -1933,8 +1933,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                            panels[i].items[j].action_id!=ID_EXPERT_MODE)
                             filters+=1<<panels[i].items[j].action_id;
 
-                    manager_filter(manager_g,filters);
-                    manager_setpos(manager_g);
+                    manager_g->manager_filter(filters);
+                    manager_g->manager_setpos();
                     //manager_print(manager_g);
                     break;
 
@@ -2035,7 +2035,7 @@ void contextmenu(int x,int y)
     int flagssubmenu=0;
 
     if(!itembar->hwidmatch)flags1|=MF_GRAYED;
-    if(groupsize(manager_g,itembar->index)<2)flags2|=MF_GRAYED;
+    if(manager_g->groupsize(itembar->index)<2)flags2|=MF_GRAYED;
 
     if(floating_itembar==SLOT_RESTORE_POINT)
     {
@@ -2123,7 +2123,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             canvasField.begin(hwnd,rect.right,rect.bottom);
 
             BitBlt(canvasField.getDC(),0,0,rect.right,rect.bottom,canvasMain.getDC(),Xm(D(DRVLIST_OFSX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
-            manager_draw(manager_g,canvasField.getDC(),y);
+            manager_g->manager_draw(canvasField.getDC(),y);
 
             canvasField.end();
             break;
@@ -2162,7 +2162,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
 
         case WM_LBUTTONUP:
             if(!mouseclick)break;
-            manager_hitscan(manager_g,x,y,&floating_itembar,&i);
+            manager_g->manager_hitscan(x,y,&floating_itembar,&i);
             if(floating_itembar==SLOT_SNAPSHOT)
             {
                 statemode=0;
@@ -2178,7 +2178,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 if(installmode==MODE_INSTALLING)
                     installmode=MODE_STOPPING;
                 else if(installmode==MODE_NONE)
-                    manager_clear(manager_g);
+                    manager_g->manager_clear();
             }
             if(floating_itembar==SLOT_DOWNLOAD)
             {
@@ -2190,7 +2190,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
 
             if(floating_itembar>=0&&(i==1||i==0||i==3))
             {
-                manager_toggle(manager_g,floating_itembar);
+                manager_g->manager_toggle(floating_itembar);
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((flags&FLAG_EXTRACTONLY)==0)
@@ -2201,12 +2201,12 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             }
             if(floating_itembar>=0&&i==2)
             {
-                manager_expand(manager_g,floating_itembar);
+                manager_g->manager_expand(floating_itembar);
             }
             break;
 
         case WM_RBUTTONDOWN:
-            manager_hitscan(manager_g,x,y,&floating_itembar,&i);
+            manager_g->manager_hitscan(x,y,&floating_itembar,&i);
             if(floating_itembar>=0&&(i==0||i==3))
                 contextmenu(x,y);
             break;
@@ -2241,7 +2241,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 if(space_down)type=FLOATING_DRIVERLST;else
                 if(ctrl_down||expertmode)type=FLOATING_CMPDRIVER;
 
-                manager_hitscan(manager_g,x,y,&itembar_i,&i);
+                manager_g->manager_hitscan(x,y,&itembar_i,&i);
                 if(i==0&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||expertmode))
                     drawpopup(itembar_i,type,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_AUTORUN)

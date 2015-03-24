@@ -378,7 +378,7 @@ WCHAR *finddrp(WCHAR *s)
 //{ Collection
 void Collection::init(WCHAR *driverpacks_dirv,const WCHAR *index_bin_dirv,const WCHAR *index_linear_dirv,int flags_l)
 {
-    driverpack_list.reserve(50);
+    driverpack_list.reserve(100);
     flags=flags_l;
 
     driverpack_dir=driverpacks_dirv;
@@ -438,7 +438,7 @@ void Collection::save()
                     manager_g->items_list[SLOT_INDEXING].val2=count-1;
                     wcscpy(manager_g->items_list[SLOT_INDEXING].txt1,bufw2);
                     manager_g->items_list[SLOT_INDEXING].percent=(cur)*1000/count;
-                    manager_setpos(manager_g);
+                    manager_g->manager_setpos();
                     redrawfield();
                     cur++;
                 }
@@ -447,7 +447,7 @@ void Collection::save()
             }
         }
         manager_g->items_list[SLOT_INDEXING].isactive=0;
-        manager_setpos(manager_g);
+        manager_g->manager_setpos();
         log_con("DONE\n");
     }
 
@@ -703,7 +703,7 @@ void Collection::scanfolder(const WCHAR *path)
                     manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
                     manager_g->items_list[SLOT_INDEXING].val2=drp_count;
                     itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
-                    manager_setpos(manager_g);
+                    manager_g->manager_setpos();
                     drp->genindex();
                     drp_cur++;
                 }

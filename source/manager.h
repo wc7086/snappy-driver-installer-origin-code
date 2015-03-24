@@ -141,15 +141,44 @@ typedef struct _itembar_t
     int oldpos,curpos,tagpos,accel;
 }itembar_t;
 
-typedef struct _manager_t
+class manager_t
 {
+public:
     Matcher *matcher;
 
     itembar_t *items_list;
     heap_t items_handle;
 
     long animstart;
-}manager_t;
+
+public:
+    void manager_init(Matcher *matcher);
+    void manager_free();
+    void manager_populate();
+    void manager_filter(int options);
+    void manager_print_tbl();
+    void manager_print_hr();
+    void manager_sorta(Matcher *m,int *v);
+
+// User interaction
+    void manager_hitscan(int x,int y, int *i,int *zone);
+    void manager_clear();
+    void manager_testitembars();
+    void manager_toggle(int index);
+    void manager_expand(int index);
+    void manager_selectnone();
+    void manager_selectall();
+
+// Driver list
+    void manager_setpos();
+    int  manager_animate();
+    int  manager_drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
+    int  isbehind(int pos,int ofs,int j);
+    int  calc_cutoff();
+    void manager_draw(HDC hdc,int ofsy);
+    void manager_restorepos(manager_t *manager_prev);
+    int groupsize(int index);
+};
 
 typedef struct _textdata_t
 {
@@ -169,27 +198,12 @@ extern WCHAR extractdir[BUFLEN];
 //}
 
 // Manager
-void manager_init(manager_t *manager,Matcher *matcher);
-void manager_free(manager_t *manager);
-void manager_populate(manager_t *manager);
-void manager_filter(manager_t *manager,int options);
-void manager_print_tbl(manager_t *manager);
-void manager_print_hr(manager_t *manager);
-void manager_sorta(Matcher *m,int *v);
 int  manager_drplive(WCHAR *s);
-
-// User interaction
-void manager_hitscan(manager_t *manager,int x,int y, int *i,int *zone);
 void manager_install(int flags);
-void manager_clear(manager_t *manager);
-void manager_testitembars(manager_t *manager);
-void manager_toggle(manager_t *manager,int index);
-void manager_expand(manager_t *manager,int index);
-void manager_selectnone(manager_t *manager);
-void manager_selectall(manager_t *manager);
+void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *str2);
+
 
 // Helpers
-int groupsize(manager_t *manager,int index);
 void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
 void itembar_settext(manager_t *manager,int i,const WCHAR *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
@@ -200,15 +214,6 @@ int  box_status(int index);
 void str_date(version_t *v,WCHAR *buf);
 const WCHAR *str_version(version_t *ver);
 
-// Driver list
-void manager_setpos(manager_t *manager);
-int  manager_animate(manager_t *manager);
-void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *str2);
-int  manager_drawitem(manager_t *manager,HDC hdc,int index,int ofsy,int zone,int cutoff);
-int  isbehind(manager_t *manager,int pos,int ofs,int j);
-int  calc_cutoff(manager_t *manager);
-void manager_draw(manager_t *manager,HDC hdc,int ofsy);
-void manager_restorepos(manager_t *manager,manager_t *manager_prev);
 
 // Draw
 void TextOut_CM(HDC hdcMem,int x,int y,const WCHAR *str,int color,int *maxsz,int mode);
