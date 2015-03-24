@@ -36,18 +36,20 @@ void manager_t::manager_init(Matcher *matchera)
     int i;
     matcher=matchera;
 
-    heap_init(&items_handle,ID_MANAGER,(void **)&items_list,0,sizeof(itembar_t));
+    //heap_init(&items_handle,ID_MANAGER,(void **)&items_list,0,sizeof(itembar_t));
 
     for(i=0;i<RES_SLOTS;i++)
     {
-        itembar=(itembar_t *)heap_allocitem_ptr(&items_handle);
+        items_list.push_back(itembar_t());
+        itembar=&items_list.back();
+        //itembar=(itembar_t *)heap_allocitem_ptr(&items_handle);
         itembar_init(itembar,0,0,i,0,1);
     }
 }
 
 void manager_t::manager_free()
 {
-    heap_free(&items_handle);
+//    heap_free(&items_handle);
 }
 
 void manager_t::manager_sorta(Matcher *m,int *v)
@@ -101,7 +103,7 @@ int  manager_drplive(WCHAR *s)
     int k,needle=0;
 
     itembar=&manager_g->items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<manager_g->items_handle.items;k++,itembar++)
+    for(k=RES_SLOTS;k<manager_g->items_list.size();k++,itembar++)
     if(itembar->hwidmatch&&StrStrIW(itembar->hwidmatch->getdrp_packname(),s))
     {
         if(itembar->isactive)
@@ -120,8 +122,8 @@ void manager_t::manager_populate()
     int i,j,id=RES_SLOTS;
     int remap[1024];
 
-    items_handle.used=sizeof(itembar_t)*RES_SLOTS;
-    items_handle.items=RES_SLOTS;
+    //items_handle.used=sizeof(itembar_t)*RES_SLOTS;
+    //items_list.size()=RES_SLOTS;
 
     manager_sorta(matcher,remap);
 
@@ -132,16 +134,17 @@ void manager_t::manager_populate()
         hwidmatch=&matcher->hwidmatch_list[devicematch->start_matches];
         for(j=0;j<devicematch->num_matches;j++,hwidmatch++)
         {
-            itembar_init((itembar_t *)heap_allocitem_ptr(&items_handle),devicematch,hwidmatch,i+RES_SLOTS,
-                remap[i],j?2:2);
-            itembar_init((itembar_t *)heap_allocitem_ptr(&items_handle),devicematch,hwidmatch,i+RES_SLOTS,
-                remap[i],j?0:1);
+            items_list.push_back(itembar_t());
+            itembar_init(&items_list.back(),devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?2:2);
+            items_list.push_back(itembar_t());
+            itembar_init(&items_list.back(),devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1);
 
             id++;
         }
         if(!devicematch->num_matches)
         {
-            itembar_init((itembar_t *)heap_allocitem_ptr(&items_handle),devicematch,0,i+RES_SLOTS,remap[i],1);
+            items_list.push_back(itembar_t());
+            itembar_init(&items_list.back(),devicematch,0,i+RES_SLOTS,remap[i],1);
             id++;
         }
     }
@@ -158,7 +161,7 @@ void manager_t::manager_filter(int options)
 
     itembar=&items_list[RES_SLOTS];
 
-    for(i=RES_SLOTS;i<items_handle.items;)
+    for(i=RES_SLOTS;i<items_list.size();)
     {
         devicematch=itembar->devicematch;
         memset(cnt,0,sizeof(cnt));
@@ -275,11 +278,11 @@ void manager_t::manager_filter(int options)
     }
     i=0;
     itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_handle.items;k++,itembar++)
+    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
         if(itembar->isactive&&itembar->hwidmatch)i++;else itembar->checked=0;
 
     items_list[SLOT_NOUPDATES].isactive=
-        items_handle.items==RES_SLOTS||
+        items_list.size()==RES_SLOTS||
         (i==0&&statemode==0&&matcher->col->driverpack_list.size()>1)?1:0;
 
     items_list[SLOT_RESTORE_POINT].isactive=statemode==
@@ -301,12 +304,12 @@ void manager_t::manager_print_tbl()
     memset(limits,0,sizeof(limits));
 
     itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_handle.items;k++,itembar++)
+    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
         if(itembar->isactive&&itembar->hwidmatch)
             itembar->hwidmatch->calclen(limits);
 
     itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_handle.items;k++,itembar++)
+    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
             log_file("$%04d|",k);
@@ -333,7 +336,7 @@ void manager_t::manager_print_hr()
     log_file("{manager_print\n");
 
     itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_handle.items;k++,itembar++)
+    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
             if(flags&FLAG_FILTERSP&&!isvalidcat(itembar->hwidmatch,matcher->state))continue;
@@ -388,8 +391,8 @@ void manager_t::manager_hitscan(int x,int y,int *r,int *zone)
     y-=-D(DRVITEM_DIST_Y0);
     x-=Xg(D(DRVITEM_OFSX));
     if(kbpanel==KB_NONE)if(x<0||x>wx)return;
-    itembar=items_list;
-    for(i=0;i<items_handle.items;i++,itembar++)
+    itembar=&items_list[0];
+    for(i=0;i<items_list.size();i++,itembar++)
     if(itembar->isactive&&(itembar->first&2)==0)
     {
 
@@ -435,7 +438,7 @@ void manager_t::manager_clear()
     int i;
 
     itembar=&items_list[RES_SLOTS];
-    for(i=RES_SLOTS;i<items_handle.items;i++,itembar++)
+    for(i=RES_SLOTS;i<items_list.size();i++,itembar++)
     {
         itembar->install_status=0;
         itembar->percent=0;
@@ -452,13 +455,13 @@ void manager_t::manager_testitembars()
     itembar_t *itembar;
     int i,j=0,index=1;
 
-    itembar=items_list;
+    itembar=&items_list[0];
 
     manager_filter(FILTER_SHOW_CURRENT|FILTER_SHOW_NEWER);
     wcscpy(drpext_dir,L"drpext");
     items_list[SLOT_EMPTY].curpos=1;
 
-    for(i=0;i<items_handle.items;i++,itembar++)
+    for(i=0;i<items_list.size();i++,itembar++)
     if(i>SLOT_EMPTY&&i<RES_SLOTS)
     {
         if(i==SLOT_VIRUS_HIDDEN||i==SLOT_VIRUS_RECYCLER||i==SLOT_NODRIVERS||i==SLOT_DPRDIR)continue;
@@ -526,8 +529,8 @@ void manager_t::manager_toggle(int index)
     }
     group=itembar1->index;
 
-    itembar=items_list;
-    for(i=0;i<items_handle.items;i++,itembar++)
+    itembar=&items_list[0];
+    for(i=0;i<items_list.size();i++,itembar++)
         if(itembar!=itembar1&&itembar->index==group)
             itembar->checked&=~1;
 
@@ -545,10 +548,10 @@ void manager_t::manager_expand(int index)
     itembar1=&items_list[index];
     group=itembar1->index;
 
-    itembar=items_list;
+    itembar=&items_list[0];
     if((itembar1->isactive&2)==0)// collapsed
     {
-        for(i=0;i<items_handle.items;i++,itembar++)
+        for(i=0;i<items_list.size();i++,itembar++)
             if(itembar->index==group&&itembar->hwidmatch&&(itembar->hwidmatch->status&STATUS_INVALID)==0&&(itembar->first&2)==0)
                 {
                     itembar->isactive|=2; // expand
@@ -556,7 +559,7 @@ void manager_t::manager_expand(int index)
     }
     else
     {
-        for(i=0;i<items_handle.items;i++,itembar++)
+        for(i=0;i<items_list.size();i++,itembar++)
             if(itembar->index==group&&(itembar->first&2)==0)
             {
                 itembar->isactive&=1; //collapse
@@ -581,7 +584,7 @@ void manager_t::manager_selectnone()
         set_rstpnt(0);
     }
     itembar=&items_list[RES_SLOTS];
-    for(i=RES_SLOTS;i<items_handle.items;i++,itembar++)itembar->checked=0;
+    for(i=RES_SLOTS;i<items_list.size();i++,itembar++)itembar->checked=0;
 }
 
 void manager_t::manager_selectall()
@@ -599,7 +602,7 @@ void manager_t::manager_selectall()
         set_rstpnt(1);
 
     itembar=&items_list[RES_SLOTS];
-    for(i=RES_SLOTS;i<items_handle.items;i++,itembar++)
+    for(i=RES_SLOTS;i<items_list.size();i++,itembar++)
     {
         itembar->checked=0;
         if(itembar->isactive&&group!=itembar->index&&itembar->hwidmatch&&(itembar->first&2)==0)
@@ -717,7 +720,7 @@ int box_status(int index)
 
         case SLOT_DOWNLOAD:
         case SLOT_NOUPDATES:
-            return manager_g->items_handle.items>RES_SLOTS?BOX_NOUPDATES:BOX_DRVITEM_IF;
+            return manager_g->items_list.size()>RES_SLOTS?BOX_NOUPDATES:BOX_DRVITEM_IF;
 
         case SLOT_RESTORE_POINT:
             switch(itembar->install_status)
@@ -861,8 +864,8 @@ void manager_t::manager_setpos()
 //0:wide
 //1:narrow
 
-    itembar=items_list;
-    for(k=0;k<items_handle.items;k++,itembar++)
+    itembar=&items_list[0];
+    for(k=0;k<items_list.size();k++,itembar++)
     {
         devicematch=itembar->devicematch;
         cnt=group==itembar->index?1:0;
@@ -890,8 +893,8 @@ int manager_t::manager_animate()
     int chg=0;
     long tt1=GetTickCount()-animstart;
 
-    itembar=items_list;
-    for(i=0;i<items_handle.items;i++,itembar++)
+    itembar=&items_list[0];
+    for(i=0;i<items_list.size();i++,itembar++)
     {
         if(itembar->curpos==itembar->tagpos)continue;
         chg=1;
@@ -919,8 +922,8 @@ int manager_t::groupsize(int index)
     int i;
     int num=0;
 
-    itembar=items_list;
-    for(i=0;i<items_handle.items;i++,itembar++)
+    itembar=&items_list[0];
+    for(i=0;i<items_list.size();i++,itembar++)
         if(itembar->index==index&&itembar->hwidmatch&&(itembar->hwidmatch->status&STATUS_INVALID)==0&&(itembar->first&2)==0)
             num++;
 
@@ -1066,7 +1069,7 @@ int  manager_t::manager_drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
         case SLOT_NOUPDATES:
             pos+=D(ITEM_TEXT_OFS_Y);
-            wsprintf(bufw,L"%s",STR(items_handle.items>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
+            wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
             SetTextColor(hdc,D(boxindex[box_status(index)]+14));
             TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw,wcslen(bufw));
             break;
@@ -1299,7 +1302,7 @@ void manager_t::manager_draw(HDC hdc,int ofsy)
     cutoff=calc_cutoff();
     updatecur();
     updateoverall(this);
-    for(i=items_handle.items-1;i>=0;i--)
+    for(i=items_list.size()-1;i>=0;i--)
     {
         itembar=&items_list[i];
         if(itembar->isactive)continue;
@@ -1307,7 +1310,7 @@ void manager_t::manager_draw(HDC hdc,int ofsy)
         if(isbehind((itembar->curpos>>16),ofsy,i))continue;
         nm+=manager_drawitem(hdc,i,ofsy,-1,cutoff);
     }
-    for(i=items_handle.items-1;i>=0;i--)
+    for(i=items_list.size()-1;i>=0;i--)
     {
         itembar=&items_list[i];
         if(itembar->isactive==0)continue;
@@ -1354,7 +1357,7 @@ void manager_t::manager_restorepos(manager_t *manager_old)
     itembar_t *itembar_new,*itembar_old;
     CHAR *t_new,*t_old;
     int i,j;
-    int show_changes=manager_old->items_handle.items>20;
+    int show_changes=manager_old->items_list.size()>20;
 
     //if(statemode==STATEMODE_LOAD)show_changes=0;
     if((log_verbose&LOG_VERBOSE_DEVSYNC)==0)show_changes=0;
@@ -1373,10 +1376,10 @@ void manager_t::manager_restorepos(manager_t *manager_old)
         return;
     }
 
-    log_con("{Updated %d->%d\n",manager_old->items_handle.items,items_handle.items);
+    log_con("{Updated %d->%d\n",manager_old->items_list.size(),items_list.size());
     log_console=0;
     itembar_new=&items_list[RES_SLOTS];
-    for(i=RES_SLOTS;i<items_handle.items;i++,itembar_new++)
+    for(i=RES_SLOTS;i<items_list.size();i++,itembar_new++)
     {
         itembar_old=&manager_old->items_list[RES_SLOTS];
 
@@ -1386,7 +1389,7 @@ void manager_t::manager_restorepos(manager_t *manager_old)
             itembar_act=i;
         }
 
-        for(j=RES_SLOTS;j<manager_old->items_handle.items;j++,itembar_old++)
+        for(j=RES_SLOTS;j<manager_old->items_list.size();j++,itembar_old++)
         {
             if(itembar_old->isactive!=9)
             {
@@ -1412,7 +1415,7 @@ void manager_t::manager_restorepos(manager_t *manager_old)
             }
         }
         if(show_changes)
-        if(j==manager_old->items_handle.items)
+        if(j==manager_old->items_list.size())
         {
             log_con("\nAdded   $%04d|%S|%S|",i,t_new+itembar_new->devicematch->device->Driver,
                     t_new+itembar_new->devicematch->device->Devicedesc);
@@ -1431,7 +1434,7 @@ void manager_t::manager_restorepos(manager_t *manager_old)
 
     itembar_old=&manager_old->items_list[RES_SLOTS];
     if(show_changes)
-    for(j=RES_SLOTS;j<manager_old->items_handle.items;j++,itembar_old++)
+    for(j=RES_SLOTS;j<manager_old->items_list.size();j++,itembar_old++)
     {
         if(itembar_old->isactive!=9)
         {
@@ -1593,8 +1596,8 @@ void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i)
 
     memset(limits,0,sizeof(limits));
 
-    itembar=manager->items_list;
-    for(k=0;k<manager->items_handle.items;k++,itembar++)
+    itembar=&manager->items_list[0];
+    for(k=0;k<manager->items_list.size();k++,itembar++)
         if(itembar->index==group&&itembar->hwidmatch)
             popup_driverline(itembar->hwidmatch,limits,hdcMem,td.y,0,k);
 
@@ -1623,8 +1626,8 @@ void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i)
     td.y+=lne;
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_AVAILDRVS),c0,&maxsz,1);td.y+=lne;
 
-    itembar=manager->items_list;
-    for(k=0;k<manager->items_handle.items;k++,itembar++)
+    itembar=&manager->items_list[0];
+    for(k=0;k<manager->items_list.size();k++,itembar++)
         if(itembar->index==group&&itembar->hwidmatch&&(itembar->first&2)==0)
     {
         if(k==i)

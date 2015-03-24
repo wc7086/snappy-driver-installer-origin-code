@@ -132,7 +132,7 @@ void updateoverall(manager_t *manager)
         return;
     }
     itembar_t *itembar1=&manager->items_list[RES_SLOTS];
-    for(j=RES_SLOTS;j<manager->items_handle.items;j++,itembar1++)
+    for(j=RES_SLOTS;j<manager->items_list.size();j++,itembar1++)
     {
         if(itembar1->checked||itembar1->install_status){_totalitems++;}
         if(itembar1->install_status&&!itembar1->checked){_processeditems++;}
@@ -284,7 +284,7 @@ unsigned int __stdcall thread_install(void *arg)
     // Download driverpacks
 #ifdef USE_TORRENT
     itembar=&manager_g->items_list[RES_SLOTS];
-    for(i=RES_SLOTS;i<manager_g->items_handle.items&&installmode==MODE_INSTALLING;i++,itembar++)
+    for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
         if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
     {
         if(!istorrentready())
@@ -368,8 +368,8 @@ unsigned int __stdcall thread_install(void *arg)
     wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->state->text+manager_g->matcher->state->windir);
     _wremove(buf);
 goaround:
-    itembar=manager_g->items_list;
-    for(i=0;i<manager_g->items_handle.items&&installmode==MODE_INSTALLING;i++,itembar++)
+    itembar=&manager_g->items_list[0];
+    for(i=0;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
         if(i>=RES_SLOTS&&itembar->checked&&itembar->isactive&&itembar->hwidmatch)
     {
         int unpacked=0;
@@ -416,7 +416,7 @@ goaround:
                     hwidmatch->getdrp_infpath());
 
             itembar1=itembar;
-            for(j=i;j<manager_g->items_handle.items;j++,itembar1++)
+            for(j=i;j<manager_g->items_list.size();j++,itembar1++)
                 if(itembar1->checked&&
                    !wcscmp(hwidmatch->getdrp_packpath(),itembar1->hwidmatch->getdrp_packpath())&&
                    !wcscmp(hwidmatch->getdrp_packname(),itembar1->hwidmatch->getdrp_packname()))
@@ -528,7 +528,7 @@ goaround:
     if(installmode==MODE_INSTALLING)
     {
         itembar=&manager_g->items_list[RES_SLOTS];
-        for(j=RES_SLOTS;j<manager_g->items_handle.items;j++,itembar++)
+        for(j=RES_SLOTS;j<manager_g->items_list.size();j++,itembar++)
             if(itembar->checked)
                 goto goaround;
     }

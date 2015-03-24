@@ -1395,7 +1395,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 manager_g=&manager_v[manager_active];
 
                 manager_g->matcher=&bb->matcher;
-                memcpy(manager_g->items_list,manager_prev->items_list,sizeof(itembar_t)*RES_SLOTS);
+                memcpy(&manager_g->items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
                 manager_g->manager_populate();
                 manager_g->manager_filter(filters);
                 manager_g->items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_LOAD?1:0;
@@ -1417,7 +1417,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         if(!panels[11].items[3].checked)manager_g->manager_selectall();
                         itembar_t *itembar=&manager_g->items_list[RES_SLOTS];
-                        for(i=RES_SLOTS;i<manager_g->items_handle.items;i++,itembar++)
+                        for(i=RES_SLOTS;i<manager_g->items_list.size();i++,itembar++)
                             if(itembar->checked)
                         {
                             cnt++;
