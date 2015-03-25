@@ -39,7 +39,8 @@ const char *nts[NUM_DECS]=
     "nt.6.0","ntx86.6.0","ntamd64.6.0","ntia64.6.0", // Vista
     "nt.6.1","ntx86.6.1","ntamd64.6.1","ntia64.6.1", // 7
     "nt.6.2","ntx86.6.2","ntamd64.6.2","ntia64.6.2", // 8
-    "nt.6.3","ntx86.6.3","ntamd64.6.3","ntia64.6.3", // 9
+    "nt.6.3","ntx86.6.3","ntamd64.6.3","ntia64.6.3", // 10
+    "nt.10.0","ntx86.10.3","ntamd64.10.0","ntia64.10.0", // 10
     "nt",    "ntx86",    "ntamd64",    "ntia64",
     "nt..",  "ntx86..",  "ntamd64..",  "ntia64..",
 };
