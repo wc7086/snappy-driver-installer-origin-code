@@ -124,7 +124,7 @@ void updateoverall(manager_t *manager)
 {
     int _totalitems=0;
     int _processeditems=0;
-    int j;
+    unsigned j;
 
     if(installmode==MODE_NONE)
     {
@@ -262,7 +262,7 @@ unsigned int __stdcall thread_install(void *arg)
     WCHAR hwid[BUFLEN];
     WCHAR inf[BUFLEN];
     WCHAR buf[BUFLEN];
-    int i,j,downdrivers=0;
+    unsigned i,j,downdrivers=0;
     RESTOREPOINTINFOW pRestorePtSpec;
     STATEMGRSTATUS pSMgrStatus;
     HINSTANCE hinstLib=0;

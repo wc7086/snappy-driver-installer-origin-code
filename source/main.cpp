@@ -74,7 +74,7 @@ int mainx_w,mainy_w;
 int mousex=-1,mousey=-1,mousedown=0,mouseclick=0;
 int cntd=0;
 int hideconsole=SW_HIDE;
-int offset_target=0;
+unsigned offset_target=0;
 
 int kbpanel=KB_NONE;
 int kbitem[]={0,0,0,0,0,0,0,0,0,0,0};
@@ -159,6 +159,12 @@ void str_unicode2ansi(char *a)
 void str_unicode2ansi(const WCHAR *s,char *d)
 {
     while((*d++=*s++));
+}
+int _wtoi_my(const WCHAR *str)
+{
+    int val;
+    swscanf(str,L"%d",&val);
+    return val;
 }
 
 void settings_parse(const WCHAR *str,int ind)
@@ -1293,7 +1299,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     RECT rect;
     short x,y;
 
-    int i,j,f;
+    int i;
+    int j,f;
     int wp;
     long long timer=GetTickCount();
 
@@ -1417,7 +1424,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         if(!panels[11].items[3].checked)manager_g->manager_selectall();
                         itembar_t *itembar=&manager_g->items_list[RES_SLOTS];
-                        for(i=RES_SLOTS;i<manager_g->items_list.size();i++,itembar++)
+                        for(i=RES_SLOTS;(unsigned)i<manager_g->items_list.size();i++,itembar++)
                             if(itembar->checked)
                         {
                             cnt++;

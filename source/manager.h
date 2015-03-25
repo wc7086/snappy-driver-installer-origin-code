@@ -223,7 +223,7 @@ void format_size(WCHAR *buf,long long val,int isspeed);
 void format_time(WCHAR *buf,long long val);
 void popup_resize(int x,int y);
 void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int ln,int mode,int index);
-void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i);
+void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,unsigned i);
 int  pickcat(Hwidmatch *hwidmatch,State *state);
 int  isvalidcat(Hwidmatch *hwidmatch,State *state);
 void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int i);

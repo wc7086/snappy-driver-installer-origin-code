@@ -401,7 +401,7 @@ void Collection::save()
     WCHAR buf1[BUFLEN];
     WCHAR buf2[BUFLEN];
     WCHAR buf3[BUFLEN];
-    int i;
+    unsigned i;
 
     time_indexsave=GetTickCount();
 

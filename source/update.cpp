@@ -665,12 +665,6 @@ void update_resume()
     torrenttime=GetTickCount();
 }
 
-int _wtoi_my(const WCHAR *str)
-{
-    int val;
-    swscanf(str,L"%d",&val);
-    return val;
-}
 void upddlg_calctotalsize(HWND hList)
 {
     WCHAR buf[BUFLEN];

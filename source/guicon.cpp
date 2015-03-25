@@ -85,7 +85,7 @@ void gen_timestamp()
              1900+ti->tm_year,ti->tm_mon+1,ti->tm_mday,
              ti->tm_hour,ti->tm_min,ti->tm_sec,pcname);
 }
-void myterminate()
+static void myterminate()
 {
     WCHAR buf[BUFLEN];
 
@@ -124,7 +124,7 @@ void myterminate()
     abort();
 }
 
-void myunexpected()
+static void myunexpected()
 {
     log_con("ERROR: myunexpected()\n");
     myterminate();
@@ -351,6 +351,7 @@ int canWrite(const WCHAR *path)
 
 void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
