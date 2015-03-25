@@ -163,7 +163,7 @@ extern int floating_itembar;
 extern int floating_x,floating_y;
 extern int horiz_sh;
 extern int ret_global;
-extern int offset_target;
+extern unsigned offset_target;
 extern int kbpanel,kbitem[KB_PANEL_CHK+1];
 
 // Settings

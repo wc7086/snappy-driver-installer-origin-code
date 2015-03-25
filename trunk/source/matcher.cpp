@@ -705,7 +705,7 @@ void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int is
 {
     Driverpack *drp;
     Hwidmatch *hwidmatch;
-    int i;
+    unsigned i;
     int code;
     int sz;
     int isfound;
@@ -810,15 +810,16 @@ void Matcher::sort()
     devicematch_t *devicematch;
     Hwidmatch *match1,*match2,*bestmatch;
     Hwidmatch matchtmp;
-    char sect1[BUFLEN],sect2[BUFLEN];
-    int k,i,j;
 
+    char sect1[BUFLEN],sect2[BUFLEN];
+    int k;
+    unsigned i,j;
     devicematch=devicematch_list;
     for(k=0;k<devicematch_handle.items;k++,devicematch++)
     {
         // Sort
         match1=&hwidmatch_list[devicematch->start_matches];
-        for(i=0;i<devicematch->num_matches-1;i++,match1++)
+        for(i=0;i+1<devicematch->num_matches;i++,match1++)
         {
             match2=&hwidmatch_list[devicematch->start_matches+i+1];
             bestmatch=match1;
@@ -836,7 +837,7 @@ void Matcher::sort()
 
         // Mark dups
         match1=&hwidmatch_list[devicematch->start_matches];
-        for(i=0;i<devicematch->num_matches-1;i++,match1++)
+        for(i=0;i+1<devicematch->num_matches;i++,match1++)
         {
             match1->getdrp_drvsection(sect1);
 
@@ -861,7 +862,8 @@ void Matcher::print()
     Device *cur_device;
     Hwidmatch *hwidmatch;
     int limits[7];
-    int i,j;
+    int i;
+    unsigned j;
 
     if((log_verbose&LOG_VERBOSE_MATCHER)==0)return;
     log_file("\n{matcher_print[devices=%d,hwids=%d]\n",devicematch_handle.items,hwidmatch_handle.items);

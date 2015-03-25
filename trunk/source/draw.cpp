@@ -766,7 +766,7 @@ void panel_draw(HDC hdc,panel_t *panel)
                 SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
                 if(i==1&&panel->index==8)
                 {
-                    int j,cnt=0;
+                    unsigned j,cnt=0;
                     itembar_t *itembar;
 
                     itembar=&manager_g->items_list[RES_SLOTS];

@@ -100,7 +100,7 @@ void manager_t::manager_sorta(Matcher *m,int *v)
 int  manager_drplive(WCHAR *s)
 {
     itembar_t *itembar;
-    int k,needle=0;
+    unsigned k,needle=0;
 
     itembar=&manager_g->items_list[RES_SLOTS];
     for(k=RES_SLOTS;k<manager_g->items_list.size();k++,itembar++)
@@ -119,7 +119,8 @@ void manager_t::manager_populate()
 {
     devicematch_t *devicematch;
     Hwidmatch *hwidmatch;
-    int i,j,id=RES_SLOTS;
+    int i,id=RES_SLOTS;
+    unsigned j;
     int remap[1024];
 
     //items_handle.used=sizeof(itembar_t)*RES_SLOTS;
@@ -154,7 +155,7 @@ void manager_t::manager_filter(int options)
 {
     devicematch_t *devicematch;
     itembar_t *itembar,*itembar1,*itembar_drp=0,*itembar_drpcur=0;
-    int i,j,k;
+    unsigned i,j,k;
     int cnt[NUM_STATUS+1];
     int ontorrent;
     int o1=options&FILTER_SHOW_ONE;
@@ -296,7 +297,7 @@ void manager_t::manager_filter(int options)
 void manager_t::manager_print_tbl()
 {
     itembar_t *itembar;
-    int k,act=0;
+    unsigned k,act=0;
     int limits[7];
 
     if((log_verbose&LOG_VERBOSE_MANAGER)==0)return;
@@ -330,7 +331,7 @@ void manager_t::manager_print_hr()
 {
     WCHAR buf[BUFLEN];
     itembar_t *itembar;
-    int k,act=0;
+    unsigned k,act=0;
 
     if((log_verbose&LOG_VERBOSE_MANAGER)==0)return;
     log_file("{manager_print\n");
@@ -377,7 +378,7 @@ void manager_t::manager_print_hr()
 void manager_t::manager_hitscan(int x,int y,int *r,int *zone)
 {
     itembar_t *itembar;
-    int i;
+    unsigned i;
     int pos;
     int ofsy=getscrollpos();
     int cutoff=calc_cutoff()+D(DRVITEM_DIST_Y0);
@@ -435,7 +436,7 @@ void manager_t::manager_hitscan(int x,int y,int *r,int *zone)
 void manager_t::manager_clear()
 {
     itembar_t *itembar;
-    int i;
+    unsigned i;
 
     itembar=&items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<items_list.size();i++,itembar++)
@@ -453,7 +454,7 @@ void manager_t::manager_clear()
 void manager_t::manager_testitembars()
 {
     itembar_t *itembar;
-    int i,j=0,index=1;
+    unsigned i,j=0,index=1;
 
     itembar=&items_list[0];
 
@@ -509,7 +510,8 @@ void manager_t::manager_testitembars()
 void manager_t::manager_toggle(int index)
 {
     itembar_t *itembar,*itembar1;
-    int i,group;
+    unsigned i;
+    int group;
 
 #ifdef USE_TORRENT
     if(installmode&&!torrentstatus.sessionpaused)
@@ -543,7 +545,8 @@ void manager_t::manager_toggle(int index)
 void manager_t::manager_expand(int index)
 {
     itembar_t *itembar,*itembar1;
-    int i,group;
+    unsigned i;
+    int group;
 
     itembar1=&items_list[index];
     group=itembar1->index;
@@ -572,7 +575,7 @@ void manager_t::manager_expand(int index)
 void manager_t::manager_selectnone()
 {
     itembar_t *itembar;
-    int i;
+    unsigned i;
 
 #ifdef USE_TORRENT
     if(installmode&&!torrentstatus.sessionpaused)
@@ -590,7 +593,8 @@ void manager_t::manager_selectnone()
 void manager_t::manager_selectall()
 {
     itembar_t *itembar;
-    int i,group=-1;
+    unsigned i;
+    int group=-1;
 
 #ifdef USE_TORRENT
     if(installmode&&!torrentstatus.sessionpaused)
@@ -854,7 +858,7 @@ void manager_t::manager_setpos()
 {
     devicematch_t *devicematch;
     itembar_t *itembar,*lastitembar=0;
-    int k;
+    unsigned k;
     int cnt=0;
     int pos=D(DRVITEM_OFSY);
     //int pos=0;
@@ -888,7 +892,7 @@ void manager_t::manager_setpos()
 int manager_t::manager_animate()
 {
     itembar_t *itembar;
-    int i;
+    unsigned i;
     int pos=0;
     int chg=0;
     long tt1=GetTickCount()-animstart;
@@ -918,13 +922,10 @@ int manager_t::manager_animate()
 
 int manager_t::groupsize(int index)
 {
-    itembar_t *itembar;
-    int i;
     int num=0;
 
-    itembar=&items_list[0];
-    for(i=0;i<items_list.size();i++,itembar++)
-        if(itembar->index==index&&itembar->hwidmatch&&(itembar->hwidmatch->status&STATUS_INVALID)==0&&(itembar->first&2)==0)
+    for(auto itembar:items_list)
+        if(itembar.index==index&&itembar.hwidmatch&&(itembar.hwidmatch->status&STATUS_INVALID)==0&&(itembar.first&2)==0)
             num++;
 
     return num;
@@ -1356,7 +1357,7 @@ void manager_t::manager_restorepos(manager_t *manager_old)
 {
     itembar_t *itembar_new,*itembar_old;
     CHAR *t_new,*t_old;
-    int i,j;
+    unsigned i,j;
     int show_changes=manager_old->items_list.size()>20;
 
     //if(statemode==STATEMODE_LOAD)show_changes=0;
@@ -1567,14 +1568,14 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
     TextOutP(&td,L"| %s",bufw);
 }
 
-void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,int i)
+void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,unsigned i)
 {
     itembar_t *itembar;
     POINT p;
     WCHAR i_hwid[BUFLEN];
     WCHAR bufw[BUFLEN];
     int lne=D(POPUP_WY);
-    int k;
+    unsigned k;
     int maxsz=0;
     int limits[30];
     int c0=D(POPUP_TEXT_COLOR);
