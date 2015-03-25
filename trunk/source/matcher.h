@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define NUM_DECS 11*4
+#define NUM_DECS 12*4
 #define NUM_MARKERS 31
 
 enum DRIVER_STATUS
