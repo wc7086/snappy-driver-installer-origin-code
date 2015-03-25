@@ -86,11 +86,26 @@ public:
     void end();
 };
 
-typedef struct _panel_t
+class panel_t
 {
+public:
     panelitem_t *items;
-    int index;
-}panel_t;
+
+private:
+    int index,indofs;
+
+    int Xp();
+    int Yp();
+    int XP();
+    int YP();
+
+public:
+    panel_t(panelitem_t *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
+    int  panel_hitscan(int x,int y);
+    void panel_draw_inv();
+    virtual void panel_draw(HDC hdc);
+    void moveWindow(HWND hwnd,int i,int j,int f);
+};
 
 //}
 
@@ -102,12 +117,6 @@ extern panelitem_t panel3[];
 extern panelitem_t panel3_w[];
 extern panel_t panels[NUM_PANELS];
 //}
-
-
-int Xp(panel_t *p);
-int Yp(panel_t *p);
-int XP(panel_t *p);
-int YP(panel_t *p);
 
 int Xm(int x);
 int Ym(int y);
@@ -128,9 +137,7 @@ void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 
 // Panel
-void panel_setfilters(panel_t *panel);
 int  panels_hitscan(int hx,int hy,int *ii);
-int  panel_hitscan(panel_t *panel,int x,int y);
-void panel_draw_inv(panel_t *panel);
-void panel_draw(HDC hdc,panel_t *panel);
+void panel_setfilters(panel_t *panel);
+
 

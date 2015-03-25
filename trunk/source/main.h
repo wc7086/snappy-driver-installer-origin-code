@@ -80,8 +80,11 @@ extern "C"
 #define VER_INDEX           0x204
 
 // Mode
-#define STATEMODE_LOAD      2
-#define STATEMODE_EXIT      3
+enum STATEMODE
+{
+    STATEMODE_LOAD      =1,
+    STATEMODE_EXIT      =2,
+};
 
 // Popup window
 enum FLOATING_TYPE
@@ -255,6 +258,5 @@ void drvdir();
 const WCHAR *getHWIDby(int id,int num);
 void escapeAmpUrl(WCHAR *buf,WCHAR *source);
 void escapeAmp(WCHAR *buf,WCHAR *source);
-void contextmenu3(int x,int y);
 void contextmenu2(int x,int y);
 void contextmenu(int x,int y);

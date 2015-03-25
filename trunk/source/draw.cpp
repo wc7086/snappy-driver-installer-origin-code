@@ -151,34 +151,21 @@ panel_t panels[NUM_PANELS]=
 };
 //}
 
-
-int Xp(panel_t *p)
+int panel_t::Xp()
 {
-    int idofs=PAN_ENT*p->index+PAN_ENT;
-    int x=D(PANEL_OFSX+idofs);
-
-    return x>=0?x:(main1x_c+x);
+    return Xm(D(PANEL_OFSX+indofs));
 }
-int Yp(panel_t *p)
+int panel_t::Yp()
 {
-    int idofs=PAN_ENT*p->index+PAN_ENT;
-    int y=D(PANEL_OFSY+idofs);
-
-    return y>=0?y:(main1y_c+y);
+    return Ym(D(PANEL_OFSY+indofs));
 }
-int XP(panel_t *p)
+int panel_t::XP()
 {
-    int idofs=PAN_ENT*p->index+PAN_ENT;
-    int x=D(PANEL_WX+idofs),o=D(PANEL_OFSX+idofs);
-
-    return x>=0?x:(main1x_c+x-o);
+    return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
 }
-int YP(panel_t *p)
+int panel_t::YP()
 {
-    int idofs=PAN_ENT*p->index+PAN_ENT;
-    int y=D(PANEL_WY+idofs),o=D(PANEL_OFSY+idofs);
-
-    return y>=0?y:(main1y_c+y-o);
+    return YM(D(PANEL_WY+indofs),D(PANEL_OFSY+indofs));
 }
 
 int Xm(int x){return x>=0?x:(main1x_c+x);}
@@ -612,32 +599,31 @@ void Canvas::end()
 //}
 
 //{ Panel
-int panel_hitscan(panel_t *panel,int hx,int hy)
+int panel_t::panel_hitscan(int hx,int hy)
 {
-    int idofs=PAN_ENT*panel->index+PAN_ENT;
-    int wy=D(PANEL_WY+idofs);
+    int wy=D(PANEL_WY+indofs);
 
-    if(kbpanel&&panel->items[0].str_id==kbpanel)
+    if(kbpanel&&items[0].str_id==kbpanel)
     {
         if(kbpanel==KB_INSTALL)
         {
             if(kbitem[kbpanel]>2)kbitem[kbpanel]=2;
-            return panel->index-8==kbitem[kbpanel];
+            return index-8==kbitem[kbpanel];
         }
-        if(kbitem[kbpanel]>panel->items[0].action_id)kbitem[kbpanel]=panel->items[0].action_id;
-        while(panel->items[kbitem[kbpanel]].type!=TYPE_CHECKBOX&&
-              panel->items[kbitem[kbpanel]].type!=TYPE_BUTTON)kbitem[kbpanel]++;
+        if(kbitem[kbpanel]>items[0].action_id)kbitem[kbpanel]=items[0].action_id;
+        while(items[kbitem[kbpanel]].type!=TYPE_CHECKBOX&&
+              items[kbitem[kbpanel]].type!=TYPE_BUTTON)kbitem[kbpanel]++;
 
         return kbitem[kbpanel];
     }
 
     if(!wy)return -1;
-    hx-=Xp(panel)+D(PNLITEM_OFSX);
-    hy-=Yp(panel)+D(PNLITEM_OFSY);
+    hx-=Xp()+D(PNLITEM_OFSX);
+    hy-=Yp()+D(PNLITEM_OFSY);
 
-    if(!expertmode&&panel->items[0].type==TYPE_GROUP_BREAK)return -2;
-    if(hx<0||hy<0||hx>XP(panel)-D(PNLITEM_OFSX)*2)return -3;
-    if(hy/wy>=panel->items[0].action_id)return -4;
+    if(!expertmode&&items[0].type==TYPE_GROUP_BREAK)return -2;
+    if(hx<0||hy<0||hx>XP()-D(PNLITEM_OFSX)*2)return -3;
+    if(hy/wy>=items[0].action_id)return -4;
     return hy/wy+1;
 }
 
@@ -648,7 +634,7 @@ int panels_hitscan(int hx,int hy,int *ii)
     *ii=-1;
     for(i=0;i<NUM_PANELS;i++)
     {
-        r=panel_hitscan(&panels[i],hx,hy);
+        r=panels[i].panel_hitscan(hx,hy);
         if(r>=0&&panels[i].items[r].type)
         {
             *ii=i;
@@ -658,113 +644,118 @@ int panels_hitscan(int hx,int hy,int *ii)
     return -1;
 }
 
-void panel_draw_inv(panel_t *panel)
+void panel_t::panel_draw_inv()
 {
-    int x=Xp(panel),y=Yp(panel);
-    int idofs=PAN_ENT*panel->index+PAN_ENT;
-    int wy=D(PANEL_WY+idofs);
+    int x=Xp(),y=Yp();
+    int wy=D(PANEL_WY+indofs);
     int ofsy=D(PNLITEM_OFSY);
     RECT rect;
 
-//    if(!panel)return;
     rect.left=x;
     rect.top=y;
-    rect.right=x+XP(panel);
-    rect.bottom=y+(wy+1)*panel->items[0].action_id+ofsy*2;
+    rect.right=x+XP();
+    rect.bottom=y+(wy+1)*items[0].action_id+ofsy*2;
     InvalidateRect(hMain,&rect,0);
 }
+/*
+Panel
+    SysInfo panel
+    CheckBox
+    Button
+        Big Button
+    Text
+*/
+void panel_t::moveWindow(HWND hwnd,int i,int j,int f)
+{
+    MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
+}
 
-void panel_draw(HDC hdc,panel_t *panel)
+void panel_t::panel_draw(HDC hdc)
 {
     WCHAR buf[BUFLEN];
     POINT p;
     HRGN rgn=0;
     int cur_i;
     int i;
-    int idofs=PAN_ENT*panel->index+PAN_ENT;
-    int x=Xp(panel),y=Yp(panel);
+    int x=Xp(),y=Yp();
     int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
-    int wy=D(PANEL_WY+idofs);
+    int wy=D(PANEL_WY+indofs);
 
-    if(XP(panel)<0)return;
-    //if(panel_lasti/256!=panel->index)return;
+    if(XP()<0)return;
+    if(!D(PANEL_WY+indofs))return;
 
     GetCursorPos(&p);
     ScreenToClient(hMain,&p);
-    cur_i=panel_hitscan(panel,p.x,p.y);
+    cur_i=panel_hitscan(p.x,p.y);
 
-    if(!D(PANEL_WY+idofs))return;
-    for(i=0;i<panel->items[0].action_id+1;i++)
+    for(i=0;i<items[0].action_id+1;i++)
     {
-        if(i==1&&panel->index==0)
+        SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
+
+        // System Info (1st line)
+        if(i==1&&index==0)
         {
             wsprintf(buf,L"%s",STR(STR_SYSINF_MOTHERBOARD));
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s",STR(STR_SYSINF_ENVIRONMENT));
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
         }
-        if(i==2&&panel->index==0)
+
+        // System Info (2nd line)
+        if(i==2&&index==0)
         {
             wsprintf(buf,L"%s (%d-bit)",get_winverstr(manager_g),manager_g->matcher->state->architecture?64:32);
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s",manager_g->matcher->state->getProduct());
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s",STR(STR_SYSINF_WINDIR));
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s",manager_g->matcher->state->text+manager_g->matcher->state->windir);
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,buf,wcslen(buf));
         }
-        if(i==3&&panel->index==0)
+
+        // System Info (3rd line)
+        if(i==3&&index==0)
         {
-            if(XP(panel)<10+SYSINFO_COL1)
+            if(XP()<10+SYSINFO_COL1)
                 wsprintf(buf,L"%s",manager_g->matcher->state->getProduct());
             else
                 wsprintf(buf,L"%s",manager_g->matcher->state->platform.szCSDVersion);
-
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s",STR(STR_SYSINF_TEMP));
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
 
             wsprintf(buf,L"%s",manager_g->matcher->state->text+manager_g->matcher->state->temp);
-            SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,buf,wcslen(buf));
         }
-        if(panel->items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;
-        switch(panel->items[i].type)
+        if(items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;
+        switch(items[i].type)
         {
             case TYPE_CHECKBOX:
-                drawcheckbox(hdc,x+ofsx,y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,panel->items[i].checked,i==cur_i);
+                drawcheckbox(hdc,x+ofsx,y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,i==cur_i);
                 SetTextColor(hdc,D(i==cur_i?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOut(hdc,x+D(CHKBOX_TEXT_OFSX)+ofsx,y+ofsy,STR(panel->items[i].str_id),wcslen(STR(panel->items[i].str_id)));
-                if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP(panel)-ofsx,y+ofsy+wy,0xff00,1);
+                TextOut(hdc,x+D(CHKBOX_TEXT_OFSX)+ofsx,y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
                 y+=D(PNLITEM_WY);
                 break;
 
             case TYPE_BUTTON:
-                if(panel->index>=8&&panel->index<=10&&D(PANEL_OUTLINE_WIDTH+idofs)<0)
-                    box_draw(hdc,x+ofsx,y+ofsy,x+XP(panel)-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+panel->index*2+2:BOX_PANEL+panel->index*2+2);
+                if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
+                    box_draw(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
                 else
-                    box_draw(hdc,x+ofsx,y+ofsy,x+XP(panel)-ofsx,y+ofsy+wy-1,i==cur_i?BOX_BUTTON_H:BOX_BUTTON);
+                    box_draw(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,i==cur_i?BOX_BUTTON_H:BOX_BUTTON);
 
                 SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
-                if(i==1&&panel->index==8)
+
+                if(i==1&&index==8) // Install button
                 {
                     unsigned j,cnt=0;
                     itembar_t *itembar;
@@ -773,17 +764,17 @@ void panel_draw(HDC hdc,panel_t *panel)
                     for(j=RES_SLOTS;j<manager_g->items_list.size();j++,itembar++)
                     if(itembar->checked)cnt++;
 
-                    wsprintf(buf,L"%s (%d)",STR(panel->items[i].str_id),cnt);
+                    wsprintf(buf,L"%s (%d)",STR(items[i].str_id),cnt);
                     TextOut(hdc,x+ofsx+wy/2,y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf,wcslen(buf));
                 }
                 else
-                    TextOut(hdc,x+ofsx+wy/2,y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(panel->items[i].str_id),wcslen(STR(panel->items[i].str_id)));
+                    TextOut(hdc,x+ofsx+wy/2,y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
 
                 y+=D(PNLITEM_WY);
                 break;
 
             case TYPE_TEXT:
-                if(i==1&&panel->index==7)
+                if(i==1&&index==7) // Revision number
                 {
                     version_t v;
 
@@ -798,17 +789,17 @@ void panel_draw(HDC hdc,panel_t *panel)
                     TextOut(hdc,x+ofsx,y+ofsy,buf,wcslen(buf));
                 }
                 SetTextColor(hdc,D(i==cur_i&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOut(hdc,x+ofsx,y+ofsy,STR(panel->items[i].str_id),wcslen(STR(panel->items[i].str_id)));
+                TextOut(hdc,x+ofsx,y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
                 y+=D(PNLITEM_WY);
                 break;
 
             case TYPE_GROUP_BREAK:
             case TYPE_GROUP:
-                if(panel->index>=8&&panel->index<=10)break;
+                if(index>=8&&index<=10)break;
                 if(i)y+=D(PNLITEM_WY);
-                box_draw(hdc,x,y,x+XP(panel),y+(wy)*panel->items[i].action_id+ofsy*2,
-                         BOX_PANEL+panel->index*2+2);
-                rgn=CreateRectRgn(x,y,x+XP(panel),y+(wy)*panel->items[i].action_id+ofsy*2);
+                box_draw(hdc,x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
+                         BOX_PANEL+index*2+2);
+                rgn=CreateRectRgn(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2);
                 SelectClipRgn(hdc,rgn);
                 break;
 

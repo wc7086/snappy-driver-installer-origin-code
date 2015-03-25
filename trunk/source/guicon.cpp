@@ -130,13 +130,17 @@ static void myunexpected()
     myterminate();
 }
 
+void start_exception_hadnlers()
+{
+    std::set_unexpected(myunexpected);
+    std::set_terminate(myterminate);
+}
+
 void log_start(WCHAR *logdir)
 {
     WCHAR filename[BUFLEN];
 
     setlocale(LC_ALL,"");
-    std::set_unexpected(myunexpected);
-    std::set_terminate(myterminate);
     //system("chcp 1251");
 
     gen_timestamp();

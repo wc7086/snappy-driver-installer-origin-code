@@ -18,28 +18,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global variables
-/*const WCHAR *menu3str[]=
-{
-    L"SDI at samforum.org (Russian)",
-    L"SDI at forum.oszone.net (Russian)",
-    L"SDI at VKontakte (Russian)",
-    L"SDI at Facebook",
-    L"SDI at Google Code",
-    L"SamDrivers",
-    L"DriverPacks.net",
-};
-
-WCHAR *menu3url[]=
-{
-    L"http://samforum.org/showthread.php?t=31662",
-    L"http://forum.oszone.net/thread-277409.html",
-    L"http://vk.com/snappydriverinstaller",
-    L"http://facebook.com/SnappyDriverInstaller",
-    L"http://code.google.com/p/snappy-driver-installer",
-    L"http://driveroff.net/sam",
-    L"http://driverpacks.net",
-};*/
 #define _wcsicmp StrCmpIW
+
 // Manager
 manager_t manager_v[2];
 manager_t *manager_g=&manager_v[0];
@@ -273,7 +253,7 @@ void settings_parse(const WCHAR *str,int ind)
         if(StrCmpIW(pr,GFG_DEF)==0)  continue;
         else
             log_err("Unknown argument '%S'\n",pr);
-       if(statemode==STATEMODE_EXIT)break;
+        if(statemode==STATEMODE_EXIT)break;
     }
     LocalFree(argv);
     if(statemode==STATEMODE_EXIT)return;
@@ -371,56 +351,57 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     HANDLE thr;
     HMODULE backtrace=0;
     DWORD dwProcessId;
+    time_startup=time_total=GetTickCount();
+    ghInst=hInst;
 
+// Hide the console window as soon as possible
     GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
     if(GetCurrentProcessId()!=dwProcessId)hideconsole=SW_SHOWNOACTIVATE;
     ShowWindow(GetConsoleWindow(),hideconsole);
 
-    time_startup=time_total=GetTickCount();
-#ifdef _DEBUG
+// Runtime error handlers
+    start_exception_hadnlers();
+    #ifdef _DEBUG
     backtrace=LoadLibraryA("backtrace.dll");
-#endif
-    ghInst=hInst;
+    #else
+    signal(SIGSEGV,SignalHandler);
+    #endif
+
+// Load settings
     init_CLIParam();
     if (isCfgSwithExist(GetCommandLineW(),CLIParam.SaveInstalledFileName))
         settings_load(CLIParam.SaveInstalledFileName);
     else
     if(!settings_load(L"sdi.cfg"))
         settings_load(L"tools\\SDI\\settings.cfg");
-
     settings_parse(GetCommandLineW(),1);
+    RUN_CLI(CLIParam);
 
-#ifdef CONSOLE_MODE
+// Reset paths for GUI-less version of the app
+    #ifdef CONSOLE_MODE
     flags|=FLAG_NOGUI;
     license=1;
     wcscpy(drp_dir,log_dir);
     wcscpy(index_dir,log_dir);
     wcscpy(output_dir,log_dir);
-#endif
-    ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
+    #endif
+
+// Close the app if the work is done
     if(statemode==STATEMODE_EXIT)
     {
         if(backtrace)FreeLibrary(backtrace);
         ShowWindow(GetConsoleWindow(),SW_SHOW);
         return ret_global;
     }
-    log_start(log_dir);
-    RUN_CLI(CLIParam);
 
-    if(statemode==STATEMODE_EXIT)
-    {
-        if(backtrace)FreeLibrary(backtrace);
-        ShowWindow(GetConsoleWindow(),SW_SHOW);
-        return ret_global;
-    }
-#ifdef NDEBUG
-    signal(SIGSEGV,SignalHandler);
-#endif
-
-#ifndef CONSOLE_MODE
+// Bring back the console window
+    #ifndef CONSOLE_MODE
     ShowWindow(GetConsoleWindow(),(expertmode&&flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:hideconsole);
-#endif
+    #endif
 
+// Start logging
+    ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
+    log_start(log_dir);
     if(log_verbose&LOG_VERBOSE_ARGS)
     {
         log_con("Settings\n");
@@ -447,34 +428,46 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         if(virtual_os_version)log_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
         log_con("\n");
     }
+
+// Make dirs
     mkdir_r(drp_dir);
     mkdir_r(index_dir);
     mkdir_r(output_dir);
+
+// Load text
     vault_init();
+    vault_loadfromres(&vLang,IDR_LANG);
+
+// Allocate resources
     bundle_init(&bundle[0]);
     bundle_init(&bundle[1]);
     manager_v[0].manager_init(&bundle[bundle_display].matcher);
     manager_v[1].manager_init(&bundle[bundle_display].matcher);
-
-    bundle_prep(&bundle[bundle_display]);
-    vault_loadfromres(&vLang,IDR_LANG);
-
     deviceupdate_event=CreateEvent(0,0,0,0);
+
+// Start device/driver scan
+    bundle_prep(&bundle[bundle_display]);
     thr=(HANDLE)_beginthreadex(0,0,&thread_loadall,&bundle[0],0,0);
 
+// Check updates
     checkupdates();
+
+// Start folder monitors
     mon_drp=monitor_start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
     virusmonitor_start();
     viruscheck(L"",0,0);
-    if(!(flags&FLAG_NOGUI)||flags&FLAG_AUTOINSTALL)gui(nCmd);
-    if(mon_drp)monitor_stop(mon_drp);
 
+// MAIN GUI LOOP
+    if(!(flags&FLAG_NOGUI)||flags&FLAG_AUTOINSTALL)gui(nCmd);
+
+// Wait till the device scan thread is finished
     deviceupdate_exitflag=1;
     SetEvent(deviceupdate_event);
     WaitForSingleObject(thr,INFINITE);
     CloseHandle_log(thr,L"WinMain",L"thr");
     CloseHandle_log(deviceupdate_event,L"WinMain",L"event");
 
+// Stop libtorrent
     #ifdef USE_TORRENT
     if(flags&FLAG_CHECKUPDATES)
     {
@@ -484,33 +477,43 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         CloseHandle_log(thandle_download,L"thandle_download",L"thr");
         CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
     }
+    update_stop();
     #endif
+
+// Free allocated resources
     bundle_free(&bundle[0]);
     bundle_free(&bundle[1]);
     vault_free();
     manager_v[0].manager_free();
     manager_v[1].manager_free();
-#ifndef CONSOLE_MODE
-    settings_save();
-#endif
 
+// Save settings
+    #ifndef CONSOLE_MODE
+    settings_save();
+    #endif
+
+// Stop folder monitors
+    if(mon_drp)monitor_stop(mon_drp);
     virusmonitor_stop();
+
+// Bring the console window back
+    ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
+    #ifdef CONSOLE_MODE
+    //MessageBox(0,L"В папке logs отчет создан!",L"Сообщение",0);
+    #endif
+
+// Stop runtime error handlers
+    #ifdef NDEBUG
+    signal(SIGSEGV,SIG_DFL);
+    #endif
+    if(backtrace)FreeLibrary(backtrace);
+
+// Stop logging
     time_total=GetTickCount()-time_total;
-#ifdef USE_TORRENT
-    update_stop();
-#endif
     log_times();
     log_stop();
-#ifdef NDEBUG
-    signal(SIGSEGV,SIG_DFL);
-#endif
-    ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
 
-#ifdef CONSOLE_MODE
-    //MessageBox(0,L"В папке logs отчет создан!",L"Сообщение",0);
-#endif
-
-    if(backtrace)FreeLibrary(backtrace);
+// Exit
     return ret_global;
 }
 //}
@@ -897,7 +900,7 @@ void tabadvance(int v)
         if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
 
         if(!expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
-        if(kbpanel==KB_PANEL_CHK&&!YP(&panels[11]))continue;
+        //if(kbpanel==KB_PANEL_CHK&&!YP(&panels[11]))continue;
         break;
     }
     //log_con("Tab %d,%d\n",kbpanel,YP(&panels[11]));
@@ -1646,9 +1649,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             j=D(PANEL_LIST_OFSX)?0:1;
             f=D(PANEL_LIST_OFSX)?4:0;
             MoveWindow(hField,Xm(D(DRVLIST_OFSX)),Ym(D(DRVLIST_OFSY)),XM(D(DRVLIST_WX),D(DRVLIST_OFSX)),YM(D(DRVLIST_WY),D(DRVLIST_OFSY)),TRUE);
-            MoveWindow(hLang, Xp(&panels[2])+i,Yp(&panels[2])+j*D(PNLITEM_WY)-2+f,XP(&panels[2])-i-D(PNLITEM_OFSX),190*2,0);
+
+            panels[2].moveWindow(hLang,i,j,f);
             j=D(PANEL_LIST_OFSX)?1:3;
-            MoveWindow(hTheme,Xp(&panels[2])+i,Yp(&panels[2])+j*D(PNLITEM_WY)-2+f,XP(&panels[2])-i-D(PNLITEM_OFSX),190*2,0);
+            panels[2].moveWindow(hTheme,i,j,f);
+/*            MoveWindow(hLang, Xp(&panels[2])+i,Yp(&panels[2])+j*D(PNLITEM_WY)-2+f,XP(&panels[2])-i-D(PNLITEM_OFSX),190*2,0);
+            j=D(PANEL_LIST_OFSX)?1:3;
+            MoveWindow(hTheme,Xp(&panels[2])+i,Yp(&panels[2])+j*D(PNLITEM_WY)-2+f,XP(&panels[2])-i-D(PNLITEM_OFSX),190*2,0);*/
             manager_g->manager_setpos();
 
             redrawmainwnd();
@@ -1667,10 +1674,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
             box_draw(canvasMain.getDC(),0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
             SelectObject(canvasMain.getDC(),hFont);
-            panel_draw(canvasMain.getDC(),&panels[7]);// draw revision
+            panels[7].panel_draw(canvasMain.getDC());// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
             {
-                panel_draw(canvasMain.getDC(),&panels[i]);
+                panels[i].panel_draw(canvasMain.getDC());
             }
             canvasMain.end();
             break;
@@ -1696,8 +1703,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
             if(panel_lasti!=i+j*256)
             {
-                if(j>=0)panel_draw_inv(&panels[j]);
-                panel_draw_inv(&panels[panel_lasti/256]);
+                if(j>=0)panels[j].panel_draw_inv();
+                panels[panel_lasti/256].panel_draw_inv();
             }
             if(j>=0)panel_lasti=i+j*256;else panel_lasti=0;
             break;
@@ -2013,19 +2020,6 @@ void contextmenu2(int x,int y)
     GetWindowRect(hMain,&rect);
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
 }
-
-/*void contextmenu3(int x,int y)
-{
-    int i;
-    RECT rect;
-    HMENU hPopupMenu=CreatePopupMenu();
-
-    for(i=0;i<6;i++)InsertMenu(hPopupMenu,i,MF_BYPOSITION|MF_STRING,ID_URL0+i,menu3str[i]);
-    SetForegroundWindow(hMain);
-    GetWindowRect(hMain,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
-}*/
-
 
 void contextmenu(int x,int y)
 {
