@@ -77,3 +77,4 @@ void virusmonitor_start();
 void virusmonitor_stop();
 void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj);
 void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj);
+void start_exception_hadnlers();
