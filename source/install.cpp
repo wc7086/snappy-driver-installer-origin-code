@@ -120,7 +120,7 @@ int showpercent(int a)
     }
 }
 
-void updateoverall(manager_t *manager)
+void updateoverall(Manager *manager)
 {
     int _totalitems=0;
     int _processeditems=0;
@@ -210,7 +210,7 @@ void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
     }
 
     if(!*ret)*ret=GetLastError();
-    if((unsigned)*ret==0xE0000235||*ret==0x103)//ERROR_IN_WOW64
+    if((unsigned)*ret==0xE0000235||manager_g->matcher->state->architecture)//ERROR_IN_WOW64
     {
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
         wsprintf(cmd,L"%s\\install64.exe",extractdir);
@@ -278,8 +278,8 @@ unsigned int __stdcall thread_install(void *arg)
     manager_g->items_list[SLOT_EXTRACTING].install_status=
         instflag&INSTALLDRIVERS?STR_INST_INSTALLING:STR_EXTR_EXTRACTING;
     manager_g->items_list[SLOT_EXTRACTING].isactive=1;
-    manager_g->manager_setpos();
-    if(panels[11].items[3].checked)flags|=FLAG_AUTOINSTALL;
+    manager_g->setpos();
+    if(panels[11].isChecked(3))flags|=FLAG_AUTOINSTALL;
 
     // Download driverpacks
 #ifdef USE_TORRENT
@@ -501,7 +501,7 @@ goaround:
             {
                 itembar->install_status=STR_INST_STOPPING;
                 manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
-                manager_g->manager_selectnone();
+                manager_g->selectnone();
             }
             else
             {
@@ -510,7 +510,7 @@ goaround:
                 else
                 {
                     if((itembar->isactive&2)==0)// collapsed
-                        manager_g->manager_expand(i);
+                        manager_g->expand(i);
 
                     itembar->install_status=STR_INST_FAILED;
                     itembar->val1=ret;
@@ -545,8 +545,8 @@ goaround:
         log_con("%S\n",extractdir);
         ShellExecute(0,L"explore",extractdir,0,0,SW_SHOW);
         manager_g->items_list[SLOT_EXTRACTING].isactive=0;
-        manager_g->manager_clear();
-        manager_g->manager_setpos();
+        manager_g->clear();
+        manager_g->setpos();
     }
     if(instflag&INSTALLDRIVERS&&(flags&FLAG_KEEPTEMPFILES)==0)
     {

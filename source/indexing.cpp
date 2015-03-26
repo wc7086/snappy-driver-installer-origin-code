@@ -438,7 +438,7 @@ void Collection::save()
                     manager_g->items_list[SLOT_INDEXING].val2=count-1;
                     wcscpy(manager_g->items_list[SLOT_INDEXING].txt1,bufw2);
                     manager_g->items_list[SLOT_INDEXING].percent=(cur)*1000/count;
-                    manager_g->manager_setpos();
+                    manager_g->setpos();
                     redrawfield();
                     cur++;
                 }
@@ -447,7 +447,7 @@ void Collection::save()
             }
         }
         manager_g->items_list[SLOT_INDEXING].isactive=0;
-        manager_g->manager_setpos();
+        manager_g->setpos();
         log_con("DONE\n");
     }
 
@@ -703,7 +703,7 @@ void Collection::scanfolder(const WCHAR *path)
                     manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
                     manager_g->items_list[SLOT_INDEXING].val2=drp_count;
                     itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
-                    manager_g->manager_setpos();
+                    manager_g->setpos();
                     drp->genindex();
                     drp_cur++;
                 }
@@ -949,8 +949,9 @@ void Driverpack::getindexfilename(const WCHAR *dir,const WCHAR *ext,WCHAR *indfi
 
 void Driverpack::print()
 {
-    int inffile_index,pos,manuf_index,desc_index,HWID_index;
-    int n=inffile.size();
+    int pos;
+    unsigned inffile_index,manuf_index,HWID_index,desc_index;
+    unsigned n=inffile.size();
     version_t *t;
     data_inffile_t *d_i;
     Hwidmatch hwidmatch;
@@ -958,8 +959,8 @@ void Driverpack::print()
     WCHAR filename[BUFLEN];
     FILE *f;
     int cnts[NUM_DECS],plain;
-    int HWID_index_last=0;
-    int manuf_index_last=0;
+    unsigned HWID_index_last=0;
+    unsigned manuf_index_last=0;
     int i;
 
     hwidmatch.drp=this;
@@ -1173,9 +1174,12 @@ void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *ad
         {
             //wsprintfA(bufb,"%ws",p+19);
             //if(*bufa&&strcmp(bufa,bufb))log_con("^^");
-            if(!*bufa||bufal<wcslen((WCHAR *)(p+19)))
+            //if(!*bufa||bufal<wcslen((WCHAR *)(p+19+p[17]-4)))
+            int ofs=p[19]=='2'?1:0;
+            if(!*bufa||bufal<wcslen((WCHAR *)(p+18+ofs)))
             {
-                wsprintfA(bufa,"%ws",p+19);
+                wsprintfA(bufa,"%ws",p+18+ofs);
+                //wsprintfA(bufa,"(%ws)%d",p+19,p[16]);
                 bufal=strlen(bufa);
                 //log_con("Found '%s'\n",bufa);
                 //break;

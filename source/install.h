@@ -42,7 +42,7 @@ extern int needreboot;
 extern long long totalinstalltime,totalextracttime;
 
 int showpercent(int a);
-void updateoverall(manager_t *manager);
+void updateoverall(Manager *manager);
 void updatecur();
 void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb);
 void removeextrainfs(WCHAR *inf);

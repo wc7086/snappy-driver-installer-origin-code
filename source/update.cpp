@@ -491,7 +491,7 @@ int upddlg_populatelist(HWND hList,int update)
 
     manager_g->items_list[SLOT_DOWNLOAD].isactive=ret?1:0;
     if(ret)manager_g->items_list[SLOT_NODRIVERS].isactive=0;
-    manager_g->manager_setpos();
+    manager_g->setpos();
     manager_g->items_list[SLOT_DOWNLOAD].val1=ret;
     return ret;
 }

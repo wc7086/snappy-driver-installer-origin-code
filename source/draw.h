@@ -86,7 +86,7 @@ public:
     void end();
 };
 
-class panel_t
+class Panel
 {
 public:
     panelitem_t *items;
@@ -100,10 +100,13 @@ private:
     int YP();
 
 public:
-    panel_t(panelitem_t *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
-    int  panel_hitscan(int x,int y);
-    void panel_draw_inv();
-    virtual void panel_draw(HDC hdc);
+    Panel(panelitem_t *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
+    bool isChecked(int i){return items[i].checked;}
+    void setChecked(int i,int val){items[i].checked=val;}
+    void setfilters();
+    int  hitscan(int x,int y);
+    void draw_inv();
+    virtual void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);
 };
 
@@ -115,7 +118,7 @@ extern Image icon[ICON_NUM];
 
 extern panelitem_t panel3[];
 extern panelitem_t panel3_w[];
-extern panel_t panels[NUM_PANELS];
+extern Panel panels[NUM_PANELS];
 //}
 
 int Xm(int x);
@@ -138,6 +141,6 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 
 // Panel
 int  panels_hitscan(int hx,int hy,int *ii);
-void panel_setfilters(panel_t *panel);
+void panel_setfilters(Panel *panel);
 
 
