@@ -30,7 +30,7 @@ const status_t statustnl[NUM_STATUS]=
 //}
 
 //{ Manager
-void manager_t::manager_init(Matcher *matchera)
+void Manager::init(Matcher *matchera)
 {
     itembar_t *itembar;
     int i;
@@ -47,12 +47,12 @@ void manager_t::manager_init(Matcher *matchera)
     }
 }
 
-void manager_t::manager_free()
+void Manager::release()
 {
 //    heap_free(&items_handle);
 }
 
-void manager_t::manager_sorta(Matcher *m,int *v)
+void Manager::sorta(Matcher *m,int *v)
 {
     devicematch_t *devicematch_i,*devicematch_j;
     Hwidmatch *hwidmatch_i,*hwidmatch_j;
@@ -115,7 +115,7 @@ int  manager_drplive(WCHAR *s)
     return needle?1:1; // No/Unknown
 }
 
-void manager_t::manager_populate()
+void Manager::populate()
 {
     devicematch_t *devicematch;
     Hwidmatch *hwidmatch;
@@ -126,7 +126,7 @@ void manager_t::manager_populate()
     //items_handle.used=sizeof(itembar_t)*RES_SLOTS;
     //items_list.size()=RES_SLOTS;
 
-    manager_sorta(matcher,remap);
+    sorta(matcher,remap);
 
     devicematch=matcher->devicematch_list;
     for(i=0;i<matcher->devicematch_handle.items;i++)
@@ -151,7 +151,7 @@ void manager_t::manager_populate()
     }
 }
 
-void manager_t::manager_filter(int options)
+void Manager::filter(int options)
 {
     devicematch_t *devicematch;
     itembar_t *itembar,*itembar1,*itembar_drp=0,*itembar_drpcur=0;
@@ -294,7 +294,7 @@ void manager_t::manager_filter(int options)
         items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
 }
 
-void manager_t::manager_print_tbl()
+void Manager::print_tbl()
 {
     itembar_t *itembar;
     unsigned k,act=0;
@@ -327,7 +327,7 @@ void manager_t::manager_print_tbl()
     log_file("}manager_print[%d]\n\n",act);
 }
 
-void manager_t::manager_print_hr()
+void Manager::print_hr()
 {
     WCHAR buf[BUFLEN];
     itembar_t *itembar;
@@ -375,7 +375,7 @@ void manager_t::manager_print_hr()
 // 1 checkbox
 // 2 downarrow
 // 3 text
-void manager_t::manager_hitscan(int x,int y,int *r,int *zone)
+void Manager::hitscan(int x,int y,int *r,int *zone)
 {
     itembar_t *itembar;
     unsigned i;
@@ -433,7 +433,7 @@ void manager_t::manager_hitscan(int x,int y,int *r,int *zone)
     *r=-1;
 }
 
-void manager_t::manager_clear()
+void Manager::clear()
 {
     itembar_t *itembar;
     unsigned i;
@@ -446,19 +446,19 @@ void manager_t::manager_clear()
     }
     items_list[SLOT_EXTRACTING].isactive=0;
     items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
-    manager_filter(filters);
-    manager_setpos();
+    filter(filters);
+    setpos();
     PostMessage(hMain,WM_DEVICECHANGE,7,2);
 }
 
-void manager_t::manager_testitembars()
+void Manager::testitembars()
 {
     itembar_t *itembar;
     unsigned i,j=0,index=1;
 
     itembar=&items_list[0];
 
-    manager_filter(FILTER_SHOW_CURRENT|FILTER_SHOW_NEWER);
+    filter(FILTER_SHOW_CURRENT|FILTER_SHOW_NEWER);
     wcscpy(drpext_dir,L"drpext");
     items_list[SLOT_EMPTY].curpos=1;
 
@@ -507,7 +507,7 @@ void manager_t::manager_testitembars()
 
 }
 
-void manager_t::manager_toggle(int index)
+void Manager::toggle(int index)
 {
     itembar_t *itembar,*itembar1;
     unsigned i;
@@ -537,12 +537,12 @@ void manager_t::manager_toggle(int index)
             itembar->checked&=~1;
 
     if(itembar1->checked&&itembar1->isactive&2)
-        manager_expand(index);
+        expand(index);
     else
         redrawmainwnd();
 }
 
-void manager_t::manager_expand(int index)
+void Manager::expand(int index)
 {
     itembar_t *itembar,*itembar1;
     unsigned i;
@@ -569,10 +569,10 @@ void manager_t::manager_expand(int index)
                 if(itembar->checked)itembar->isactive|=4;
             }
     }
-    manager_setpos();
+    setpos();
 }
 
-void manager_t::manager_selectnone()
+void Manager::selectnone()
 {
     itembar_t *itembar;
     unsigned i;
@@ -590,7 +590,7 @@ void manager_t::manager_selectnone()
     for(i=RES_SLOTS;i<items_list.size();i++,itembar++)itembar->checked=0;
 }
 
-void manager_t::manager_selectall()
+void Manager::selectall()
 {
     itembar_t *itembar;
     unsigned i;
@@ -631,7 +631,7 @@ void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *hwidmatc
     item->first=first;
 }
 
-void itembar_settext(manager_t *manager,int i,const WCHAR *txt1,int percent)
+void itembar_settext(Manager *manager,int i,const WCHAR *txt1,int percent)
 {
     itembar_t *itembar=&manager->items_list[i];
     wcscpy(itembar->txt1,txt1);
@@ -854,7 +854,7 @@ const WCHAR *str_version(version_t *ver)
 //}
 
 //{ Driver list
-void manager_t::manager_setpos()
+void Manager::setpos()
 {
     devicematch_t *devicematch;
     itembar_t *itembar,*lastitembar=0;
@@ -889,7 +889,7 @@ void manager_t::manager_setpos()
     animstart=GetTickCount();
 }
 
-int manager_t::manager_animate()
+int Manager::animate()
 {
     itembar_t *itembar;
     unsigned i;
@@ -920,7 +920,7 @@ int manager_t::manager_animate()
         (installmode==MODE_NONE&&items_list[SLOT_EXTRACTING].install_status);
 }
 
-int manager_t::groupsize(int index)
+int Manager::groupsize(int index)
 {
     int num=0;
 
@@ -941,7 +941,7 @@ void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *s
     TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2,wcslen(str2));
 }
 
-int  manager_t::manager_drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
+int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 {
     HICON hIcon;
     WCHAR bufw[BUFLEN];
@@ -1258,7 +1258,7 @@ int  manager_t::manager_drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
     return 1;
 }
 
-int manager_t::isbehind(int pos,int ofsy,int j)
+int Manager::isbehind(int pos,int ofsy,int j)
 {
     itembar_t *itembar;
 
@@ -1272,7 +1272,7 @@ int manager_t::isbehind(int pos,int ofsy,int j)
     return 0;
 }
 
-int manager_t::calc_cutoff()
+int Manager::calc_cutoff()
 {
     int i,cutoff=0;
 
@@ -1282,7 +1282,7 @@ int manager_t::calc_cutoff()
     return cutoff;
 }
 
-void manager_t::manager_draw(HDC hdc,int ofsy)
+void Manager::draw(HDC hdc,int ofsy)
 {
     itembar_t *itembar;
     int i;
@@ -1295,7 +1295,7 @@ void manager_t::manager_draw(HDC hdc,int ofsy)
 
     GetCursorPos(&p);
     ScreenToClient(hField,&p);
-    manager_hitscan(p.x,p.y,&cur_i,&zone);
+    hitscan(p.x,p.y,&cur_i,&zone);
 
     GetClientRect(hField,&rect);
     box_draw(hdc,0,0,rect.right,rect.bottom,BOX_DRVLIST);
@@ -1309,7 +1309,7 @@ void manager_t::manager_draw(HDC hdc,int ofsy)
         if(itembar->isactive)continue;
 
         if(isbehind((itembar->curpos>>16),ofsy,i))continue;
-        nm+=manager_drawitem(hdc,i,ofsy,-1,cutoff);
+        nm+=drawitem(hdc,i,ofsy,-1,cutoff);
     }
     for(i=items_list.size()-1;i>=0;i--)
     {
@@ -1317,7 +1317,7 @@ void manager_t::manager_draw(HDC hdc,int ofsy)
         if(itembar->isactive==0)continue;
 
         if(itembar->curpos>maxpos)maxpos=itembar->curpos;
-        nm+=manager_drawitem(hdc,i,ofsy,cur_i==i?zone:-1,cutoff);
+        nm+=drawitem(hdc,i,ofsy,cur_i==i?zone:-1,cutoff);
 
     }
     //printf("nm:%3d, ofs:%d\n",nm,ofsy);
@@ -1353,7 +1353,7 @@ int itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb)
 //* loading a snapshot
 //* returning to real machine
 //* driverpack update
-void manager_t::manager_restorepos(manager_t *manager_old)
+void Manager::restorepos(Manager *manager_old)
 {
     itembar_t *itembar_new,*itembar_old;
     CHAR *t_new,*t_old;
@@ -1568,7 +1568,7 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
     TextOutP(&td,L"| %s",bufw);
 }
 
-void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,unsigned i)
+void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
 {
     itembar_t *itembar;
     POINT p;
@@ -1691,7 +1691,7 @@ int isvalidcat(Hwidmatch *hwidmatch,State *state)
     return strstr(s,bufa)?1:0;
 }
 
-void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int index)
+void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
 {
     WCHAR bufw[BUFLEN];
     WCHAR i_hwid[BUFLEN];
@@ -1882,7 +1882,7 @@ void popup_about(HDC hdcMem)
     popup_resize(D(POPUP_WX),td.y+D(POPUP_OFSY));
 }
 
-void popup_sysinfo(manager_t *manager,HDC hdcMem)
+void popup_sysinfo(Manager *manager,HDC hdcMem)
 {
     WCHAR bufw[BUFLEN];
     textdata_t td;

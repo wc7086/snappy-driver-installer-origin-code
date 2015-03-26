@@ -133,7 +133,7 @@ panelitem_t panel13[]=
     {TYPE_TEXT,0,0,0},
 };
 
-panel_t panels[NUM_PANELS]=
+Panel panels[NUM_PANELS]=
 {
     {panel1,  0},
     {panel2,  1},
@@ -151,19 +151,19 @@ panel_t panels[NUM_PANELS]=
 };
 //}
 
-int panel_t::Xp()
+int Panel::Xp()
 {
     return Xm(D(PANEL_OFSX+indofs));
 }
-int panel_t::Yp()
+int Panel::Yp()
 {
     return Ym(D(PANEL_OFSY+indofs));
 }
-int panel_t::XP()
+int Panel::XP()
 {
     return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
 }
-int panel_t::YP()
+int Panel::YP()
 {
     return YM(D(PANEL_WY+indofs),D(PANEL_OFSY+indofs));
 }
@@ -599,7 +599,7 @@ void Canvas::end()
 //}
 
 //{ Panel
-int panel_t::panel_hitscan(int hx,int hy)
+int Panel::hitscan(int hx,int hy)
 {
     int wy=D(PANEL_WY+indofs);
 
@@ -624,7 +624,9 @@ int panel_t::panel_hitscan(int hx,int hy)
     if(!expertmode&&items[0].type==TYPE_GROUP_BREAK)return -2;
     if(hx<0||hy<0||hx>XP()-D(PNLITEM_OFSX)*2)return -3;
     if(hy/wy>=items[0].action_id)return -4;
-    return hy/wy+1;
+    int r=hy/wy+1;
+    if(r>=0&&!items[r].type)return -1;
+    return r;
 }
 
 int panels_hitscan(int hx,int hy,int *ii)
@@ -634,8 +636,8 @@ int panels_hitscan(int hx,int hy,int *ii)
     *ii=-1;
     for(i=0;i<NUM_PANELS;i++)
     {
-        r=panels[i].panel_hitscan(hx,hy);
-        if(r>=0&&panels[i].items[r].type)
+        r=panels[i].hitscan(hx,hy);
+        if(r>=0)
         {
             *ii=i;
             return r;
@@ -644,7 +646,7 @@ int panels_hitscan(int hx,int hy,int *ii)
     return -1;
 }
 
-void panel_t::panel_draw_inv()
+void Panel::draw_inv()
 {
     int x=Xp(),y=Yp();
     int wy=D(PANEL_WY+indofs);
@@ -657,6 +659,20 @@ void panel_t::panel_draw_inv()
     rect.bottom=y+(wy+1)*items[0].action_id+ofsy*2;
     InvalidateRect(hMain,&rect,0);
 }
+
+void Panel::setfilters()
+{
+    for(int i=0;i<items[0].action_id+1;i++)
+        if(items[i].action_id>=ID_SHOW_MISSING&&items[i].action_id<=ID_SHOW_INVALID)
+            items[i].checked=filters&(1<<items[i].action_id)?1:0;
+}
+
+
+void panel_setfilters(Panel *panel)
+{
+    for(int j=0;j<7;j++)panel[j].setfilters();
+}
+
 /*
 Panel
     SysInfo panel
@@ -665,12 +681,12 @@ Panel
         Big Button
     Text
 */
-void panel_t::moveWindow(HWND hwnd,int i,int j,int f)
+void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 {
     MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
 }
 
-void panel_t::panel_draw(HDC hdc)
+void Panel::draw(HDC hdc)
 {
     WCHAR buf[BUFLEN];
     POINT p;
@@ -686,7 +702,7 @@ void panel_t::panel_draw(HDC hdc)
 
     GetCursorPos(&p);
     ScreenToClient(hMain,&p);
-    cur_i=panel_hitscan(p.x,p.y);
+    cur_i=hitscan(p.x,p.y);
 
     for(i=0;i<items[0].action_id+1;i++)
     {

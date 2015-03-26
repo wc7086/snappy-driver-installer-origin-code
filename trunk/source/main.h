@@ -146,7 +146,7 @@ enum install_mode
 //{ Global variables
 
 // Manager
-extern manager_t *manager_g;
+extern Manager *manager_g;
 extern int volatile installmode;
 extern int driverpackpath;
 extern CRITICAL_SECTION sync;
@@ -234,7 +234,7 @@ void setscrollpos(int pos);
 
 // Helpers
 void get_resource(int id,void **data,int *size);
-const WCHAR *get_winverstr(manager_t *manager);
+const WCHAR *get_winverstr(Manager *manager);
 void mkdir_r(const WCHAR *path);
 void snapshot();
 void extractto();

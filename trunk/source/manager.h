@@ -141,7 +141,7 @@ typedef struct _itembar_t
     int oldpos,curpos,tagpos,accel;
 }itembar_t;
 
-class manager_t
+class Manager
 {
 public:
     Matcher *matcher;
@@ -149,31 +149,31 @@ public:
     long animstart;
 
 public:
-    void manager_init(Matcher *matcher);
-    void manager_free();
-    void manager_populate();
-    void manager_filter(int options);
-    void manager_print_tbl();
-    void manager_print_hr();
-    void manager_sorta(Matcher *m,int *v);
+    void init(Matcher *matcher);
+    void release();
+    void populate();
+    void filter(int options);
+    void print_tbl();
+    void print_hr();
+    void sorta(Matcher *m,int *v);
 
 // User interaction
-    void manager_hitscan(int x,int y, int *i,int *zone);
-    void manager_clear();
-    void manager_testitembars();
-    void manager_toggle(int index);
-    void manager_expand(int index);
-    void manager_selectnone();
-    void manager_selectall();
+    void hitscan(int x,int y, int *i,int *zone);
+    void clear();
+    void testitembars();
+    void toggle(int index);
+    void expand(int index);
+    void selectnone();
+    void selectall();
 
 // Driver list
-    void manager_setpos();
-    int  manager_animate();
-    int  manager_drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
+    void setpos();
+    int  animate();
+    int  drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
     int  isbehind(int pos,int ofs,int j);
     int  calc_cutoff();
-    void manager_draw(HDC hdc,int ofsy);
-    void manager_restorepos(manager_t *manager_prev);
+    void draw(HDC hdc,int ofsy);
+    void restorepos(Manager *manager_prev);
     int groupsize(int index);
 };
 
@@ -202,7 +202,7 @@ void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *s
 
 // Helpers
 void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
-void itembar_settext(manager_t *manager,int i,const WCHAR *txt1,int percent);
+void itembar_settext(Manager *manager,int i,const WCHAR *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
 int  itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb);
 int  isdrivervalid(Hwidmatch *hwidmatch);
@@ -223,10 +223,10 @@ void format_size(WCHAR *buf,long long val,int isspeed);
 void format_time(WCHAR *buf,long long val);
 void popup_resize(int x,int y);
 void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int ln,int mode,int index);
-void popup_driverlist(manager_t *manager,HDC hdcMem,RECT rect,unsigned i);
+void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i);
 int  pickcat(Hwidmatch *hwidmatch,State *state);
 int  isvalidcat(Hwidmatch *hwidmatch,State *state);
-void popup_drivercmp(manager_t *manager,HDC hdcMem,RECT rect,int i);
+void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int i);
 void popup_about(HDC hdcMem);
-void popup_sysinfo(manager_t *manager,HDC hdcMem);
+void popup_sysinfo(Manager *manager,HDC hdcMem);
 void popup_download(HDC hdcMem);
