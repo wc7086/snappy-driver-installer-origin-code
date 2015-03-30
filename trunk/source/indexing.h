@@ -134,6 +134,13 @@ public:
 
     char *get(ofst offset);
     WCHAR *getw(ofst offset);
+    void setdrp(Driverpack *drpa){drp=drpa;}
+    int strcpy(const char *mem);
+    int memcpy(const char *mem,int sz);
+    int memcpyz(const char *mem,int sz);
+    int memcpyz_dup(const char *mem,int sz);
+
+//    char *get(ofst offset){return drp->text+ofst;}
 //    char *get(ofst offset){return &text[offset];}
 //    WCHAR *getw(ofst offset){return (WCHAR *)&text[offset];}
 
@@ -168,9 +175,9 @@ public:
 class Driverpack
 {
 private:
-public:
     ofst drppath;
     ofst drpfilename;
+public:
     int type;
 
     Collection *col;
@@ -186,10 +193,13 @@ public:
     std::vector<data_HWID_t> HWID_list;
     Txt texta;
 
-    char *text;
-    heap_t text_handle;
+    char *text_old;
+    heap_t text_old_handle;
 
 public:
+    WCHAR *getPath(){return texta.getw(drppath);}
+    WCHAR *getFilename(){return texta.getw(drpfilename);}
+
     void init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
     void release();
     void saveindex();

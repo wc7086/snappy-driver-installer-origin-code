@@ -760,7 +760,7 @@ void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *u
         wsprintfA(sect,"%ws%ws",state->text+cur_driver->InfSection,state->text+cur_driver->InfSectionExt);
         wsprintfA(bufa,"%ws",state->text+cur_driver->MatchingDeviceId);
         for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
-        if(!StrCmpIA(unpacked_drp->text+unpacked_drp->HWID_list[HWID_index].HWID,bufa))
+        if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),bufa))
         {
             Hwidmatch hwidmatch;
 
