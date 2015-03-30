@@ -151,33 +151,6 @@ Panel panels[NUM_PANELS]=
 };
 //}
 
-int Panel::Xp()
-{
-    return Xm(D(PANEL_OFSX+indofs));
-}
-int Panel::Yp()
-{
-    return Ym(D(PANEL_OFSY+indofs));
-}
-int Panel::XP()
-{
-    return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
-}
-int Panel::YP()
-{
-    return YM(D(PANEL_WY+indofs),D(PANEL_OFSY+indofs));
-}
-
-int Xm(int x){return x>=0?x:(main1x_c+x);}
-int Ym(int y){return y>=0?y:(main1y_c+y);}
-int XM(int x,int o){return x>=0?x:(main1x_c+x-o);}
-int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
-
-int Xg(int x){return x>=0?x:(mainx_c+x);}
-int Yg(int y){return y>=0?y:(mainy_c+y);}
-int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
-int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
-
 //{ Image
 
 void Image::makecopy(Image &t)
@@ -372,6 +345,38 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 //}
 
 //{ Draw
+int Xm(int x){return x>=0?x:(main1x_c+x);}
+int Ym(int y){return y>=0?y:(main1y_c+y);}
+int XM(int x,int o){return x>=0?x:(main1x_c+x-o);}
+int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
+
+int Xg(int x){return x>=0?x:(mainx_c+x);}
+int Yg(int y){return y>=0?y:(mainy_c+y);}
+int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
+int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
+
+int panels_hitscan(int hx,int hy,int *ii)
+{
+    int i,r=-1;
+
+    *ii=-1;
+    for(i=0;i<NUM_PANELS;i++)
+    {
+        r=panels[i].hitscan(hx,hy);
+        if(r>=0)
+        {
+            *ii=i;
+            return r;
+        }
+    }
+    return -1;
+}
+
+void panel_setfilters(Panel *panel)
+{
+    for(int j=0;j<7;j++)panel[j].setfilters();
+}
+
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
@@ -599,6 +604,12 @@ void Canvas::end()
 //}
 
 //{ Panel
+
+int Panel::Xp(){return Xm(D(PANEL_OFSX+indofs));}
+int Panel::Yp(){return Ym(D(PANEL_OFSY+indofs));}
+int Panel::XP(){return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));}
+int Panel::YP(){return YM(D(PANEL_WY+indofs),D(PANEL_OFSY+indofs));}
+
 int Panel::hitscan(int hx,int hy)
 {
     int wy=D(PANEL_WY+indofs);
@@ -629,23 +640,6 @@ int Panel::hitscan(int hx,int hy)
     return r;
 }
 
-int panels_hitscan(int hx,int hy,int *ii)
-{
-    int i,r=-1;
-
-    *ii=-1;
-    for(i=0;i<NUM_PANELS;i++)
-    {
-        r=panels[i].hitscan(hx,hy);
-        if(r>=0)
-        {
-            *ii=i;
-            return r;
-        }
-    }
-    return -1;
-}
-
 void Panel::draw_inv()
 {
     int x=Xp(),y=Yp();
@@ -667,20 +661,6 @@ void Panel::setfilters()
             items[i].checked=filters&(1<<items[i].action_id)?1:0;
 }
 
-
-void panel_setfilters(Panel *panel)
-{
-    for(int j=0;j<7;j++)panel[j].setfilters();
-}
-
-/*
-Panel
-    SysInfo panel
-    CheckBox
-    Button
-        Big Button
-    Text
-*/
 void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 {
     MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);

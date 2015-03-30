@@ -109,7 +109,6 @@ public:
     virtual void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);
 };
-
 //}
 
 //{ Global vars
@@ -131,6 +130,9 @@ int Yg(int y);
 int XG(int x,int o);
 int YG(int y,int o);
 
+int  panels_hitscan(int hx,int hy,int *ii);
+void panel_setfilters(Panel *panel);
+
 // Draw
 void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);
 void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int i);
@@ -138,9 +140,3 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
 void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
-
-// Panel
-int  panels_hitscan(int hx,int hy,int *ii);
-void panel_setfilters(Panel *panel);
-
-
