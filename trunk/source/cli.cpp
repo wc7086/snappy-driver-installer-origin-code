@@ -1,9 +1,9 @@
 #include "main.h"
 
-const WCHAR INSTALLEDVENFILENAMEDEFPATH[]=L"%temp%\\SDI2\\InstalledID.txt";
-
+//{Global variables
 HFONT CLIHelp_Font;
 CommandLineParam_t CLIParam;
+//}
 
 static void ExpandPath(WCHAR *Apath)
 {

@@ -1,3 +1,4 @@
+#define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 #define SAVE_INSTALLED_ID_DEF   L"-save-installed-id"
 #define HWIDINSTALLED_DEF       L"-HWIDInstalled:"
 #define GFG_DEF                 L"-cfg:"
