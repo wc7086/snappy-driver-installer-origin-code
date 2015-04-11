@@ -752,15 +752,6 @@ void Driverpack::init(WCHAR const *driverpack_path,WCHAR const *driverpack_filen
 
     col=col_v;
 
-    texta.setdrp(this);
-    /*inffile.reserve(20000);
-    manufacturer_list.reserve(20000);
-    desc_list.reserve(20000);
-    HWID_list.reserve(20000);*/
-    //heap_init(&desc_list_handle,ID_DRIVERPACK_desc_list,(void **)&desc_list,0,sizeof(data_desc_t));
-    //heap_init(&HWID_list_handle,ID_DRIVERPACK_HWID_list,(void **)&HWID_list,0,sizeof(data_HWID_t));
-    heap_init(&text_old_handle,ID_DRIVERPACK_text,(void **)&text_old,0,1);
-
     hash_init(&string_list,ID_STRINGS,1024,HASH_FLAG_KEYS_ARE_POINTERS|HASH_FLAG_STR_TO_LOWER);
     hash_init(&section_list,ID_SECTIONS,16,HASH_FLAG_KEYS_ARE_POINTERS|HASH_FLAG_STR_TO_LOWER);
     hash_init(&cat_list,ID_CAT_LIST,512*8,HASH_FLAG_STR_TO_LOWER);
@@ -779,8 +770,6 @@ void Driverpack::release()
     manufacturer_list.clear();
     desc_list.clear();
     HWID_list.clear();
-    //texta.text.clear();
-    heap_free(&text_old_handle);
 
     hash_free(&string_list);
     hash_free(&section_list);
@@ -810,7 +799,8 @@ void Driverpack::saveindex()
         manufacturer_list.size()*sizeof(data_manufacturer_t)+
         desc_list.size()*sizeof(data_desc_t)+
         HWID_list.size()*sizeof(data_HWID_t)+
-        text_old_handle.used+
+        //text_old_handle.used+
+        texta.text.size()+
         indexes.items_handle.used+sizeof(int)+
         6*sizeof(int)*2;
 
@@ -822,7 +812,7 @@ void Driverpack::saveindex()
     p=vector_save(&manufacturer_list,p);
     p=vector_save(&desc_list,p);
     p=vector_save(&HWID_list,p);
-    p=heap_save(&text_old_handle,p);
+    p=vector_save(&texta.text,p);
     p=hash_save(&indexes,p);
     /*log_con("Sz:(%d,%d,%d,%d,%d,%d)=%d\n",
             inffile_handle.used,
@@ -914,7 +904,7 @@ int Driverpack::loadindex()
     p=vector_load(&manufacturer_list,p);
     p=vector_load(&desc_list,p);
     p=vector_load(&HWID_list,p);
-    p=heap_load(&text_old_handle,p);
+    p=vector_load(&texta.text,p);
     p=hash_load(&indexes,p);
 
     free(mem);
@@ -1171,7 +1161,7 @@ void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *ad
             //wsprintfA(bufb,"%ws",p+19);
             //if(*bufa&&strcmp(bufa,bufb))log_con("^^");
             //if(!*bufa||bufal<wcslen((WCHAR *)(p+19+p[17]-4)))
-            int ofs=p[19]=='2'?1:0;
+            int ofs=p[19]=='2'||p[19]=='1'?1:0;
             if(!*bufa||bufal<wcslen((WCHAR *)(p+18+ofs)))
             {
                 wsprintfA(bufa,"%ws",p+18+ofs);
@@ -1933,42 +1923,45 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
     hash_clear(&section_list,1);
 }
 //}
-char *Txt::get(ofst offset){return (char *)(drp->text_old+offset);}
-WCHAR *Txt::getw(ofst offset){return (WCHAR *)(drp->text_old+offset);}
-//char *Txt::get(ofst offset){return (char *)(&drp->texta.text[offset]);}
-//WCHAR *Txt::getw(ofst offset){return (WCHAR *)(&drp->texta.text[offset]);}
+
+char *Txt::get(ofst offset){return (char *)(&text[offset]);}
+WCHAR *Txt::getw(ofst offset){return (WCHAR *)(&text[offset]);}
 int Txt::strcpy(const char *str)
 {
-    return heap_strcpy(&drp->text_old_handle,str);
-
     int r=text.size();
     text.insert(text.end(),str,str+strlen(str)+1);
     return r;
 }
 int Txt::memcpy(const char *mem,int sz)
 {
-    return heap_memcpy(&drp->text_old_handle,mem,sz);
-
     int r=text.size();
     text.insert(text.end(),mem,mem+sz);
     return r;
 }
 int Txt::memcpyz(const char *mem,int sz)
 {
-    return heap_memcpyz(&drp->text_old_handle,mem,sz);
-
     int r=text.size();
     text.insert(text.end(),mem,mem+sz);
     text.insert(text.end(),0);
     return r;
 }
+
 int Txt::memcpyz_dup(const char *mem,int sz)
 {
-    return heap_memcpyz_dup(&drp->text_old_handle,mem,sz);
+    std::string str(mem,sz);
+    auto it=dub.find(str);
 
-    int r=text.size();
-    text.insert(text.end(),mem,mem+sz);
-    text.insert(text.end(),0);
-    return r;
+    if(it==dub.end())
+    {
+        int r=text.size();
+        text.insert(text.end(),mem,mem+sz);
+        text.insert(text.end(),0);
+
+        dub.insert({{std::move(str),r}});
+        return r;
+    }
+    else
+    {
+        return it->second;
+    }
 }
-

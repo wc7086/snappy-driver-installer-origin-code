@@ -122,54 +122,20 @@ enum DRIVERPACK_TYPE
 };
 
 //{ Indexing strucures
-
 class Txt
 {
 private:
-//    typedef std::unordered_map<std::string,ofst> stringmap;
+    typedef std::unordered_map<std::string,ofst> stringmap;
 public:
     std::vector<char> text;
-    Driverpack *drp;
-//    stringmap dub;
+    stringmap dub;
 
     char *get(ofst offset);
     WCHAR *getw(ofst offset);
-    void setdrp(Driverpack *drpa){drp=drpa;}
     int strcpy(const char *mem);
     int memcpy(const char *mem,int sz);
     int memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
-
-//    char *get(ofst offset){return drp->text+ofst;}
-//    char *get(ofst offset){return &text[offset];}
-//    WCHAR *getw(ofst offset){return (WCHAR *)&text[offset];}
-
-/*    ofst addStr(char *pb,char *pe)
-    {
-        int r=text.size();
-        text.insert(text.end(),pb,pe);
-
-        return r;
-    }
-    ofst heap_memcpyz(char *pb,int len)
-    {
-        int r=text.size();
-        text.insert(text.end(),pb,pb+len);
-        text.push_back(0);
-        return r;
-    }
-    ofst addStr(char *pb)
-    {
-        int r=text.size();
-        text.insert(text.end(),pb,pb+strlen(pb)+1);
-        return r;
-    }
-    ofst addStr(const WCHAR *pb)
-    {
-        int r=text.size();
-        text.insert(text.end(),pb,pb+wcslen(pb)*2+2);
-        return r;
-    }*/
 };
 
 class Driverpack
@@ -192,9 +158,6 @@ public:
     std::vector<data_desc_t> desc_list;
     std::vector<data_HWID_t> HWID_list;
     Txt texta;
-
-    char *text_old;
-    heap_t text_old_handle;
 
 public:
     WCHAR *getPath(){return texta.getw(drppath);}
@@ -266,9 +229,6 @@ public:
     int flags;
 
     std::vector<Driverpack> driverpack_list;
-
-//    Driverpack *driverpack_list;
-//    heap_t driverpack_handle;
 
     inflist_t *inflist;
     int pos_in,pos_out;

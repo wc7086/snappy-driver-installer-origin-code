@@ -18,6 +18,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define BUFLEN              4096
 
 //{ Includes
+
+// Windows
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commdlg.h>
@@ -30,6 +32,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "SRRestorePtAPI.h"
 typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 
+// C
+#include <assert.h>
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
@@ -40,12 +44,15 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <direct.h>
 #include <locale.h>
 
+// C++
+#include <unordered_map>
+#include <string>
 #include <vector>
 #include <exception>
 
+// SDI
 #include "svnrev.h"
 #include "resources.h"
-
 #include "common.h"
 #include "indexing.h"
 #include "guicon.h"
@@ -58,8 +65,10 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include "cli.h"
 #include "update.h"
 
+// webp
 #include <webp\decode.h>
 
+// 7-zip
 extern "C"
 {
 #include "7z.h"
