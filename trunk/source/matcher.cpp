@@ -252,7 +252,7 @@ unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
 unsigned calc_score_h(Driver *driver,State *state)
 {
     return calc_score(driver->catalogfile,driver->feature,driver->identifierscore,
-        state,StrStrI(state->textas.getw_o(driver->InfSectionExt),L".nt")?1:0);
+        state,StrStrI(state->textas.getw(driver->InfSectionExt),L".nt")?1:0);
 }
 
 int calc_secttype(const char *s)
@@ -334,14 +334,14 @@ int calc_markerscore(State *state,char *path)
 intptr_t Hwidmatch::isvalid_usb30hub(State *state,const WCHAR *str)
 {
     //log_con("Intel USB3.0 HUB '%S'\n",state->text+hwidmatch->devicematch->device->HardwareID);
-    return (intptr_t)StrStrI(state->textas.getw_o(devicematch->device->HardwareID),str);
+    return (intptr_t)StrStrI(state->textas.getw(devicematch->device->HardwareID),str);
 }
 
 int Hwidmatch::isblacklisted(State *state,const WCHAR *hwid,const char *section)
 {
     char buf[BUFLEN];
 
-    if(StrStrI(state->textas.getw_o(devicematch->device->HardwareID),hwid))
+    if(StrStrI(state->textas.getw(devicematch->device->HardwareID),hwid))
     {
         getdrp_drvsection(buf);
         if(StrStrIA(buf,section))return 1;
@@ -427,7 +427,7 @@ int isMissing(Device *device,Driver *driver,State *state)
     if(device->problem==CM_PROB_DISABLED)return 0;
     if(driver)
     {
-        if(!StrCmpIW((WCHAR*)(state->textas.get_o(driver->MatchingDeviceId)),L"PCI\\CC_0300"))return 1;
+        if(!StrCmpIW((WCHAR*)(state->textas.get(driver->MatchingDeviceId)),L"PCI\\CC_0300"))return 1;
         if(device->problem&&device->HardwareID)return 1;
     }else
     {
@@ -487,11 +487,11 @@ void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos)
     Driver *cur_driver=&state->Drivers_list[cur_device->driver_index];
 
     *ishw=1;
-    findHWID_in_list(state->textas.get_o(0),cur_device->HardwareID,cur_driver->MatchingDeviceId,dev_pos);
+    findHWID_in_list(state->textas.get(0),cur_device->HardwareID,cur_driver->MatchingDeviceId,dev_pos);
     if(*dev_pos<0&&cur_device->CompatibleIDs)
     {
         *ishw=0;
-        findHWID_in_list(state->textas.get_o(0),cur_device->CompatibleIDs,cur_driver->MatchingDeviceId,dev_pos);
+        findHWID_in_list(state->textas.get(0),cur_device->CompatibleIDs,cur_driver->MatchingDeviceId,dev_pos);
     }
 }
 
@@ -738,7 +738,7 @@ void Matcher::populate()
     Driver *cur_driver;
     Device *cur_device;
     WCHAR *p;
-    char *s=state->textas.get_o(0);
+    char *s=state->textas.get(0);
     char buf[BUFLEN];
     int dev_pos;
     unsigned int i;
@@ -787,12 +787,12 @@ void Matcher::populate()
             if(isMissing(cur_device,cur_driver,state))devicematch->status=STATUS_NF_MISSING;else
             if(devicematch->driver)
             {
-                if(!wcscmp(state->textas.getw_o(devicematch->driver->ProviderName),L"Microsoft")||
-                   !wcscmp(state->textas.getw_o(devicematch->driver->ProviderName),L"Майкрософт"))
+                if(!wcscmp(state->textas.getw(devicematch->driver->ProviderName),L"Microsoft")||
+                   !wcscmp(state->textas.getw(devicematch->driver->ProviderName),L"Майкрософт"))
                     devicematch->status=STATUS_NF_STANDARD;
                 else
                 {
-                    if(*state->textas.get_o(devicematch->driver->MatchingDeviceId))
+                    if(*state->textas.get(devicematch->driver->MatchingDeviceId))
                         devicematch->status=STATUS_NF_UNKNOWN;
                     else
                         devicematch->status=STATUS_NF_STANDARD;

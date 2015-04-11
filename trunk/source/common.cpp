@@ -123,25 +123,25 @@ void heap_init(heap_t *t,int id,void **mem,int sz, int itemsize)
     t->items=0;
     *t->membck=t->base;
 
-    t->dup=0;
+//    t->dup=0;
 }
 
 void heap_free(heap_t *t)
 {
     if(t->base)free(t->base);
     //log_file("heap[%s] wasted %d bytes of RAM\n",heaps[t->id],t->allocated-t->used);
-    if(t->dup)
+    /*if(t->dup)
     {
         hash_free(t->dup);
         free(t->dup);
-    }
+    }*/
     t->base=0;
     *t->membck=0;
 }
 
 void heap_reset(heap_t *t,int sz)
 {
-    if(t->dup)hash_clear(t->dup,1);
+    //if(t->dup)hash_clear(t->dup,1);
     t->used=sz;
     t->items=0;
 }
@@ -215,7 +215,7 @@ int heap_memcpyz(heap_t *t,const void *mem,int sz)
     return r;
 }
 
-int heap_memcpyz_dup(heap_t *t,const void *mem,int sz)
+/*int heap_memcpyz_dup(heap_t *t,const void *mem,int sz)
 {
     int r=t->used;
 
@@ -240,7 +240,7 @@ int heap_memcpyz_dup(heap_t *t,const void *mem,int sz)
 
     if(t->dup)hash_add(t->dup,u,sz,r,HASH_MODE_INTACT);
     return r;
-}
+}*/
 
 int heap_strtolowerz(heap_t *t,const char *s,int sz)
 {

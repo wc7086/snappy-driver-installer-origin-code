@@ -154,12 +154,10 @@ public:
     std::vector<Device> Devices_list;
     std::vector<Driver> Drivers_list;
 
-    //char *text;
-    heap_t text_handle_st;
-
     Txt textas;
 
 public:
+    ~State();
     void init();
     void release();
     void save(const WCHAR *filename);

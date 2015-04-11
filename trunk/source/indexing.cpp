@@ -1932,10 +1932,6 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
 
 char *Txt::get(ofst offset){return (char *)(&text[offset]);}
 WCHAR *Txt::getw(ofst offset){return (WCHAR *)(&text[offset]);}
-char *Txt::get_o(ofst offset){return (char *)(&text_old[offset]);}
-WCHAR *Txt::getw_o(ofst offset){return (WCHAR *)(&text_old[offset]);}
-//char *Txt::get_o(ofst offset){return (char *)(&text[offset]);}
-//WCHAR *Txt::getw_o(ofst offset){return (WCHAR *)(&text[offset]);}
 
 int Txt::strcpy(const char *str)
 {

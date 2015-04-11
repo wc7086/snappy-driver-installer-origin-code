@@ -1231,7 +1231,7 @@ const WCHAR *getHWIDby(int id,int num)
 {
     devicematch_t *devicematch_f=manager_g->items_list[id].devicematch;
     WCHAR *p;
-    char *t=manager_g->matcher->state->textas.get_o(0);
+    char *t=manager_g->matcher->state->textas.get(0);
     int i=0;
 
     if(devicematch_f->device->HardwareID)
@@ -1431,7 +1431,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         if(!panels[11].isChecked(3))manager_g->selectall();
                         if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get_o(manager_g->matcher->state->temp));
+                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
                         manager_install(INSTALLDRIVERS);
                     }
                     else
@@ -1784,8 +1784,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         Driver *cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
-                               manager_g->matcher->state->textas.get_o(manager_g->matcher->state->windir),
-                               manager_g->matcher->state->textas.get_o(cur_driver->InfPath));
+                               manager_g->matcher->state->textas.get(manager_g->matcher->state->windir),
+                               manager_g->matcher->state->textas.get(cur_driver->InfPath));
 
                         if(wp==ID_OPENINF)
                             RunSilent(buf,L"",SW_SHOW,0);
@@ -1884,7 +1884,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     if(installmode==MODE_NONE)
                     {
                         if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get_o(manager_g->matcher->state->temp));
+                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
                         manager_install(INSTALLDRIVERS);
                     }
                     break;
@@ -2044,7 +2044,7 @@ void contextmenu(int x,int y)
     devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
     Driver *cur_driver=0;
     WCHAR *p;
-    char *t=manager_g->matcher->state->textas.get_o(0);
+    char *t=manager_g->matcher->state->textas.get(0);
     if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
     int flags3=cur_driver?0:MF_GRAYED;
     WCHAR buf[512];
@@ -2185,7 +2185,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((flags&FLAG_EXTRACTONLY)==0)
-                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get_o(manager_g->matcher->state->temp));
+                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
                     manager_install(INSTALLDRIVERS);
                 }
                 redrawfield();
