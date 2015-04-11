@@ -264,7 +264,7 @@ unsigned int __stdcall thread_download(void *arg)
             InvalidateRect(hPopup,0,0);
             Sleep(500);
            {
-                std::auto_ptr<alert> holder;
+                std::unique_ptr<alert> holder;
                 holder=sessionhandle->pop_alert();
                 while(holder.get())
                 {
@@ -288,7 +288,7 @@ unsigned int __stdcall thread_download(void *arg)
                         log_con("time out\n");
                         break;
                     }
-                    std::auto_ptr<alert> holder=sessionhandle->pop_alert();
+                    std::unique_ptr<alert> holder=sessionhandle->pop_alert();
                     if(alert_cast<cache_flushed_alert>(a))
                     {
                         log_con("done\n");

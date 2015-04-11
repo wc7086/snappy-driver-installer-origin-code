@@ -129,13 +129,20 @@ private:
 public:
     std::vector<char> text;
     stringmap dub;
+    char *text_old;
 
     char *get(ofst offset);
     WCHAR *getw(ofst offset);
+    char *get_o(ofst offset);
+    WCHAR *getw_o(ofst offset);
+
     int strcpy(const char *mem);
     int memcpy(const char *mem,int sz);
     int memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
+
+    int alloc(int sz);
+    void reset(int sz);
 };
 
 class Driverpack
@@ -165,6 +172,8 @@ public:
 
     void init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
     void release();
+    ~Driverpack();
+
     void saveindex();
     int  checkindex();
     int  loadindex();

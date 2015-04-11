@@ -317,7 +317,7 @@ void Manager::print_tbl()
             if(itembar->hwidmatch)
                 itembar->hwidmatch->print_tbl(limits);
             else
-                log_file("'%S'\n",matcher->state->text+itembar->devicematch->device->Devicedesc);
+                log_file("'%S'\n",matcher->state->textas.get_o(itembar->devicematch->device->Devicedesc));
             act++;
         }else
         {
@@ -1210,7 +1210,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 // Device desc
                 if(itembar->devicematch)
                 {
-                    wsprintf(bufw,L"%ws",matcher->state->text+itembar->devicematch->device->Devicedesc);
+                    wsprintf(bufw,L"%ws",matcher->state->textas.get_o(itembar->devicematch->device->Devicedesc));
                     SetTextColor(hdc,D(boxindex[box_status(index)]+14));
                     RECT rect;
                     int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
@@ -1364,8 +1364,8 @@ void Manager::restorepos(Manager *manager_old)
     if((log_verbose&LOG_VERBOSE_DEVSYNC)==0)show_changes=0;
     //show_changes=1;
 
-    t_old=manager_old->matcher->state->text;
-    t_new=matcher->state->text;
+    t_old=manager_old->matcher->state->textas.get_o(0);
+    t_new=matcher->state->textas.get_o(0);
 
     if(manager_old->items_list[SLOT_EMPTY].curpos==1)
     {
@@ -1593,7 +1593,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
 
     int group=manager->items_list[i].index;
     Driver *cur_driver=manager->items_list[i].devicematch->driver;
-    char *t=manager->matcher->state->text;
+    char *t=manager->matcher->state->textas.get_o(0);
 
     memset(limits,0,sizeof(limits));
 
@@ -1696,7 +1696,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     WCHAR bufw[BUFLEN];
     WCHAR i_hwid[BUFLEN];
     WCHAR a_hwid[BUFLEN];
-    char *t=manager->matcher->state->text;
+    char *t=manager->matcher->state->textas.get_o(0);
     int maxln=0;
     int bolder=rect.right/2;
     WCHAR *p;
@@ -1914,8 +1914,8 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     }*/
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_ENVIRONMENT));td.x=p1;
-    TextOutSF(&td,STR(STR_SYSINF_WINDIR),L"%s",state->text+state->windir);
-    TextOutSF(&td,STR(STR_SYSINF_TEMP),L"%s",state->text+state->temp);
+    TextOutSF(&td,STR(STR_SYSINF_WINDIR),L"%s",state->textas.get_o(state->windir));
+    TextOutSF(&td,STR(STR_SYSINF_TEMP),L"%s",state->textas.get_o(state->temp));
 
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_MOTHERBOARD));td.x=p1;
@@ -1926,7 +1926,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
 
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_BATTERY));td.x=p1;
-    battery=(SYSTEM_POWER_STATUS *)(state->text+state->battery);
+    battery=(SYSTEM_POWER_STATUS *)(state->textas.get_o(state->battery));
     switch(battery->ACLineStatus)
     {
         case 0:wcscpy(bufw,STR(STR_SYSINF_OFFLINE));break;
@@ -1953,7 +1953,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     if(battery->BatteryFullLifeTime!=0xFFFFFFFF)
         TextOutSF(&td,STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
 
-    buf=(WCHAR *)(state->text+state->monitors);
+    buf=(WCHAR *)(state->textas.get_o(state->monitors));
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_MONITORS));td.x=p1;
     for(i=0;i<buf[0];i++)
