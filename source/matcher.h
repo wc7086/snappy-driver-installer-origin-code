@@ -50,7 +50,7 @@ public:
     Device *device;
     Driver *driver;
     int start_matches;
-    int num_matches;
+    unsigned num_matches;
     int status;
 };
 

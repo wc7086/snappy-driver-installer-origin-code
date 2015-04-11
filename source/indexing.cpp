@@ -552,6 +552,7 @@ void Collection::updatedindexes()
         driverpack_list.push_back(Driverpack());
         drp=&driverpack_list.back();
         drp->init(driverpack_dir,filename,this);
+//        drp=driverpack_list.emplace_back({driverpack_dir,filename,this});
 //        log_con("Load '%S'\n",filename);
         drp->loadindex();
     }
@@ -778,6 +779,11 @@ void Driverpack::release()
     if(indexes.size)hash_free(&indexes);
 }
 
+Driverpack::~Driverpack()
+{
+
+}
+
 void Driverpack::saveindex()
 {
     WCHAR filename[BUFLEN];
@@ -958,7 +964,7 @@ void Driverpack::print()
     {
         d_i=&inffile[inffile_index];
         fprintf(f,"  %s%s (%d bytes)\n",texta.get(d_i->infpath),texta.get(d_i->inffilename),d_i->infsize);
-    for(i=0;i<n;i++)if(i!=inffile_index&&d_i->infcrc==inffile[i].infcrc)
+    for(i=0;i<(int)n;i++)if(i!=(int)inffile_index&&d_i->infcrc==inffile[i].infcrc)
     fprintf(f,"**%s%s\n",texta.get(inffile[i].infpath),texta.get(inffile[i].inffilename));
         t=&d_i->version;
         fprintf(f,"    date\t\t\t%d/%d/%d\n",t->d,t->m,t->y);
@@ -1926,6 +1932,11 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
 
 char *Txt::get(ofst offset){return (char *)(&text[offset]);}
 WCHAR *Txt::getw(ofst offset){return (WCHAR *)(&text[offset]);}
+char *Txt::get_o(ofst offset){return (char *)(&text_old[offset]);}
+WCHAR *Txt::getw_o(ofst offset){return (WCHAR *)(&text_old[offset]);}
+//char *Txt::get_o(ofst offset){return (char *)(&text[offset]);}
+//WCHAR *Txt::getw_o(ofst offset){return (WCHAR *)(&text[offset]);}
+
 int Txt::strcpy(const char *str)
 {
     int r=text.size();
@@ -1965,3 +1976,17 @@ int Txt::memcpyz_dup(const char *mem,int sz)
         return it->second;
     }
 }
+
+int Txt::alloc(int sz)
+{
+    int r=text.size();
+    text.resize(r+sz);
+    return r;
+}
+
+void Txt::reset(int sz)
+{
+    text.resize(sz);
+}
+
+

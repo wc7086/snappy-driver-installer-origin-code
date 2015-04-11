@@ -710,7 +710,7 @@ void Panel::draw(HDC hdc)
             wsprintf(buf,L"%s",STR(STR_SYSINF_WINDIR));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
 
-            wsprintf(buf,L"%s",manager_g->matcher->state->text+manager_g->matcher->state->windir);
+            wsprintf(buf,L"%s",manager_g->matcher->state->textas.get_o(manager_g->matcher->state->windir));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,buf,wcslen(buf));
         }
 
@@ -729,7 +729,7 @@ void Panel::draw(HDC hdc)
             wsprintf(buf,L"%s",STR(STR_SYSINF_TEMP));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
 
-            wsprintf(buf,L"%s",manager_g->matcher->state->text+manager_g->matcher->state->temp);
+            wsprintf(buf,L"%s",manager_g->matcher->state->textas.get_o(manager_g->matcher->state->temp));
             TextOut(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,buf,wcslen(buf));
         }
         if(items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;

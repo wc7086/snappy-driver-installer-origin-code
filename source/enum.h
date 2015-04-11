@@ -151,15 +151,13 @@ public:
     char reserved1[676];
 //    driverpack_t windirinf;
 
-/*    ofst *profile_list;
-    heap_t profile_handle;
-    int profile_current;*/
-
     std::vector<Device> Devices_list;
     std::vector<Driver> Drivers_list;
 
-    char *text;
+    //char *text;
     heap_t text_handle_st;
+
+    Txt textas;
 
 public:
     void init();

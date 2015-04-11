@@ -106,7 +106,7 @@ public:
     void setfilters();
     int  hitscan(int x,int y);
     void draw_inv();
-    virtual void draw(HDC hdc);
+    void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);
 };
 //}
