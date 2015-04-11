@@ -78,7 +78,7 @@ typedef struct _heap_t
     int itemsize;
     int items;
 
-    hashtable_t *dup;
+    //hashtable_t *dup;
 }heap_t;
 
 typedef struct _find_t
@@ -127,7 +127,7 @@ void heap_freelastitem(heap_t *t);
 int  heap_memcpy(heap_t *t,const void *mem,int sz);
 int  heap_strcpy(heap_t *t,const char *s);
 int  heap_memcpyz(heap_t *t,const void *mem,int sz);
-int  heap_memcpyz_dup(heap_t *t,const void *mem,int sz);
+//int  heap_memcpyz_dup(heap_t *t,const void *mem,int sz);
 int  heap_strtolowerz(heap_t *t,const char *s,int sz);
 char *heap_save(heap_t *t,char *p);
 char *heap_load(heap_t *t,char *p);

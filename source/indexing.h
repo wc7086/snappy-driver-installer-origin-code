@@ -129,12 +129,9 @@ private:
 public:
     std::vector<char> text;
     stringmap dub;
-    char *text_old;
 
     char *get(ofst offset);
     WCHAR *getw(ofst offset);
-    char *get_o(ofst offset);
-    WCHAR *getw_o(ofst offset);
 
     int strcpy(const char *mem);
     int memcpy(const char *mem,int sz);
