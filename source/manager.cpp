@@ -58,7 +58,7 @@ void Manager::sorta(Matcher *m,int *v)
     Hwidmatch *hwidmatch_i,*hwidmatch_j;
     int i,j,num;
 
-    num=m->devicematch_handle.items;
+    num=m->devicematch_list.size();
 
     for(i=0;i<num;i++)v[i]=i;
 
@@ -119,8 +119,8 @@ void Manager::populate()
 {
     devicematch_t *devicematch;
     Hwidmatch *hwidmatch;
-    int i,id=RES_SLOTS;
-    unsigned j;
+    int id=RES_SLOTS;
+    unsigned i,j;
     int remap[1024];
 
     //items_handle.used=sizeof(itembar_t)*RES_SLOTS;
@@ -128,8 +128,8 @@ void Manager::populate()
 
     sorta(matcher,remap);
 
-    devicematch=matcher->devicematch_list;
-    for(i=0;i<matcher->devicematch_handle.items;i++)
+    devicematch=&matcher->devicematch_list[0];
+    for(i=0;i<matcher->devicematch_list.size();i++)
     {
         devicematch=&matcher->devicematch_list[remap[i]];
         hwidmatch=&matcher->hwidmatch_list[devicematch->start_matches];

@@ -111,11 +111,8 @@ public:
     State *state;
     Collection *col;
 
-    devicematch_t *devicematch_list;
-    heap_t devicematch_handle;
-
-    Hwidmatch *hwidmatch_list;
-    heap_t hwidmatch_handle;
+    std::vector<devicematch_t> devicematch_list;
+    std::vector<Hwidmatch> hwidmatch_list;
 
 public:
     void init(State *state,Collection *col);

@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <vector>
+#include <unordered_map>
+#include <string>
 #define STR_LN 4096
 typedef int ofst;
 //#define MERGE_FINDER

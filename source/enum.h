@@ -27,6 +27,7 @@ extern int isLaptop;
 #endif
 
 class State;
+class Device;
 
 typedef struct _infdata_t
 {
@@ -62,7 +63,11 @@ public:
     int feature;
     int identifierscore;
 
+private:
+    void scaninf(State *state,hashtable_t *inf_list,Driverpack *unpacked_drp,int &inf_pos);
+
 public:
+    void init(State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,Driverpack *unpacked_drp);
     void print(State *state);
 };
 
@@ -114,8 +119,7 @@ public:
 
 public:
     void setDriverIndex(int v){driver_index=v;}
-
-    int getDriverIndex(){return driver_index;}
+    int  getDriverIndex(){return driver_index;}
     ofst getHardwareID(){return HardwareID;}
     ofst getDriver(){return Driver;}
     ofst getDescr(){return Devicedesc;}
@@ -123,7 +127,11 @@ public:
     int  print_status();
     void print(State *state);
     void printHWIDS(State *state);
-    int device_readprop(HDEVINFO hDevInfo,State *state,int i);
+    Device(HDEVINFO hDevInfo,State *state,int i);
+
+    Device():driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
+        Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
+        InstanceId(0),status(0),problem(0),ret(0){}
 };
 
 class State
@@ -149,7 +157,6 @@ public:
     char reserved[1024];
 
     char reserved1[676];
-//    driverpack_t windirinf;
 
     std::vector<Device> Devices_list;
     std::vector<Driver> Drivers_list;
@@ -187,8 +194,6 @@ int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
 template <class T> char *vector_save(std::vector<T> *v,char *p);
 template <class T> char *vector_load(std::vector<T> *v,char *p);
-void scaninf(State *state,Driver *cur_driver,hashtable_t *inf_list,Driverpack *unpacked_drp,int &inf_pos);
-void driver_read(Driver *cur_driver,State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,Driverpack *unpacked_drp);
 
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
@@ -216,7 +221,6 @@ char *vector_load(std::vector<T> *v,char *p)
     memcpy(&sz,p,sizeof(int));p+=sizeof(int);
     memcpy(&num,p,sizeof(int));p+=sizeof(int);
     v->resize(num);
-//    log_con("SZ %d,%d\n",num,v->size());
     memcpy(v->data(),p,sz);p+=sz;
     return p;
 }
