@@ -87,18 +87,19 @@ void Device::print_guid(GUID *g)
     log_file("%S\n",buffer);
 }
 
-void Device::read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoDataa,State *state,int id,ofst *val)
+void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *val)
 {
     DWORD buffersize=0;
     int lr;
     DWORD DataT=0;
     PBYTE p;
     BYTE buf[BUFLEN];
+    auto DeviceInfoDataloc=(SP_DEVINFO_DATA *)&DeviceInfoData;
 
     memset(buf,0,BUFLEN);
     *val=0;
 
-    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataa,id,&DataT,0,0,&buffersize))
+    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,0,0,&buffersize))
     {
         lr=GetLastError();
         if(lr==ERROR_INVALID_DATA)return;
@@ -120,7 +121,7 @@ void Device::read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoD
         p=(PBYTE)(state->textas.get(*val));
     }
     memset(p,0,buffersize);
-    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataa,id,&DataT,(PBYTE)buf,buffersize,&buffersize))
+    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,(PBYTE)buf,buffersize,&buffersize))
     {
         lr=GetLastError();
         log_file("Property %d\n",id);
@@ -225,14 +226,14 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
     SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,0,0,&buffersize);
     InstanceId=state->textas.alloc(buffersize);
     SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,state->textas.getw(InstanceId),BUFLEN,0);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_DEVICEDESC,    &Devicedesc);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_HARDWAREID,    &HardwareID);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_COMPATIBLEIDS, &CompatibleIDs);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_DRIVER,        &Driver);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_MFG,           &Mfg);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_FRIENDLYNAME,  &FriendlyName);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_CAPABILITIES,  &Capabilities);
-    read_device_property(hDevInfo,DeviceInfoDataloc,state,SPDRP_CONFIGFLAGS,   &ConfigFlags);
+    read_device_property(hDevInfo,state,SPDRP_DEVICEDESC,    &Devicedesc);
+    read_device_property(hDevInfo,state,SPDRP_HARDWAREID,    &HardwareID);
+    read_device_property(hDevInfo,state,SPDRP_COMPATIBLEIDS, &CompatibleIDs);
+    read_device_property(hDevInfo,state,SPDRP_DRIVER,        &Driver);
+    read_device_property(hDevInfo,state,SPDRP_MFG,           &Mfg);
+    read_device_property(hDevInfo,state,SPDRP_FRIENDLYNAME,  &FriendlyName);
+    read_device_property(hDevInfo,state,SPDRP_CAPABILITIES,  &Capabilities);
+    read_device_property(hDevInfo,state,SPDRP_CONFIGFLAGS,   &ConfigFlags);
 
     ret=CM_Get_DevNode_Status(&status,&problem,DeviceInfoDataloc->DevInst,0);
     if(ret!=CR_SUCCESS)

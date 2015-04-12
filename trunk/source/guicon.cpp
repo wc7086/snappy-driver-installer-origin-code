@@ -85,56 +85,6 @@ void gen_timestamp()
              1900+ti->tm_year,ti->tm_mon+1,ti->tm_mday,
              ti->tm_hour,ti->tm_min,ti->tm_sec,pcname);
 }
-static void myterminate()
-{
-    WCHAR buf[BUFLEN];
-
-    std::exception_ptr p;
-    p=std::current_exception();
-
-    try
-    {
-        std::rethrow_exception (p);
-    }
-    catch(const std::exception& e)
-    {
-        wsprintfW(buf,L"Exception: %s\n",e.what());
-    }
-    catch(int i)
-    {
-        wsprintfW(buf,L"Exception: %d\n",i);
-    }
-    catch(char const*str)
-    {
-        wsprintfW(buf,L"Exception: %S\n",str);
-    }
-    catch(WCHAR const*str)
-    {
-        wsprintfW(buf,L"Exception: %s\n",str);
-    }
-    catch(...)
-    {
-        wsprintfW(buf,L"Exception: unknown");
-    }
-    log_con("ERROR: %S\n",buf);
-    log_save();
-    StrCatW(buf,L"\n\nThe program will self terminate now.");
-    MessageBox(hMain,buf,L"Exception",MB_ICONERROR);
-
-    abort();
-}
-
-static void myunexpected()
-{
-    log_con("ERROR: myunexpected()\n");
-    myterminate();
-}
-
-void start_exception_hadnlers()
-{
-    std::set_unexpected(myunexpected);
-    std::set_terminate(myterminate);
-}
 
 void log_start(WCHAR *logdir)
 {
@@ -240,6 +190,7 @@ void log_nul(CHAR const *format,...)
 }
 //}
 
+//{ Error handling
 const WCHAR *errno_str()
 {
     switch(errno)
@@ -295,33 +246,6 @@ void print_error(int r,const WCHAR *s)
     error_count++;
 }
 
-DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait)
-{
-    DWORD ret;
-
-    SHELLEXECUTEINFO ShExecInfo;
-    memset(&ShExecInfo,0,sizeof(SHELLEXECUTEINFO));
-    ShExecInfo.cbSize=sizeof(SHELLEXECUTEINFO);
-    ShExecInfo.fMask=SEE_MASK_NOCLOSEPROCESS;
-    ShExecInfo.lpFile=file;
-    ShExecInfo.lpParameters=cmd;
-    ShExecInfo.nShow=show;
-
-    log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
-    if(!wcscmp(file,L"open"))
-    {
-        ShellExecute(NULL, L"open", cmd, NULL, NULL, SW_SHOWNORMAL);
-
-    }
-    else
-        ShellExecuteEx(&ShExecInfo);
-
-    if(!wait)return 0;
-    WaitForSingleObject(ShExecInfo.hProcess,INFINITE);
-    GetExitCodeProcess(ShExecInfo.hProcess,&ret);
-    return ret;
-}
-
 void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj)
 {
     if(!CloseHandle(h))
@@ -334,25 +258,59 @@ void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *fu
         log_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
 }
 
-
-int canWrite(const WCHAR *path)
+static void myterminate()
 {
-    DWORD flagsv;
-    WCHAR drive[4];
+    WCHAR buf[BUFLEN];
 
-    wcscpy(drive,L"C:\\");
+    std::exception_ptr p;
+    p=std::current_exception();
 
-    if(path&&wcslen(path)>1&&path[1]==':')
+    try
     {
-        drive[0]=path[0];
-        GetVolumeInformation(drive,0,0,0,0,&flagsv,0,0);
+        std::rethrow_exception (p);
     }
-    else
-        GetVolumeInformation(0,0,0,0,0,&flagsv,0,0);
+    catch(const std::exception& e)
+    {
+        wsprintfW(buf,L"Exception: %s\n",e.what());
+    }
+    catch(int i)
+    {
+        wsprintfW(buf,L"Exception: %d\n",i);
+    }
+    catch(char const*str)
+    {
+        wsprintfW(buf,L"Exception: %S\n",str);
+    }
+    catch(WCHAR const*str)
+    {
+        wsprintfW(buf,L"Exception: %s\n",str);
+    }
+    catch(...)
+    {
+        wsprintfW(buf,L"Exception: unknown");
+    }
+    log_con("ERROR: %S\n",buf);
+    log_save();
+    StrCatW(buf,L"\n\nThe program will self terminate now.");
+    MessageBox(hMain,buf,L"Exception",MB_ICONERROR);
 
-    return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
+    abort();
 }
 
+static void myunexpected()
+{
+    log_con("ERROR: myunexpected()\n");
+    myterminate();
+}
+
+void start_exception_hadnlers()
+{
+    std::set_unexpected(myunexpected);
+    std::set_terminate(myterminate);
+}
+//}
+
+//{ Virus detection
 void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
@@ -429,3 +387,51 @@ void virusmonitor_stop()
 {
     if(mon_vir)monitor_stop(mon_vir);
 }
+//}
+
+//{ Misc
+int canWrite(const WCHAR *path)
+{
+    DWORD flagsv;
+    WCHAR drive[4];
+
+    wcscpy(drive,L"C:\\");
+
+    if(path&&wcslen(path)>1&&path[1]==':')
+    {
+        drive[0]=path[0];
+        GetVolumeInformation(drive,0,0,0,0,&flagsv,0,0);
+    }
+    else
+        GetVolumeInformation(0,0,0,0,0,&flagsv,0,0);
+
+    return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
+}
+
+DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait)
+{
+    DWORD ret;
+
+    SHELLEXECUTEINFO ShExecInfo;
+    memset(&ShExecInfo,0,sizeof(SHELLEXECUTEINFO));
+    ShExecInfo.cbSize=sizeof(SHELLEXECUTEINFO);
+    ShExecInfo.fMask=SEE_MASK_NOCLOSEPROCESS;
+    ShExecInfo.lpFile=file;
+    ShExecInfo.lpParameters=cmd;
+    ShExecInfo.nShow=show;
+
+    log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
+    if(!wcscmp(file,L"open"))
+    {
+        ShellExecute(NULL, L"open", cmd, NULL, NULL, SW_SHOWNORMAL);
+
+    }
+    else
+        ShellExecuteEx(&ShExecInfo);
+
+    if(!wait)return 0;
+    WaitForSingleObject(ShExecInfo.hProcess,INFINITE);
+    GetExitCodeProcess(ShExecInfo.hProcess,&ret);
+    return ret;
+}
+//}
