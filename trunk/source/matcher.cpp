@@ -695,14 +695,14 @@ void Matcher::init(State *state1,Collection *col1)
     state=state1;
     col=col1;
 
-    heap_init(&devicematch_handle,ID_MATCHER,(void **)&devicematch_list,0,sizeof(devicematch_t));
-    heap_init(&hwidmatch_handle,ID_MATCHER,(void **)&hwidmatch_list,0,sizeof(Hwidmatch));
+    //heap_init(&devicematch_handle,ID_MATCHER,(void **)&devicematch_list,0,sizeof(devicematch_t));
+    //heap_init(&hwidmatch_handle,ID_MATCHER,(void **)&hwidmatch_list,0,sizeof(Hwidmatch));
 }
 
 void Matcher::release()
 {
-    heap_free(&devicematch_handle);
-    heap_free(&hwidmatch_handle);
+    //heap_free(&devicematch_handle);
+    //heap_free(&hwidmatch_handle);
 }
 
 void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int ishw)
@@ -724,7 +724,8 @@ void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int is
         int val=hash_find(&drp->indexes,(char *)&code,4,&isfound);
         while(isfound)
         {
-            hwidmatch=(Hwidmatch *)heap_allocitem_ptr(&hwidmatch_handle);
+            hwidmatch_list.push_back(Hwidmatch());
+            hwidmatch=&hwidmatch_list.back();
             hwidmatch->init(drp,val,dev_pos,ishw,state,devicematch);
             devicematch->num_matches++;
             val=hash_findnext_b(&drp->indexes,&isfound);
@@ -745,16 +746,17 @@ void Matcher::populate()
 
     time_matcher=GetTickCount();
     cur_device=&state->Devices_list[0];
-    heap_reset(&devicematch_handle,0);
-    heap_reset(&hwidmatch_handle,0);
+    devicematch_list.clear();
+    hwidmatch_list.clear();
 
     state->genmarker();
     for(i=0;i<state->Devices_list.size();i++,cur_device++)
     {
         cur_driver=0;
         if(cur_device->driver_index>=0)cur_driver=&state->Drivers_list[cur_device->driver_index];
-        devicematch=(devicematch_t *)heap_allocitem_ptr(&devicematch_handle);
-        devicematch_init(devicematch,cur_device,cur_driver,hwidmatch_handle.items);
+        devicematch_list.push_back(devicematch_t());
+        devicematch=&devicematch_list.back();
+        devicematch_init(devicematch,cur_device,cur_driver,hwidmatch_list.size());
         if(cur_device->HardwareID)
         {
             p=(WCHAR *)(s+cur_device->HardwareID);
@@ -782,7 +784,7 @@ void Matcher::populate()
         }
         if(!devicematch->num_matches)
         {
-            heap_allocitem_ptr(&hwidmatch_handle);
+            hwidmatch_list.push_back(Hwidmatch());
 
             if(isMissing(cur_device,cur_driver,state))devicematch->status=STATUS_NF_MISSING;else
             if(devicematch->driver)
@@ -816,10 +818,10 @@ void Matcher::sort()
     Hwidmatch matchtmp;
 
     char sect1[BUFLEN],sect2[BUFLEN];
-    int k;
+    unsigned k;
     unsigned i,j;
-    devicematch=devicematch_list;
-    for(k=0;k<devicematch_handle.items;k++,devicematch++)
+    devicematch=&devicematch_list[0];
+    for(k=0;k<devicematch_list.size();k++,devicematch++)
     {
         // Sort
         match1=&hwidmatch_list[devicematch->start_matches];
@@ -866,13 +868,13 @@ void Matcher::print()
     Device *cur_device;
     Hwidmatch *hwidmatch;
     int limits[7];
-    int i;
+    unsigned i;
     unsigned j;
 
     if((log_verbose&LOG_VERBOSE_MATCHER)==0)return;
-    log_file("\n{matcher_print[devices=%d,hwids=%d]\n",devicematch_handle.items,hwidmatch_handle.items);
-    devicematch=devicematch_list;
-    for(i=0;i<devicematch_handle.items;i++,devicematch++)
+    log_file("\n{matcher_print[devices=%d,hwids=%d]\n",devicematch_list.size(),hwidmatch_list.size());
+    devicematch=&devicematch_list[0];
+    for(i=0;i<devicematch_list.size();i++,devicematch++)
     {
         cur_device=devicematch->device;
         cur_device->print(state);
