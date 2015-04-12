@@ -127,6 +127,7 @@ void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,Stat
     BYTE buf[BUFLEN];
 
     memset(buf,0,BUFLEN);
+    *val=0;
 
     if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoData,id,&DataT,0,0,&buffersize))
     {
@@ -413,7 +414,6 @@ void State::print()
 {
     int x,y;
     unsigned i;
-    Device *cur_device;
     WCHAR *buf;
     SYSTEM_POWER_STATUS *batteryloc;
 
@@ -440,7 +440,7 @@ void State::print()
         }
         log_file("\nEnvironment\n");
         log_file("  windir:      %S\n",textas.get(windir));
-        log_file("  tempa:        %S\n",textas.get(temp));
+        log_file("  temp:        %S\n",textas.get(temp));
 
         log_file("\nMotherboard\n");
         log_file("  Product:     %S\n",textas.get(product));
@@ -494,19 +494,17 @@ void State::print()
     }
 
     if(log_verbose&LOG_VERBOSE_DEVICES)
-    for(i=0;i<Devices_list.size();i++)
+    for(auto cur_device:Devices_list)
     {
-        cur_device=&Devices_list[i];
+        cur_device.print(this);
 
-        cur_device->print(this);
-
-        log_file("DriverInfo\n",cur_device->getDriverIndex());
-        if(cur_device->getDriverIndex()>=0)
-            Drivers_list[cur_device->getDriverIndex()].print(this);
+        log_file("DriverInfo\n",cur_device.getDriverIndex());
+        if(cur_device.getDriverIndex()>=0)
+            Drivers_list[cur_device.getDriverIndex()].print(this);
         else
             log_file("##NoDriver\n");
 
-        cur_device->printHWIDS(this);
+        cur_device.printHWIDS(this);
         log_file("\n\n");
     }
     //log_file("Errors: %d\n",error_count);
@@ -710,42 +708,43 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
     }
 }
 
-void Driver::scaninf(State *state,hashtable_t *inf_list,Driverpack *unpacked_drp,int &inf_pos)
+void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 {
     WCHAR filename[BUFLEN];
     infdata_t *infdata;
     WCHAR buf[BUFLEN];
     char bufa[BUFLEN];
+    hashtable_t *inf_list=&state->inf_list;
 
     FILE *f;
     char *buft;
     int len;
     unsigned HWID_index;
-
-    wsprintf(filename,L"%s%s",state->textas.get(state->windir),state->textas.get(InfPath));
-
     int isfound;
-    wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
-    infdata=(infdata_t *)hash_find(inf_list,bufa,strlen(bufa),&isfound);
+
     if(flags&FLAG_FAILSAFE)
     {
         inf_pos=0;
+        return;
     }
-    else
+    wsprintf(filename,L"%s%s",state->textas.get(state->windir),state->textas.get(InfPath));
+    wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
+    infdata=(infdata_t *)hash_find(inf_list,bufa,strlen(bufa),&isfound);
+
     if(isfound)
     {
-        log_file("Skipped '%S'\n",filename,inf_pos);
+        log_file("Skipped '%S' (%S)\n",filename,state->textas.get(MatchingDeviceId));
         feature=infdata->feature;
         catalogfile=infdata->catalogfile;
         cat=infdata->cat;
         inf_pos=infdata->inf_pos;
     }else
     {
-        log_file("Looking for '%S'\n",filename);
+        log_file("Looking '%S' (%S)\n",filename,state->textas.get(MatchingDeviceId));
         f=_wfopen(filename,L"rb");
         if(!f)
         {
-            log_err("ERROR: Not found '%S'\n",filename);
+            log_err("ERROR: file not found '%S'\n",filename);
             return;
         }
         fseek(f,0,SEEK_END);
@@ -778,7 +777,7 @@ void Driver::scaninf(State *state,hashtable_t *inf_list,Driverpack *unpacked_drp
             }
         }
         if(inf_pos==-1)
-            log_err("ERROR: not found '%s'\n",sect);
+            log_err("ERROR: sect not found '%s'\n",sect);
 
         cat=state->opencatfile(this);
 
@@ -793,11 +792,13 @@ void Driver::scaninf(State *state,hashtable_t *inf_list,Driverpack *unpacked_drp
     }
 }
 
-void Driver::init(State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,Driverpack *unpacked_drp)
+Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp)
 {
     char bufa[BUFLEN];
     int dev_pos,ishw,inf_pos=-1;
     Parser_str pi;
+    DriverDate=0;
+    DriverVersion=0;
 
     read_reg_val(hkey,state,L"DriverDesc",         &DriverDesc);
     read_reg_val(hkey,state,L"ProviderName",       &ProviderName);
@@ -809,21 +810,27 @@ void Driver::init(State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_lis
     read_reg_val(hkey,state,L"InfSection",         &InfSection);
     read_reg_val(hkey,state,L"InfSectionExt",      &InfSectionExt);
 
-    getdd(cur_device,state,&ishw,&dev_pos);
+    getdd(cur_device,this,state,&ishw,&dev_pos);
 
     if(InfPath)
-        scaninf(state,inf_list,unpacked_drp,inf_pos);
+        scaninf(state,unpacked_drp,inf_pos);
 
     identifierscore=calc_identifierscore(dev_pos,ishw,inf_pos);
     //log_file("%d,%d,%d\n",dev_pos,ishw,inf_pos);
 
-    wsprintfA(bufa,"%ws",state->textas.get(DriverDate));
-    pi.setRange(bufa,bufa+strlen(bufa));
-    pi.readDate(&version);
+    if(DriverDate)
+    {
+        wsprintfA(bufa,"%ws",state->textas.get(DriverDate));
+        pi.setRange(bufa,bufa+strlen(bufa));
+        pi.readDate(&version);
+    }
 
-    wsprintfA(bufa,"%ws",state->textas.get(DriverVersion));
-    pi.setRange(bufa,bufa+strlen(bufa));
-    pi.readVersion(&version);
+    if(DriverVersion)
+    {
+        wsprintfA(bufa,"%ws",state->textas.get(DriverVersion));
+        pi.setRange(bufa,bufa+strlen(bufa));
+        pi.readVersion(&version);
+    }
 }
 
 void State::scanDevices()
@@ -831,11 +838,9 @@ void State::scanDevices()
     HDEVINFO hDevInfo;
     HKEY   hkey;
     WCHAR buf[BUFLEN];
-    Driver *cur_driver;
     Collection collection;
     Driverpack unpacked_drp;
-    hashtable_t inf_list;
-    //unordered_map <string,infdata_t> inflist;
+    inflist_tp inflist;
     unsigned i;
     int lr;
 
@@ -872,17 +877,13 @@ void State::scanDevices()
 
         // Driver
         if(!cur_device->getDriver())continue;
-
         wsprintf(buf,L"SYSTEM\\CurrentControlSet\\Control\\Class\\%s",textas.getw(cur_device->getDriver()));
         lr=RegOpenKeyEx(HKEY_LOCAL_MACHINE,buf,0,KEY_QUERY_VALUE,&hkey);
         switch(lr)
         {
             case ERROR_SUCCESS:
                 cur_device->setDriverIndex(Drivers_list.size());
-                Drivers_list.push_back(Driver());
-                cur_driver=&Drivers_list.back();
-
-                cur_driver->init(this,cur_device,hkey,&inf_list,&unpacked_drp);
+                Drivers_list.emplace_back(Driver(this,cur_device,hkey,&unpacked_drp));
                 break;
 
             default:

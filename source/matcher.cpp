@@ -482,9 +482,9 @@ void findHWID_in_list(char *s,int list,int str,int *dev_pos)
     *dev_pos=-1;
 }
 
-void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos)
+void getdd(Device *cur_device,Driver *cur_driver,State *state,int *ishw,int *dev_pos)
 {
-    Driver *cur_driver=&state->Drivers_list[cur_device->driver_index];
+    //Driver *cur_driver=&state->Drivers_list[cur_device->driver_index];
 
     *ishw=1;
     findHWID_in_list(state->textas.get(0),cur_device->HardwareID,cur_driver->MatchingDeviceId,dev_pos);
