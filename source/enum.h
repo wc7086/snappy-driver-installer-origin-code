@@ -171,7 +171,7 @@ public:
     std::vector<Driver> Drivers_list;
 
     Txt textas;
-    hashtable_t inf_list;
+    inflist_tp inf_list_new;
 
 public:
     ~State();

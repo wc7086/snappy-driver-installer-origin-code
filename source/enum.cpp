@@ -714,33 +714,42 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     infdata_t *infdata;
     WCHAR buf[BUFLEN];
     char bufa[BUFLEN];
-    hashtable_t *inf_list=&state->inf_list;
+    auto inf_list_new=&state->inf_list_new;
 
     FILE *f;
     char *buft;
     int len;
     unsigned HWID_index;
-    int isfound;
 
     if(flags&FLAG_FAILSAFE)
     {
         inf_pos=0;
         return;
     }
+
     wsprintf(filename,L"%s%s",state->textas.get(state->windir),state->textas.get(InfPath));
     wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
-    infdata=(infdata_t *)hash_find(inf_list,bufa,strlen(bufa),&isfound);
-
-    if(isfound)
+    auto got=inf_list_new->find(std::string(bufa));
+    if(got!=inf_list_new->end())
     {
-        log_file("Skipped '%S' (%S)\n",filename,state->textas.get(MatchingDeviceId));
+        infdata=&got->second;
+        //log_file("Match1 '%s' %d,%d,%d,%d\n",bufa,infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
         feature=infdata->feature;
         catalogfile=infdata->catalogfile;
         cat=infdata->cat;
         inf_pos=infdata->inf_pos;
-    }else
+        return;
+    }
+
+    wsprintfA(bufa,"%ws",filename);
+    got=inf_list_new->find(std::string(bufa));
+    if(got!=inf_list_new->end())
     {
-        log_file("Looking '%S' (%S)\n",filename,state->textas.get(MatchingDeviceId));
+        //log_file("Match2 '%s'\n",bufa);
+    }
+    else
+    {
+        //log_file("Reading '%S' for (%S)\n",filename,state->textas.get(MatchingDeviceId));
         f=_wfopen(filename,L"rb");
         if(!f)
         {
@@ -759,37 +768,33 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         if(len>0)
         unpacked_drp->indexinf(buf,(WCHAR *)(state->textas.get(InfPath)),buft,len);
         free(buft);
-
-        char sect[BUFLEN];
-        wsprintfA(sect,"%ws%ws",state->textas.get(InfSection),state->textas.get(InfSectionExt));
-        wsprintfA(bufa,"%ws",state->textas.get(MatchingDeviceId));
-        for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
-        if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),bufa))
-        {
-            Hwidmatch hwidmatch;
-
-            hwidmatch.initbriefly(unpacked_drp,HWID_index);
-            if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
-            {
-                feature=hwidmatch.getdrp_drvfeature();
-                catalogfile=hwidmatch.calc_catalogfile();
-                if(inf_pos<0||inf_pos>hwidmatch.getdrp_drvinfpos())inf_pos=hwidmatch.getdrp_drvinfpos();
-            }
-        }
-        if(inf_pos==-1)
-            log_err("ERROR: sect not found '%s'\n",sect);
-
-        cat=state->opencatfile(this);
-
-        //log_file("Added '%S',%d\n",filename,inf_pos);
-        infdata=(infdata_t *)malloc(sizeof(infdata_t));
-        infdata->catalogfile=catalogfile;
-        infdata->feature=feature;
-        infdata->cat=cat;
-        infdata->inf_pos=inf_pos;
-        wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
-        hash_add(inf_list,bufa,strlen(bufa),(intptr_t)infdata,HASH_MODE_INTACT);
     }
+
+    char sect[BUFLEN];
+    wsprintfA(sect,"%ws%ws",state->textas.get(InfSection),state->textas.get(InfSectionExt));
+    wsprintfA(bufa,"%ws",state->textas.get(MatchingDeviceId));
+    for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
+    if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),bufa))
+    {
+        Hwidmatch hwidmatch;
+
+        hwidmatch.initbriefly(unpacked_drp,HWID_index);
+        if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
+        {
+            feature=hwidmatch.getdrp_drvfeature();
+            catalogfile=hwidmatch.calc_catalogfile();
+            if(inf_pos<0||inf_pos>hwidmatch.getdrp_drvinfpos())inf_pos=hwidmatch.getdrp_drvinfpos();
+        }
+    }
+    if(inf_pos==-1)
+        log_err("ERROR: sect not found '%s'\n",sect);
+
+    cat=state->opencatfile(this);
+
+    wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
+    inf_list_new->insert({std::string(bufa),infdata_t(catalogfile,feature,cat,inf_pos)});
+    wsprintfA(bufa,"%ws",filename);
+    inf_list_new->insert({std::string(bufa),infdata_t(0,0,0,0)});
 }
 
 Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp)
@@ -848,8 +853,8 @@ void State::scanDevices()
     collection.init(textas.getw(windir),L"",L"",0);
     unpacked_drp.init(L"",L"windir.7z",&collection);
     //Driverpack unpacked_drp(L"",L"windir.7z",&collection);
-    hash_init(&inf_list,ID_INF_LIST,200,HASH_FLAG_KEYS_ARE_POINTERS);
     Devices_list.clear();
+    inf_list_new.clear();
 
     hDevInfo=SetupDiGetClassDevs(0,0,0,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
@@ -911,7 +916,6 @@ void State::scanDevices()
     }*/
     //driverpack_print(&unpacked_drp);
     collection.release();
-    hash_free(&inf_list);
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;
 }
