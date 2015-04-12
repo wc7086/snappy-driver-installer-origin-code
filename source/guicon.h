@@ -30,8 +30,10 @@ enum LOG_VERBOSE
     LOG_VERBOSE_BATCH     = 0x0800,
 };
 
+//{ Global variables
 extern int log_verbose;
 extern int log_console;
+extern int error_count;
 extern WCHAR timestamp[BUFLEN];
 extern long
     time_total,
@@ -44,11 +46,9 @@ extern long
     time_sysinfo,
     time_matcher,
     time_test;
-
-extern int error_count;
+//}
 
 //#define log_index log
-
 #ifndef log_index
 #define log_index log_nul
 #endif
@@ -68,13 +68,18 @@ void log_err(CHAR const *format,...);
 void log_con(CHAR const *format,...);
 void log_nul(CHAR const *format,...);
 
+// Error handling
 const WCHAR *errno_str();
 void print_error(int r,const WCHAR *s);
-DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait);
-int canWrite(const WCHAR *path);
-void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam);
-void virusmonitor_start();
-void virusmonitor_stop();
 void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj);
 void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj);
 void start_exception_hadnlers();
+
+// Virus detection
+void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam);
+void virusmonitor_start();
+void virusmonitor_stop();
+
+// Misc
+int canWrite(const WCHAR *path);
+DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait);

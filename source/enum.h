@@ -15,11 +15,10 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//{ Global variables
+// Global variables
 extern int isLaptop;
-//}
 
-//{ Misc struct
+// Misc struct
 class State;
 class Device;
 
@@ -44,9 +43,8 @@ typedef struct _SP_DEVINFO_DATA32
     DWORD     DevInst;
     int       Reserved;
 } SP_DEVINFO_DATA_32, *PSP_DEVINFO_DATA_32;
-//}
 
-//{ Device
+// Device
 class Device
 {
 public:
@@ -69,7 +67,7 @@ public:
 
 private:
     void print_guid(GUID *g);
-    void read_device_property(HDEVINFO hDevInfo,SP_DEVINFO_DATA *DeviceInfoData,State *state,int id,ofst *val);
+    void read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *val);
 
 public:
     void setDriverIndex(int v){driver_index=v;}
@@ -87,9 +85,8 @@ public:
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
         InstanceId(0),status(0),problem(0),ret(0){}
 };
-//}
 
-//{ Driver
+// Driver
 class Driver
 {
 public:
@@ -119,9 +116,8 @@ public:
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),catalogfile(0),feature(0),identifierscore(0){}
 };
-//}
 
-//{ State (POD)
+// State (POD)
 typedef struct _state_m_t
 {
     OSVERSIONINFOEX platform;
@@ -145,9 +141,8 @@ typedef struct _state_m_t
 
     char reserved1[676];
 }state_m_t;
-//}
 
-//{ State
+// State
 class State
 {
 public:
@@ -202,21 +197,18 @@ public:
     void genmarker(); // in matcher.cpp
     void isnotebook_a();
 };
-//}
 
-//{ Monitor info
+// Monitor info
 int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
-//}
 
-// { Misc
+
+//  Misc (in baseboard.cpp)
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
-void print_appinfo();
-//}
 
-//{ Vector templates
+// Vector templates
 template <class T>
 char *vector_save(std::vector<T> *v,char *p)
 {
@@ -243,4 +235,4 @@ char *vector_load(std::vector<T> *v,char *p)
     memcpy(v->data(),p,sz);p+=sz;
     return p;
 }
-//}
+
