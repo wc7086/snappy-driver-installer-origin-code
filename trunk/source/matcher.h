@@ -136,7 +136,7 @@ int calc_markerscore(State *state,char *path);
 
 // Misc
 void findHWID_in_list(char *s,int list,int str,int *dev_pos);
-void getdd(Device *cur_device,State *state,int *ishw,int *dev_pos);
+void getdd(Device *cur_device,Driver *cur_driver,State *state,int *ishw,int *dev_pos);
 int  cmpunsigned(unsigned a,unsigned b);
 int  cmpdate(version_t *t1,version_t *t2);
 int  cmpversion(version_t *t1,version_t *t2);

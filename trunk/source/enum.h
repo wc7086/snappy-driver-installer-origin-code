@@ -29,13 +29,19 @@ extern int isLaptop;
 class State;
 class Device;
 
-typedef struct _infdata_t
+class infdata_t
 {
+public:
     int catalogfile;
     int feature;
     int inf_pos;
     ofst cat;
-}infdata_t;
+
+public:
+    infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat):
+        catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat){};
+};
+typedef std::unordered_map <std::string,infdata_t> inflist_tp;
 
 typedef struct _SP_DEVINFO_DATA32
 {
@@ -64,11 +70,14 @@ public:
     int identifierscore;
 
 private:
-    void scaninf(State *state,hashtable_t *inf_list,Driverpack *unpacked_drp,int &inf_pos);
+    void scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos);
 
 public:
-    void init(State *state,Device *cur_device,HKEY hkey,hashtable_t *inf_list,Driverpack *unpacked_drp);
+    Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp);
     void print(State *state);
+
+    Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
+        InfPath(0),InfSection(0),InfSectionExt(0),cat(0),catalogfile(0),feature(0),identifierscore(0){}
 };
 
 typedef struct _state_m_t
@@ -162,6 +171,7 @@ public:
     std::vector<Driver> Drivers_list;
 
     Txt textas;
+    hashtable_t inf_list;
 
 public:
     ~State();
