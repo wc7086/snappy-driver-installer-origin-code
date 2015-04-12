@@ -31,6 +31,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <winerror.h>
 #include "SRRestorePtAPI.h"
 typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
+#ifndef _WIN64
+#define DISPLAY_DEVICE_ACTIVE         1
+#define DISPLAY_DEVICE_ATTACHED       2
+#endif
 
 // C
 #include <assert.h>
