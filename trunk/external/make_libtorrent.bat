@@ -43,7 +43,7 @@ rem Check for webp
 if /I not exist ..\webp\mingw\msys\1.0\home\libwebp-0.4.3.tar.gz  (echo ERROR: libwebp-0.4.3.tar.gz not found in webp\mingw\msys\1.0\home & goto EOF)
 
 rem Install webp
-if /I exist %GCC_PATH%\msys\1.0\home\libwebp-0.4.0.tar.gz (echo Skipping installing WebP & goto skipprepwebp)
+if /I exist %GCC_PATH%\msys\1.0\home\libwebp-0.4.3.tar.gz (echo Skipping installing WebP & goto skipprepwebp)
 xcopy ..\webp\mingw %GCC_PATH% /E /I /Y
 echo %GCC_PATH% /mingw > %GCC_PATH%\msys\1.0\etc\fstab
 pushd %GCC_PATH%\msys\1.0
@@ -53,7 +53,7 @@ xcopy %GCC_PATH%\include\webp %GCC64_PATH%\include\webp  /E /I /Y
 :skipprepwebp
 
 rem Add missing headers to GCC
-rem if /I not exist %GCC_PATH%\include\wspiapi.h (copy ..\gcc_patch\wspiapi.h %GCC_PATH%\include\wspiapi.h /Y)
+if /I not exist %GCC_PATH%\include\wspiapi.h (copy ..\gcc_patch\wspiapi.h %GCC_PATH%\include\wspiapi.h /Y)
 if /I not exist %GCC_PATH%\include\shobjidl.h (copy ..\gcc_patch\shobjidl.h %GCC_PATH%\include\shobjidl.h /Y)
 
 rem Build bjam.exe
@@ -70,7 +70,7 @@ bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS%
 
 rem Build libtorrent.a
 cd "%LIBTORRENT_PATH%"
-rem if /I exist "%LIBTORRENT_PATH%\bin\gcc-mngw-%GCC_VERSION%\myrls\excpt-hndl-off\libtorrent.a" (echo Skipping building libtorrent & goto skipbuildlibtorrent)
+if /I exist "%LIBTORRENT_PATH%\bin\gcc-mngw-%GCC_VERSION%\myrls\excpt-hndl-off\libtorrent.a" (echo Skipping building libtorrent & goto skipbuildlibtorrent)
 cd examples
 copy "%LIBTORRENT_PATH%\..\libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=off "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
