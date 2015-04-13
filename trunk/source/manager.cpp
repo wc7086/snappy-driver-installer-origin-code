@@ -123,8 +123,7 @@ void Manager::populate()
     unsigned i,j;
     int remap[1024];
 
-    //items_handle.used=sizeof(itembar_t)*RES_SLOTS;
-    //items_list.size()=RES_SLOTS;
+    items_list.resize(RES_SLOTS);
 
     sorta(matcher,remap);
 
@@ -1978,14 +1977,20 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     td.maxsz-=POPUP_SYSINFO_OFS;
     popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
 }
-
+#include <sstream>
 void format_size(WCHAR *buf,long long val,int isspeed)
 {
 #ifdef USE_TORRENT
-    if(val<(1<<10))wsprintf(buf,L"%d %s",    (int)val,STR(STR_UPD_BYTES));else
-    if(val<(1<<20))wsprintf(buf,L"%.03f %s",(double)val/(1<<10),STR(STR_UPD_BYTES+1));else
-    if(val<(1<<30))wsprintf(buf,L"%.03f %s",(double)val/(1<<20),STR(STR_UPD_BYTES+2));else
-    if(val<((long long)1<<40))wsprintf(buf,L"%.03f %s",(double)val/(1<<30),STR(STR_UPD_BYTES+3));
+    std::wstringbuf buffer;
+    std::wostream os (&buffer);
+    os.precision(3);
+    os.setf(std::ios::fixed);
+    if(val<(1<<10))os<<val <<' ' <<STR(STR_UPD_BYTES);else
+    if(val<(1<<20))os<<(double)val/(1<<10) <<' ' <<STR(STR_UPD_BYTES+1);else
+    if(val<(1<<30))os<<(double)val/(1<<20) <<' ' <<STR(STR_UPD_BYTES+2);else
+    if(val<((long long)1<<40))os<<(double)val/(1<<30) <<' ' <<STR(STR_UPD_BYTES+3);
+    const WCHAR* cstr = buffer.str().c_str();
+    lstrcpy(buf,cstr);
 #else
     buf[0]=0;
     UNREFERENCED_PARAMETER(val)

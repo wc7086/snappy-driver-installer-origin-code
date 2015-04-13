@@ -845,8 +845,8 @@ int Main2(
     CUpdateErrorInfo errorInfo;
 
 
-    //if (!uo.Init(codecs, types, options.ArchiveName))
-    //  throw kUnsupportedUpdateArcType;
+    if (!uo.Init(codecs, types, options.ArchiveName))
+      throw kUnsupportedUpdateArcType;
 
     hresultMain = UpdateArchive(codecs,
         types,

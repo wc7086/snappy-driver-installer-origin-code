@@ -642,7 +642,7 @@ WCHAR *Collection::finddrp(WCHAR *fnd)
 
     j=0;
     n_s=0;
-    for(auto drp:driverpack_list)
+    for(auto &drp:driverpack_list)
     {
         s=drp.getFilename();
         if(StrStrIW(s,fnd)&&drp.type!=DRIVERPACK_TYPE_UPDATE)

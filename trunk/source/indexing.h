@@ -105,11 +105,13 @@ typedef struct _tbl_t
     int sz;
 }tbl_t;
 
-typedef struct _version_t
+struct version_t
 {
     int d,m,y;
     int v1,v2,v3,v4;
-}version_t;
+
+    version_t():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
+};
 //}
 
 enum DRIVERPACK_TYPE
