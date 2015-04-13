@@ -1,4 +1,4 @@
-tar -xf libwebp-0.4.0.tar.gz
-cd libwebp-0.4.0
+tar -xf libwebp-0.4.3.tar.gz
+cd libwebp-0.4.3
 ./configure --prefix=/mingw
-make install
+make install CFLAGS='-O2 -g -mstackrealign'
