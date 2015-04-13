@@ -36,13 +36,15 @@ public:
 };
 typedef std::unordered_map <std::string,infdata_t> inflist_tp;
 
-typedef struct _SP_DEVINFO_DATA32
+struct SP_DEVINFO_DATA_32
 {
     DWORD     cbSize;
     GUID      ClassGuid;
     DWORD     DevInst;
     int       Reserved;
-} SP_DEVINFO_DATA_32, *PSP_DEVINFO_DATA_32;
+
+    SP_DEVINFO_DATA_32():cbSize(sizeof(SP_DEVINFO_DATA_32)),DevInst(0),Reserved(0){}
+};
 
 // Device
 class Device
@@ -83,7 +85,7 @@ public:
     Device(HDEVINFO hDevInfo,State *state,int i);
     Device():driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
-        InstanceId(0),status(0),problem(0),ret(0){}
+        InstanceId(0),status(0),problem(0),ret(0),DeviceInfoData(){}
 };
 
 // Driver
@@ -114,7 +116,7 @@ public:
 
     Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp);
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
-        InfPath(0),InfSection(0),InfSectionExt(0),cat(0),catalogfile(0),feature(0),identifierscore(0){}
+        InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
 };
 
 // State (POD)
@@ -202,7 +204,6 @@ public:
 int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
-
 
 //  Misc (in baseboard.cpp)
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);

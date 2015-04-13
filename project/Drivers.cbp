@@ -31,7 +31,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system" />
+					<Add library="boost_system-mt" />
 					<Add directory="../lib/ReleaseU" />
 				</Linker>
 			</Target>
@@ -57,7 +57,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system" />
+					<Add library="boost_system-mt" />
 					<Add directory="../lib/DebugU" />
 				</Linker>
 			</Target>
@@ -166,6 +166,7 @@
 			<Add option="-DWINVER=0x0500" />
 			<Add directory="../resources" />
 			<Add directory="../external/SevenZ/build/C" />
+			<Add directory="C:/Boost/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libstdc++" />
@@ -191,6 +192,7 @@
 			<Add library="comctl32" />
 			<Add library="wbemuuid" />
 			<Add directory="../external" />
+			<Add directory="C:/Boost/lib" />
 		</Linker>
 		<ExtraCommands>
 			<Add before="..\SubWCRev32.exe .. ..\source\svnrev_template.h ..\source\svnrev.h" />
