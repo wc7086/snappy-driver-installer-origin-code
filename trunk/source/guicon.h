@@ -53,10 +53,6 @@ extern long
 #define log_index log_nul
 #endif
 
-// Console
-void RedirectIOToFiles();
-void closeConsole();
-
 // Logging
 void log_times();
 void gen_timestamp();
@@ -82,4 +78,4 @@ void virusmonitor_stop();
 
 // Misc
 int canWrite(const WCHAR *path);
-DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait);
+DWORD run_command(const WCHAR* file,const WCHAR* cmd,int show,int wait);

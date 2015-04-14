@@ -152,7 +152,6 @@ Panel panels[NUM_PANELS]=
 //}
 
 //{ Image
-
 void Image::makecopy(Image &t)
 {
     release();
@@ -604,7 +603,6 @@ void Canvas::end()
 //}
 
 //{ Panel
-
 int Panel::Xp(){return Xm(D(PANEL_OFSX+indofs));}
 int Panel::Yp(){return Ym(D(PANEL_OFSY+indofs));}
 int Panel::XP(){return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));}
@@ -686,6 +684,7 @@ void Panel::draw(HDC hdc)
     ScreenToClient(hMain,&p);
     cur_i=hitscan(p.x,p.y);
 
+    State *state=manager_g->matcher->state;
     for(i=0;i<items[0].action_id+1;i++)
     {
         SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
@@ -700,24 +699,21 @@ void Panel::draw(HDC hdc)
         // System Info (2nd line)
         if(i==2&&index==0)
         {
-            wsprintf(buf,L"%s (%d-bit)",get_winverstr(manager_g),manager_g->matcher->state->architecture?64:32);
+            wsprintf(buf,L"%s (%d-bit)",get_winverstr(manager_g),state->architecture?64:32);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,manager_g->matcher->state->getProduct());
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,manager_g->matcher->state->textas.getw(manager_g->matcher->state->windir));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->windir));
         }
 
         // System Info (3rd line)
         if(i==3&&index==0)
         {
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,(XP()<10+SYSINFO_COL1)?
-                        manager_g->matcher->state->getProduct():
-                        manager_g->matcher->state->platform.szCSDVersion);
-
-            wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,(XP()<10+SYSINFO_COL1)?state->getProduct():state->platform.szCSDVersion);
+            wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,manager_g->matcher->state->textas.getw(manager_g->matcher->state->temp));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->temp));
         }
         if(items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;
         switch(items[i].type)

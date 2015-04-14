@@ -185,7 +185,7 @@ void update_movefiles()
     if(i!=numfiles)
     {
         wsprintf(buf,L"/c del %ws\\_*.bin",index_dir);
-        RunSilent(L"cmd",buf,SW_HIDE,1);
+        run_command(L"cmd",buf,SW_HIDE,1);
     }
 
     for(i=0;i<numfiles;i++)
@@ -228,7 +228,7 @@ void update_movefiles()
             if(!r)log_err("ERROR in MoveFile:%d\n",GetLastError());
         }
     }
-    RunSilent(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
+    run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
 
 unsigned int __stdcall thread_download(void *arg)
@@ -305,7 +305,7 @@ unsigned int __stdcall thread_download(void *arg)
                 {
                     WCHAR buf[BUFLEN];
                     wsprintf(buf,L" /c %s",finish_upd);
-                    RunSilent(L"cmd",buf,SW_HIDE,0);
+                    run_command(L"cmd",buf,SW_HIDE,0);
                 }
                 if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
 

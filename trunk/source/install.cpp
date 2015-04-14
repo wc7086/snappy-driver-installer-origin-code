@@ -215,7 +215,7 @@ void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
         wsprintf(cmd,L"%s\\install64.exe",extractdir);
         log_con("'%S %S'\n",cmd,buf);
-        *ret=RunSilent(cmd,buf,SW_HIDE,1);
+        *ret=run_command(cmd,buf,SW_HIDE,1);
         if((*ret&0x7FFFFFFF)==1)
         {
             *needrb=*ret&0x80000000?1:0;
@@ -551,7 +551,7 @@ goaround:
     if(instflag&INSTALLDRIVERS&&(flags&FLAG_KEEPTEMPFILES)==0)
     {
         wsprintf(buf,L" /c rd /s /q \"%s\"",extractdir);
-        RunSilent(L"cmd",buf,SW_HIDE,1);
+        run_command(L"cmd",buf,SW_HIDE,1);
     }
 
     manager_g->items_list[SLOT_EXTRACTING].percent=0;

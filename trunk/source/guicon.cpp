@@ -56,16 +56,16 @@ void log_times()
 {
     if((log_verbose&LOG_VERBOSE_TIMES)==0)return;
     log_file("Times\n");
-    log_file("##devicescan: %7ld (%d errors)\n",time_devicescan,error_count);
-    log_file("##indexes:    %7ld\n",time_indexes);
-    log_file("##sysinfo:    %7ld\n",time_sysinfo);
-    log_file("##matcher:    %7ld\n",time_matcher);
-    log_file("##chkupdate:  %7ld\n",time_chkupdate);
-    log_file("##startup:    %7ld (%ld)\n",time_startup,time_startup-time_devicescan-time_indexes-time_matcher-time_sysinfo);
-    log_file("##indexsave:  %7ld\n",time_indexsave);
-    log_file("##indexprint: %7ld\n",time_indexprint);
-    log_file("##total:      %7ld\n",time_total);
-    log_file("##test:       %7ld\n",time_test);
+    log_file("  devicescan: %7ld (%d errors)\n",time_devicescan,error_count);
+    log_file("  indexes:    %7ld\n",time_indexes);
+    log_file("  sysinfo:    %7ld\n",time_sysinfo);
+    log_file("  matcher:    %7ld\n",time_matcher);
+    log_file("  chkupdate:  %7ld\n",time_chkupdate);
+    log_file("  startup:    %7ld (%ld)\n",time_startup,time_startup-time_devicescan-time_indexes-time_matcher-time_sysinfo);
+    log_file("  indexsave:  %7ld\n",time_indexsave);
+    log_file("  indexprint: %7ld\n",time_indexprint);
+    log_file("  total:      %7ld\n",time_total);
+    log_file("  test:       %7ld\n",time_test);
 }
 
 void gen_timestamp()
@@ -90,31 +90,26 @@ void log_start(WCHAR *logdir)
 {
     WCHAR filename[BUFLEN];
 
+    if(flags&FLAG_NOLOGFILE)return;
     setlocale(LC_ALL,"");
     //system("chcp 1251");
 
     gen_timestamp();
 
-    wcscpy(filename,L"log.txt");
     wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
     if(!canWrite(filename))
     {
         log_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
-//        GetEnvironmentVariable(L"HOMEDRIVE",log_dir,BUFLEN);
-//        GetEnvironmentVariable(L"HOMEPATH",log_dir+2,BUFLEN);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
         wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
     }
 
     mkdir_r(logdir);
-    if(flags&FLAG_NOLOGFILE)return;
     logfile=_wfopen(filename,L"wt");
     if(!logfile)
     {
         log_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
-//        GetEnvironmentVariable(L"HOMEDRIVE",log_dir,BUFLEN);
-//        GetEnvironmentVariable(L"HOMEPATH",log_dir+2,BUFLEN);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
         wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
@@ -123,7 +118,6 @@ void log_start(WCHAR *logdir)
     }
     if((log_verbose&LOG_VERBOSE_BATCH)==0)
         log_file("{start logging\n%s\n\n",SVN_REV_STR);
-    //throw L"Test";
 }
 
 void log_save()
@@ -143,12 +137,11 @@ void log_stop()
 void log_file(CHAR const *format,...)
 {
     CHAR buffer[1024*16];
-    CHAR *ptr=buffer;
+
     if(!logfile)return;
     va_list args;
     va_start(args,format);
     vsprintf(buffer,format,args);
-    while(*ptr){if(*ptr=='#')*ptr=' ';ptr++;}
     fputs(buffer,logfile);
     if(log_console)fputs(buffer,stdout);
     va_end(args);
@@ -157,13 +150,11 @@ void log_file(CHAR const *format,...)
 void log_err(CHAR const *format,...)
 {
     CHAR buffer[1024*16];
-    CHAR *ptr=buffer;
 
     if((log_verbose&LOG_VERBOSE_LOG_ERR)==0)return;
     va_list args;
     va_start(args,format);
     vsprintf(buffer,format,args);
-    while(*ptr){if(*ptr=='#')*ptr=' ';ptr++;}
     if(logfile)fputs(buffer,logfile);
     fputs(buffer,stdout);
     va_end(args);
@@ -172,13 +163,11 @@ void log_err(CHAR const *format,...)
 void log_con(CHAR const *format,...)
 {
     CHAR buffer[1024*16];
-    CHAR *ptr=buffer;
 
     if((log_verbose&LOG_VERBOSE_LOG_CON)==0)return;
     va_list args;
     va_start(args,format);
     wvsprintfA(buffer,format,args);
-    while(*ptr){if(*ptr=='#')*ptr=' ';ptr++;}
     if(logfile)fputs(buffer,logfile);
     fputs(buffer,stdout);
     va_end(args);
@@ -408,7 +397,7 @@ int canWrite(const WCHAR *path)
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
 
-DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait)
+DWORD run_command(const WCHAR* file,const WCHAR* cmd,int show,int wait)
 {
     DWORD ret;
 
@@ -422,10 +411,7 @@ DWORD RunSilent(const WCHAR* file,const WCHAR* cmd,int show,int wait)
 
     log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
     if(!wcscmp(file,L"open"))
-    {
-        ShellExecute(NULL, L"open", cmd, NULL, NULL, SW_SHOWNORMAL);
-
-    }
+        ShellExecute(0,L"open",cmd,0,0,SW_SHOWNORMAL);
     else
         ShellExecuteEx(&ShExecInfo);
 

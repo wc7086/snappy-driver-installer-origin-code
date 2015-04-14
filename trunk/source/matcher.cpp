@@ -137,6 +137,7 @@ const markers_t markers[NUM_MARKERS]=
 };
 
 char marker[BUFLEN];
+int isLaptop;
 
 const WCHAR *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",0};
 const WCHAR *Filter_2[]={L"Apple",L"apple",0};
@@ -749,7 +750,9 @@ void Matcher::populate()
     devicematch_list.clear();
     hwidmatch_list.clear();
 
-    state->genmarker();
+    isLaptop=state->isLaptop;
+    //wcscpy(marker,state->marker);
+
     for(i=0;i<state->Devices_list.size();i++,cur_device++)
     {
         cur_driver=0;
@@ -882,7 +885,7 @@ void Matcher::print()
         if(devicematch->driver)
             devicematch->driver->print(state);
         else
-            log_file("##NoDriver\n");
+            log_file("  NoDriver\n");
 
         memset(limits,0,sizeof(limits));
         hwidmatch=&hwidmatch_list[devicematch->start_matches];

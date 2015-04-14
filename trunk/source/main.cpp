@@ -89,7 +89,7 @@ WCHAR HWIDs     [BUFLEN]=L"";
 
 //int flags=COLLECTION_USE_LZMA;
 int flags=0;
-int statemode=0;
+int statemode=STATEMODE_REAL;
 int expertmode=0;
 int license=0;
 WCHAR curlang [BUFLEN]=L"";
@@ -207,7 +207,7 @@ void settings_parse(const WCHAR *str,int ind)
             log_con("Ret: %X,%d\n",ret_global,needreboot);
             if(needreboot)ret_global|=0x80000000;
             wsprintf(buf,L" /c rd /s /q \"%s\"",extractdir);
-            RunSilent(L"cmd",buf,SW_HIDE,1);
+            run_command(L"cmd",buf,SW_HIDE,1);
             statemode=STATEMODE_EXIT;
             break;
         }
@@ -231,7 +231,7 @@ void settings_parse(const WCHAR *str,int ind)
         if(!wcscmp(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
         if( wcsstr(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
         if( wcsstr(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
-        if( wcsstr(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_LOAD;}else
+        if( wcsstr(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_EMUL;}else
         if(!wcscmp(pr,L"-a:32"))         virtual_arch_type=32;else
         if(!wcscmp(pr,L"-a:64"))         virtual_arch_type=64;else
         if( wcsstr(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
@@ -413,7 +413,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         log_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
         log_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
         log_con("\n");
-        if(*state_file&&statemode)log_con("Virtual system system config '%S'\n",state_file);
+        if(statemode==STATEMODE_EMUL)log_con("Virtual system system config '%S'\n",state_file);
         if(virtual_arch_type)log_con("Virtual Windows version: %d-bit\n",virtual_arch_type);
         if(virtual_os_version)log_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
         log_con("\n");
@@ -513,12 +513,10 @@ unsigned int __stdcall thread_scandevices(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
     State *state=&bundle->state;
-    //log_con("{thread_scandevices\n");
-    if(statemode==0)
-        state->scanDevices();else
-    if(statemode==STATEMODE_LOAD)
-        state->load(state_file);
-    //log_con("}thread_scandevices\n");
+
+    if(statemode==STATEMODE_REAL)state->scanDevices();
+    if(statemode==STATEMODE_EMUL)state->load(state_file);
+
     return 0;
 }
 
@@ -541,9 +539,10 @@ unsigned int __stdcall thread_getsysinfo(void *arg)
     bundle_t *bundle=(bundle_t *)arg;
     State *state=&bundle->state;
 
-    //log_con("{thread_getsysinfo\n");
-    if(statemode!=STATEMODE_LOAD)state->getsysinfo_slow();
-    //log_con("}thread_getsysinfo\n");
+    if(statemode==STATEMODE_REAL)state->getsysinfo_slow();
+    state->isnotebook_a();
+    state->genmarker();
+
     return 0;
 }
 
@@ -641,7 +640,6 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
-    bundle->state.isnotebook_a();
     bundle->matcher.populate();
     bundle->matcher.sort();
 }
@@ -1158,7 +1156,7 @@ void snapshot()
 
     if(GetOpenFileName(&ofn))
     {
-        statemode=STATEMODE_LOAD;
+        statemode=STATEMODE_EMUL;
         PostMessage(hMain,WM_DEVICECHANGE,7,2);
     }
 }
@@ -1398,7 +1396,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 memcpy(&manager_g->items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
                 manager_g->populate();
                 manager_g->filter(filters);
-                manager_g->items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_LOAD?1:0;
+                manager_g->items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_EMUL?1:0;
                 manager_g->items_list[SLOT_DPRDIR].isactive=*drpext_dir?1:0;
                 manager_g->restorepos(manager_prev);
                 viruscheck(L"",0,0);
@@ -1445,7 +1443,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                             wsprintf(buf,L" /c %s",needreboot?finish_rb:finish);
 
                         if(*(needreboot?finish_rb:finish)||panels[11].isChecked(3))
-                            RunSilent(L"cmd",buf,SW_HIDE,0);
+                            run_command(L"cmd",buf,SW_HIDE,0);
 
                         if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
                     }
@@ -1481,7 +1479,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 else if(StrStrI(lpszFile,L".snp"))
                 {
                     wcscpy(state_file,lpszFile);
-                    statemode=STATEMODE_LOAD;
+                    statemode=STATEMODE_EMUL;
                     PostMessage(hMain,WM_DEVICECHANGE,7,2);
                 }
                 //else
@@ -1705,7 +1703,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(i<0)break;
             if(i<4&&j==0)
             {
-                RunSilent(L"devmgmt.msc",0,SW_SHOW,0);
+                run_command(L"devmgmt.msc",0,SW_SHOW,0);
             }
             else
             //log_con("%d,%d\n",j,i);
@@ -1722,7 +1720,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 InvalidateRect(hwnd,NULL,TRUE);
             }
-            if(j==7||j==12)RunSilent(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
+            if(j==7||j==12)run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
             break;
 
         case WM_RBUTTONUP:
@@ -1766,8 +1764,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_SHOWALT:
                     if(floating_itembar==SLOT_RESTORE_POINT)
                     {
-                        RunSilent(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
-                        RunSilent(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
+                        run_command(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
+                        run_command(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
                     }
                     else
                     {
@@ -1788,14 +1786,14 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                                manager_g->matcher->state->textas.get(cur_driver->InfPath));
 
                         if(wp==ID_OPENINF)
-                            RunSilent(buf,L"",SW_SHOW,0);
+                            run_command(buf,L"",SW_SHOW,0);
                         else
-                            RunSilent(L"explorer.exe",buf,SW_SHOW,0);
+                            run_command(L"explorer.exe",buf,SW_SHOW,0);
                     }
                     break;
 
                 case ID_DEVICEMNG:
-                    RunSilent(L"devmgmt.msc",0,SW_SHOW,0);
+                    run_command(L"devmgmt.msc",0,SW_SHOW,0);
                     break;
 
                 case ID_EMU_32:
@@ -1842,7 +1840,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     wsprintf(buf,L"https://www.google.com/#q=%s",getHWIDby(floating_itembar,id));
                     wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",getHWIDby(floating_itembar,id));
                     escapeAmpUrl(buf2,buf);
-                    RunSilent(L"iexplore.exe",buf2,SW_SHOW,0);
+                    run_command(L"iexplore.exe",buf2,SW_SHOW,0);
 
                 }
                 else
@@ -2156,7 +2154,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             manager_g->hitscan(x,y,&floating_itembar,&i);
             if(floating_itembar==SLOT_SNAPSHOT)
             {
-                statemode=0;
+                statemode=STATEMODE_REAL;
                 PostMessage(hMain,WM_DEVICECHANGE,7,2);
             }
             if(floating_itembar==SLOT_DPRDIR)
