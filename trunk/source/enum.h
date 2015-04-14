@@ -34,7 +34,7 @@ public:
     infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat):
         catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat){};
 };
-typedef std::unordered_map <std::string,infdata_t> inflist_tp;
+typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 
 struct SP_DEVINFO_DATA_32
 {

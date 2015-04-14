@@ -301,6 +301,7 @@ int  decode(char *dest,int dest_sz,char *src,int src_sz);
 int  checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);
 void hash_clearfiles(hashtable_t *t);
 WCHAR *finddrp(WCHAR *s);
+void findosattr(char *bufa,char *adr,int len);
 
 void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
 unsigned int __stdcall thread_indexinf(void *arg);

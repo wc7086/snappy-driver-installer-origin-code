@@ -666,6 +666,8 @@ void Panel::moveWindow(HWND hwnd,int i,int j,int f)
     MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
 }
 
+static void TextOutH(HDC hdc,int x,int y,LPCTSTR buf){TextOut(hdc,x,y,buf,wcslen(buf));}
+
 void Panel::draw(HDC hdc)
 {
     WCHAR buf[BUFLEN];
@@ -691,46 +693,31 @@ void Panel::draw(HDC hdc)
         // System Info (1st line)
         if(i==1&&index==0)
         {
-            wsprintf(buf,L"%s",STR(STR_SYSINF_MOTHERBOARD));
-            TextOut(hdc,x+ofsx+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
-
-            wsprintf(buf,L"%s",STR(STR_SYSINF_ENVIRONMENT));
-            TextOut(hdc,x+ofsx+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
+            TextOutH(hdc,x+ofsx+SYSINFO_COL1,y+ofsy,STR(STR_SYSINF_MOTHERBOARD));
+            TextOutH(hdc,x+ofsx+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_ENVIRONMENT));
         }
 
         // System Info (2nd line)
         if(i==2&&index==0)
         {
             wsprintf(buf,L"%s (%d-bit)",get_winverstr(manager_g),manager_g->matcher->state->architecture?64:32);
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf,wcslen(buf));
-
-            wsprintf(buf,L"%s",manager_g->matcher->state->getProduct());
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
-
-            wsprintf(buf,L"%s",STR(STR_SYSINF_WINDIR));
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
-
-            wsprintf(buf,L"%s",manager_g->matcher->state->textas.get(manager_g->matcher->state->windir));
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,buf,wcslen(buf));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,manager_g->matcher->state->getProduct());
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,manager_g->matcher->state->textas.getw(manager_g->matcher->state->windir));
         }
 
         // System Info (3rd line)
         if(i==3&&index==0)
         {
-            if(XP()<10+SYSINFO_COL1)
-                wsprintf(buf,L"%s",manager_g->matcher->state->getProduct());
-            else
-                wsprintf(buf,L"%s",manager_g->matcher->state->platform.szCSDVersion);
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf,wcslen(buf));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,(XP()<10+SYSINFO_COL1)?
+                        manager_g->matcher->state->getProduct():
+                        manager_g->matcher->state->platform.szCSDVersion);
 
             wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf,wcslen(buf));
-
-            wsprintf(buf,L"%s",STR(STR_SYSINF_TEMP));
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,buf,wcslen(buf));
-
-            wsprintf(buf,L"%s",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
-            TextOut(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,buf,wcslen(buf));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,manager_g->matcher->state->textas.getw(manager_g->matcher->state->temp));
         }
         if(items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;
         switch(items[i].type)

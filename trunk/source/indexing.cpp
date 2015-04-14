@@ -388,7 +388,7 @@ void Collection::init(WCHAR *driverpacks_dirv,const WCHAR *index_bin_dirv,const 
 
 void Collection::release()
 {
-    for(auto drp:driverpack_list)
+    for(auto &drp:driverpack_list)
         drp.release();
 
     driverpack_list.clear();
@@ -614,7 +614,7 @@ void Collection::print()
 {
     time_indexprint=GetTickCount();
 
-    for(auto drp:driverpack_list)
+    for(auto &drp:driverpack_list)
         drp.print();
 
     time_indexprint=GetTickCount()-time_indexprint;
@@ -627,7 +627,7 @@ void Collection::printstates()
     if((log_verbose&LOG_VERBOSE_DRP)==0)return;
     log_file("Driverpacks\n");
 
-    for(auto drp:driverpack_list)
+    for(auto &drp:driverpack_list)
     {
         log_file("  %6d  %S\\%S\n",drp.HWID_list.size(),drp.getPath(),drp.getFilename());
         sum+=drp.HWID_list.size();
@@ -1151,36 +1151,36 @@ void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pat
     SetEvent(t->dataready);
 }
 
-void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *adr,int len)
+void findosattr(char *bufa,char *adr,int len)
 {
-    CHAR filename[BUFLEN];
-    CHAR bufa[BUFLEN];
     unsigned bufal=0;
     char *p=adr;
 
     *bufa=0;
-    wsprintfA(filename,"%ws%ws",pathinf,inffilename);
     while(p+11<adr+len)
     {
         if(*p=='O'&&!memcmp(p,L"OSAttr",11))
         {
-            //wsprintfA(bufb,"%ws",p+19);
-            //if(*bufa&&strcmp(bufa,bufb))log_con("^^");
-            //if(!*bufa||bufal<wcslen((WCHAR *)(p+19+p[17]-4)))
             int ofs=p[19]=='2'||p[19]=='1'?1:0;
             if(!*bufa||bufal<wcslen((WCHAR *)(p+18+ofs)))
             {
                 wsprintfA(bufa,"%ws",p+18+ofs);
-                //wsprintfA(bufa,"(%ws)%d",p+19,p[16]);
                 bufal=strlen(bufa);
-                //log_con("Found '%s'\n",bufa);
-                //break;
             }
         }
         p++;
     }
+}
+
+void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *adr,int len)
+{
+    CHAR bufa[BUFLEN];
+
+    findosattr(bufa,adr,len);
     if(*bufa)
     {
+        CHAR filename[BUFLEN];
+        wsprintfA(filename,"%ws%ws",pathinf,inffilename);
         strtolower(filename,strlen(filename));
         hash_add(&cat_list,filename,strlen(filename),texta.memcpyz_dup(bufa,strlen(bufa)),HASH_MODE_INTACT);
         //log_con("(%s)\n##%s\n",filename,bufa);

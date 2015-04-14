@@ -923,7 +923,7 @@ int Manager::groupsize(int index)
 {
     int num=0;
 
-    for(auto itembar:items_list)
+    for(auto &itembar:items_list)
         if(itembar.index==index&&itembar.hwidmatch&&(itembar.hwidmatch->status&STATUS_INVALID)==0&&(itembar.first&2)==0)
             num++;
 

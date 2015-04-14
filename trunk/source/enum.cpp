@@ -78,7 +78,7 @@ void Device::print_guid(GUID *g)
         (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
         (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
 
-    memset(buffer,0,sizeof(buffer));
+    *buffer=0;
     if(!SetupDiGetClassDescription(g,buffer,BUFLEN,0))
     {
         //int lr=GetLastError();
@@ -93,12 +93,9 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
     int lr;
     DWORD DataT=0;
     PBYTE p;
-    BYTE buf[BUFLEN];
     auto DeviceInfoDataloc=(SP_DEVINFO_DATA *)&DeviceInfoData;
 
-    memset(buf,0,BUFLEN);
     *val=0;
-
     if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,0,0,&buffersize))
     {
         lr=GetLastError();
@@ -119,16 +116,15 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
     {
         *val=state->textas.alloc(buffersize);
         p=(PBYTE)(state->textas.get(*val));
+        *p=0;
     }
-    memset(p,0,buffersize);
-    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,(PBYTE)buf,buffersize,&buffersize))
+    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,(PBYTE)p,buffersize,&buffersize))
     {
         lr=GetLastError();
         log_file("Property %d\n",id);
         print_error(lr,L"read_device_property()");
         return;
     }
-    memcpy(p,buf,buffersize);
 }
 
 int Device::print_status()
@@ -225,7 +221,8 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
 
     SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,0,0,&buffersize);
     InstanceId=state->textas.alloc(buffersize);
-    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,state->textas.getw(InstanceId),BUFLEN,0);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,state->textas.getw(InstanceId),buffersize,0);
+
     read_device_property(hDevInfo,state,SPDRP_DEVICEDESC,    &Devicedesc);
     read_device_property(hDevInfo,state,SPDRP_HARDWAREID,    &HardwareID);
     read_device_property(hDevInfo,state,SPDRP_COMPATIBLEIDS, &CompatibleIDs);
@@ -271,15 +268,10 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
 void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 {
     WCHAR filename[BUFLEN];
-    infdata_t *infdata;
-    WCHAR buf[BUFLEN];
-    char bufa[BUFLEN];
-    auto inf_list_new=&state->inf_list_new;
+    WCHAR fnm_hwid[BUFLEN];
+    auto inf_list=&state->inf_list_new;
 
-    FILE *f;
-    char *buft;
-    int len;
-    unsigned HWID_index;
+    unsigned HWID_index,start_index=0;
 
     if(flags&FLAG_FAILSAFE)
     {
@@ -288,12 +280,12 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     }
 
     wsprintf(filename,L"%s%s",state->textas.get(state->windir),state->textas.get(InfPath));
-    wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
-    auto got=inf_list_new->find(std::string(bufa));
-    if(got!=inf_list_new->end())
+    wsprintf(fnm_hwid,L"%s%s",filename,state->textas.get(MatchingDeviceId));
+    auto got=inf_list->find(std::wstring(fnm_hwid));
+    if(got!=inf_list->end())
     {
-        infdata=&got->second;
-        //log_file("Match1 '%s' %d,%d,%d,%d\n",bufa,infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
+        infdata_t *infdata=&got->second;
+        //log_file("Match_hwid '%S' %d,%d,%d,%d\n",fnm_hwid,infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
         feature=infdata->feature;
         catalogfile=infdata->catalogfile;
         cat=infdata->cat;
@@ -301,14 +293,18 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         return;
     }
 
-    wsprintfA(bufa,"%ws",filename);
-    got=inf_list_new->find(std::string(bufa));
-    if(got!=inf_list_new->end())
+    got=inf_list->find(std::wstring(filename));
+    if(got!=inf_list->end())
     {
-        //log_file("Match2 '%s'\n",bufa);
+        //infdata_t *infdata=&got->second;
+        //log_file("Match_inf  '%S',%d\n",filename,infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
     }
     else
     {
+        FILE *f;
+        char *buft;
+        int len;
+
         //log_file("Reading '%S' for (%S)\n",filename,state->textas.get(MatchingDeviceId));
         f=_wfopen(filename,L"rb");
         if(!f)
@@ -324,17 +320,23 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         fread(buft,len,1,f);
         fclose(f);
 
-        wsprintf(buf,L"%ws",state->textas.get(state->windir));
         if(len>0)
-        unpacked_drp->indexinf(buf,(WCHAR *)(state->textas.get(InfPath)),buft,len);
+        {
+            start_index=unpacked_drp->HWID_list.size();
+            unpacked_drp->indexinf(state->textas.getw(state->windir),state->textas.getw(InfPath),buft,len);
+        }
         free(buft);
+
+        cat=state->opencatfile(this);
     }
 
     char sect[BUFLEN];
+    char hwid[BUFLEN];
+    inf_pos=-1;
     wsprintfA(sect,"%ws%ws",state->textas.get(InfSection),state->textas.get(InfSectionExt));
-    wsprintfA(bufa,"%ws",state->textas.get(MatchingDeviceId));
-    for(HWID_index=0;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
-    if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),bufa))
+    wsprintfA(hwid,"%ws",state->textas.get(MatchingDeviceId));
+    for(HWID_index=start_index;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
+    if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),hwid))
     {
         Hwidmatch hwidmatch;
 
@@ -347,14 +349,17 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         }
     }
     if(inf_pos==-1)
+    {
+        inf_pos=0;
+        cat=0;
+        feature=0xFF;
         log_err("ERROR: sect not found '%s'\n",sect);
+    }
 
-    cat=state->opencatfile(this);
+    //log_file("Added  %d,%d,%d,%d\n",feature,catalogfile,cat,inf_pos);
 
-    wsprintfA(bufa,"%ws%ws",filename,state->textas.get(MatchingDeviceId));
-    inf_list_new->insert({std::string(bufa),infdata_t(catalogfile,feature,cat,inf_pos)});
-    wsprintfA(bufa,"%ws",filename);
-    inf_list_new->insert({std::string(bufa),infdata_t(0,0,0,0)});
+    inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,cat,inf_pos)});
+    inf_list->insert({std::wstring(filename),infdata_t(0,0,0,0)});
 }
 
 void Driver::print(State *state)
@@ -369,8 +374,7 @@ void Driver::print(State *state)
     log_file("##Version:##%d.%d.%d.%d\n",version.v1,version.v2,version.v3,version.v4);
     log_file("##HWID:#####%S\n",s+MatchingDeviceId);
     log_file("##inf:######%S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
-    int score=calc_score_h(this,state);
-    log_file("##Score:####%08X %04x\n",score,identifierscore);
+    log_file("##Score:####%08X %04x\n",calc_score_h(this,state),identifierscore);
 
     if(log_verbose&LOG_VERBOSE_BATCH)
         log_file("##Filter:###\"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);
@@ -432,25 +436,25 @@ void State::fakeOSversion()
 
 WCHAR *State::getProduct()
 {
-    WCHAR *s=(WCHAR *)(textas.get(product));
+    WCHAR *s=textas.getw(product);
 
-    if(StrStrIW(s,L"Product"))return (WCHAR *)(textas.get(cs_model));
+    if(StrStrIW(s,L"Product"))return textas.getw(cs_model);
     return s;
 }
 
 WCHAR *State::getManuf()
 {
-    WCHAR *s=(WCHAR *)(textas.get(manuf));
+    WCHAR *s=textas.getw(manuf);
 
-    if(StrStrIW(s,L"Vendor"))return (WCHAR *)(textas.get(cs_manuf));
+    if(StrStrIW(s,L"Vendor"))return textas.getw(cs_manuf);
     return s;
 }
 
 WCHAR *State::getModel()
 {
-    WCHAR *s=(WCHAR *)(textas.get(model));
+    WCHAR *s=textas.getw(model);
 
-    if(!*s)return (WCHAR *)(textas.get(cs_model));
+    if(!*s)return textas.getw(cs_model);
     return s;
 }
 
@@ -481,7 +485,6 @@ State::~State()
 
 void State::print()
 {
-    int x,y;
     unsigned i;
     WCHAR *buf;
     SYSTEM_POWER_STATUS *batteryloc;
@@ -545,12 +548,12 @@ void State::print()
         if(batteryloc->BatteryFullLifeTime!=0xFFFFFFFF)
             log_file("  FullLifeTime: %d mins\n",batteryloc->BatteryFullLifeTime/60);
 
-        buf=(WCHAR *)(textas.get(monitors));
+        buf=textas.getw(monitors);
         log_file("\nMonitors\n");
         for(i=0;i<buf[0];i++)
         {
-            x=buf[1+i*2];
-            y=buf[2+i*2];
+            int x=buf[1+i*2];
+            int y=buf[2+i*2];
             log_file("  %dcmx%dcm (%.1fin)\t%.3f %s\n",x,y,sqrt(x*x+y*y)/2.54,(double)y/x,iswide(x,y)?"wide":"");
         }
 
@@ -559,11 +562,10 @@ void State::print()
         log_file("  Locale:      %X\n",locale);
         log_file("  CPU_Arch:    %s\n",architecture?"64-bit":"32-bit");
         log_file("\n");
-
     }
 
     if(log_verbose&LOG_VERBOSE_DEVICES)
-    for(auto cur_device:Devices_list)
+    for(auto &cur_device:Devices_list)
     {
         cur_device.print(this);
 
@@ -584,7 +586,7 @@ void State::save(const WCHAR *filename)
     FILE *f;
     int sz;
     int version=VER_STATE;
-    char *mem,*mem_pack,*p;
+    char *mem,*p;
 
     if(flags&FLAG_NOSNAPSHOT)return;
     log_file("Saving state in '%S'...",filename);
@@ -619,7 +621,7 @@ void State::save(const WCHAR *filename)
 
     if(1)
     {
-        mem_pack=(char *)malloc(sz);
+        char *mem_pack=(char *)malloc(sz);
         sz=encode(mem_pack,sz,mem,sz);
         fwrite(mem_pack,sz,1,f);
         free(mem_pack);
@@ -634,7 +636,6 @@ void State::save(const WCHAR *filename)
 int  State::load(const WCHAR *filename)
 {
     char buf[BUFLEN];
-    //WCHAR txt2[256];
     FILE *f;
     int sz;
     int version;
@@ -644,7 +645,7 @@ int  State::load(const WCHAR *filename)
     f=_wfopen(filename,L"rb");
     if(!f)
     {
-        log_err("FAILED(%S)\n",errno_str());
+        log_err("ERROR in State::load(): failed _wfopen(%S)\n",errno_str());
         return 0;
     }
 
@@ -658,12 +659,12 @@ int  State::load(const WCHAR *filename)
 
     if(memcmp(buf,VER_MARKER,3))
     {
-        log_err("FAILED(invalid snapshot)\n");
+        log_err("ERROR in State::load(): invalid snapshot\n");
         return 0;
     }
     if(version!=VER_STATE)
     {
-        log_err("FAILED(invalid version)\n");
+        log_err("ERROR in State::load(): invalid version(%d)\n",version);
         return 0;
     }
 
@@ -696,25 +697,25 @@ int  State::load(const WCHAR *filename)
 
 void State::getsysinfo_fast()
 {
-    SYSTEM_POWER_STATUS *batteryloc;
-    DISPLAY_DEVICE DispDev;
-    int x,y,i=0;
     WCHAR buf[BUFLEN];
 
     time_test=GetTickCount();
-
     textas.reset(2);
+
     // Battery
     battery=textas.alloc(sizeof(SYSTEM_POWER_STATUS));
-    batteryloc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
+    SYSTEM_POWER_STATUS *batteryloc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
     GetSystemPowerStatus(batteryloc);
 
     // Monitors
+    DISPLAY_DEVICE DispDev;
     memset(&DispDev,0,sizeof(DispDev));
     DispDev.cb=sizeof(DispDev);
     buf[0]=0;
+    int i=0;
     while(EnumDisplayDevices(0,i,&DispDev,0))
     {
+        int x,y;
         GetMonitorSizeFromEDID(DispDev.DeviceName,&x,&y);
         if(x&&y)
         {
@@ -863,53 +864,35 @@ int State::opencatfile(Driver *cur_driver)
 {
     WCHAR filename[BUFLEN];
     CHAR bufa[BUFLEN];
+    FILE *f;
+    char *buft;
+    int len;
+    *bufa=0;
 
     wcscpy(filename,textas.getw(windir));
     wsprintf(filename+wcslen(filename)-4,
              L"system32\\CatRoot\\{F750E6C3-38EE-11D1-85E5-00C04FC295EE}\\%ws",
              textas.getw(cur_driver->InfPath));
-
     wcscpy(filename+wcslen(filename)-3,L"cat");
+
+    f=_wfopen(filename,L"rb");
+    //log_con("Open '%S'\n",filename);
+    if(f)
     {
-        FILE *f;
-        char *buft;
-        int len;
+        fseek(f,0,SEEK_END);
+        len=ftell(f);
+        fseek(f,0,SEEK_SET);
+        buft=(char *)malloc(len);
+        fread(buft,len,1,f);
+        fclose(f);
 
-        *bufa=0;
-        f=_wfopen(filename,L"rb");
-        if(f)
-        {
-            //log_con("Open '%S'\n",filename);
-            fseek(f,0,SEEK_END);
-            len=ftell(f);
-            fseek(f,0,SEEK_SET);
-            buft=(char *)malloc(len);
-            fread(buft,len,1,f);
-            fclose(f);
-            {
-                unsigned bufal=0;
-                char *p=buft;
-
-                while(p+11<buft+len)
-                {
-                    if(*p=='O'&&!memcmp(p,L"OSAttr",11))
-                    {
-                        if(!*bufa||bufal<wcslen((WCHAR *)(p+19)))
-                        {
-                            wsprintfA(bufa,"%ws",p+19);
-                            bufal=strlen(bufa);
-                        }
-                    }
-                    p++;
-                }
-                //if(*bufa)log_con("[%s]\n",bufa);
-            }
-            free(buft);
-        }
+        findosattr(bufa,buft,len);
+        free(buft);
     }
 
     if(*bufa)
     {
+        //log_con("'%s'\n",bufa);
         return textas.strcpy(bufa);
     }
     return 0;
