@@ -29,18 +29,26 @@ typedef struct _entry_t
     int init;
 }entry_t;
 
-typedef struct _vault_t
+class Vault
 {
+public:
     entry_t *entry;
     int num;
     WCHAR namelist[64][250];
     WCHAR *data,*odata;
     hashtable_t strs;
-}vault_t;
+
+public:
+    void init1(entry_t *entry,int num);
+    void free1();
+    void parse(WCHAR *data);
+    void loadfromfile(WCHAR *filename);
+    void loadfromres(int id);
+};
 
 extern entry_t language[STR_NM];
 extern entry_t theme[THEME_NM];
-extern vault_t vLang,vTheme;
+extern Vault vLang,vTheme;
 extern int monitor_pause;
 
 // Monitor
@@ -69,11 +77,6 @@ int  vault_findvar(hashtable_t *t,WCHAR *str);
 int  vault_readvalue(const WCHAR *str);
 intptr_t  vault_findstr(WCHAR *str);
 
-void vault_init1(vault_t *v,entry_t *entry,int num);
-void vault_free1(vault_t *v);
-void vault_parse(vault_t *v,WCHAR *data);
-void vault_loadfromfile(vault_t *v,WCHAR *filename);
-void vault_loadfromres(vault_t *v,int id);
 
 // Lang/theme
 int  lang_enum(HWND hwnd,const WCHAR *path,int locale);

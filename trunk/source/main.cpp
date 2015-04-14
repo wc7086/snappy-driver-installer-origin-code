@@ -121,7 +121,7 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 
 //{ Main
 int main2(int argc, char* argv[]);
-void str_unicode2ansi(char *a)
+/*void str_unicode2ansi(char *a)
 {
     WCHAR *u=(WCHAR *)a;
     while((*a++=*u++));
@@ -130,6 +130,12 @@ void str_unicode2ansi(const WCHAR *s,char *d)
 {
     while((*d++=*s++));
 }
+void str_ansi2unicode(const WCHAR *a)
+{
+    WCHAR *u=(WCHAR *)a;
+    while((*a++=*u++));
+}*/
+
 int _wtoi_my(const WCHAR *str)
 {
     int val;
@@ -426,7 +432,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 // Load text
     vault_init();
-    vault_loadfromres(&vLang,IDR_LANG);
+    vLang.loadfromres(IDR_LANG);
 
 // Allocate resources
     bundle_init(&bundle[0]);

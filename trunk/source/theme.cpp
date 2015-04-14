@@ -19,7 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global vars
 monitor_t mon_lang,mon_theme;
-vault_t vLang,vTheme;
+Vault vLang,vTheme;
 int monitor_pause=0;
 //}
 
@@ -40,34 +40,10 @@ void vault_stopmonitors()
     if(mon_theme)monitor_stop(mon_theme);
 }
 
-void vault_init1(vault_t *v,entry_t *entry,int num)
-{
-    char buf[BUFLEN];
-    int i;
-
-    memset(v,0,sizeof(vault_t));
-    v->entry=entry;
-    v->num=num;
-
-    hash_init(&v->strs,ID_INF_LIST,num*4,0);
-    for(i=0;i<num;i++)
-    {
-        wsprintfA(buf,"%S",v->entry[i].name);
-        hash_add(&v->strs,buf,strlen(buf),(int)i+1,HASH_MODE_INTACT);
-    }
-}
-
-void vault_free1(vault_t *v)
-{
-    if(v->odata)free(v->odata);
-    if(v->data)free(v->data);
-    hash_free(&v->strs);
-}
-
 void vault_init()
 {
-    vault_init1(&vLang,language,STR_NM);
-    vault_init1(&vTheme,theme,THEME_NM);
+    vLang.init1(language,STR_NM);
+    vTheme.init1(theme,THEME_NM);
 }
 
 void vault_free()
@@ -77,16 +53,24 @@ void vault_free()
     for(i=0;i<BOX_NUM;i++)box[i].release();
     for(i=0;i<ICON_NUM;i++)icon[i].release();
 
-    vault_free1(&vLang);
-    vault_free1(&vTheme);
+    vLang.free1();
+    vTheme.free1();
+}
+
+static void myswab(const char *s,char *d,int sz)
+{
+    while(sz--)
+    {
+        d[0]=s[1];
+        d[1]=s[0];
+        d+=2;s+=2;
+    }
 }
 
 void *vault_loadfile(const WCHAR *filename,int *sz)
 {
     FILE *f;
     void *data;
-    void *data1;
-    WCHAR *p;
 
     f=_wfopen(filename,L"rb");
     if(!f)
@@ -96,16 +80,18 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
     }
 
     fseek(f,0,SEEK_END);
-    *sz=ftell(f)+4096;
+    *sz=ftell(f);
     fseek(f,0,SEEK_SET);
-    data=malloc(*sz*2+2);
+    data=malloc(*sz*2+2+1024);
+    log_con("Read '%S':%d\n",filename,*sz);
 
     fread(data,2,1,f);
     if(!memcmp(data,"\xEF\xBB",2))// UTF-8
     {
+        void *data1;
         int szo;
-        *sz-=3;
         fread(data,1,1,f);
+        *sz-=3;
         int q=fread(data,1,*sz,f);
         szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)data,q,0,0);
         data1=malloc(szo*2+2);
@@ -123,14 +109,12 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
     }else
     if(!memcmp(data,"\xFE\xFF",2))// UTF-16 BE
     {
-        data1=malloc(*sz+2);
         fread(data,*sz,1,f);
-        //_swab((char *)data,(char *)data1,*sz); // FIXME
-        free(data);
+        myswab((char *)data,(char *)data,*sz);
         *sz>>=1;(*sz)--;
         fclose(f);
-        return data1;
-    }else                             // ANSI
+        return data;
+    }else                         // ANSI
     {
         fclose(f);
         f=_wfopen(filename,L"rt");
@@ -140,7 +124,7 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
             free(data);
             return 0;
         }
-        p=(WCHAR *)data;(*sz)--;
+        WCHAR *p=(WCHAR *)data;(*sz)--;
         while(!feof(f))
         {
             fgetws(p,*sz,f);
@@ -192,12 +176,36 @@ intptr_t vault_findstr(WCHAR *str)
     return (intptr_t)b;
 }
 
-void vault_parse(vault_t *val,WCHAR *data)
+void Vault::init1(entry_t *entryv,int numv)
+{
+    char buf[BUFLEN];
+    int i;
+
+    memset(this,0,sizeof(Vault));
+    entry=entryv;
+    num=numv;
+
+    hash_init(&strs,ID_INF_LIST,num*4,0);
+    for(i=0;i<num;i++)
+    {
+        wsprintfA(buf,"%S",entry[i].name);
+        hash_add(&strs,buf,strlen(buf),(int)i+1,HASH_MODE_INTACT);
+    }
+}
+
+void Vault::free1()
+{
+    if(odata)free(odata);
+    if(data)free(data);
+    hash_free(&strs);
+}
+
+void Vault::parse(WCHAR *datav)
 {
     WCHAR *lhs,*rhs,*le;
     WCHAR *tmp;
 
-    le=lhs=data;
+    le=lhs=datav;
 
     while(le)
     {
@@ -219,7 +227,7 @@ void vault_parse(vault_t *val,WCHAR *data)
 
         // Parse LHS
         int r;
-        r=vault_findvar(&val->strs,lhs);
+        r=vault_findvar(&strs,lhs);
         if(r<0)
         {
             printf("Error: unknown var '%S'\n",lhs);
@@ -227,7 +235,7 @@ void vault_parse(vault_t *val,WCHAR *data)
         {
             intptr_t v,r1,r2;
             r1=vault_findstr(rhs);
-            r2=vault_findvar(&val->strs,rhs);
+            r2=vault_findvar(&strs,rhs);
 
             if(r1)               // String
             {
@@ -251,73 +259,73 @@ void vault_parse(vault_t *val,WCHAR *data)
                     for(i=0;i<l;i++)if(tmp[i]==1)tmp[i]=0;
                 }
                 v=(intptr_t)tmp;
-                val->entry[r].init=1;
+                entry[r].init=1;
             }
             else if(r2>=0)      // Var
             {
-                v=val->entry[r2].val;
-                val->entry[r].init=10+r2;
+                v=entry[r2].val;
+                entry[r].init=10+r2;
             }
             else                // Number
             {
                 v=vault_readvalue(rhs);
-                val->entry[r].init=2;
+                entry[r].init=2;
             }
 
             //if(r2<0)printf("-RHS:'%S'\n",L"",rhs);
             //if(r2>=0)printf("+RHS:'%S'\n",L"",rhs);
             //log("%d,%d,%X,{%S|%S}\n",r2,v,v,lhs,rhs);
-            val->entry[r].val=v;
+            entry[r].val=v;
         }
         lhs=le+1;
     }
-    if(val->odata)free(val->odata);
-    val->odata=val->data;
-    val->data=data;
+    if(odata)free(odata);
+    odata=data;
+    data=datav;
 }
 
-void vault_loadfromfile(vault_t *v,WCHAR *filename)
+void Vault::loadfromfile(WCHAR *filename)
 {
-    WCHAR *data;
+    WCHAR *datav;
     int sz,i;
 
     if(!filename[0])return;
     //printf("{%S\n",filename);
-    //if(v->odata)free(v->odata);
-    //v->odata=v->data;
-    data=(WCHAR *)vault_loadfile(filename,&sz);
-    if(!data)
+    //if(odata)free(odata);
+    //odata=datav;
+    datav=(WCHAR *)vault_loadfile(filename,&sz);
+    if(!datav)
     {
         log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
         return;
     }
-    data[sz]=0;
-    vault_parse(v,data);
+    datav[sz]=0;
+    parse(datav);
 
-    for(i=0;i<v->num;i++)
-        if(v->entry[i].init>=10)v->entry[i].val=v->entry[v->entry[i].init-10].val;
+    for(i=0;i<num;i++)
+        if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
 }
 
-void vault_loadfromres(vault_t *v,int id)
+void Vault::loadfromres(int id)
 {
-    WCHAR *data;
+    WCHAR *datav;
     char *data1;
     int sz,i;
 
-    //if(v->odata)free(v->odata);
-    //v->odata=v->data;
+    //if(odata)free(odata);
+    //odata=datav;
     get_resource(id,(void **)&data1,&sz);
-    data=(WCHAR*)malloc(sz*2+2);
+    datav=(WCHAR*)malloc(sz*2+2);
     int j=0;
     for(i=0;i<sz;i++,j++)
     {
-        if(data1[i]==L'\r')data[i]=L' ';else
-        data[i]=data1[j];
+        if(data1[i]==L'\r')datav[i]=L' ';else
+        datav[i]=data1[j];
     }
-    data[sz]=0;
-    vault_parse(v,data);
-    for(i=0;i<v->num;i++)
-        if(v->entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",v->entry[i].name);
+    datav[sz]=0;
+    parse(datav);
+    for(i=0;i<num;i++)
+        if(entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 //}
 
@@ -326,16 +334,16 @@ void lang_set(int i)
 {
     //printf("%d,'%S'\n",i,langlist[i]);
     if(flags&FLAG_NOGUI)return;
-    vault_loadfromres(&vLang,IDR_LANG);
-    vault_loadfromfile(&vLang,vLang.namelist[i]);
+    vLang.loadfromres(IDR_LANG);
+    vLang.loadfromfile(vLang.namelist[i]);
 }
 
 void theme_set(int i)
 {
     //printf("%d,'%S'\n",i,themelist[i]);
     if(flags&FLAG_NOGUI)return;
-    vault_loadfromres(&vTheme,IDR_THEME);
-    vault_loadfromfile(&vTheme,vTheme.namelist[i]);
+    vTheme.loadfromres(IDR_THEME);
+    vTheme.loadfromfile(vTheme.namelist[i]);
 
     for(i=0;i<BOX_NUM;i++)
     {
@@ -394,7 +402,7 @@ int lang_enum(HWND hwnd,const WCHAR *path,int locale)
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
         wsprintf(buf,L"%s\\%s\\%s",data_dir,path,FindFileData.cFileName);
-        vault_loadfromfile(&vLang,buf);
+        vLang.loadfromfile(buf);
         if(language[STR_LANG_CODE].val==(locale&0xFF))
         {
             wsprintf(langauto2,L"Auto (%s)",STR(STR_LANG_NAME));
@@ -438,7 +446,7 @@ void theme_enum(HWND hwnd,const WCHAR *path)
     {
         wsprintf(buf,L"%s\\%s\\%s",data_dir,path,FindFileData.cFileName);
         D(THEME_NAME)=(intptr_t)L"";
-        vault_loadfromfile(&vTheme,buf);
+        vTheme.loadfromfile(buf);
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)D(THEME_NAME));
         wcscpy(vTheme.namelist[i],buf);
         i++;

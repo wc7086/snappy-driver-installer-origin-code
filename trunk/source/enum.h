@@ -234,4 +234,3 @@ char *vector_load(std::vector<T> *v,char *p)
     memcpy(v->data(),p,sz);p+=sz;
     return p;
 }
-
