@@ -509,7 +509,7 @@ int Collection::scanfolder_count(const WCHAR *path)
             if(StrStrIW(FindFileData.cFileName,olddrps[i]))
             {
                 wsprintf(buf,L" /c del \"%s\\%s*.7z\" /Q /F",driverpack_dir,olddrps[i]);
-                RunSilent(L"cmd",buf,SW_HIDE,1);
+                run_command(L"cmd",buf,SW_HIDE,1);
                 break;
             }
             if(i==5&&StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)

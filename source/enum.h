@@ -15,9 +15,6 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Global variables
-extern int isLaptop;
-
 // Misc struct
 class State;
 class Device;
@@ -175,6 +172,7 @@ public:
     std::vector<Driver> Drivers_list;
     Txt textas;
     inflist_tp inf_list_new;
+    int isLaptop;
 
 private:
     void fakeOSversion();

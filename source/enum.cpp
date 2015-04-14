@@ -19,8 +19,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "device.h"
 
 //{ Global variables
-int isLaptop;
-
 static const char *deviceststus_str[]=
 {
     "Device is not present",
@@ -160,15 +158,15 @@ void Device::print(State *state)
 {
     char *s=state->textas.get(0);
     log_file("DeviceInfo\n");
-    log_file("##Name:#########%S\n",s+Devicedesc);
-    log_file("##Status:#######");
+    log_file("  Name:         %S\n",s+Devicedesc);
+    log_file("  Status:       ");
     log_file(deviceststus_str[print_status()],problem);
-    log_file("\n##Manufacturer:#%S\n",s+Mfg);
-    log_file("##HWID_reg######%S\n",s+Driver);
-    log_file("##Class:########");    print_guid(&DeviceInfoData.ClassGuid);
-    log_file("##Location:#####\n");
-    log_file("##ConfigFlags:##%d\n", ConfigFlags);
-    log_file("##Capabilities:#%d\n", Capabilities);
+    log_file("\n  Manufacturer: %S\n",s+Mfg);
+    log_file("  HWID_reg      %S\n",s+Driver);
+    log_file("  Class:        ");print_guid(&DeviceInfoData.ClassGuid);
+    log_file("  Location:\n");
+    log_file("  ConfigFlags:  %d\n", ConfigFlags);
+    log_file("  Capabilities: %d\n", Capabilities);
 }
 
 void Device::printHWIDS(State *state)
@@ -368,16 +366,16 @@ void Driver::print(State *state)
     WCHAR buf[BUFLEN];
 
     str_date(&version,buf);
-    log_file("##Name:#####%S\n",s+DriverDesc);
-    log_file("##Provider:#%S\n",s+ProviderName);
-    log_file("##Date:#####%S\n",buf);
-    log_file("##Version:##%d.%d.%d.%d\n",version.v1,version.v2,version.v3,version.v4);
-    log_file("##HWID:#####%S\n",s+MatchingDeviceId);
-    log_file("##inf:######%S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
-    log_file("##Score:####%08X %04x\n",calc_score_h(this,state),identifierscore);
+    log_file("  Name:     %S\n",s+DriverDesc);
+    log_file("  Provider: %S\n",s+ProviderName);
+    log_file("  Date:     %S\n",buf);
+    log_file("  Version:  %d.%d.%d.%d\n",version.v1,version.v2,version.v3,version.v4);
+    log_file("  HWID:     %S\n",s+MatchingDeviceId);
+    log_file("  inf:      %S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
+    log_file("  Score:    %08X %04x\n",calc_score_h(this,state),identifierscore);
 
     if(log_verbose&LOG_VERBOSE_BATCH)
-        log_file("##Filter:###\"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);
+        log_file("  Filter:   \"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);
 }
 
 Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp)
@@ -573,7 +571,7 @@ void State::print()
         if(cur_device.getDriverIndex()>=0)
             Drivers_list[cur_device.getDriverIndex()].print(this);
         else
-            log_file("##NoDriver\n");
+            log_file("  NoDriver\n");
 
         cur_device.printHWIDS(this);
         log_file("\n\n");
@@ -792,7 +790,6 @@ void State::scanDevices()
     time_devicescan=GetTickCount();
     collection.init(textas.getw(windir),L"",L"",0);
     unpacked_drp.init(L"",L"windir.7z",&collection);
-    //Driverpack unpacked_drp(L"",L"windir.7z",&collection);
     Devices_list.clear();
     inf_list_new.clear();
 
@@ -837,6 +834,7 @@ void State::scanDevices()
             case ERROR_FILE_NOT_FOUND:
                 break;
         }
+        RegCloseKey(hkey);
     }
 /*
     SP_DRVINFO_DATA drvinfo;

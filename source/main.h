@@ -96,7 +96,8 @@ extern "C"
 // Mode
 enum STATEMODE
 {
-    STATEMODE_LOAD      =1,
+    STATEMODE_REAL      =0,
+    STATEMODE_EMUL      =1,
     STATEMODE_EXIT      =2,
 };
 

@@ -286,7 +286,7 @@ void Manager::filter(int options)
         (i==0&&statemode==0&&matcher->col->driverpack_list.size()>1)?1:0;
 
     items_list[SLOT_RESTORE_POINT].isactive=statemode==
-        STATEMODE_LOAD||i==0||(flags&FLAG_NORESTOREPOINT)?0:1;
+        STATEMODE_EMUL||i==0||(flags&FLAG_NORESTOREPOINT)?0:1;
     //set_rstpnt(0);
 
     if(!items_list[SLOT_RESTORE_POINT].install_status)
@@ -1921,7 +1921,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",state->getProduct());
     TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",state->getModel());
     TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",state->getManuf());
-    TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),state->ChassisType);
+    TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",state->isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),state->ChassisType);
 
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_BATTERY));td.x=p1;
