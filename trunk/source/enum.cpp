@@ -77,7 +77,7 @@ void Device::print_guid(GUID *g)
         (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
 
     *buffer=0;
-    if(!SetupDiGetClassDescription(g,buffer,BUFLEN,0))
+    if(!SetupDiGetClassDescription(g,buffer,BUFLEN,nullptr))
     {
         //int lr=GetLastError();
         //print_error(lr,L"print_guid()");
@@ -94,7 +94,7 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
     auto DeviceInfoDataloc=(SP_DEVINFO_DATA *)&DeviceInfoData;
 
     *val=0;
-    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,0,0,&buffersize))
+    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,nullptr,0,&buffersize))
     {
         lr=GetLastError();
         if(lr==ERROR_INVALID_DATA)return;
@@ -217,9 +217,9 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
         return;
     }
 
-    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,0,0,&buffersize);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,nullptr,0,&buffersize);
     InstanceId=state->textas.alloc(buffersize);
-    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,state->textas.getw(InstanceId),buffersize,0);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,state->textas.getw(InstanceId),buffersize,nullptr);
 
     read_device_property(hDevInfo,state,SPDRP_DEVICEDESC,    &Devicedesc);
     read_device_property(hDevInfo,state,SPDRP_HARDWAREID,    &HardwareID);
@@ -245,7 +245,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
     int lr;
 
     *val=0;
-    lr=RegQueryValueEx(hkey,key,NULL,0,0,&dwSize);
+    lr=RegQueryValueEx(hkey,key,nullptr,nullptr,nullptr,&dwSize);
     if(lr==ERROR_FILE_NOT_FOUND)return;
     if(lr!=ERROR_SUCCESS)
     {
@@ -255,7 +255,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
     }
 
     *val=state->textas.alloc(dwSize);
-    lr=RegQueryValueEx(hkey,key,NULL,&dwType,(unsigned char *)(state->textas.get(*val)),&dwSize);
+    lr=RegQueryValueEx(hkey,key,nullptr,&dwType,(unsigned char *)(state->textas.get(*val)),&dwSize);
     if(lr!=ERROR_SUCCESS)
     {
         log_err("Key %S\n",key);
@@ -637,7 +637,7 @@ int  State::load(const WCHAR *filename)
     FILE *f;
     int sz;
     int version;
-    char *mem,*p,*mem_unpack=0;
+    char *mem,*p,*mem_unpack=nullptr;
 
     log_con("Loading state from '%S'...",filename);
     f=_wfopen(filename,L"rb");
@@ -711,7 +711,7 @@ void State::getsysinfo_fast()
     DispDev.cb=sizeof(DispDev);
     buf[0]=0;
     int i=0;
-    while(EnumDisplayDevices(0,i,&DispDev,0))
+    while(EnumDisplayDevices(nullptr,i,&DispDev,0))
     {
         int x,y;
         GetMonitorSizeFromEDID(DispDev.DeviceName,&x,&y);
@@ -793,7 +793,7 @@ void State::scanDevices()
     Devices_list.clear();
     inf_list_new.clear();
 
-    hDevInfo=SetupDiGetClassDevs(0,0,0,DIGCF_PRESENT|DIGCF_ALLCLASSES);
+    hDevInfo=SetupDiGetClassDevs(nullptr,nullptr,nullptr,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
     {
         print_error(GetLastError(),L"SetupDiGetClassDevs()");
@@ -1021,13 +1021,13 @@ int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height)
             DWORD i=0;
             DWORD size=MAX_PATH;
             FILETIME ft;
-            while(RegEnumKeyEx(hKey,i,str,&size,NULL,NULL,NULL,&ft)==ERROR_SUCCESS)
+            while(RegEnumKeyEx(hKey,i,str,&size,nullptr,nullptr,nullptr,&ft)==ERROR_SUCCESS)
             {
                 HKEY hKey2;
                 if(RegOpenKeyEx(hKey,str,0,KEY_READ,&hKey2)==ERROR_SUCCESS)
                 {
                     size=MAX_PATH;
-                    if(RegQueryValueEx(hKey2, L"Driver",NULL,NULL,(LPBYTE)&str,&size)==ERROR_SUCCESS)
+                    if(RegQueryValueEx(hKey2, L"Driver",nullptr,nullptr,(LPBYTE)&str,&size)==ERROR_SUCCESS)
                     {
                         if(wcscmp(str,path)==0)
                         {
@@ -1036,7 +1036,7 @@ int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height)
                             {
                                 BYTE EDID[256];
                                 size=256;
-                                if(RegQueryValueEx(hKey3,L"EDID",NULL,NULL,(LPBYTE)&EDID,&size)==ERROR_SUCCESS)
+                                if(RegQueryValueEx(hKey3,L"EDID",nullptr,nullptr,(LPBYTE)&EDID,&size)==ERROR_SUCCESS)
                                 {
                                     DWORD p=8;
                                     WCHAR model2[9];

@@ -135,8 +135,8 @@ void heap_free(heap_t *t)
         hash_free(t->dup);
         free(t->dup);
     }*/
-    t->base=0;
-    *t->membck=0;
+    t->base=nullptr;
+    *t->membck=nullptr;
 }
 
 void heap_reset(heap_t *t,int sz)

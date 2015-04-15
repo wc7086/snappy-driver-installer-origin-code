@@ -32,18 +32,18 @@ CRITICAL_SECTION sync;
 // Window
 HINSTANCE ghInst;
 MSG msg;
-HFONT hFont=0;
+HFONT hFont=nullptr;
 Canvas canvasMain;
 Canvas canvasField;
 Canvas canvasPopup;
 const WCHAR classMain[]= L"classMain";
 const WCHAR classField[]=L"classField";
 const WCHAR classPopup[]=L"classPopup";
-HWND hMain=0;
-HWND hField=0;
-HWND hPopup=0;
-HWND hLang=0;
-HWND hTheme=0;
+HWND hMain=nullptr;
+HWND hField=nullptr;
+HWND hPopup=nullptr;
+HWND hLang=nullptr;
+HWND hTheme=nullptr;
 
 // Window helpers
 int panel_lasti=0;
@@ -69,7 +69,7 @@ int scrollvisible=0;
 
 int ret_global=0;
 volatile int deviceupdate_exitflag=0;
-FILE *snplist=0;
+FILE *snplist=nullptr;
 HANDLE deviceupdate_event;
 
 // Settings
@@ -333,8 +333,8 @@ void checkupdates()
     torrentstatus.sessionpaused=1;
     if(flags&FLAG_CHECKUPDATES)
     {
-        downloadmangar_event=CreateEvent(0,1,0,0);
-        thandle_download=(HANDLE)_beginthreadex(0,0,&thread_download,0,0,0);
+        downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
+        thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
     }
 #endif
 }
@@ -347,7 +347,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     bundle_t bundle[2];
     monitor_t *mon_drp;
     HANDLE thr;
-    HMODULE backtrace=0;
+    HMODULE backtrace=nullptr;
     DWORD dwProcessId;
     time_startup=time_total=GetTickCount();
     ghInst=hInst;
@@ -442,11 +442,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     bundle_init(&bundle[1]);
     manager_v[0].init(&bundle[bundle_display].matcher);
     manager_v[1].init(&bundle[bundle_display].matcher);
-    deviceupdate_event=CreateEvent(0,0,0,0);
+    deviceupdate_event=CreateEvent(nullptr,0,0,nullptr);
 
 // Start device/driver scan
     bundle_prep(&bundle[bundle_display]);
-    thr=(HANDLE)_beginthreadex(0,0,&thread_loadall,&bundle[0],0,0);
+    thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
 
 // Check updates
     checkupdates();
@@ -578,7 +578,7 @@ unsigned int __stdcall thread_loadall(void *arg)
 
         if(!cancel_update)
         {
-            if((flags&FLAG_NOGUI||hMain==0)&&(flags&FLAG_AUTOINSTALL)==0)
+            if((flags&FLAG_NOGUI||hMain==nullptr)&&(flags&FLAG_AUTOINSTALL)==0)
             {
                 manager_g->matcher=&bundle[bundle_shadow].matcher;
                 manager_g->populate();
@@ -645,9 +645,9 @@ void bundle_load(bundle_t *bundle)
 {
     HANDLE thandle[3];
 
-    thandle[0]=(HANDLE)_beginthreadex(0,0,&thread_scandevices,bundle,0,0);
-    thandle[1]=(HANDLE)_beginthreadex(0,0,&thread_loadindexes,bundle,0,0);
-    thandle[2]=(HANDLE)_beginthreadex(0,0,&thread_getsysinfo,bundle,0,0);
+    thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,bundle,0,nullptr);
+    thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,bundle,0,nullptr);
+    thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,bundle,0,nullptr);
     WaitForMultipleObjects(3,thandle,1,INFINITE);
     CloseHandle_log(thandle[0],L"bundle_load",L"0");
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
@@ -723,7 +723,7 @@ void redrawfield()
         log_err("ERROR in redrawfield(): hField is 0\n");
         return;
     }
-    InvalidateRect(hField,NULL,TRUE);
+    InvalidateRect(hField,nullptr,TRUE);
     //UpdateWindow(hField);
 }
 
@@ -735,7 +735,7 @@ void redrawmainwnd()
         return;
     }
     //log_con("Redraw main %d\n",cntd++);
-    InvalidateRect(hMain,NULL,TRUE);
+    InvalidateRect(hMain,nullptr,TRUE);
     //UpdateWindow(hMain);
 }
 
@@ -748,7 +748,7 @@ void lang_refresh()
     }
     redrawmainwnd();
     redrawfield();
-    InvalidateRect(hPopup,0,1);
+    InvalidateRect(hPopup,nullptr,1);
 #ifdef USE_TORRENT
     upddlg_updatelang();
 #endif
@@ -835,16 +835,16 @@ void setscrollpos(int pos)
 //{ Helpers
 void get_resource(int id,void **data,int *size)
 {
-    HRSRC myResource=FindResource(NULL,MAKEINTRESOURCE(id),(WCHAR *)RESFILE);
+    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(WCHAR *)RESFILE);
     if(!myResource)
     {
         log_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
         *size=0;
-        *data=0;
+        *data=nullptr;
         return;
     }
-    *size=SizeofResource(NULL,myResource);
-    *data=LoadResource(NULL,myResource);
+    *size=SizeofResource(nullptr,myResource);
+    *data=LoadResource(nullptr,myResource);
 }
 
 const WCHAR *get_winverstr(Manager *manager1)
@@ -921,7 +921,7 @@ void gui(int nCmd)
     wcx.lpfnWndProc=    WndProc;
     wcx.hInstance=      ghInst;
     wcx.hIcon=          LoadIcon(ghInst,MAKEINTRESOURCE(IDI_ICON1));
-    wcx.hCursor=        (HCURSOR)LoadCursor(0,IDC_ARROW);
+    wcx.hCursor=        (HCURSOR)LoadCursor(nullptr,IDC_ARROW);
     wcx.lpszClassName=  classMain;
     wcx.hbrBackground=  (HBRUSH)(COLOR_WINDOW+1);
     if(!RegisterClassEx(&wcx))
@@ -932,7 +932,7 @@ void gui(int nCmd)
 
     wcx.lpfnWndProc=PopupProcedure;
     wcx.lpszClassName=classPopup;
-    wcx.hIcon=0;
+    wcx.hIcon=nullptr;
     if(!RegisterClassEx(&wcx))
     {
         log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
@@ -977,7 +977,7 @@ void gui(int nCmd)
                             APPTITLE,
                             WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN,
                             CW_USEDEFAULT,CW_USEDEFAULT,D(MAINWND_WX),D(MAINWND_WY),
-                            0,0,ghInst,0);
+                            nullptr,nullptr,ghInst,nullptr);
         if(!hMain)
         {
             log_err("ERROR in gui(): failed to create '%S' window\n",classMain);
@@ -988,9 +988,9 @@ void gui(int nCmd)
 
         while(!done)
         {
-            while(WAIT_IO_COMPLETION==MsgWaitForMultipleObjectsEx(0,0,INFINITE,QS_ALLINPUT,MWMO_ALERTABLE));
+            while(WAIT_IO_COMPLETION==MsgWaitForMultipleObjectsEx(0,nullptr,INFINITE,QS_ALLINPUT,MWMO_ALERTABLE));
 
-            while(PeekMessage(&msg,0,0,0,PM_REMOVE))
+            while(PeekMessage(&msg,nullptr,0,0,PM_REMOVE))
             {
                 if(msg.message==WM_QUIT)
                 {
@@ -1088,16 +1088,16 @@ LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     {
         case WM_MOUSELEAVE:
             ShowWindow(hPopup,SW_HIDE);
-            InvalidateRect(hwnd,0,0);//common
+            InvalidateRect(hwnd,nullptr,0);//common
             break;
 
         case WM_MOUSEHOVER:
-            InvalidateRect(hPopup,0,1);
+            InvalidateRect(hPopup,nullptr,1);
             ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
             break;
 
         case WM_ACTIVATE:
-            InvalidateRect(hwnd,0,0);//common
+            InvalidateRect(hwnd,nullptr,0);//common
             break;
 
         case WM_MOUSEMOVE:
@@ -1137,7 +1137,7 @@ LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_RBUTTONUP:
             mousex=-1;
             mousey=-1;
-            SetCursor(LoadCursor(0,IDC_ARROW));
+            SetCursor(LoadCursor(nullptr,IDC_ARROW));
             ReleaseCapture();
             if(mousedown==2)
             {
@@ -1320,12 +1320,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             hMain=hwnd;
 
             // Field
-            hField=CreateWindowMF(classField,NULL,hwnd,0,WS_VSCROLL);
+            hField=CreateWindowMF(classField,nullptr,hwnd,nullptr,WS_VSCROLL);
 
             // Popup
             hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
                 classPopup,L"",WS_POPUP,
-                0,0,0,0,hwnd,(HMENU)0,ghInst,0);
+                0,0,0,0,hwnd,(HMENU)0,ghInst,nullptr);
 
             // Lang
             hLang=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)ID_LANG,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
@@ -1352,7 +1352,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_CLOSE:
             if(installmode==MODE_NONE||(flags&FLAG_AUTOCLOSE))
                 DestroyWindow(hwnd);
-            else if(MessageBox(0,STR(STR_INST_QUIT_MSG),STR(STR_INST_QUIT_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
+            else if(MessageBox(hMain,STR(STR_INST_QUIT_MSG),STR(STR_INST_QUIT_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
                 installmode=MODE_STOPPING;
             break;
 
@@ -1418,7 +1418,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 LeaveCriticalSection(&sync);
 
 #ifdef USE_TORRENT
-                upddlg_populatelist(0,0);
+                upddlg_populatelist(nullptr,0);
 #endif
                 //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
                 if(flags&FLAG_AUTOINSTALL)
@@ -1472,7 +1472,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             UINT uFile=0;
             HDROP hDrop=(HDROP)wParam;
 
-            uFile=DragQueryFile(hDrop,0xFFFFFFFF,NULL,0);
+            uFile=DragQueryFile(hDrop,0xFFFFFFFF,nullptr,0);
             if(uFile!=1)
             {
                 //MessageBox(0,L"Dropping multiple files is not supported.",NULL,MB_ICONERROR);
@@ -1592,7 +1592,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(wParam==VK_F7)
             {
                 wndclicker(2);
-                MessageBox(0,L"Windows data recorded into the log.",L"Message",0);
+                MessageBox(hMain,L"Windows data recorded into the log.",L"Message",0);
             }
             if(wParam==VK_F8)
             {
@@ -1689,7 +1689,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_MOUSEMOVE:
             GetClientRect(hwnd,&rect);
             i=panels_hitscan(x,y,&j);
-            if(j==0||j==7||j==12)SetCursor(LoadCursor(0,IDC_HAND));
+            if(j==0||j==7||j==12)SetCursor(LoadCursor(nullptr,IDC_HAND));
             //log_con("%d,%d\n",j,i);
 
             if(i>0)
@@ -1716,7 +1716,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(i<0)break;
             if(i<4&&j==0)
             {
-                run_command(L"devmgmt.msc",0,SW_SHOW,0);
+                run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
             }
             else
             //log_con("%d,%d\n",j,i);
@@ -1731,7 +1731,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 else
                     PostMessage(hwnd,WM_COMMAND,panels[j].items[i].action_id+(BN_CLICKED<<16),0);
 
-                InvalidateRect(hwnd,NULL,TRUE);
+                InvalidateRect(hwnd,nullptr,TRUE);
             }
             if(j==7||j==12)run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
             break;
@@ -1757,7 +1757,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             {
                 horiz_sh-=i/5;
                 if(horiz_sh>0)horiz_sh=0;
-                InvalidateRect(hPopup,0,0);
+                InvalidateRect(hPopup,nullptr,0);
             }
             else
                 SendMessage(hField,WM_VSCROLL,MAKELONG(i>0?SB_LINEUP:SB_LINEDOWN,0),0);
@@ -1806,7 +1806,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_DEVICEMNG:
-                    run_command(L"devmgmt.msc",0,SW_SHOW,0);
+                    run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
                     break;
 
                 case ID_EMU_32:
@@ -1862,7 +1862,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     HGLOBAL hMem=GlobalAlloc(GMEM_MOVEABLE,len);
                     memcpy(GlobalLock(hMem),getHWIDby(floating_itembar,id),len);
                     GlobalUnlock(hMem);
-                    OpenClipboard(0);
+                    OpenClipboard(nullptr);
                     EmptyClipboard();
                     SetClipboardData(CF_UNICODETEXT,hMem);
                     CloseClipboard();
@@ -1913,7 +1913,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_OPENLOGS:
-                    ShellExecute(hwnd,L"explore",log_dir,0,0,SW_SHOW);
+                    ShellExecute(hwnd,L"explore",log_dir,nullptr,nullptr,SW_SHOW);
                     break;
 
                 case ID_SNAPSHOT:
@@ -2012,14 +2012,14 @@ void contextmenu2(int x,int y)
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP,(UINT_PTR)hSub1,STR(STR_SYS_WINVER));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(arch==0?MF_CHECKED:0),ID_EMU_32,STR(STR_SYS_32));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(arch==1?MF_CHECKED:0),ID_EMU_64,STR(STR_SYS_64));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,0);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,ID_DEVICEMNG,STR(STR_SYS_DEVICEMNG));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,0);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_DISABLEINSTALL?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
     SetForegroundWindow(hMain);
     GetWindowRect(hMain,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
 }
 
 void contextmenu(int x,int y)
@@ -2046,14 +2046,14 @@ void contextmenu(int x,int y)
         InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
         SetForegroundWindow(hMain);
         GetWindowRect(hField,&rect);
-        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
+        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
         return;
     }
     if(floating_itembar<RES_SLOTS)return;
     //printf("itembar %d\n",floating_itembar);
 
     devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
-    Driver *cur_driver=0;
+    Driver *cur_driver=nullptr;
     WCHAR *p;
     char *t=manager_g->matcher->state->textas.get(0);
     if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
@@ -2090,15 +2090,15 @@ void contextmenu(int x,int y)
     i=0;
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_CONT_INSTALL));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags2,ID_SHOWALT,  STR(STR_CONT_SHOWALT));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,0);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub1,STR(STR_CONT_HWID_SEARCH));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub2,STR(STR_CONT_HWID_CLIP));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,0);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_OPENINF,  STR(STR_CONT_OPENINF));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_LOCATEINF,STR(STR_CONT_LOCATEINF));
     SetForegroundWindow(hMain);
     GetWindowRect(hField,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,NULL);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
 }
 
 LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
@@ -2217,7 +2217,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             mousedown=3;
             mousex=x;
             mousey=y;
-            SetCursor(LoadCursor(0,IDC_SIZEALL));
+            SetCursor(LoadCursor(nullptr,IDC_SIZEALL));
             SetCapture(hwnd);
             break;
 

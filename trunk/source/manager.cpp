@@ -43,7 +43,7 @@ void Manager::init(Matcher *matchera)
         items_list.push_back(itembar_t());
         itembar=&items_list.back();
         //itembar=(itembar_t *)heap_allocitem_ptr(&items_handle);
-        itembar_init(itembar,0,0,i,0,1);
+        itembar_init(itembar,nullptr,nullptr,i,0,1);
     }
 }
 
@@ -68,8 +68,8 @@ void Manager::sorta(Matcher *m,int *v)
         {
             devicematch_i=&m->devicematch_list[v[i]];
             devicematch_j=&m->devicematch_list[v[j]];
-            hwidmatch_i=(devicematch_i->num_matches)?&m->hwidmatch_list[devicematch_i->start_matches]:0;
-            hwidmatch_j=(devicematch_j->num_matches)?&m->hwidmatch_list[devicematch_j->start_matches]:0;
+            hwidmatch_i=(devicematch_i->num_matches)?&m->hwidmatch_list[devicematch_i->start_matches]:nullptr;
+            hwidmatch_j=(devicematch_j->num_matches)?&m->hwidmatch_list[devicematch_j->start_matches]:nullptr;
             int ismi=isMissing(devicematch_i->device,devicematch_i->driver,m->state);
             int ismj=isMissing(devicematch_j->device,devicematch_j->driver,m->state);
 
@@ -144,7 +144,7 @@ void Manager::populate()
         if(!devicematch->num_matches)
         {
             items_list.push_back(itembar_t());
-            itembar_init(&items_list.back(),devicematch,0,i+RES_SLOTS,remap[i],1);
+            itembar_init(&items_list.back(),devicematch,nullptr,i+RES_SLOTS,remap[i],1);
             id++;
         }
     }
@@ -153,7 +153,7 @@ void Manager::populate()
 void Manager::filter(int options)
 {
     devicematch_t *devicematch;
-    itembar_t *itembar,*itembar1,*itembar_drp=0,*itembar_drpcur=0;
+    itembar_t *itembar,*itembar1,*itembar_drp=nullptr,*itembar_drpcur=nullptr;
     unsigned i,j,k;
     int cnt[NUM_STATUS+1];
     int ontorrent;
@@ -497,9 +497,9 @@ void Manager::testitembars()
             case 16:itembar->hwidmatch->status=STATUS_OLD|STATUS_SAME;break;
             case 17:itembar->hwidmatch->status=STATUS_OLD|STATUS_WORSE;break;
 
-            case 18:itembar->devicematch->status=STATUS_NF_MISSING;itembar->hwidmatch=0;break;
-            case 19:itembar->devicematch->status=STATUS_NF_STANDARD;itembar->hwidmatch=0;break;
-            case 20:itembar->devicematch->status=STATUS_NF_UNKNOWN;itembar->hwidmatch=0;break;
+            case 18:itembar->devicematch->status=STATUS_NF_MISSING;itembar->hwidmatch=nullptr;break;
+            case 19:itembar->devicematch->status=STATUS_NF_STANDARD;itembar->hwidmatch=nullptr;break;
+            case 20:itembar->devicematch->status=STATUS_NF_UNKNOWN;itembar->hwidmatch=nullptr;break;
             default:itembar->isactive=0;
         }
     }
@@ -840,7 +840,7 @@ void str_date(version_t *v,WCHAR *buf)
     if(v->y<1000)
         wsprintf(buf,STR(STR_HINT_UNKNOWN));
     else
-        GetDateFormat(manager_g->matcher->state->locale,0,&tm,0,buf,100);
+        GetDateFormat(manager_g->matcher->state->locale,0,&tm,nullptr,buf,100);
 }
 
 WCHAR unkver[128];
@@ -856,7 +856,7 @@ const WCHAR *str_version(version_t *ver)
 void Manager::setpos()
 {
     devicematch_t *devicematch;
-    itembar_t *itembar,*lastitembar=0;
+    itembar_t *itembar,*lastitembar=nullptr;
     unsigned k;
     int cnt=0;
     int pos=D(DRVITEM_OFSY);
@@ -884,7 +884,7 @@ void Manager::setpos()
             if(devicematch)lastmatch=devicematch->num_matches;
         }
     }
-    SetTimer(hMain,1,1000/60,0);
+    SetTimer(hMain,1,1000/60,nullptr);
     animstart=GetTickCount();
 }
 
@@ -944,7 +944,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 {
     HICON hIcon;
     WCHAR bufw[BUFLEN];
-    HRGN hrgn=0,hrgn2;
+    HRGN hrgn=nullptr,hrgn2;
     int x=Xg(D(DRVITEM_OFSX));
     int wx=XG(D(DRVITEM_WX),x);
     int r=D(boxindex[box_status(index)]+3);
@@ -987,7 +987,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
         newpen=CreatePen(PS_SOLID,D(DRVITEM_LINE_WIDTH),D(DRVITEM_LINE_COLOR));
         oldpen=(HPEN)SelectObject(hdc,newpen);
-        MoveToEx(hdc,x-D(DRVITEM_LINE_INTEND)/2,(items_list[intend].curpos>>16)-D(DRVITEM_DIST_Y0)+D(DRVITEM_WY)-ofsy,0);
+        MoveToEx(hdc,x-D(DRVITEM_LINE_INTEND)/2,(items_list[intend].curpos>>16)-D(DRVITEM_DIST_Y0)+D(DRVITEM_WY)-ofsy,nullptr);
         LineTo(hdc,x-D(DRVITEM_LINE_INTEND)/2,pos+D(DRVITEM_WY)/2);
         LineTo(hdc,x,pos+D(DRVITEM_WY)/2);
         SelectObject(hdc,oldpen);
@@ -1235,9 +1235,9 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 }
             }
             // Device icon
-            if(itembar->devicematch&&SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,0))
+            if(itembar->devicematch&&SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr))
             {
-                DrawIconEx(hdc,x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,0,DI_NORMAL);
+                DrawIconEx(hdc,x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
                 DestroyIcon(hIcon);
             }
 
@@ -1251,7 +1251,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
     }
 
-    SelectClipRgn(hdc,0);
+    SelectClipRgn(hdc,nullptr);
     DeleteObject(hrgn);
     DeleteObject(hrgn2);
     return 1;
@@ -1699,11 +1699,11 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     int maxln=0;
     int bolder=rect.right/2;
     WCHAR *p;
-    devicematch_t *devicematch_f=0;
-    Hwidmatch *hwidmatch_f=0;
-    Driver *cur_driver=0;
+    devicematch_t *devicematch_f=nullptr;
+    Hwidmatch *hwidmatch_f=nullptr;
+    Driver *cur_driver=nullptr;
     textdata_t td;
-    version_t *a_v=0;
+    version_t *a_v=nullptr;
     unsigned score=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
     int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
@@ -1759,7 +1759,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
     }
 
-    SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,0);
+    SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
 
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
@@ -1806,12 +1806,12 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
 
     if(cur_driver||hwidmatch_f)
     {
-        MoveToEx(hdcMem,0,td.y-td.wy/2,0);
+        MoveToEx(hdcMem,0,td.y-td.wy/2,nullptr);
         LineTo(hdcMem,rect.right,td.y-td.wy/2);
     }
     if(devicematch_f->device->HardwareID||hwidmatch_f)
     {
-        MoveToEx(hdcMem,bolder,0,0);
+        MoveToEx(hdcMem,bolder,0,nullptr);
         LineTo(hdcMem,bolder,rect.bottom);
     }
     if(cur_driver)

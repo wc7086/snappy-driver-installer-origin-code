@@ -215,7 +215,7 @@ public:
     ofst desc;
     ofst install;
     ofst install_picked;
-    char feature;
+    unsigned char feature;
 };
 
 class data_HWID_t // 8
