@@ -37,13 +37,24 @@ public:
     WCHAR namelist[64][250];
     WCHAR *data,*odata;
     hashtable_t strs;
+    int res;
+
+private:
+    int  vault_findvar(WCHAR *str);
+    int  vault_readvalue(const WCHAR *str);
+    intptr_t  vault_findstr(WCHAR *str);
+    void parse(WCHAR *data);
+    void *loadFromEncodedFile(const WCHAR *filename,int *sz);
+    void loadFromFile(WCHAR *filename);
+    void loadFromRes(int id);
 
 public:
-    void init1(entry_t *entry,int num);
+    void init1(entry_t *entry,int num,int res);
     void free1();
-    void parse(WCHAR *data);
-    void loadfromfile(WCHAR *filename);
-    void loadfromres(int id);
+    void load(int i);
+
+    friend void lang_enum(HWND hwnd,const WCHAR *path,int locale);
+    friend void theme_enum(HWND hwnd,const WCHAR *path);
 };
 
 extern entry_t language[STR_NM];
@@ -51,10 +62,11 @@ extern entry_t theme[THEME_NM];
 extern Vault vLang,vTheme;
 extern int monitor_pause;
 
-// Monitor
+// FileMonitor
 typedef void (CALLBACK *FileChangeCallback)(const WCHAR *,DWORD,LPARAM);
-typedef struct _monitor_t
+class monitor_t
 {
+public:
 	OVERLAPPED ol;
 	HANDLE     hDir;
 	BYTE       buffer[32*1024];
@@ -64,30 +76,21 @@ typedef struct _monitor_t
 	WCHAR      dir[BUFLEN];
 	int        subdirs;
 	FileChangeCallback callback;
-}*monitor_t;
-
-// Vault
-void vault_startmonitors();
-void vault_stopmonitors();
-void vault_init();
-void vault_free();
-
-void *vault_loadfile(const WCHAR *filename,int *sz);
-int  vault_findvar(hashtable_t *t,WCHAR *str);
-int  vault_readvalue(const WCHAR *str);
-intptr_t  vault_findstr(WCHAR *str);
-
+};
 
 // Lang/theme
-int  lang_enum(HWND hwnd,const WCHAR *path,int locale);
+void lang_enum(HWND hwnd,const WCHAR *path,int locale);
 void theme_enum(HWND hwnd,const WCHAR *path);
 void lang_set(int i);
 void theme_set(int i);
+
+void vault_startmonitors();
+void vault_stopmonitors();
 void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
 void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
 
-// Monitor
-monitor_t      monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
-int           monitor_refresh(monitor_t pMonitor);
+// FileMonitor
+monitor_t     *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+int           monitor_refresh(monitor_t *pMonitor);
 void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-void          monitor_stop(monitor_t pMonitor);
+void          monitor_stop(monitor_t *pMonitor);

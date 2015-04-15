@@ -170,9 +170,9 @@ void Image::load(int i)
     release();
 
     if(wcsstr(filename,L"RES_"))
-        readFromRes(_wtoi_my(filename+4));
+        loadFromRes(_wtoi_my(filename+4));
     else
-        readFromFile(filename);
+        loadFromFile(filename);
 }
 
 void Image::release()
@@ -192,7 +192,7 @@ void Image::release()
     iscopy=0;
 }
 
-void Image::readFromFile(WCHAR *filename)
+void Image::loadFromFile(WCHAR *filename)
 {
     WCHAR buf[BUFLEN];
     FILE *f;
@@ -224,7 +224,7 @@ void Image::readFromFile(WCHAR *filename)
     delete[] imgbuf;
 }
 
-void Image::readFromRes(int id)
+void Image::loadFromRes(int id)
 {
     int sz;
     HGLOBAL myResourceData;

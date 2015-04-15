@@ -18,45 +18,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global vars
-monitor_t mon_lang,mon_theme;
+monitor_t *mon_lang,*mon_theme;
 Vault vLang,vTheme;
 int monitor_pause=0;
 //}
 
 //{ Vault
-void vault_startmonitors()
-{
-    WCHAR buf[BUFLEN];
-
-    wsprintf(buf,L"%s\\langs",data_dir);
-    mon_lang=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
-    wsprintf(buf,L"%s\\themes",data_dir);
-    mon_theme=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
-}
-
-void vault_stopmonitors()
-{
-    if(mon_lang)monitor_stop(mon_lang);
-    if(mon_theme)monitor_stop(mon_theme);
-}
-
-void vault_init()
-{
-    vLang.init1(language,STR_NM);
-    vTheme.init1(theme,THEME_NM);
-}
-
-void vault_free()
-{
-    int i;
-
-    for(i=0;i<BOX_NUM;i++)box[i].release();
-    for(i=0;i<ICON_NUM;i++)icon[i].release();
-
-    vLang.free1();
-    vTheme.free1();
-}
-
 static void myswab(const char *s,char *d,int sz)
 {
     while(sz--)
@@ -67,10 +34,10 @@ static void myswab(const char *s,char *d,int sz)
     }
 }
 
-void *vault_loadfile(const WCHAR *filename,int *sz)
+void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
 {
     FILE *f;
-    void *data;
+    void *dataloc;
 
     f=_wfopen(filename,L"rb");
     if(!f)
@@ -82,38 +49,38 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
     fseek(f,0,SEEK_END);
     *sz=ftell(f);
     fseek(f,0,SEEK_SET);
-    data=malloc(*sz*2+2+1024);
+    dataloc=malloc(*sz*2+2+1024);
     log_con("Read '%S':%d\n",filename,*sz);
 
-    fread(data,2,1,f);
-    if(!memcmp(data,"\xEF\xBB",2))// UTF-8
+    fread(dataloc,2,1,f);
+    if(!memcmp(dataloc,"\xEF\xBB",2))// UTF-8
     {
-        void *data1;
+        void *dataloc1;
         int szo;
-        fread(data,1,1,f);
+        fread(dataloc,1,1,f);
         *sz-=3;
-        int q=fread(data,1,*sz,f);
-        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)data,q,0,0);
-        data1=malloc(szo*2+2);
-        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)data,q,(LPWSTR)data1,szo);
-        free(data);
+        int q=fread(dataloc,1,*sz,f);
+        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,0,0);
+        dataloc1=malloc(szo*2+2);
+        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,(LPWSTR)dataloc1,szo);
+        free(dataloc);
         fclose(f);
-        return data1;
+        return dataloc1;
     }else
-    if(!memcmp(data,"\xFF\xFE",2))// UTF-16 LE
+    if(!memcmp(dataloc,"\xFF\xFE",2))// UTF-16 LE
     {
-        fread(data,*sz,1,f);
+        fread(dataloc,*sz,1,f);
         *sz>>=1;(*sz)--;
         fclose(f);
-        return data;
+        return dataloc;
     }else
-    if(!memcmp(data,"\xFE\xFF",2))// UTF-16 BE
+    if(!memcmp(dataloc,"\xFE\xFF",2))// UTF-16 BE
     {
-        fread(data,*sz,1,f);
-        myswab((char *)data,(char *)data,*sz);
+        fread(dataloc,*sz,1,f);
+        myswab((char *)dataloc,(char *)dataloc,*sz);
         *sz>>=1;(*sz)--;
         fclose(f);
-        return data;
+        return dataloc;
     }else                         // ANSI
     {
         fclose(f);
@@ -121,21 +88,43 @@ void *vault_loadfile(const WCHAR *filename,int *sz)
         if(!f)
         {
             log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
-            free(data);
+            free(dataloc);
             return 0;
         }
-        WCHAR *p=(WCHAR *)data;(*sz)--;
+        WCHAR *p=(WCHAR *)dataloc;(*sz)--;
         while(!feof(f))
         {
             fgetws(p,*sz,f);
             p+=wcslen(p);
         }
         fclose(f);
-        return data;
+        return dataloc;
     }
 }
 
-int vault_findvar(hashtable_t *t,WCHAR *str)
+void Vault::loadFromFile(WCHAR *filename)
+{
+    WCHAR *datav;
+    int sz,i;
+
+    if(!filename[0])return;
+    //printf("{%S\n",filename);
+    //if(odata)free(odata);
+    //odata=datav;
+    datav=(WCHAR *)loadFromEncodedFile(filename,&sz);
+    if(!datav)
+    {
+        log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
+        return;
+    }
+    datav[sz]=0;
+    parse(datav);
+
+    for(i=0;i<num;i++)
+        if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
+}
+
+int Vault::vault_findvar(WCHAR *str)
 {
     int i;
     WCHAR *p;
@@ -149,13 +138,13 @@ int vault_findvar(hashtable_t *t,WCHAR *str)
     *p=0;
 
     wsprintfA(buf,"%ws",str);
-    i=hash_find_str(t,buf);
+    i=hash_find_str(&strs,buf);
     i--;
     *p=c;
     return i;
 }
 
-int vault_readvalue(const WCHAR *str)
+int Vault::vault_readvalue(const WCHAR *str)
 {
     WCHAR *p;
 
@@ -163,7 +152,7 @@ int vault_readvalue(const WCHAR *str)
     return p?wcstol(str,0,16):_wtoi_my(str);
 }
 
-intptr_t vault_findstr(WCHAR *str)
+intptr_t Vault::vault_findstr(WCHAR *str)
 {
     WCHAR *b,*e;
 
@@ -176,7 +165,7 @@ intptr_t vault_findstr(WCHAR *str)
     return (intptr_t)b;
 }
 
-void Vault::init1(entry_t *entryv,int numv)
+void Vault::init1(entry_t *entryv,int numv,int resv)
 {
     char buf[BUFLEN];
     int i;
@@ -184,6 +173,7 @@ void Vault::init1(entry_t *entryv,int numv)
     memset(this,0,sizeof(Vault));
     entry=entryv;
     num=numv;
+    res=resv;
 
     hash_init(&strs,ID_INF_LIST,num*4,0);
     for(i=0;i<num;i++)
@@ -227,7 +217,7 @@ void Vault::parse(WCHAR *datav)
 
         // Parse LHS
         int r;
-        r=vault_findvar(&strs,lhs);
+        r=vault_findvar(lhs);
         if(r<0)
         {
             printf("Error: unknown var '%S'\n",lhs);
@@ -235,7 +225,7 @@ void Vault::parse(WCHAR *datav)
         {
             intptr_t v,r1,r2;
             r1=vault_findstr(rhs);
-            r2=vault_findvar(&strs,rhs);
+            r2=vault_findvar(rhs);
 
             if(r1)               // String
             {
@@ -284,29 +274,7 @@ void Vault::parse(WCHAR *datav)
     data=datav;
 }
 
-void Vault::loadfromfile(WCHAR *filename)
-{
-    WCHAR *datav;
-    int sz,i;
-
-    if(!filename[0])return;
-    //printf("{%S\n",filename);
-    //if(odata)free(odata);
-    //odata=datav;
-    datav=(WCHAR *)vault_loadfile(filename,&sz);
-    if(!datav)
-    {
-        log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
-        return;
-    }
-    datav[sz]=0;
-    parse(datav);
-
-    for(i=0;i<num;i++)
-        if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
-}
-
-void Vault::loadfromres(int id)
+void Vault::loadFromRes(int id)
 {
     WCHAR *datav;
     char *data1;
@@ -327,23 +295,26 @@ void Vault::loadfromres(int id)
     for(i=0;i<num;i++)
         if(entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
+
+void Vault::load(int i)
+{
+    log_con("vault %d,'%S'\n",i,namelist[i]);
+    loadFromRes(res);
+    loadFromFile(namelist[i]);
+}
 //}
 
 //{ Lang/theme
 void lang_set(int i)
 {
-    //printf("%d,'%S'\n",i,langlist[i]);
     if(flags&FLAG_NOGUI)return;
-    vLang.loadfromres(IDR_LANG);
-    vLang.loadfromfile(vLang.namelist[i]);
+    vLang.load(i);
 }
 
 void theme_set(int i)
 {
-    //printf("%d,'%S'\n",i,themelist[i]);
     if(flags&FLAG_NOGUI)return;
-    vTheme.loadfromres(IDR_THEME);
-    vTheme.loadfromfile(vTheme.namelist[i]);
+    vTheme.load(i);
 
     for(i=0;i<BOX_NUM;i++)
     {
@@ -381,32 +352,31 @@ void theme_set(int i)
     }
 }
 
-int lang_enum(HWND hwnd,const WCHAR *path,int locale)
+void lang_enum(HWND hwnd,const WCHAR *path,int locale)
 {
     WCHAR buf[BUFLEN];
-    WCHAR langauto[BUFLEN];
-    WCHAR langauto2[BUFLEN];
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     int i=0;
 
-    if(flags&FLAG_NOGUI)return 0;
-    //SendMessage(hwnd,CB_ADDSTRING,0,(int)L"Default (English)");langs=1;
-    langauto[0]=0;
-    wcscpy(langauto2,L"Auto");
+    if(flags&FLAG_NOGUI)return;
 
-    wsprintf(buf,L"%s\\%s\\*.TXT",data_dir,path);
+    int lang_auto=-1;
+    WCHAR lang_auto_str[BUFLEN];
+    wcscpy(lang_auto_str,L"Auto (English)");
+
+    wsprintf(buf,L"%s\\%s\\*.txt",data_dir,path);
     hFind=FindFirstFile(buf,&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
     do
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
         wsprintf(buf,L"%s\\%s\\%s",data_dir,path,FindFileData.cFileName);
-        vLang.loadfromfile(buf);
+        vLang.loadFromFile(buf);
         if(language[STR_LANG_CODE].val==(locale&0xFF))
         {
-            wsprintf(langauto2,L"Auto (%s)",STR(STR_LANG_NAME));
-            wcscpy(langauto,buf);
+            wsprintf(lang_auto_str,L"Auto (%s)",STR(STR_LANG_NAME));
+            lang_auto=i;
         }
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)STR(STR_LANG_NAME));
         wcscpy(vLang.namelist[i],buf);
@@ -415,18 +385,15 @@ int lang_enum(HWND hwnd,const WCHAR *path,int locale)
     while(FindNextFile(hFind,&FindFileData)!=0);
     FindClose(hFind);
 
-    if(i)
-    {
-        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)langauto2);
-        wcscpy(vLang.namelist[i],langauto);
-        i++;
-    }else
+    if(!i)
     {
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)L"English");
         vLang.namelist[i][0]=0;
-        i++;
+    }else
+    {
+        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)lang_auto_str);
+        wcscpy(vLang.namelist[i],(lang_auto>=0)?vLang.namelist[lang_auto]:L"");
     }
-    return i-1;
 }
 
 void theme_enum(HWND hwnd,const WCHAR *path)
@@ -437,7 +404,6 @@ void theme_enum(HWND hwnd,const WCHAR *path)
     int i=0;
 
     if(flags&FLAG_NOGUI)return;
-    //SendMessage(hwnd,CB_ADDSTRING,0,(int)L"Classic(default)");langs=1;
     wsprintf(buf,L"%s\\%s\\*.txt",data_dir,path);
     hFind=FindFirstFile(buf,&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
@@ -445,8 +411,7 @@ void theme_enum(HWND hwnd,const WCHAR *path)
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
         wsprintf(buf,L"%s\\%s\\%s",data_dir,path,FindFileData.cFileName);
-        D(THEME_NAME)=(intptr_t)L"";
-        vTheme.loadfromfile(buf);
+        vTheme.loadFromFile(buf);
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)D(THEME_NAME));
         wcscpy(vTheme.namelist[i],buf);
         i++;
@@ -461,29 +426,47 @@ void theme_enum(HWND hwnd,const WCHAR *path)
     }
 }
 
+void vault_startmonitors()
+{
+    WCHAR buf[BUFLEN];
+
+    wsprintf(buf,L"%s\\langs",data_dir);
+    mon_lang=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
+    wsprintf(buf,L"%s\\themes",data_dir);
+    mon_theme=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
+}
+
+void vault_stopmonitors()
+{
+    if(mon_lang)monitor_stop(mon_lang);
+    if(mon_theme)monitor_stop(mon_theme);
+}
+
 void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    log_con("Change %S\n",szFile);
+    //log_con("FileMonitor: changed %S\n",szFile);
     PostMessage(hMain,WM_UPDATELANG,0,0);
 }
 
 void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
 {
+    UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    log_con("Change %S\n",szFile);
+    //log_con("FileMonitor: changed %S\n",szFile);
     PostMessage(hMain,WM_UPDATETHEME,0,0);
 }
 //}
 
-//{ Monitors
-monitor_t monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
+//{ FileMonitor
+monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
 {
-	monitor_t pMonitor = (monitor_t)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor));
+	monitor_t *pMonitor = (monitor_t*)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor));
 
 	wcscpy(pMonitor->dir,szDirectory);
 	pMonitor->hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
@@ -510,7 +493,7 @@ monitor_t monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, Fi
 	return NULL;
 }
 
-BOOL monitor_refresh(monitor_t pMonitor)
+BOOL monitor_refresh(monitor_t *pMonitor)
 {
 	return ReadDirectoryChangesW(pMonitor->hDir,pMonitor->buffer,sizeof(pMonitor->buffer),pMonitor->subdirs,
 	                      pMonitor->notifyFilter,NULL,&pMonitor->ol,monitor_callback);
@@ -522,7 +505,7 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 
 	TCHAR szFile[MAX_PATH];
 	PFILE_NOTIFY_INFORMATION pNotify;
-	monitor_t pMonitor=(monitor_t)lpOverlapped;
+	monitor_t *pMonitor=(monitor_t*)lpOverlapped;
 	size_t offset=0;
 
 	if(dwErrorCode==ERROR_SUCCESS)
@@ -541,7 +524,8 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 
                 errno=0;
                 wsprintf(buf,L"%ws\\%ws",pMonitor->dir,szFile);
-                f=_wfsopen(buf,L"rb",0x10);
+                log_con("{\n  changed'%S'\n",buf);
+                f=_wfsopen(buf,L"rb",0x10); //deny read/write mode
                 if(f)m=2;
                 if(!f)
                 {
@@ -553,39 +537,49 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
                     fseek(f,0,SEEK_END);
                     sz=ftell(f);
                     fclose(f);
-                    if(m==1)
-                    {
-                        Sleep(5);
-                        f=_wfsopen(buf,L"rb",0x10);
-                        if(f)
-                        {
-                            m=2;
-                            fclose(f);
-                        }
-                    }
                 }
                 /*
-                a1: moving (m==0)
-                a2: deleting
-                a3: coping (m==3)
+                    m0: failed to open
+                    m1: opened(normal)
+                    m2: opened(exclusive)
                 */
+                switch(pNotify->Action)
+                {
+                    case 1: // Added
+                        flag=errno?0:1;
+                        break;
 
-                flag=((pNotify->Action==1&&m==0)||
-                        pNotify->Action==2||
-                        (pNotify->Action==3&&m==2));
+                    case 2: // Removed
+                        flag=1;
+                        break;
+
+                    case 3: // Modifed
+                        flag=errno?0:1;
+                        break;
+
+                    case 4: // Renamed(old name)
+                        flag=0;
+
+                    case 5: // Renamed(new name)
+                        flag=1;
+                        break;
+
+                    default:
+                        flag=0;
+                }
 
                 if(!monitor_pause)
-                    log_con("%cMONITOR: a:%d,m:%d,e:%02d,%9d,'%S'\n",flag?'+':'-',pNotify->Action,m,errno,sz,buf);
+                    log_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
 
-                if(flag&&!monitor_pause)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
+                //if(flag&&!monitor_pause)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
+                log_con("}\n\n");
 			}
-
 		}while(pNotify->NextEntryOffset!=0);
 	}
 	if(!pMonitor->fStop)monitor_refresh(pMonitor);
 }
 
-void monitor_stop(monitor_t pMonitor)
+void monitor_stop(monitor_t *pMonitor)
 {
 	if(pMonitor)
 	{

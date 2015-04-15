@@ -53,12 +53,11 @@ private:
     int sx,sy,hasalpha;
     int iscopy;
 
-    void readFromFile(WCHAR *filename);
-    void readFromRes(int id);
+    void loadFromFile(WCHAR *filename);
+    void loadFromRes(int id);
     void createBitmap(BYTE *data,int sz);
 
 public:
-
     Image():bitmap(0),oldbitmap(0),ldc(0),sx(0),sy(0),hasalpha(0),iscopy(0){}
     void release();
     void makecopy(Image &t);

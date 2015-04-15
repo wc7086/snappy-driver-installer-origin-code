@@ -343,7 +343,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     UNREFERENCED_PARAMETER(pStr);
 
     bundle_t bundle[2];
-    monitor_t mon_drp;
+    monitor_t *mon_drp;
     HANDLE thr;
     HMODULE backtrace=0;
     DWORD dwProcessId;
@@ -431,8 +431,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     mkdir_r(output_dir);
 
 // Load text
-    vault_init();
-    vLang.loadfromres(IDR_LANG);
+    vLang.init1(language,STR_NM,IDR_LANG);
+    vTheme.init1(theme,THEME_NM,IDR_THEME);
+    vLang.load(0);
 
 // Allocate resources
     bundle_init(&bundle[0]);
@@ -479,7 +480,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 // Free allocated resources
     bundle_free(&bundle[0]);
     bundle_free(&bundle[1]);
-    vault_free();
+    int i;
+    for(i=0;i<BOX_NUM;i++)box[i].release();
+    for(i=0;i<ICON_NUM;i++)icon[i].release();
+    vLang.free1();
+    vTheme.free1();
     manager_v[0].release();
     manager_v[1].release();
 
@@ -948,10 +953,10 @@ void gui(int nCmd)
 
     if(license==2)
     {
-        int f;
+        /*int f;
         f=lang_enum(hLang,L"langs",manager_g->matcher->state->locale);
         log_con("lang %d\n",f);
-        lang_set(f);
+        lang_set(f);*/
 
         //if(MessageBox(0,STR(STR_UPD_DIALOG_MSG),STR(STR_UPD_DIALOG_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
         {

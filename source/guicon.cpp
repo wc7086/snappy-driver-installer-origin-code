@@ -22,7 +22,7 @@ FILE *logfile=0;
 int error_count=0;
 int log_console=0;
 WCHAR timestamp[BUFLEN];
-monitor_t mon_vir;
+monitor_t *mon_vir;
 
 int log_verbose=
     LOG_VERBOSE_ARGS|
