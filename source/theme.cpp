@@ -114,9 +114,7 @@ void Vault::loadFromFile(WCHAR *filename)
     int sz,i;
 
     if(!filename[0])return;
-    //printf("{%S\n",filename);
-    //if(odata)free(odata);
-    //odata=datav;
+
     datav=(WCHAR *)loadFromEncodedFile(filename,&sz);
     if(!datav)
     {
@@ -157,7 +155,7 @@ int Vault::readvalue(const WCHAR *str)
     return p?wcstol(str,0,16):_wtoi_my(str);
 }
 
-intptr_t Vault::findstr(WCHAR *str)
+WCHAR *Vault::findstr(WCHAR *str)
 {
     WCHAR *b,*e;
 
@@ -167,7 +165,7 @@ intptr_t Vault::findstr(WCHAR *str)
     e=wcschr(b,L'\"');
     if(!e)return 0;
     *e=0;
-    return (intptr_t)b;
+    return b;
 }
 
 void Vault::init1(entry_t *entryv,int numv,int resv)
@@ -192,8 +190,6 @@ void Vault::free1()
 void Vault::parse(WCHAR *datav)
 {
     WCHAR *lhs,*rhs,*le;
-    WCHAR *tmp;
-
     le=lhs=datav;
 
     while(le)
@@ -209,64 +205,56 @@ void Vault::parse(WCHAR *datav)
         rhs=wcschr(lhs,L'=');
         if(!rhs)
         {
-            lhs=le+1;
+            lhs=le+1;// next line
             continue;
         }
         *rhs=0;rhs++;
 
         // Parse LHS
-        int r;
-        r=findvar(lhs);
+        int r=findvar(lhs);
         if(r<0)
         {
-            printf("Error: unknown var '%S'\n",lhs);
+            log_err("ERROR: unknown var '%S'\n",lhs);
         }else
         {
-            intptr_t v,r1,r2;
+            WCHAR *r1;
+            int r2;
             r1=findstr(rhs);
             r2=findvar(rhs);
 
             if(r1)               // String
             {
-                v=r1;
-                tmp=(WCHAR *)v;
-                while(wcsstr(tmp,L"\\n"))
+                while(wcsstr(r1,L"\\n"))
                 {
-                    WCHAR *yy=wcsstr(tmp,L"\\n");
+                    WCHAR *yy=wcsstr(r1,L"\\n");
                     wcscpy(yy,yy+1);
                     *yy=L'\n';
                 }
-                while(wcsstr(tmp,L"\\0"))
+                while(wcsstr(r1,L"\\0"))
                 {
-                    WCHAR *yy=wcsstr(tmp,L"\\0");
+                    WCHAR *yy=wcsstr(r1,L"\\0");
                     wcscpy(yy,yy+1);
                     *yy=1;
                 }
                 {
-                    int l=wcslen(tmp);
-                    int i;
-                    for(i=0;i<l;i++)if(tmp[i]==1)tmp[i]=0;
+                    int l=wcslen(r1);
+                    for(int i=0;i<l;i++)if(r1[i]==1)r1[i]=0;
                 }
-                v=(intptr_t)tmp;
+                entry[r].valstr=r1;
                 entry[r].init=1;
             }
             else if(r2>=0)      // Var
             {
-                v=entry[r2].val;
+                entry[r].val=entry[r2].val;
                 entry[r].init=10+r2;
             }
             else                // Number
             {
-                v=readvalue(rhs);
+                entry[r].val=readvalue(rhs);
                 entry[r].init=2;
             }
-
-            //if(r2<0)printf("-RHS:'%S'\n",L"",rhs);
-            //if(r2>=0)printf("+RHS:'%S'\n",L"",rhs);
-            //log("%d,%d,%X,{%S|%S}\n",r2,v,v,lhs,rhs);
-            entry[r].val=v;
         }
-        lhs=le+1;
+        lhs=le+1; // next line
     }
     if(odata)free(odata);
     odata=data;
@@ -279,8 +267,6 @@ void Vault::loadFromRes(int id)
     char *data1;
     int sz,i;
 
-    //if(odata)free(odata);
-    //odata=datav;
     get_resource(id,(void **)&data1,&sz);
     datav=(WCHAR*)malloc(sz*2+2);
     int j=0;
@@ -437,8 +423,8 @@ void vault_startmonitors()
 
 void vault_stopmonitors()
 {
-    if(mon_lang)monitor_stop(mon_lang);
-    if(mon_theme)monitor_stop(mon_theme);
+    if(mon_lang)mon_lang->monitor_stop();
+    if(mon_theme)mon_theme->monitor_stop();
 }
 
 void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
@@ -478,7 +464,7 @@ monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, F
 		pMonitor->callback     = callback;
 		pMonitor->subdirs      = subdirs;
 
-		if (monitor_refresh(pMonitor))
+		if (pMonitor->monitor_refresh())
 		{
 			return pMonitor;
 		}
@@ -492,10 +478,10 @@ monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, F
 	return NULL;
 }
 
-BOOL monitor_refresh(monitor_t *pMonitor)
+BOOL monitor_t::monitor_refresh()
 {
-	return ReadDirectoryChangesW(pMonitor->hDir,pMonitor->buffer,sizeof(pMonitor->buffer),pMonitor->subdirs,
-	                      pMonitor->notifyFilter,NULL,&pMonitor->ol,monitor_callback);
+	return ReadDirectoryChangesW(hDir,buffer,sizeof(buffer),subdirs,
+	                      notifyFilter,NULL,&ol,monitor_callback);
 }
 
 void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)
@@ -576,19 +562,16 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 			}
 		}while(pNotify->NextEntryOffset!=0);
 	}
-	if(!pMonitor->fStop)monitor_refresh(pMonitor);
+	if(!pMonitor->fStop)pMonitor->monitor_refresh();
 }
 
-void monitor_stop(monitor_t *pMonitor)
+void monitor_t::monitor_stop()
 {
-	if(pMonitor)
-	{
-		pMonitor->fStop=TRUE;
-		CancelIo(pMonitor->hDir);
-		if(!HasOverlappedIoCompleted(&pMonitor->ol))SleepEx(5,TRUE);
-		CloseHandle(pMonitor->ol.hEvent);
-		CloseHandle(pMonitor->hDir);
-		HeapFree(GetProcessHeap(),0,pMonitor);
-	}
+    fStop=TRUE;
+    CancelIo(hDir);
+    if(!HasOverlappedIoCompleted(&ol))SleepEx(5,TRUE);
+    CloseHandle(ol.hEvent);
+    CloseHandle(hDir);
+    HeapFree(GetProcessHeap(),0,this);
 }
 //}

@@ -19,13 +19,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "langlist.h"
 
 // Theme/lang
-#define STR(A) (language[A].val?(WCHAR *)language[A].val:L"")
+#define STR(A) (language[A].valstr?(WCHAR *)language[A].valstr:L"")
 #define D(A) theme[A].val
 
 struct entry_t
 {
     const WCHAR *name;
-    intptr_t val;
+    union
+    {
+        int val;
+        WCHAR *valstr;
+    };
     int init;
 };
 
@@ -44,7 +48,7 @@ public:
 private:
     int  readvalue(const WCHAR *str);
     int  findvar(WCHAR *str);
-    intptr_t  findstr(WCHAR *str);
+    WCHAR *findstr(WCHAR *str);
     void parse(WCHAR *data);
     void *loadFromEncodedFile(const WCHAR *filename,int *sz);
     void loadFromFile(WCHAR *filename);
@@ -66,6 +70,8 @@ extern int monitor_pause;
 
 // FileMonitor
 typedef void (CALLBACK *FileChangeCallback)(const WCHAR *,DWORD,LPARAM);
+void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
+
 class monitor_t
 {
 public:
@@ -78,11 +84,11 @@ public:
 	WCHAR      dir[BUFLEN];
 	int        subdirs;
 	FileChangeCallback callback;
+
+    int           monitor_refresh();
+    void          monitor_stop();
 };
 monitor_t     *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
-int           monitor_refresh(monitor_t *pMonitor);
-void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-void          monitor_stop(monitor_t *pMonitor);
 
 // Lang/theme
 void lang_enum(HWND hwnd,const WCHAR *path,int locale);

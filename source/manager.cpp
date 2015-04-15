@@ -169,7 +169,7 @@ void Manager::filter(int options)
         if(!devicematch){itembar++;i++;continue;}
         for(j=0;j<devicematch->num_matches;j++,itembar++,i++)
         {
-            if(!itembar)log_con("ERROR a%d\n",j);
+            if(!itembar)log_err("ERROR a%d\n",j);
             itembar->isactive=0;
             //if(!itembar->hwidmatch)log_con("ERROR %d,%d\n",itembar->index,j);
             if(!itembar->hwidmatch)continue;

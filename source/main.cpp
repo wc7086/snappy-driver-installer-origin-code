@@ -496,7 +496,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
 // Stop folder monitors
-    if(mon_drp)monitor_stop(mon_drp);
+    if(mon_drp)mon_drp->monitor_stop();
     virusmonitor_stop();
 
 // Bring the console window back

@@ -332,10 +332,11 @@ int calc_markerscore(State *state,char *path)
     return score;
 }
 
-intptr_t Hwidmatch::isvalid_usb30hub(State *state,const WCHAR *str)
+int Hwidmatch::isvalid_usb30hub(State *state,const WCHAR *str)
 {
     //log_con("Intel USB3.0 HUB '%S'\n",state->text+hwidmatch->devicematch->device->HardwareID);
-    return (intptr_t)StrStrI(state->textas.getw(devicematch->device->HardwareID),str);
+    if(StrStrI(state->textas.getw(devicematch->device->HardwareID),str))return 1;
+    return 0;
 }
 
 int Hwidmatch::isblacklisted(State *state,const WCHAR *hwid,const char *section)
