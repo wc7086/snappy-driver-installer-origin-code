@@ -51,6 +51,7 @@ Settings.cfg
 -expertmode       Enable the expert mode.
 -license          Suppress the license dialog.
 -norestorepnt     Suppress creating of restore point.
+-novirusalerts    Suppress virus alerts.
 -showdrpnames1    Shows driverpack names on the right.
 -showdrpnames2    Shows driverpack names above.
 -oldstyle         Shows driver list using old style.

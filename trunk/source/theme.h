@@ -22,12 +22,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define STR(A) (language[A].val?(WCHAR *)language[A].val:L"")
 #define D(A) theme[A].val
 
-typedef struct _entry_t
+struct entry_t
 {
     const WCHAR *name;
     intptr_t val;
     int init;
-}entry_t;
+};
+
+typedef std::unordered_map <std::wstring,int> lookuptbl_t;
 
 class Vault
 {
@@ -36,13 +38,13 @@ public:
     int num;
     WCHAR namelist[64][250];
     WCHAR *data,*odata;
-    hashtable_t strs;
+    lookuptbl_t *lookuptbl;
     int res;
 
 private:
-    int  vault_findvar(WCHAR *str);
-    int  vault_readvalue(const WCHAR *str);
-    intptr_t  vault_findstr(WCHAR *str);
+    int  readvalue(const WCHAR *str);
+    int  findvar(WCHAR *str);
+    intptr_t  findstr(WCHAR *str);
     void parse(WCHAR *data);
     void *loadFromEncodedFile(const WCHAR *filename,int *sz);
     void loadFromFile(WCHAR *filename);
@@ -77,6 +79,10 @@ public:
 	int        subdirs;
 	FileChangeCallback callback;
 };
+monitor_t     *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+int           monitor_refresh(monitor_t *pMonitor);
+void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
+void          monitor_stop(monitor_t *pMonitor);
 
 // Lang/theme
 void lang_enum(HWND hwnd,const WCHAR *path,int locale);
@@ -88,9 +94,3 @@ void vault_startmonitors();
 void vault_stopmonitors();
 void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
 void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
-
-// FileMonitor
-monitor_t     *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
-int           monitor_refresh(monitor_t *pMonitor);
-void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-void          monitor_stop(monitor_t *pMonitor);

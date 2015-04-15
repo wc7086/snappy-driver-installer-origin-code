@@ -75,12 +75,8 @@ cd examples
 copy "%LIBTORRENT_PATH%\..\libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=off "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 cd ..
-:skipbuildlibtorrent
-
-rem Copy libtorrent.a
-if /I exist %GCC_PATH%\lib\libtorrent.a (echo Skipping copying libtorrent.a & goto skipcopylibtorrent)
 copy bin\gcc-mngw-%GCC_VERSION%\myrls\excpt-hndl-off\libtorrent.a %GCC_PATH%\lib /Y
-:skipcopylibtorrent
+:skipbuildlibtorrent
 
 rem Copy libtorrent headers
 if /I exist %GCC_PATH%\include\libtorrent (echo Skipping copying %GCC_PATH%\include\libtorrent & goto skipcopylibtorrentinc)

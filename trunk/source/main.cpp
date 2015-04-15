@@ -183,6 +183,7 @@ void settings_parse(const WCHAR *str,int ind)
         if(!wcscmp(pr,L"-showconsole"))  flags|=FLAG_SHOWCONSOLE;else
         if(!wcscmp(pr,L"-checkupdates")) flags|=FLAG_CHECKUPDATES;else
         if(!wcscmp(pr,L"-onlyupdates"))  flags|=FLAG_ONLYUPDATES;else
+        if(!wcscmp(pr,L"-novirusalerts"))flags|=FLAG_NOVIRUSALERTS;else
         if(!wcscmp(pr,L"-7z"))
         {
             WCHAR cmd[BUFLEN];
@@ -288,6 +289,7 @@ void settings_save()
 
     if(license)fwprintf(f,L"-license ");
     if(expertmode)fwprintf(f,L"-expertmode ");
+    if(flags&FLAG_NOVIRUSALERTS)fwprintf(f,L"-novirusalerts ");
     if(flags&FLAG_NORESTOREPOINT)fwprintf(f,L"-norestorepnt ");
     if(flags&FLAG_SHOWDRPNAMES1)fwprintf(f,L"-showdrpnames1 ");
     if(flags&FLAG_SHOWDRPNAMES2)fwprintf(f,L"-showdrpnames2 ");

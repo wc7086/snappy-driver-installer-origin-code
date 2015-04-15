@@ -49,6 +49,12 @@ void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
     fseek(f,0,SEEK_END);
     *sz=ftell(f);
     fseek(f,0,SEEK_SET);
+    if(*sz<10)
+    {
+        log_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
+        fclose(f);
+        return 0;
+    }
     dataloc=malloc(*sz*2+2+1024);
     log_con("Read '%S':%d\n",filename,*sz);
 
@@ -124,12 +130,11 @@ void Vault::loadFromFile(WCHAR *filename)
         if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
 }
 
-int Vault::vault_findvar(WCHAR *str)
+int Vault::findvar(WCHAR *str)
 {
     int i;
     WCHAR *p;
     WCHAR c;
-    char buf[BUFLEN];
 
     while(*str&&(*str==L' '||*str==L'\t'))str++;
     p=str;
@@ -137,14 +142,14 @@ int Vault::vault_findvar(WCHAR *str)
     c=*p;
     *p=0;
 
-    wsprintfA(buf,"%ws",str);
-    i=hash_find_str(&strs,buf);
+    auto got=lookuptbl->find(std::wstring(str));
+    i=(got!=lookuptbl->end())?got->second:0;
     i--;
     *p=c;
     return i;
 }
 
-int Vault::vault_readvalue(const WCHAR *str)
+int Vault::readvalue(const WCHAR *str)
 {
     WCHAR *p;
 
@@ -152,7 +157,7 @@ int Vault::vault_readvalue(const WCHAR *str)
     return p?wcstol(str,0,16):_wtoi_my(str);
 }
 
-intptr_t Vault::vault_findstr(WCHAR *str)
+intptr_t Vault::findstr(WCHAR *str)
 {
     WCHAR *b,*e;
 
@@ -167,27 +172,21 @@ intptr_t Vault::vault_findstr(WCHAR *str)
 
 void Vault::init1(entry_t *entryv,int numv,int resv)
 {
-    char buf[BUFLEN];
-    int i;
-
     memset(this,0,sizeof(Vault));
     entry=entryv;
     num=numv;
     res=resv;
 
-    hash_init(&strs,ID_INF_LIST,num*4,0);
-    for(i=0;i<num;i++)
-    {
-        wsprintfA(buf,"%S",entry[i].name);
-        hash_add(&strs,buf,strlen(buf),(int)i+1,HASH_MODE_INTACT);
-    }
+    lookuptbl=new lookuptbl_t;
+    for(int i=0;i<num;i++)
+        lookuptbl->insert({std::wstring(entry[i].name),i+1});
 }
 
 void Vault::free1()
 {
+    delete lookuptbl;
     if(odata)free(odata);
     if(data)free(data);
-    hash_free(&strs);
 }
 
 void Vault::parse(WCHAR *datav)
@@ -217,15 +216,15 @@ void Vault::parse(WCHAR *datav)
 
         // Parse LHS
         int r;
-        r=vault_findvar(lhs);
+        r=findvar(lhs);
         if(r<0)
         {
             printf("Error: unknown var '%S'\n",lhs);
         }else
         {
             intptr_t v,r1,r2;
-            r1=vault_findstr(rhs);
-            r2=vault_findvar(rhs);
+            r1=findstr(rhs);
+            r2=findvar(rhs);
 
             if(r1)               // String
             {
@@ -258,7 +257,7 @@ void Vault::parse(WCHAR *datav)
             }
             else                // Number
             {
-                v=vault_readvalue(rhs);
+                v=readvalue(rhs);
                 entry[r].init=2;
             }
 
@@ -302,7 +301,7 @@ void Vault::load(int i)
     loadFromRes(res);
     loadFromFile(namelist[i]);
 }
-//}
+//{
 
 //{ Lang/theme
 void lang_set(int i)
@@ -517,6 +516,7 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 
             lstrcpynW(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(WCHAR)+1);
 
+			if(!monitor_pause)
 			{
                 FILE *f;
                 WCHAR buf[BUFLEN];
@@ -559,6 +559,7 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 
                     case 4: // Renamed(old name)
                         flag=0;
+                        break;
 
                     case 5: // Renamed(new name)
                         flag=1;
@@ -568,10 +569,9 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
                         flag=0;
                 }
 
-                if(!monitor_pause)
-                    log_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
+                log_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
 
-                //if(flag&&!monitor_pause)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
+                if(flag)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
                 log_con("}\n\n");
 			}
 		}while(pNotify->NextEntryOffset!=0);
