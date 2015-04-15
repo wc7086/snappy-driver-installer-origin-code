@@ -21,6 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Theme/lang
 #define STR(A) (language[A].valstr?(WCHAR *)language[A].valstr:L"")
 #define D(A) theme[A].val
+#define D_STR(A) theme[A].valstr
 
 struct entry_t
 {
