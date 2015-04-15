@@ -306,13 +306,12 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    char buf[BUFLEN];
-    WCHAR bufw[BUFLEN];
     HANDLE hFind = INVALID_HANDLE_VALUE;
     WIN32_FIND_DATA FindFileData;
     int type;
     int update=0;
 
+    if(flags&FLAG_NOVIRUSALERTS)return;
     type=GetDriveType(0);
 
     // autorun.inf
@@ -324,6 +323,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
             f=_wfopen(L"\\autorun.inf",L"rb");
             if(f)
             {
+                char buf[BUFLEN];
                 fread(buf,BUFLEN,1,f);
                 fclose(f);
                 buf[BUFLEN-1]=0;
@@ -352,6 +352,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
 
             if(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_HIDDEN)
             {
+                WCHAR bufw[BUFLEN];
                 wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
                 if(PathFileExists(bufw))continue;
                 log_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);

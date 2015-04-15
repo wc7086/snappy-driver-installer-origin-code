@@ -7,7 +7,7 @@ STR_LANG_NAME           = "English"
 STR_LANG_CODE           = 0x09
 
 // left panel
-STR_SHOW_SYSINFO        = "System information"
+STR_SHOW_SYSINFO        = "System information2"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Install"
