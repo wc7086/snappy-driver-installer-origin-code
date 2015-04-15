@@ -165,7 +165,7 @@ void Image::makecopy(Image &t)
 
 void Image::load(int i)
 {
-    WCHAR *filename=(WCHAR *)D(i);
+    WCHAR *filename=D_STR(i);
 
     release();
 

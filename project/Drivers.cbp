@@ -72,15 +72,20 @@
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
-					<Add option="-O1" />
+					<Add option="-O3" />
 					<Add option="-std=c++11" />
 					<Add option="-m64" />
 					<Add option="-DNDEBUG" />
+					<Add option="-DUSE_TORRENT" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m64" />
 					<Add library="webp64" />
+					<Add library="torrent64" />
+					<Add library="wsock32" />
+					<Add library="ws2_32" />
+					<Add library="boost_system64" />
 					<Add directory="../lib/Release64U" />
 				</Linker>
 			</Target>
@@ -98,11 +103,16 @@
 					<Add option="-g" />
 					<Add option="-m64" />
 					<Add option="-D_DEBUG" />
+					<Add option="-DUSE_TORRENT" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
 					<Add option="-m64" />
 					<Add library="webp64" />
+					<Add library="torrent64" />
+					<Add library="wsock32" />
+					<Add library="ws2_32" />
+					<Add library="boost_system64" />
 					<Add directory="../lib/Debug64U" />
 				</Linker>
 			</Target>
@@ -144,15 +154,16 @@
 			<Add option="-Wswitch-enum" />
 			<Add option="-Wswitch-default" />
 			<Add option="-Weffc++" />
+			<Add option="-Wzero-as-null-pointer-constant" />
 			<Add option="-Wmain" />
+			<Add option="-pedantic" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
-			<Add option="-Wno-format" />
-			<Add option="-fno-builtin-log" />
 			<Add option="-m32" />
 			<Add option="-finput-charset=CP1251" />
+			<Add option="-Wunused" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
 			<Add option="-DEXCLUDE_COM" />
@@ -256,9 +267,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../source/themelist.h" />
-		<Unit filename="../source/update.cpp">
-			<Option compiler="gcc" use="1" buildCommand="$compiler $options $includes -c $file -o $object -DBOOST_ALL_NO_LIB -DBOOST_ASIO_ENABLE_CANCELIO -DBOOST_ASIO_HASH_MAP_BUCKETS=1021 -DBOOST_ASIO_SEPARATE_COMPILATION -DBOOST_EXCEPTION_DISABLE -DBOOST_MULTI_INDEX_DISABLE_SERIALIZATION -DBOOST_SYSTEM_STATIC_LINK=1 -DTORRENT_DISABLE_GEO_IP -DTORRENT_NO_DEPRECATE -DTORRENT_PRODUCTION_ASSERTS=1 -DTORRENT_RELEASE_ASSERTS=1 -DTORRENT_USE_I2P=0 -DTORRENT_USE_ICONV=0 -DTORRENT_USE_IPV6=0 -DTORRENT_USE_TOMMATH" />
-		</Unit>
+		<Unit filename="../source/update.cpp" />
 		<Unit filename="../source/update.h" />
 		<Extensions>
 			<code_completion />

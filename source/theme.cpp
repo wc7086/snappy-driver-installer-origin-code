@@ -48,10 +48,10 @@ WCHAR *Vault::findstr(WCHAR *str)
     WCHAR *b,*e;
 
     b=wcschr(str,L'\"');
-    if(!b)return 0;
+    if(!b)return nullptr;
     b++;
     e=wcschr(b,L'\"');
-    if(!e)return 0;
+    if(!e)return nullptr;
     *e=0;
     return b;
 }
@@ -61,7 +61,7 @@ int Vault::readvalue(const WCHAR *str)
     WCHAR *p;
 
     p=wcsstr(str,L"0x");
-    return p?wcstol(str,0,16):_wtoi_my(str);
+    return p?wcstol(str,nullptr,16):_wtoi_my(str);
 }
 
 void Vault::parse(WCHAR *datav)
@@ -303,10 +303,10 @@ void theme_set(int i)
 
     for(i=0;i<BOX_NUM;i++)
     {
-        WCHAR *str=(WCHAR *)D(boxindex[i]+4);
+        WCHAR *str=D_STR(boxindex[i]+4);
         int j;
         for(j=0;j<i;j++)
-            if(!wcscmp(str,(WCHAR *)D(boxindex[j]+4)))
+            if(!wcscmp(str,D_STR(boxindex[j]+4)))
         {
             box[i].makecopy(box[j]);
             //log_con("%d Copy %S %d\n",i,str,j);
@@ -320,10 +320,10 @@ void theme_set(int i)
     }
     for(i=0;i<ICON_NUM;i++)
     {
-        WCHAR *str=(WCHAR *)D(iconindex[i]);
+        WCHAR *str=D_STR(iconindex[i]);
         int j;
         for(j=0;j<i;j++)
-            if(!wcscmp(str,(WCHAR *)D(iconindex[j])))
+            if(!wcscmp(str,D_STR(iconindex[j])))
         {
             icon[i].makecopy(icon[j]);
             //log_con("%d Copy %S %d\n",i,str,j);

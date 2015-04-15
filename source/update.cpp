@@ -19,6 +19,23 @@ int torrentport=50171;
 int downlimit=0,uplimit=0;
 
 #ifdef USE_TORRENT
+
+#define BOOST_ALL_NO_LIB
+#define BOOST_ASIO_ENABLE_CANCELIO
+#define BOOST_ASIO_HASH_MAP_BUCKETS 1021
+#define BOOST_ASIO_SEPARATE_COMPILATION
+#define BOOST_EXCEPTION_DISABLE
+#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+#define BOOST_SYSTEM_STATIC_LINK 1
+#define TORRENT_DISABLE_GEO_IP
+#define TORRENT_NO_DEPRECATE
+#define TORRENT_PRODUCTION_ASSERTS 1
+#define TORRENT_RELEASE_ASSERTS 1
+#define TORRENT_USE_I2P 0
+#define TORRENT_USE_ICONV 0
+#define TORRENT_USE_IPV6 0
+#define TORRENT_USE_TOMMATH
+
 #define IPV6_TCLASS 30
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
@@ -831,7 +848,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             upddlg_setcheckboxes(hListg);
             if(flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
 
-            wpOrigButtonProc=(WNDPROC)SetWindowLong(thispcbut,GWLP_WNDPROC,(LONG)NewButtonProc);
+            wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
             SetTimer(hwnd,1,2000,nullptr);
 
             if(flags&FLAG_AUTOUPDATE)SendMessage(hwnd,WM_COMMAND,IDCHECKALL,0);
@@ -847,7 +864,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             break;
 
         case WM_DESTROY:
-            SetWindowLong(thispcbut,GWLP_WNDPROC,(LONG)wpOrigButtonProc);
+            SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)wpOrigButtonProc);
             hListg=nullptr;
             break;
 

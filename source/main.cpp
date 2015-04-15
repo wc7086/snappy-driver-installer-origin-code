@@ -711,7 +711,7 @@ void setfont()
         log_err("ERROR in manager_setfont(): failed DeleteObject\n");
 
     hFont=CreateFont(-D(FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,(WCHAR *)D(FONT_NAME));
+                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
     if(!hFont)
         log_err("ERROR in manager_setfont(): failed CreateFont\n");
 }
@@ -1325,7 +1325,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             // Popup
             hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
                 classPopup,L"",WS_POPUP,
-                0,0,0,0,hwnd,(HMENU)0,ghInst,nullptr);
+                0,0,0,0,hwnd,(HMENU)nullptr,ghInst,nullptr);
 
             // Lang
             hLang=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)ID_LANG,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
@@ -1384,8 +1384,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 //panels[2].items=D(PANEL_LIST_OFSX)?panel3_w:panel3;
                 j=SendMessage(hTheme,CB_GETCOUNT,0,0);
                 for(i=0;i<j;i++)
-                    if(StrStrI(vTheme.namelist[i],(WCHAR *)D(THEME_NAME))&&
-                       StrStrI(vTheme.namelist[i],L"big")==0){f=i;break;}
+                    if(StrStrI(vTheme.namelist[i],D_STR(THEME_NAME))&&
+                       StrStrI(vTheme.namelist[i],L"big")==nullptr){f=i;break;}
             }else
                 theme_set(f);
             //panels[2].items=D(PANEL_LIST_OFSX)?panel3_w:panel3;
