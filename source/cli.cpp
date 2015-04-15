@@ -167,7 +167,7 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
         ExpandPath(CLIParam.SaveInstalledFileName);
         wcscpy(buf, CLIParam.SaveInstalledFileName);
         PathRemoveFileSpec(buf);
-        CreateDirectory(buf, NULL);
+        CreateDirectory(buf,nullptr);
         DeleteFileW(CLIParam.SaveInstalledFileName);
     }
     else

@@ -139,28 +139,28 @@ const markers_t markers[NUM_MARKERS]=
 char marker[BUFLEN];
 int isLaptop;
 
-const WCHAR *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",0};
-const WCHAR *Filter_2[]={L"Apple",L"apple",0};
-const WCHAR *Filter_3[]={L"Asus",L"asus",0};
-const WCHAR *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",0};
-const WCHAR *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",0};
-const WCHAR *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",0};
-const WCHAR *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",0};
-const WCHAR *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",0};
-const WCHAR *Filter_9[]={L"OEM",L"intel",L"wistron",0};
-const WCHAR *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",0};
-const WCHAR *Filter_11[]={L"LG",L"lg",0};
-const WCHAR *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",0};
-const WCHAR *Filter_13[]={L"MSI",L"msi",L"micro-star",0};
-const WCHAR *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",0};
-const WCHAR *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",0};
-const WCHAR *Filter_16[]={L"OEM",L"pegatron",L"medion",0};
-const WCHAR *Filter_17[]={L"Samsung",L"samsung",0};
-const WCHAR *Filter_18[]={L"Gigabyte",L"gigabyte",0};
-const WCHAR *Filter_19[]={L"Sony",L"sony",L"vaio",0};
-const WCHAR *Filter_20[]={L"Toshiba",L"toshiba",0};
-const WCHAR *Filter_21[]={L"OEM",L"twinhead",L"durabook",0};
-const WCHAR *Filter_22[]={L"NEC",L"Nec_brand",L"nec",0};
+const WCHAR *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",nullptr};
+const WCHAR *Filter_2[]={L"Apple",L"apple",nullptr};
+const WCHAR *Filter_3[]={L"Asus",L"asus",nullptr};
+const WCHAR *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",nullptr};
+const WCHAR *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",nullptr};
+const WCHAR *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",nullptr};
+const WCHAR *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",nullptr};
+const WCHAR *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",nullptr};
+const WCHAR *Filter_9[]={L"OEM",L"intel",L"wistron",nullptr};
+const WCHAR *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",nullptr};
+const WCHAR *Filter_11[]={L"LG",L"lg",nullptr};
+const WCHAR *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",nullptr};
+const WCHAR *Filter_13[]={L"MSI",L"msi",L"micro-star",nullptr};
+const WCHAR *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",nullptr};
+const WCHAR *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",nullptr};
+const WCHAR *Filter_16[]={L"OEM",L"pegatron",L"medion",nullptr};
+const WCHAR *Filter_17[]={L"Samsung",L"samsung",nullptr};
+const WCHAR *Filter_18[]={L"Gigabyte",L"gigabyte",nullptr};
+const WCHAR *Filter_19[]={L"Sony",L"sony",L"vaio",nullptr};
+const WCHAR *Filter_20[]={L"Toshiba",L"toshiba",nullptr};
+const WCHAR *Filter_21[]={L"OEM",L"twinhead",L"durabook",nullptr};
+const WCHAR *Filter_22[]={L"NEC",L"Nec_brand",L"nec",nullptr};
 
 const WCHAR **filter_list[]=
 {
@@ -696,15 +696,10 @@ void Matcher::init(State *state1,Collection *col1)
 {
     state=state1;
     col=col1;
-
-    //heap_init(&devicematch_handle,ID_MATCHER,(void **)&devicematch_list,0,sizeof(devicematch_t));
-    //heap_init(&hwidmatch_handle,ID_MATCHER,(void **)&hwidmatch_list,0,sizeof(Hwidmatch));
 }
 
 void Matcher::release()
 {
-    //heap_free(&devicematch_handle);
-    //heap_free(&hwidmatch_handle);
 }
 
 void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int ishw)
@@ -756,7 +751,7 @@ void Matcher::populate()
 
     for(i=0;i<state->Devices_list.size();i++,cur_device++)
     {
-        cur_driver=0;
+        cur_driver=nullptr;
         if(cur_device->driver_index>=0)cur_driver=&state->Drivers_list[cur_device->driver_index];
         devicematch_list.push_back(devicematch_t());
         devicematch=&devicematch_list.back();

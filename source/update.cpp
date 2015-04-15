@@ -43,19 +43,19 @@ int cxn[]=
     90,
 };
 
-session *sessionhandle=0;
+session *sessionhandle=nullptr;
 torrent_handle updatehandle;
 
 volatile int downloadmangar_exitflag=0;
-HANDLE downloadmangar_event=0;
-HANDLE thandle_download=0;
+HANDLE downloadmangar_event=nullptr;
+HANDLE thandle_download=nullptr;
 long long torrenttime=0;
 
 session_settings settings;
 dht_settings dht;
 
 int totalsize=0,numfiles;
-HWND hUpdate=0;
+HWND hUpdate=nullptr;
 HWND hListg;
 int bMouseInWindow=0;
 WNDPROC wpOrigButtonProc;
@@ -261,7 +261,7 @@ unsigned int __stdcall thread_download(void *arg)
         {
             update_getstatus(&torrentstatus);
             ShowProgressInTaskbar(hMain,TBPF_NORMAL,torrentstatus.downloaded,torrentstatus.downloadsize);
-            InvalidateRect(hPopup,0,0);
+            InvalidateRect(hPopup,nullptr,0);
             Sleep(500);
            {
                 std::unique_ptr<alert> holder;
@@ -497,7 +497,7 @@ int upddlg_populatelist(HWND hList,int update)
 }
 
 int yes1(libtorrent::torrent_status const&){return true;}
-int istorrentready(){return updatehandle.torrent_file()!=0;}
+int istorrentready(){return updatehandle.torrent_file()!=nullptr;}
 void update_start()
 {
     error_code ec;
@@ -573,7 +573,7 @@ void update_start()
         Sleep(100);
     }
     log_con(updatehandle.torrent_file()?"":"FAILED\n");
-    i=upddlg_populatelist(0,0);
+    i=upddlg_populatelist(nullptr,0);
     log_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
     for(i=0;i<numfiles;i++)updatehandle.file_priority(i,0);
 
@@ -585,7 +585,7 @@ void update_getstatus(torrent_status_t *t)
     std::vector<torrent_status> temp;
 
     memset(t,0,sizeof(torrent_status_t));
-    if(sessionhandle==0)
+    if(sessionhandle==nullptr)
     {
         wcscpy(t->error,STR(STR_DWN_ERRSES));
         return;
@@ -832,7 +832,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             if(flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLong(thispcbut,GWLP_WNDPROC,(LONG)NewButtonProc);
-            SetTimer(hwnd,1,2000,0);
+            SetTimer(hwnd,1,2000,nullptr);
 
             if(flags&FLAG_AUTOUPDATE)SendMessage(hwnd,WM_COMMAND,IDCHECKALL,0);
             return TRUE;
@@ -848,7 +848,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
 
         case WM_DESTROY:
             SetWindowLong(thispcbut,GWLP_WNDPROC,(LONG)wpOrigButtonProc);
-            hListg=0;
+            hListg=nullptr;
             break;
 
         case WM_TIMER:
@@ -860,7 +860,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             switch(LOWORD(wParam))
             {
                 case IDOK:
-                    hUpdate=0;
+                    hUpdate=nullptr;
                     upddlg_setpriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
@@ -876,7 +876,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
                     return TRUE;
 
                 case IDCANCEL:
-                    hUpdate=0;
+                    hUpdate=nullptr;
                     EndDialog(hwnd,IDCANCEL);
                     return TRUE;
 

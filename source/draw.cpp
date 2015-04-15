@@ -187,8 +187,8 @@ void Image::release()
         r=DeleteObject(bitmap);
             if(!r)log_err("ERROR in box_init(): failed DeleteObject\n");
     }
-    bitmap=0;
-    ldc=0;
+    bitmap=nullptr;
+    ldc=nullptr;
     iscopy=0;
 }
 
@@ -248,7 +248,7 @@ void Image::createBitmap(BYTE *data,int sz)
     int i;
 
     hasalpha=sx=sy=0;
-    ldc=0;
+    ldc=nullptr;
 #ifdef CONSOLE_MODE
     return;
 #else
@@ -274,8 +274,8 @@ void Image::createBitmap(BYTE *data,int sz)
     bmi.bmiHeader.biCompression=BI_RGB;
     bmi.bmiHeader.biSizeImage=sx*sy*4;
 
-    ldc=CreateCompatibleDC(0);
-    bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,0,0);
+    ldc=CreateCompatibleDC(nullptr);
+    bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,nullptr,0);
 
     p1=bits;p2=big;
     for(i=0;i<sx*sy;i++)
@@ -504,7 +504,7 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
         }
 
         MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
-        if(needupdate)InvalidateRect(hPopup,0,0);
+        if(needupdate)InvalidateRect(hPopup,nullptr,0);
 
         TRACKMOUSEEVENT tme;
         tme.cbSize=sizeof(tme);
@@ -523,11 +523,11 @@ void Canvas::init()
 {
     int r;
 
-    hdcMem=CreateCompatibleDC(0);
+    hdcMem=CreateCompatibleDC(nullptr);
     if(!hdcMem)log_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
     r=SetBkMode(hdcMem,TRANSPARENT);
     if(!r)log_err("ERROR in canvas_init(): failed SetBkMode\n");
-    bitmap=0;
+    bitmap=nullptr;
     x=0;
     y=0;
 }
@@ -540,7 +540,7 @@ void Canvas::free()
     {
         r=DeleteDC(hdcMem);
         if(!r)log_err("ERROR in canvas_free(): failed DeleteDC\n");
-        hdcMem=0;
+        hdcMem=nullptr;
     }
 
     if(bitmap)
@@ -549,7 +549,7 @@ void Canvas::free()
         //if(!r)log_err("ERROR in canvas_free(): failed SelectObject\n");
         r=DeleteObject(bitmap);
         if(!r)log_err("ERROR in canvas_free(): failed DeleteObject\n");
-        bitmap=0;
+        bitmap=nullptr;
     }
 }
 
@@ -594,7 +594,7 @@ void Canvas::end()
             hdcMem,
             ps.rcPaint.left,ps.rcPaint.top,
             SRCCOPY);
-    SelectClipRgn(hdcMem,0);
+    SelectClipRgn(hdcMem,nullptr);
     if(!r)log_err("ERROR in canvas_end(): failed BitBlt\n");
     r=DeleteObject(clipping);
     if(!r)log_err("ERROR in canvas_end(): failed DeleteObject\n");
@@ -670,7 +670,7 @@ void Panel::draw(HDC hdc)
 {
     WCHAR buf[BUFLEN];
     POINT p;
-    HRGN rgn=0;
+    HRGN rgn=nullptr;
     int cur_i;
     int i;
     int x=Xp(),y=Yp();
@@ -789,7 +789,7 @@ void Panel::draw(HDC hdc)
     }
     if(rgn)
     {
-        SelectClipRgn(hdc,0);
+        SelectClipRgn(hdc,nullptr);
         DeleteObject(rgn);
     }
 }

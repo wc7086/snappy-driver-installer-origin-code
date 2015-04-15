@@ -201,12 +201,12 @@ void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
 
     clicker_flag=1;
     log_save();
-    thr=(HANDLE)_beginthreadex(0,0,&thread_clicker,0,0,0);
+    thr=(HANDLE)_beginthreadex(nullptr,0,&thread_clicker,nullptr,0,nullptr);
     {
         if(flags&FLAG_DISABLEINSTALL)
             Sleep(2000);
         else
-            *ret=UpdateDriverForPlugAndPlayDevices(0,hwid,inf,INSTALLFLAG_FORCE,needrb);
+            *ret=UpdateDriverForPlugAndPlayDevices(hMain,hwid,inf,INSTALLFLAG_FORCE,needrb);
     }
 
     if(!*ret)*ret=GetLastError();
@@ -265,7 +265,7 @@ unsigned int __stdcall thread_install(void *arg)
     unsigned i,j,downdrivers=0;
     RESTOREPOINTINFOW pRestorePtSpec;
     STATEMGRSTATUS pSMgrStatus;
-    HINSTANCE hinstLib=0;
+    HINSTANCE hinstLib=nullptr;
     WINAPI5t_SRSetRestorePointW WIN5f_SRSetRestorePointW;
     int r=0;
     int failed=0,installed=0;
@@ -383,7 +383,7 @@ goaround:
         hwidmatch->print_hr();
         wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
-        SetTimer(hMain,1,1000/60,0);
+        SetTimer(hMain,1,1000/60,nullptr);
         manager_g->animstart=GetTickCount();
         offset_target=(itembar->curpos>>16)-mainy_c+D(DRVITEM_DIST_Y0)-3;
 
@@ -543,7 +543,7 @@ goaround:
         while(*(--p)!='\\');
         *p=0;
         log_con("%S\n",extractdir);
-        ShellExecute(0,L"explore",extractdir,0,0,SW_SHOW);
+        ShellExecute(nullptr,L"explore",extractdir,nullptr,nullptr,SW_SHOW);
         manager_g->items_list[SLOT_EXTRACTING].isactive=0;
         manager_g->clear();
         manager_g->setpos();
@@ -591,7 +591,7 @@ goaround:
 void manager_install(int flagsv)
 {
     instflag=flagsv;
-    _beginthreadex(0,0,&thread_install,0,0,0);
+    _beginthreadex(nullptr,0,&thread_install,nullptr,0,nullptr);
 }
 
 void calcwnddata(wnddata_t *w,HWND hwnd)

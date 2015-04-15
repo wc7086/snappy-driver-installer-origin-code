@@ -18,7 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global variables
-FILE *logfile=0;
+FILE *logfile=nullptr;
 int error_count=0;
 int log_console=0;
 WCHAR timestamp[BUFLEN];
@@ -230,7 +230,7 @@ void print_error(int r,const WCHAR *s)
 {
     WCHAR buf[BUFLEN];
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-                    NULL,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPWSTR)&buf,BUFLEN,NULL);
+                    nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPWSTR)&buf,BUFLEN,nullptr);
     log_err("ERROR with %S:[%d]'%S'\n",s,r,buf);
     error_count++;
 }
@@ -312,7 +312,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
     int update=0;
 
     if(flags&FLAG_NOVIRUSALERTS)return;
-    type=GetDriveType(0);
+    type=GetDriveType(nullptr);
 
     // autorun.inf
     if(type!=DRIVE_CDROM)
@@ -364,7 +364,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
     if(update)
     {
         manager_g->setpos();
-        SetTimer(hMain,1,1000/60,0);
+        SetTimer(hMain,1,1000/60,nullptr);
     }
 }
 
@@ -390,10 +390,10 @@ int canWrite(const WCHAR *path)
     if(path&&wcslen(path)>1&&path[1]==':')
     {
         drive[0]=path[0];
-        GetVolumeInformation(drive,0,0,0,0,&flagsv,0,0);
+        GetVolumeInformation(drive,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
     }
     else
-        GetVolumeInformation(0,0,0,0,0,&flagsv,0,0);
+        GetVolumeInformation(nullptr,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
 
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
@@ -412,7 +412,7 @@ DWORD run_command(const WCHAR* file,const WCHAR* cmd,int show,int wait)
 
     log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
     if(!wcscmp(file,L"open"))
-        ShellExecute(0,L"open",cmd,0,0,SW_SHOWNORMAL);
+        ShellExecute(nullptr,L"open",cmd,nullptr,nullptr,SW_SHOWNORMAL);
     else
         ShellExecuteEx(&ShExecInfo);
 

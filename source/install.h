@@ -55,4 +55,3 @@ int cmpclickdata(int *a,int *b);
 BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam);
 void wndclicker(int mode);
 unsigned int __stdcall thread_clicker(void *arg);
-

@@ -117,8 +117,8 @@ int Parser_str::parseItem()
                 p++;
         }
     }
-    strBeg=0;
-    strEnd=0;
+    strBeg=nullptr;
+    strEnd=nullptr;
     return 0;
 }
 
@@ -350,7 +350,7 @@ int unicode2ansi(char *s,char *out,int size)
     if(!out)log_err("Error out:\n");
     if(!s)log_err("Error in:\n");
     if(size<0)log_err("Error size:\n");
-    ret=WideCharToMultiByte(CP_ACP,0,(WCHAR *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,0,&flag);
+    ret=WideCharToMultiByte(CP_ACP,0,(WCHAR *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,nullptr,&flag);
     if(!ret)log_err("Error:%d\n",GetLastError());
     out[size]=0;
     return ret;
@@ -576,13 +576,13 @@ void Collection::load()
     if(!inflist){log_err("ERROR 1\n");return;}
     for(i=0;i<LSTCNT;i++)
     {
-        inflist[i].dataready=CreateEvent(0,0,0,0);
-        inflist[i].slotvacant=CreateEvent(0,0,1,0);
+        inflist[i].dataready=CreateEvent(nullptr,0,0,nullptr);
+        inflist[i].slotvacant=CreateEvent(nullptr,0,1,nullptr);
         if(!inflist[i].dataready){log_err("ERROR 2\n");return;}
         if(!inflist[i].slotvacant){log_err("ERROR 3\n");return;}
     }
     pos_in=pos_out=0;
-    thr=(HANDLE)_beginthreadex(0,0,&thread_indexinf,this,0,0);
+    thr=(HANDLE)_beginthreadex(nullptr,0,&thread_indexinf,this,0,nullptr);
 //}thread
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
@@ -598,7 +598,7 @@ void Collection::load()
     flags&=~COLLECTION_FORCE_REINDEXING;
 
 //{thread
-    driverpack_indexinf_async(0,this,L"",L"",0,0);
+    driverpack_indexinf_async(nullptr,this,L"",L"",nullptr,0);
     WaitForSingleObject(thr,INFINITE);
     CloseHandle_log(thr,L"driverpack_genindex",L"thr");
     for(i=0;i<LSTCNT;i++)
@@ -641,7 +641,7 @@ WCHAR *Collection::finddrp(WCHAR *fnd)
     WCHAR *s,*d,*n_s;
 
     j=0;
-    n_s=0;
+    n_s=nullptr;
     for(auto &drp:driverpack_list)
     {
         s=drp.getFilename();
@@ -876,7 +876,7 @@ int Driverpack::loadindex()
     FILE *f;
     int sz;
     int version;
-    char *mem,*p,*mem_unpack=0;
+    char *mem,*p,*mem_unpack=nullptr;
 
     getindexfilename(col->getIndex_bin_dir(),L"bin",filename);
     f=_wfopen(filename,L"rb");
@@ -1350,7 +1350,7 @@ int Driverpack::genindex()
       if you use external function, you can make these variable as static.
       */
         UInt32 blockIndex=0xFFFFFFFF; /* it can have any value before first call (if outBuffer = 0) */
-        Byte *outBuffer=0; /* it must be 0 before first call for each new archive. */
+        Byte *outBuffer=nullptr; /* it must be 0 before first call for each new archive. */
         size_t outBufferSize=0;  /* it can have any value before first call (if outBuffer = 0) */
 
         for(i=0;i<db.NumFiles;i++)
@@ -1360,13 +1360,13 @@ int Driverpack::genindex()
             size_t len;
             if(SzArEx_IsDir(&db,i))continue;
 
-            len=SzArEx_GetFileNameUtf16(&db,i,NULL);
+            len=SzArEx_GetFileNameUtf16(&db,i,nullptr);
             if(len>tempSize)
             {
-                SzFree(NULL,temp);
+                SzFree(nullptr,temp);
                 tempSize=len;
-                temp=(UInt16 *)SzAlloc(NULL,tempSize *sizeof(temp[0]));
-                if(temp==0)
+                temp=(UInt16 *)SzAlloc(nullptr,tempSize *sizeof(temp[0]));
+                if(temp==nullptr)
                 {
                     res=SZ_ERROR_MEM;
                     log_err("ERROR mem(%d)\n",tempSize *sizeof(temp[0]));
@@ -1491,7 +1491,7 @@ int Driverpack::genindex()
         IAlloc_Free(&allocImp,outBuffer);
     }
     SzArEx_Free(&db,&allocImp);
-    SzFree(NULL,temp);
+    SzFree(nullptr,temp);
     File_Close(&archiveStream.file);
 
 #ifdef MERGE_FINDER
@@ -1502,7 +1502,7 @@ int Driverpack::genindex()
     hash_free(&foldercmps);
 #endif
 
-    driverpack_indexinf_async(this,col,L"",L"",0,0);
+    driverpack_indexinf_async(this,col,L"",L"",nullptr,0);
     return 1;
 }
 
@@ -1561,7 +1561,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
 
     char *p=inf_base,*strend=inf_base+inf_len;
     char *p2,*sectnmend;
-    char *lnk_s=0;
+    char *lnk_s=nullptr;
 
     cur_inffile_index=inffile.size();
     inffile.resize(cur_inffile_index+1);

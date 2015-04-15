@@ -24,110 +24,6 @@ int monitor_pause=0;
 //}
 
 //{ Vault
-static void myswab(const char *s,char *d,int sz)
-{
-    while(sz--)
-    {
-        d[0]=s[1];
-        d[1]=s[0];
-        d+=2;s+=2;
-    }
-}
-
-void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
-{
-    FILE *f;
-    void *dataloc;
-
-    f=_wfopen(filename,L"rb");
-    if(!f)
-    {
-        log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
-        return 0;
-    }
-
-    fseek(f,0,SEEK_END);
-    *sz=ftell(f);
-    fseek(f,0,SEEK_SET);
-    if(*sz<10)
-    {
-        log_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
-        fclose(f);
-        return 0;
-    }
-    dataloc=malloc(*sz*2+2+1024);
-    log_con("Read '%S':%d\n",filename,*sz);
-
-    fread(dataloc,2,1,f);
-    if(!memcmp(dataloc,"\xEF\xBB",2))// UTF-8
-    {
-        void *dataloc1;
-        int szo;
-        fread(dataloc,1,1,f);
-        *sz-=3;
-        int q=fread(dataloc,1,*sz,f);
-        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,0,0);
-        dataloc1=malloc(szo*2+2);
-        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,(LPWSTR)dataloc1,szo);
-        free(dataloc);
-        fclose(f);
-        return dataloc1;
-    }else
-    if(!memcmp(dataloc,"\xFF\xFE",2))// UTF-16 LE
-    {
-        fread(dataloc,*sz,1,f);
-        *sz>>=1;(*sz)--;
-        fclose(f);
-        return dataloc;
-    }else
-    if(!memcmp(dataloc,"\xFE\xFF",2))// UTF-16 BE
-    {
-        fread(dataloc,*sz,1,f);
-        myswab((char *)dataloc,(char *)dataloc,*sz);
-        *sz>>=1;(*sz)--;
-        fclose(f);
-        return dataloc;
-    }else                         // ANSI
-    {
-        fclose(f);
-        f=_wfopen(filename,L"rt");
-        if(!f)
-        {
-            log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
-            free(dataloc);
-            return 0;
-        }
-        WCHAR *p=(WCHAR *)dataloc;(*sz)--;
-        while(!feof(f))
-        {
-            fgetws(p,*sz,f);
-            p+=wcslen(p);
-        }
-        fclose(f);
-        return dataloc;
-    }
-}
-
-void Vault::loadFromFile(WCHAR *filename)
-{
-    WCHAR *datav;
-    int sz,i;
-
-    if(!filename[0])return;
-
-    datav=(WCHAR *)loadFromEncodedFile(filename,&sz);
-    if(!datav)
-    {
-        log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
-        return;
-    }
-    datav[sz]=0;
-    parse(datav);
-
-    for(i=0;i<num;i++)
-        if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
-}
-
 int Vault::findvar(WCHAR *str)
 {
     int i;
@@ -147,14 +43,6 @@ int Vault::findvar(WCHAR *str)
     return i;
 }
 
-int Vault::readvalue(const WCHAR *str)
-{
-    WCHAR *p;
-
-    p=wcsstr(str,L"0x");
-    return p?wcstol(str,0,16):_wtoi_my(str);
-}
-
 WCHAR *Vault::findstr(WCHAR *str)
 {
     WCHAR *b,*e;
@@ -168,23 +56,12 @@ WCHAR *Vault::findstr(WCHAR *str)
     return b;
 }
 
-void Vault::init1(entry_t *entryv,int numv,int resv)
+int Vault::readvalue(const WCHAR *str)
 {
-    memset(this,0,sizeof(Vault));
-    entry=entryv;
-    num=numv;
-    res=resv;
+    WCHAR *p;
 
-    lookuptbl=new lookuptbl_t;
-    for(int i=0;i<num;i++)
-        lookuptbl->insert({std::wstring(entry[i].name),i+1});
-}
-
-void Vault::free1()
-{
-    delete lookuptbl;
-    if(odata)free(odata);
-    if(data)free(data);
+    p=wcsstr(str,L"0x");
+    return p?wcstol(str,0,16):_wtoi_my(str);
 }
 
 void Vault::parse(WCHAR *datav)
@@ -261,6 +138,110 @@ void Vault::parse(WCHAR *datav)
     data=datav;
 }
 
+static void myswab(const char *s,char *d,int sz)
+{
+    while(sz--)
+    {
+        d[0]=s[1];
+        d[1]=s[0];
+        d+=2;s+=2;
+    }
+}
+
+void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
+{
+    FILE *f;
+    void *dataloc;
+
+    f=_wfopen(filename,L"rb");
+    if(!f)
+    {
+        log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
+        return nullptr;
+    }
+
+    fseek(f,0,SEEK_END);
+    *sz=ftell(f);
+    fseek(f,0,SEEK_SET);
+    if(*sz<10)
+    {
+        log_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
+        fclose(f);
+        return nullptr;
+    }
+    dataloc=malloc(*sz*2+2+1024);
+    log_con("Read '%S':%d\n",filename,*sz);
+
+    fread(dataloc,2,1,f);
+    if(!memcmp(dataloc,"\xEF\xBB",2))// UTF-8
+    {
+        void *dataloc1;
+        int szo;
+        fread(dataloc,1,1,f);
+        *sz-=3;
+        int q=fread(dataloc,1,*sz,f);
+        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,nullptr,0);
+        dataloc1=malloc(szo*2+2);
+        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,(LPWSTR)dataloc1,szo);
+        free(dataloc);
+        fclose(f);
+        return dataloc1;
+    }else
+    if(!memcmp(dataloc,"\xFF\xFE",2))// UTF-16 LE
+    {
+        fread(dataloc,*sz,1,f);
+        *sz>>=1;(*sz)--;
+        fclose(f);
+        return dataloc;
+    }else
+    if(!memcmp(dataloc,"\xFE\xFF",2))// UTF-16 BE
+    {
+        fread(dataloc,*sz,1,f);
+        myswab((char *)dataloc,(char *)dataloc,*sz);
+        *sz>>=1;(*sz)--;
+        fclose(f);
+        return dataloc;
+    }else                         // ANSI
+    {
+        fclose(f);
+        f=_wfopen(filename,L"rt");
+        if(!f)
+        {
+            log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
+            free(dataloc);
+            return nullptr;
+        }
+        WCHAR *p=(WCHAR *)dataloc;(*sz)--;
+        while(!feof(f))
+        {
+            fgetws(p,*sz,f);
+            p+=wcslen(p);
+        }
+        fclose(f);
+        return dataloc;
+    }
+}
+
+void Vault::loadFromFile(WCHAR *filename)
+{
+    WCHAR *datav;
+    int sz,i;
+
+    if(!filename[0])return;
+
+    datav=(WCHAR *)loadFromEncodedFile(filename,&sz);
+    if(!datav)
+    {
+        log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
+        return;
+    }
+    datav[sz]=0;
+    parse(datav);
+
+    for(i=0;i<num;i++)
+        if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
+}
+
 void Vault::loadFromRes(int id)
 {
     WCHAR *datav;
@@ -281,13 +262,32 @@ void Vault::loadFromRes(int id)
         if(entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
+void Vault::init1(entry_t *entryv,int numv,int resv)
+{
+    memset(this,0,sizeof(Vault));
+    entry=entryv;
+    num=numv;
+    res=resv;
+
+    lookuptbl=new lookuptbl_t;
+    for(int i=0;i<num;i++)
+        lookuptbl->insert({std::wstring(entry[i].name),i+1});
+}
+
+void Vault::free1()
+{
+    delete lookuptbl;
+    if(odata)free(odata);
+    if(data)free(data);
+}
+
 void Vault::load(int i)
 {
     log_con("vault %d,'%S'\n",i,namelist[i]);
     loadFromRes(res);
     loadFromFile(namelist[i]);
 }
-//{
+//}
 
 //{ Lang/theme
 void lang_set(int i)
@@ -433,7 +433,6 @@ void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    //log_con("FileMonitor: changed %S\n",szFile);
     PostMessage(hMain,WM_UPDATELANG,0,0);
 }
 
@@ -443,7 +442,6 @@ void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    //log_con("FileMonitor: changed %S\n",szFile);
     PostMessage(hMain,WM_UPDATETHEME,0,0);
 }
 //}
@@ -455,11 +453,11 @@ monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, F
 
 	wcscpy(pMonitor->dir,szDirectory);
 	pMonitor->hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
-	                            NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OVERLAPPED,NULL);
+	                            nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OVERLAPPED,nullptr);
 
 	if(pMonitor->hDir!=INVALID_HANDLE_VALUE)
 	{
-		pMonitor->ol.hEvent    = CreateEvent(NULL,TRUE,FALSE,NULL);
+		pMonitor->ol.hEvent    = CreateEvent(nullptr,TRUE,FALSE,nullptr);
 		pMonitor->notifyFilter = notifyFilter;
 		pMonitor->callback     = callback;
 		pMonitor->subdirs      = subdirs;
@@ -475,13 +473,13 @@ monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, F
 		}
 	}
 	HeapFree(GetProcessHeap(),0,pMonitor);
-	return NULL;
+	return nullptr;
 }
 
 BOOL monitor_t::monitor_refresh()
 {
 	return ReadDirectoryChangesW(hDir,buffer,sizeof(buffer),subdirs,
-	                      notifyFilter,NULL,&ol,monitor_callback);
+	                      notifyFilter,nullptr,&ol,monitor_callback);
 }
 
 void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)

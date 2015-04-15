@@ -46,9 +46,9 @@ public:
     int res;
 
 private:
-    int  readvalue(const WCHAR *str);
     int  findvar(WCHAR *str);
     WCHAR *findstr(WCHAR *str);
+    int  readvalue(const WCHAR *str);
     void parse(WCHAR *data);
     void *loadFromEncodedFile(const WCHAR *filename,int *sz);
     void loadFromFile(WCHAR *filename);
@@ -91,10 +91,10 @@ public:
 monitor_t     *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
 
 // Lang/theme
-void lang_enum(HWND hwnd,const WCHAR *path,int locale);
-void theme_enum(HWND hwnd,const WCHAR *path);
 void lang_set(int i);
 void theme_set(int i);
+void lang_enum(HWND hwnd,const WCHAR *path,int locale);
+void theme_enum(HWND hwnd,const WCHAR *path);
 
 void vault_startmonitors();
 void vault_stopmonitors();
