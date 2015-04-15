@@ -278,7 +278,7 @@ static void myterminate()
     {
         wsprintfW(buf,L"Exception: unknown");
     }
-    log_con("ERROR: %S\n",buf);
+    log_err("ERROR: %S\n",buf);
     log_save();
     StrCatW(buf,L"\n\nThe program will self terminate now.");
     MessageBox(hMain,buf,L"Exception",MB_ICONERROR);
@@ -288,7 +288,7 @@ static void myterminate()
 
 static void myunexpected()
 {
-    log_con("ERROR: myunexpected()\n");
+    log_err("ERROR: myunexpected()\n");
     myterminate();
 }
 
@@ -375,7 +375,7 @@ void virusmonitor_start()
 
 void virusmonitor_stop()
 {
-    if(mon_vir)monitor_stop(mon_vir);
+    if(mon_vir)mon_vir->monitor_stop();
 }
 //}
 

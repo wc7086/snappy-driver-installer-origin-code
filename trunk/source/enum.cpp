@@ -233,7 +233,7 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
     ret=CM_Get_DevNode_Status(&status,&problem,DeviceInfoDataloc->DevInst,0);
     if(ret!=CR_SUCCESS)
     {
-        log_file("ERROR %d with CM_Get_DevNode_Status()\n",ret);
+        log_err("ERROR %d with CM_Get_DevNode_Status()\n",ret);
     }
 }
 //}
@@ -249,7 +249,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
     if(lr==ERROR_FILE_NOT_FOUND)return;
     if(lr!=ERROR_SUCCESS)
     {
-        log_file("Key %S\n",key);
+        log_err("Key %S\n",key);
         print_error(lr,L"RegQueryValueEx()");
         return;
     }
@@ -258,7 +258,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
     lr=RegQueryValueEx(hkey,key,NULL,&dwType,(unsigned char *)(state->textas.get(*val)),&dwSize);
     if(lr!=ERROR_SUCCESS)
     {
-        log_file("Key %S\n",key);
+        log_err("Key %S\n",key);
         print_error(lr,L"read_reg_val()");
     }
 }

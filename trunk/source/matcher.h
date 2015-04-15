@@ -89,7 +89,7 @@ public:
     short getdrp_drvinfpos();
     char *getdrp_drvHWID();
 
-    intptr_t isvalid_usb30hub(State *state,const WCHAR *str);
+    int isvalid_usb30hub(State *state,const WCHAR *str);
     int isblacklisted(State *state,const WCHAR *hwid,const char *section);
     int isvalid_ver(State *state);
     int calc_notebook();

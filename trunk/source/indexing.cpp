@@ -573,13 +573,13 @@ void Collection::load()
     int i;
     HANDLE thr;
     inflist=(inflist_t *)malloc(LSTCNT*sizeof(inflist_t));
-    if(!inflist){log_con("ERROR 1\n");return;}
+    if(!inflist){log_err("ERROR 1\n");return;}
     for(i=0;i<LSTCNT;i++)
     {
         inflist[i].dataready=CreateEvent(0,0,0,0);
         inflist[i].slotvacant=CreateEvent(0,0,1,0);
-        if(!inflist[i].dataready){log_con("ERROR 2\n");return;}
-        if(!inflist[i].slotvacant){log_con("ERROR 3\n");return;}
+        if(!inflist[i].dataready){log_err("ERROR 2\n");return;}
+        if(!inflist[i].slotvacant){log_err("ERROR 3\n");return;}
     }
     pos_in=pos_out=0;
     thr=(HANDLE)_beginthreadex(0,0,&thread_indexinf,this,0,0);
