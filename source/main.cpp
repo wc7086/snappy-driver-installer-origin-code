@@ -36,9 +36,9 @@ HFONT hFont=nullptr;
 Canvas canvasMain;
 Canvas canvasField;
 Canvas canvasPopup;
-const WCHAR classMain[]= L"classMain";
-const WCHAR classField[]=L"classField";
-const WCHAR classPopup[]=L"classPopup";
+const wchar_t classMain[]= L"classMain";
+const wchar_t classField[]=L"classField";
+const wchar_t classPopup[]=L"classPopup";
 HWND hMain=nullptr;
 HWND hField=nullptr;
 HWND hPopup=nullptr;
@@ -73,27 +73,27 @@ FILE *snplist=nullptr;
 HANDLE deviceupdate_event;
 
 // Settings
-WCHAR drp_dir   [BUFLEN]=L"drivers";
-WCHAR drpext_dir[BUFLEN]=L"";
-WCHAR index_dir [BUFLEN]=L"indexes\\SDI";
-WCHAR output_dir[BUFLEN]=L"indexes\\SDI\\txt";
-WCHAR data_dir  [BUFLEN]=L"tools\\SDI";
-WCHAR logO_dir  [BUFLEN]=L"logs";
-WCHAR log_dir   [BUFLEN];
+wchar_t drp_dir   [BUFLEN]=L"drivers";
+wchar_t drpext_dir[BUFLEN]=L"";
+wchar_t index_dir [BUFLEN]=L"indexes\\SDI";
+wchar_t output_dir[BUFLEN]=L"indexes\\SDI\\txt";
+wchar_t data_dir  [BUFLEN]=L"tools\\SDI";
+wchar_t logO_dir  [BUFLEN]=L"logs";
+wchar_t log_dir   [BUFLEN];
 
-WCHAR state_file[BUFLEN]=L"untitled.snp";
-WCHAR finish    [BUFLEN]=L"";
-WCHAR finish_upd[BUFLEN]=L"";
-WCHAR finish_rb [BUFLEN]=L"";
-WCHAR HWIDs     [BUFLEN]=L"";
+wchar_t state_file[BUFLEN]=L"untitled.snp";
+wchar_t finish    [BUFLEN]=L"";
+wchar_t finish_upd[BUFLEN]=L"";
+wchar_t finish_rb [BUFLEN]=L"";
+wchar_t HWIDs     [BUFLEN]=L"";
 
 //int flags=COLLECTION_USE_LZMA;
 int flags=0;
 int statemode=STATEMODE_REAL;
 int expertmode=0;
 int license=0;
-WCHAR curlang [BUFLEN]=L"";
-WCHAR curtheme[BUFLEN]=L"(default)";
+wchar_t curlang [BUFLEN]=L"";
+wchar_t curtheme[BUFLEN]=L"(default)";
 int hintdelay=500;
 int filters=
     (1<<ID_SHOW_MISSING)+
@@ -105,7 +105,7 @@ int virtual_os_version=0;
 int virtual_arch_type=0;
 
 #define NUM_OS 8
-const WCHAR *windows_name[NUM_OS]=
+const wchar_t *windows_name[NUM_OS]=
 {
     L"Windows 2000",
     L"Windows XP",
@@ -123,30 +123,30 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 int main2(int argc, char* argv[]);
 /*void str_unicode2ansi(char *a)
 {
-    WCHAR *u=(WCHAR *)a;
+    wchar_t *u=(wchar_t *)a;
     while((*a++=*u++));
 }
-void str_unicode2ansi(const WCHAR *s,char *d)
+void str_unicode2ansi(const wchar_t *s,char *d)
 {
     while((*d++=*s++));
 }
-void str_ansi2unicode(const WCHAR *a)
+void str_ansi2unicode(const wchar_t *a)
 {
-    WCHAR *u=(WCHAR *)a;
+    wchar_t *u=(wchar_t *)a;
     while((*a++=*u++));
 }*/
 
-int _wtoi_my(const WCHAR *str)
+int _wtoi_my(const wchar_t *str)
 {
     int val;
     swscanf(str,L"%d",&val);
     return val;
 }
 
-void settings_parse(const WCHAR *str,int ind)
+void settings_parse(const wchar_t *str,int ind)
 {
-    WCHAR buf[BUFLEN];
-    WCHAR **argv,*pr;
+    wchar_t buf[BUFLEN];
+    wchar_t **argv,*pr;
     int argc;
     int i;
 
@@ -186,7 +186,7 @@ void settings_parse(const WCHAR *str,int ind)
         if(!wcscmp(pr,L"-novirusalerts"))flags|=FLAG_NOVIRUSALERTS;else
         if(!wcscmp(pr,L"-7z"))
         {
-            WCHAR cmd[BUFLEN];
+            wchar_t cmd[BUFLEN];
             wsprintf(cmd,L"7za.exe %s",wcsstr(GetCommandLineW(),L"-7z")+4);
             log_con("Executing '%S'\n",cmd);
             registerall();
@@ -300,9 +300,9 @@ void settings_save()
     fclose(f);
 }
 
-int  settings_load(const WCHAR *filename)
+int  settings_load(const wchar_t *filename)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
 
     if(!LoadCFGFile(filename,buf))return 0;
     settings_parse(buf,0);
@@ -316,7 +316,7 @@ void SignalHandler(int signum)
     log_stop();
 }
 
-void CALLBACK drp_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
+void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -659,7 +659,7 @@ void bundle_load(bundle_t *bundle)
 
 void bundle_lowprioirity(bundle_t *bundle)
 {
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
     time_startup=GetTickCount()-time_startup;
 
     redrawmainwnd();
@@ -693,13 +693,13 @@ void bundle_lowprioirity(bundle_t *bundle)
 //}
 
 //{ Windows
-HWND CreateWindowM(const WCHAR *type,const WCHAR *name,HWND hwnd,HMENU id)
+HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id)
 {
     return CreateWindow(type,name,WS_CHILD|WS_VISIBLE,
                         0,0,0,0,hwnd,id,ghInst,NULL);
 }
 
-HWND CreateWindowMF(const WCHAR *type,const WCHAR *name,HWND hwnd,HMENU id,DWORD f)
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f)
 {
     return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,
                         0,0,0,0,hwnd,id,ghInst,NULL);
@@ -835,7 +835,7 @@ void setscrollpos(int pos)
 //{ Helpers
 void get_resource(int id,void **data,int *size)
 {
-    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(WCHAR *)RESFILE);
+    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
     if(!myResource)
     {
         log_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
@@ -847,7 +847,7 @@ void get_resource(int id,void **data,int *size)
     *data=LoadResource(nullptr,myResource);
 }
 
-const WCHAR *get_winverstr(Manager *manager1)
+const wchar_t *get_winverstr(Manager *manager1)
 {
     int i;
     int ver=manager1->matcher->state->platform.dwMinorVersion;
@@ -865,10 +865,10 @@ const WCHAR *get_winverstr(Manager *manager1)
     return windows_name[NUM_OS-1];
 }
 
-void mkdir_r(const WCHAR *path)
+void mkdir_r(const wchar_t *path)
 {
-    WCHAR buf[BUFLEN];
-    WCHAR *p;
+    wchar_t buf[BUFLEN];
+    wchar_t *p;
 
     if(path[1]==L':'&&path[2]==0)return;
     if(!canWrite(path))
@@ -1177,10 +1177,10 @@ void snapshot()
 void extractto()
 {
     BROWSEINFO lpbi;
-    WCHAR dir[BUFLEN];
-    WCHAR buf[BUFLEN];
+    wchar_t dir[BUFLEN];
+    wchar_t buf[BUFLEN];
     LPITEMIDLIST list;
-    WCHAR **argv;
+    wchar_t **argv;
     int argc;
 
     memset(&lpbi,0,sizeof(BROWSEINFO));
@@ -1238,16 +1238,16 @@ void drvdir()
     }
 }
 
-const WCHAR *getHWIDby(int id,int num)
+const wchar_t *getHWIDby(int id,int num)
 {
     devicematch_t *devicematch_f=manager_g->items_list[id].devicematch;
-    WCHAR *p;
+    wchar_t *p;
     char *t=manager_g->matcher->state->textas.get(0);
     int i=0;
 
     if(devicematch_f->device->HardwareID)
     {
-        p=(WCHAR *)(t+devicematch_f->device->HardwareID);
+        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
         {
             if(i==num)return p;
@@ -1257,7 +1257,7 @@ const WCHAR *getHWIDby(int id,int num)
     }
     if(devicematch_f->device->CompatibleIDs)
     {
-        p=(WCHAR *)(t+devicematch_f->device->CompatibleIDs);
+        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
         {
             if(i==num)return p;
@@ -1268,9 +1268,9 @@ const WCHAR *getHWIDby(int id,int num)
     return L"";
 }
 
-void escapeAmpUrl(WCHAR *buf,WCHAR *source)
+void escapeAmpUrl(wchar_t *buf,wchar_t *source)
 {
-    WCHAR *p1=buf,*p2=source;
+    wchar_t *p1=buf,*p2=source;
 
     while(*p2)
     {
@@ -1292,7 +1292,7 @@ void escapeAmpUrl(WCHAR *buf,WCHAR *source)
     *p1=0;
 }
 
-void checktimer(const WCHAR *str,long long t,int uMsg)
+void checktimer(const wchar_t *str,long long t,int uMsg)
 {
     if(GetTickCount()-t>20&&log_verbose&LOG_VERBOSE_LAGCOUNTER)
         log_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
@@ -1447,7 +1447,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     }
                     else
                     {
-                        WCHAR buf[BUFLEN];
+                        wchar_t buf[BUFLEN];
 
                         installmode=MODE_NONE;
                         if(panels[11].isChecked(3))
@@ -1468,7 +1468,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_DROPFILES:
         {
-            WCHAR lpszFile[MAX_PATH]={0};
+            wchar_t lpszFile[MAX_PATH]={0};
             UINT uFile=0;
             HDROP hDrop=(HDROP)wParam;
 
@@ -1789,7 +1789,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_OPENINF:
                 case ID_LOCATEINF:
                     {
-                        WCHAR buf[BUFLEN];
+                        wchar_t buf[BUFLEN];
 
                         devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
                         Driver *cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
@@ -1848,8 +1848,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 if(wp>=ID_HWID_WEB)
                 {
-                    WCHAR buf[BUFLEN];
-                    WCHAR buf2[BUFLEN];
+                    wchar_t buf[BUFLEN];
+                    wchar_t buf2[BUFLEN];
                     wsprintf(buf,L"https://www.google.com/#q=%s",getHWIDby(floating_itembar,id));
                     wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",getHWIDby(floating_itembar,id));
                     escapeAmpUrl(buf2,buf);
@@ -1978,9 +1978,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     return 0;
 }
 
-void escapeAmp(WCHAR *buf,WCHAR *source)
+void escapeAmp(wchar_t *buf,wchar_t *source)
 {
-    WCHAR *p1=buf,*p2=source;
+    wchar_t *p1=buf,*p2=source;
 
     while(*p2)
     {
@@ -2054,16 +2054,16 @@ void contextmenu(int x,int y)
 
     devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
     Driver *cur_driver=nullptr;
-    WCHAR *p;
+    wchar_t *p;
     char *t=manager_g->matcher->state->textas.get(0);
     if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
     int flags3=cur_driver?0:MF_GRAYED;
-    WCHAR buf[512];
+    wchar_t buf[512];
 
     i=0;
     if(devicematch_f->device->HardwareID)
     {
-        p=(WCHAR *)(t+devicematch_f->device->HardwareID);
+        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
         {
             escapeAmp(buf,p);
@@ -2075,7 +2075,7 @@ void contextmenu(int x,int y)
     }
     if(devicematch_f->device->CompatibleIDs)
     {
-        p=(WCHAR *)(t+devicematch_f->device->CompatibleIDs);
+        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
         {
             escapeAmp(buf,p);

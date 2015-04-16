@@ -126,7 +126,7 @@ typedef struct _itembar_t
     devicematch_t *devicematch;
     Hwidmatch *hwidmatch;
 
-    WCHAR txt1[1024];
+    wchar_t txt1[1024];
     int install_status;
     int val1,val2;
     int percent;
@@ -191,36 +191,36 @@ typedef struct _textdata_t
 }textdata_t;
 
 //{ Global vars
-extern WCHAR extractdir[BUFLEN];
+extern wchar_t extractdir[BUFLEN];
 //}
 
 // Manager
-int  manager_drplive(WCHAR *s);
+int  manager_drplive(wchar_t *s);
 void manager_install(int flags);
-void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *str2);
+void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2);
 
 
 // Helpers
 void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
-void itembar_settext(Manager *manager,int i,const WCHAR *txt1,int percent);
+void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
-int  itembar_cmp(itembar_t *a,itembar_t *b,WCHAR *ta,WCHAR *tb);
+int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 int  isdrivervalid(Hwidmatch *hwidmatch);
-void str_status(WCHAR *buf,itembar_t *itembar);
+void str_status(wchar_t *buf,itembar_t *itembar);
 int  box_status(int index);
-void str_date(version_t *v,WCHAR *buf);
-const WCHAR *str_version(version_t *ver);
+void str_date(version_t *v,wchar_t *buf);
+const wchar_t *str_version(version_t *ver);
 
 
 // Draw
-void TextOut_CM(HDC hdcMem,int x,int y,const WCHAR *str,int color,int *maxsz,int mode);
-void TextOutP(textdata_t *td,const WCHAR *format,...);
-void TextOutF(textdata_t *td,int col,const WCHAR *format,...);
-void TextOutSF(textdata_t *td,const WCHAR *str,const WCHAR *format,...);
+void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
+void TextOutP(textdata_t *td,const wchar_t *format,...);
+void TextOutF(textdata_t *td,int col,const wchar_t *format,...);
+void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...);
 
 // Popup
-void format_size(WCHAR *buf,long long val,int isspeed);
-void format_time(WCHAR *buf,long long val);
+void format_size(wchar_t *buf,long long val,int isspeed);
+void format_time(wchar_t *buf,long long val);
 void popup_resize(int x,int y);
 void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int ln,int mode,int index);
 void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i);

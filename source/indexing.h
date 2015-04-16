@@ -77,8 +77,8 @@ enum
 typedef struct _inflist_t
 {
     Driverpack *drp;
-    WCHAR pathinf[BUFLEN];
-    WCHAR inffile[BUFLEN];
+    wchar_t pathinf[BUFLEN];
+    wchar_t inffile[BUFLEN];
     char *adr;
     int len;
 
@@ -91,7 +91,7 @@ typedef struct _filedata_t
 {
     int size;
     unsigned crc;
-    WCHAR *str;
+    wchar_t *str;
 }filedata_t;
 
 typedef struct _sect_data_t
@@ -132,7 +132,7 @@ public:
     stringmap dub;
 
     char *get(ofst offset);
-    WCHAR *getw(ofst offset);
+    wchar_t *getw(ofst offset);
 
     int strcpy(const char *mem);
     int memcpy(const char *mem,int sz);
@@ -165,23 +165,23 @@ public:
     Txt texta;
 
 public:
-    WCHAR *getPath(){return texta.getw(drppath);}
-    WCHAR *getFilename(){return texta.getw(drpfilename);}
+    wchar_t *getPath(){return texta.getw(drppath);}
+    wchar_t *getFilename(){return texta.getw(drpfilename);}
 
-    void init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col);
+    void init(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
     void release();
     ~Driverpack();
 
     void saveindex();
     int  checkindex();
     int  loadindex();
-    void getindexfilename(const WCHAR *dir,const WCHAR *ext,WCHAR *indfile);
+    void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
     void print();
     void genhashes();
-    void parsecat(WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     int  genindex();
-    void indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
-    void indexinf(WCHAR const *drpdir,WCHAR const *inffile,char *inf_base,int inf_len);
+    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
+    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
 };
 
 class data_inffile_t // 80
@@ -230,9 +230,9 @@ public:
 class Collection
 {
 public:
-    WCHAR *driverpack_dir;
-    const WCHAR *index_bin_dir;
-    const WCHAR *index_linear_dir;
+    wchar_t *driverpack_dir;
+    const wchar_t *index_bin_dir;
+    const wchar_t *index_linear_dir;
     int flags;
 
     std::vector<Driverpack> driverpack_list;
@@ -242,23 +242,23 @@ public:
 
 public:
     friend unsigned int __stdcall thread_indexinf(void *arg);
-    friend void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+    friend void driverpack_indexinf_async(Driverpack *drp,Collection *colv,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
-    WCHAR *getDriverpack_dir()const{return driverpack_dir;}
-    const WCHAR *getIndex_bin_dir()const{return index_bin_dir;}
-    const WCHAR *getIndex_linear_dir()const{return index_linear_dir;}
+    wchar_t *getDriverpack_dir()const{return driverpack_dir;}
+    const wchar_t *getIndex_bin_dir()const{return index_bin_dir;}
+    const wchar_t *getIndex_linear_dir()const{return index_linear_dir;}
     int getFlags()const{return flags;}
 
-    void init(WCHAR *driverpacks_dir,const WCHAR *index_bin_dir,const WCHAR *index_linear_dir,int flags);
+    void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir,int flags);
     void release();
     void save();
     void updatedindexes();
     void load();
     void print();
-    WCHAR *finddrp(WCHAR *s);
+    wchar_t *finddrp(wchar_t *s);
     void printstates();
-    void scanfolder(const WCHAR *path);
-    int  scanfolder_count(const WCHAR *path);
+    void scanfolder(const wchar_t *path);
+    int  scanfolder_count(const wchar_t *path);
 };
 
 class Parser_str
@@ -298,10 +298,10 @@ int  unicode2ansi(char *s,char *out,int size);
 void extracttest();
 int  encode(char *dest,int dest_sz,char *src,int src_sz);
 int  decode(char *dest,int dest_sz,char *src,int src_sz);
-int  checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);
+int  checkfolders(wchar_t *folder1,wchar_t *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);
 void hash_clearfiles(hashtable_t *t);
-WCHAR *finddrp(WCHAR *s);
+wchar_t *finddrp(wchar_t *s);
 void findosattr(char *bufa,char *adr,int len);
 
-void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len);
+void driverpack_indexinf_async(Driverpack *drp,Collection *colv,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 unsigned int __stdcall thread_indexinf(void *arg);

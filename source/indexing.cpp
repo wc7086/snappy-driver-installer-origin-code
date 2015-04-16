@@ -37,7 +37,7 @@ const tbl_t table_version[NUM_VER_NAMES]=
     {"driverpackagedisplayname",   24},
     {"driverpackagetype",          17}
 };
-const WCHAR *olddrps[]=
+const wchar_t *olddrps[]=
 {
     L"DP_Video_Server_1",
     L"DP_Video_Others_1",
@@ -350,7 +350,7 @@ int unicode2ansi(char *s,char *out,int size)
     if(!out)log_err("Error out:\n");
     if(!s)log_err("Error in:\n");
     if(size<0)log_err("Error size:\n");
-    ret=WideCharToMultiByte(CP_ACP,0,(WCHAR *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,nullptr,&flag);
+    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,nullptr,&flag);
     if(!ret)log_err("Error:%d\n",GetLastError());
     out[size]=0;
     return ret;
@@ -368,7 +368,7 @@ int decode(char *dest,int dest_sz,char *src,int src_sz)
     return dest_sz;
 }
 
-WCHAR *finddrp(WCHAR *s)
+wchar_t *finddrp(wchar_t *s)
 {
     return manager_g->matcher->col->finddrp(s);
 }
@@ -376,7 +376,7 @@ WCHAR *finddrp(WCHAR *s)
 //}
 
 //{ Collection
-void Collection::init(WCHAR *driverpacks_dirv,const WCHAR *index_bin_dirv,const WCHAR *index_linear_dirv,int flags_l)
+void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv,int flags_l)
 {
     driverpack_list.reserve(100);
     flags=flags_l;
@@ -398,9 +398,9 @@ void Collection::save()
 {
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
-    WCHAR buf1[BUFLEN];
-    WCHAR buf2[BUFLEN];
-    WCHAR buf3[BUFLEN];
+    wchar_t buf1[BUFLEN];
+    wchar_t buf2[BUFLEN];
+    wchar_t buf3[BUFLEN];
     unsigned i;
 
     time_indexsave=GetTickCount();
@@ -426,7 +426,7 @@ void Collection::save()
             {
                 //if(flags&COLLECTION_USE_LZMA)
                 {
-                    WCHAR bufw2[BUFLEN];
+                    wchar_t bufw2[BUFLEN];
 
                     wsprintf(bufw2,L"%ws\\%ws",
                         driverpack_list[i].getPath(),
@@ -481,11 +481,11 @@ void Collection::save()
     time_indexsave=GetTickCount()-time_indexsave;
 }
 
-int Collection::scanfolder_count(const WCHAR *path)
+int Collection::scanfolder_count(const wchar_t *path)
 {
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     Driverpack drp;
     int cnt;
     int i;
@@ -529,8 +529,8 @@ void Collection::updatedindexes()
 {
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
-    WCHAR buf[BUFLEN];
-    WCHAR filename[BUFLEN];
+    wchar_t buf[BUFLEN];
+    wchar_t filename[BUFLEN];
     Driverpack *drp;
 
     wsprintf(buf,L"%ws\\_*.*",index_bin_dir);
@@ -635,10 +635,10 @@ void Collection::printstates()
     log_file("  Sum: %d\n\n",sum);
 }
 
-WCHAR *Collection::finddrp(WCHAR *fnd)
+wchar_t *Collection::finddrp(wchar_t *fnd)
 {
     int j;
-    WCHAR *s,*d,*n_s;
+    wchar_t *s,*d,*n_s;
 
     j=0;
     n_s=nullptr;
@@ -666,11 +666,11 @@ WCHAR *Collection::finddrp(WCHAR *fnd)
     return n_s;
 }
 
-void Collection::scanfolder(const WCHAR *path)
+void Collection::scanfolder(const wchar_t *path)
 {
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
-    WCHAR buf[1024];
+    wchar_t buf[1024];
     Driverpack *drp;
 
     wsprintf(buf,L"%s\\*.*",path);
@@ -693,8 +693,8 @@ void Collection::scanfolder(const WCHAR *path)
                 drp->init(path,FindFileData.cFileName,this);
                 if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
                 {
-                    WCHAR bufw1[BUFLEN];
-                    WCHAR bufw2[BUFLEN];
+                    wchar_t bufw1[BUFLEN];
+                    wchar_t bufw2[BUFLEN];
                     if(!drp_count)drp_count=1;
                     wsprintf(bufw1,L"Indexing %d/%d",drp_cur,drp_count);
                     wsprintf(bufw2,L"%s\\%s",path,FindFileData.cFileName);
@@ -747,7 +747,7 @@ void Collection::scanfolder(const WCHAR *path)
 //}
 
 //{ Driverpack
-void Driverpack::init(WCHAR const *driverpack_path,WCHAR const *driverpack_filename,Collection *col_v)
+void Driverpack::init(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col_v)
 {
     char buf[BUFLEN];
 
@@ -786,7 +786,7 @@ Driverpack::~Driverpack()
 
 void Driverpack::saveindex()
 {
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
     FILE *f;
     int sz;
     int version=VER_INDEX;
@@ -844,7 +844,7 @@ void Driverpack::saveindex()
 
 int Driverpack::checkindex()
 {
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
     CHAR buf[3];
     FILE *f;
     int sz;
@@ -871,7 +871,7 @@ int Driverpack::checkindex()
 
 int Driverpack::loadindex()
 {
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
     CHAR buf[3];
     FILE *f;
     int sz;
@@ -921,10 +921,10 @@ int Driverpack::loadindex()
     return 1;
 }
 
-void Driverpack::getindexfilename(const WCHAR *dir,const WCHAR *ext,WCHAR *indfile)
+void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile)
 {
-    WCHAR *p;
-    WCHAR buf[BUFLEN];
+    wchar_t *p;
+    wchar_t buf[BUFLEN];
     int len=wcslen(getFilename());
 
     wsprintf(buf,L"%s",getFilename());
@@ -948,7 +948,7 @@ void Driverpack::print()
     data_inffile_t *d_i;
     Hwidmatch hwidmatch;
     char buf[BUFLEN];
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
     FILE *f;
     int cnts[NUM_DECS],plain;
     unsigned HWID_index_last=0;
@@ -1121,7 +1121,7 @@ unsigned int __stdcall thread_indexinf(void *arg)
     return 0;
 }
 
-void driverpack_indexinf_async(Driverpack *drp,Collection *colv,WCHAR const *pathinf,WCHAR const *inffile,char *adr,int len)
+void driverpack_indexinf_async(Driverpack *drp,Collection *colv,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len)
 {
     Collection *col=colv;
     inflist_t *t=&col->inflist[col->pos_in];
@@ -1162,7 +1162,7 @@ void findosattr(char *bufa,char *adr,int len)
         if(*p=='O'&&!memcmp(p,L"OSAttr",11))
         {
             int ofs=p[19]=='2'||p[19]=='1'?1:0;
-            if(!*bufa||bufal<wcslen((WCHAR *)(p+18+ofs)))
+            if(!*bufa||bufal<wcslen((wchar_t *)(p+18+ofs)))
             {
                 wsprintfA(bufa,"%ws",p+18+ofs);
                 bufal=strlen(bufa);
@@ -1172,7 +1172,7 @@ void findosattr(char *bufa,char *adr,int len)
     }
 }
 
-void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *adr,int len)
+void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char *adr,int len)
 {
     CHAR bufa[BUFLEN];
 
@@ -1188,7 +1188,7 @@ void Driverpack::parsecat(WCHAR const *pathinf,WCHAR const *inffilename,char *ad
 }
 
 #ifdef MERGE_FINDER
-int checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub)
+int checkfolders(wchar_t *folder1,wchar_t *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub)
 {
     filedata_t *file1,*file2;
     char bufa[BUFLEN];
@@ -1232,8 +1232,8 @@ int checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashta
     }
     if(ismergeable&&sub==0&&size>=1024*1024)
     {
-        WCHAR folder1d[BUFLEN],folder2d[BUFLEN],folder3[BUFLEN];
-        WCHAR *folder1a=folder1d,*folder2a=folder2d;
+        wchar_t folder1d[BUFLEN],folder2d[BUFLEN],folder3[BUFLEN];
+        wchar_t *folder1a=folder1d,*folder2a=folder2d;
         wcscpy(folder1a,folder1);
         wcscpy(folder2a,folder2);
         while(wcschr(folder1a,L'/'))folder1a=wcschr(folder1a,L'/')+1;
@@ -1248,7 +1248,7 @@ int checkfolders(WCHAR *folder1,WCHAR *folder2,hashtable_t *filename2path,hashta
 
         if(ismergeable&&sub==0)
         {
-            //WCHAR rep[BUFLEN],*f1="",*f2="";
+            //wchar_t rep[BUFLEN],*f1="",*f2="";
 
             folder1a=folder1d;folder2a=folder2d;
             while(wcschr(folder1a,L'/'))*wcschr(folder1a,L'/')=L'\\';
@@ -1315,9 +1315,9 @@ int Driverpack::genindex()
     filedata_t *filedata;
 #endif
 
-    WCHAR name[BUFLEN];
-    WCHAR pathinf[BUFLEN];
-    WCHAR *iinfdilename;
+    wchar_t name[BUFLEN];
+    wchar_t pathinf[BUFLEN];
+    wchar_t *iinfdilename;
 
     log_con("Indexing %S\\%S\n",getPath(),getFilename());
     wsprintf(name,L"%ws\\%ws",getPath(),getFilename());
@@ -1378,7 +1378,7 @@ int Driverpack::genindex()
 #ifdef MERGE_FINDER
             {
                 char bufa[BUFLEN];
-                WCHAR *filename=(WCHAR *)temp;
+                wchar_t *filename=(wchar_t *)temp;
                 while(wcschr(filename,L'/'))filename=wcschr(filename,L'/')+1;
                 filename[-1]=0;
                 //log_con("%8d,%S\n",f->Size,temp);
@@ -1403,9 +1403,9 @@ int Driverpack::genindex()
             }
 #endif
 
-            if(StrCmpIW((WCHAR *)temp+wcslen((WCHAR *)temp)-4,L".inf")==0)
+            if(StrCmpIW((wchar_t *)temp+wcslen((wchar_t *)temp)-4,L".inf")==0)
             {
-                WCHAR *ii=(WCHAR *)temp;
+                wchar_t *ii=(wchar_t *)temp;
                 while(*ii)
                 {
                     if(*ii=='/')*ii='\\';
@@ -1418,9 +1418,9 @@ int Driverpack::genindex()
                 if(res!=SZ_OK)continue;
 
 
-                iinfdilename=(WCHAR *)temp;
+                iinfdilename=(wchar_t *)temp;
                 while(*iinfdilename++);iinfdilename--;
-                while(iinfdilename!=(WCHAR *)temp&&*iinfdilename!='\\')iinfdilename--;
+                while(iinfdilename!=(wchar_t *)temp&&*iinfdilename!='\\')iinfdilename--;
                 if(*iinfdilename=='\\'){*iinfdilename++=0;}
                 wsprintf(pathinf,L"%ws\\",temp);
 //                log_file("%10ld, %10ld, Openning '%S%S'\n",offset,outSizeProcessed,pathinf,iinfdilename);
@@ -1428,9 +1428,9 @@ int Driverpack::genindex()
 //                driverpack_indexinf(drp,pathinf,iinfdilename,(char *)(outBuffer+offset),f->Size);
                 driverpack_indexinf_async(this,col,pathinf,iinfdilename,(char *)(outBuffer+offset),outSizeProcessed);
             }
-            if(StrCmpIW((WCHAR *)temp+wcslen((WCHAR *)temp)-4,L".cat")==0)
+            if(StrCmpIW((wchar_t *)temp+wcslen((wchar_t *)temp)-4,L".cat")==0)
             {
-                WCHAR *ii=(WCHAR *)temp;
+                wchar_t *ii=(wchar_t *)temp;
                 while(*ii)
                 {
                     if(*ii=='/')*ii='\\';
@@ -1442,9 +1442,9 @@ int Driverpack::genindex()
                     &allocImp,&allocTempImp);
                 if(res!=SZ_OK)continue;
 
-                iinfdilename=(WCHAR *)temp;
+                iinfdilename=(wchar_t *)temp;
                 while(*iinfdilename++);iinfdilename--;
-                while(iinfdilename!=(WCHAR *)temp&&*iinfdilename!='\\')iinfdilename--;
+                while(iinfdilename!=(wchar_t *)temp&&*iinfdilename!='\\')iinfdilename--;
                 if(*iinfdilename=='\\'){*iinfdilename++=0;}
                 wsprintf(pathinf,L"%ws\\",temp);
                 parsecat(pathinf,iinfdilename,(char *)(outBuffer+offset),outSizeProcessed);
@@ -1459,7 +1459,7 @@ int Driverpack::genindex()
             SzArEx_GetFileNameUtf16(&db,i,temp);
             const CSzFileItem *f=db.db.Files+i;
 
-            WCHAR *filename=(WCHAR *)temp;
+            wchar_t *filename=(wchar_t *)temp;
             while(wcschr(filename,L'/'))filename=wcschr(filename,L'/')+1;
             filename[-1]=0;
 
@@ -1506,7 +1506,7 @@ int Driverpack::genindex()
     return 1;
 }
 
-void Driverpack::indexinf(WCHAR const *drpdir,WCHAR const *iinfdilename,char *bb,int inf_len)
+void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char *bb,int inf_len)
 {
     if(inf_len>4&&((bb[0]==-1&&bb[3]==0)||bb[0]==0))
     {
@@ -1529,7 +1529,7 @@ void Driverpack::indexinf(WCHAR const *drpdir,WCHAR const *iinfdilename,char *bb
     }
 }
 // http://msdn.microsoft.com/en-us/library/ff547485(v=VS.85).aspx
-void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char *inf_base,int inf_len)
+void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,char *inf_base,int inf_len)
 {
     version_t *cur_ver;
     sect_data_t strlink;
@@ -1931,7 +1931,7 @@ void Driverpack::indexinf_ansi(WCHAR const *drpdir,WCHAR const *inffilename,char
 //}
 
 char *Txt::get(ofst offset){return (char *)(&text[offset]);}
-WCHAR *Txt::getw(ofst offset){return (WCHAR *)(&text[offset]);}
+wchar_t *Txt::getw(ofst offset){return (wchar_t *)(&text[offset]);}
 
 int Txt::strcpy(const char *str)
 {

@@ -70,7 +70,7 @@ const dev devtbl[NUM_PROPS]=
 //{ Device
 void Device::print_guid(GUID *g)
 {
-    WCHAR buffer[BUFLEN];
+    wchar_t buffer[BUFLEN];
     /*log_file("%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",g->Data1,g->Data2,g->Data3,
         (int)(g->Data4[0]),(int)(g->Data4[1]),
         (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
@@ -173,7 +173,7 @@ void Device::printHWIDS(State *state)
 {
     if(HardwareID)
     {
-        WCHAR *p=state->textas.getw(HardwareID);
+        wchar_t *p=state->textas.getw(HardwareID);
         log_file("HardwareID\n");
         while(*p)
         {
@@ -188,7 +188,7 @@ void Device::printHWIDS(State *state)
 
     if(CompatibleIDs)
     {
-        WCHAR *p=state->textas.getw(CompatibleIDs);
+        wchar_t *p=state->textas.getw(CompatibleIDs);
         log_file("CompatibleID\n");
         while(*p)
         {
@@ -236,7 +236,7 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
 //}
 
 //{ Driver
-void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
+void Driver::read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val)
 {
     DWORD dwType,dwSize=0;
     int lr;
@@ -262,8 +262,8 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
 
 void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 {
-    WCHAR filename[BUFLEN];
-    WCHAR fnm_hwid[BUFLEN];
+    wchar_t filename[BUFLEN];
+    wchar_t fnm_hwid[BUFLEN];
     auto inf_list=&state->inf_list_new;
 
     unsigned HWID_index,start_index=0;
@@ -294,6 +294,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         infdata_t *infdata=&got->second;
         cat=infdata->cat;
         catalogfile=infdata->catalogfile;
+        start_index=infdata->start_index;
         //log_file("Match_inf  '%S',%d\n",filename,cat,catalogfile);
     }
     else
@@ -355,14 +356,14 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 
     //log_file("Added  %d,%d,%d,%d\n",feature,catalogfile,cat,inf_pos);
 
-    inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,inf_pos,cat)});
-    inf_list->insert({std::wstring(filename),infdata_t(catalogfile,0,0,cat)});
+    inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,inf_pos,cat,start_index)});
+    inf_list->insert({std::wstring(filename),infdata_t(catalogfile,0,0,cat,start_index)});
 }
 
 void Driver::print(State *state)
 {
     char *s=state->textas.get(0);
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
 
     str_date(&version,buf);
     log_file("  Name:     %S\n",s+DriverDesc);
@@ -431,25 +432,25 @@ void State::fakeOSversion()
     }
 }
 
-WCHAR *State::getProduct()
+wchar_t *State::getProduct()
 {
-    WCHAR *s=textas.getw(product);
+    wchar_t *s=textas.getw(product);
 
     if(StrStrIW(s,L"Product"))return textas.getw(cs_model);
     return s;
 }
 
-WCHAR *State::getManuf()
+wchar_t *State::getManuf()
 {
-    WCHAR *s=textas.getw(manuf);
+    wchar_t *s=textas.getw(manuf);
 
     if(StrStrIW(s,L"Vendor"))return textas.getw(cs_manuf);
     return s;
 }
 
-WCHAR *State::getModel()
+wchar_t *State::getModel()
 {
-    WCHAR *s=textas.getw(model);
+    wchar_t *s=textas.getw(model);
 
     if(!*s)return textas.getw(cs_model);
     return s;
@@ -483,7 +484,7 @@ State::~State()
 void State::print()
 {
     unsigned i;
-    WCHAR *buf;
+    wchar_t *buf;
     SYSTEM_POWER_STATUS *batteryloc;
 
     if(log_verbose&LOG_VERBOSE_SYSINFO&&log_verbose&LOG_VERBOSE_BATCH)
@@ -578,7 +579,7 @@ void State::print()
     //log_file("Errors: %d\n",error_count);
 }
 
-void State::save(const WCHAR *filename)
+void State::save(const wchar_t *filename)
 {
     FILE *f;
     int sz;
@@ -630,7 +631,7 @@ void State::save(const WCHAR *filename)
     log_con("OK\n");
 }
 
-int  State::load(const WCHAR *filename)
+int  State::load(const wchar_t *filename)
 {
     char buf[BUFLEN];
     FILE *f;
@@ -694,7 +695,7 @@ int  State::load(const WCHAR *filename)
 
 void State::getsysinfo_fast()
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
 
     time_test=GetTickCount();
     textas.reset(2);
@@ -756,11 +757,11 @@ void State::getsysinfo_fast()
 
 void State::getsysinfo_slow()
 {
-    WCHAR smanuf[BUFLEN];
-    WCHAR smodel[BUFLEN];
-    WCHAR sproduct[BUFLEN];
-    WCHAR scs_manuf[BUFLEN];
-    WCHAR scs_model[BUFLEN];
+    wchar_t smanuf[BUFLEN];
+    wchar_t smodel[BUFLEN];
+    wchar_t sproduct[BUFLEN];
+    wchar_t scs_manuf[BUFLEN];
+    wchar_t scs_model[BUFLEN];
 
     time_sysinfo=GetTickCount();
 
@@ -779,7 +780,7 @@ void State::scanDevices()
 {
     HDEVINFO hDevInfo;
     HKEY   hkey;
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     Collection collection;
     Driverpack unpacked_drp;
     inflist_tp inflist;
@@ -859,7 +860,7 @@ void State::scanDevices()
 
 int State::opencatfile(Driver *cur_driver)
 {
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
     CHAR bufa[BUFLEN];
     FILE *f;
     char *buft;
@@ -916,7 +917,7 @@ void State::isnotebook_a()
     int min_v=99,min_x=0,min_y=0;
     int diag;
     int batdev=0;
-    WCHAR *buf;
+    wchar_t *buf;
     SYSTEM_POWER_STATUS *batteryloc;
     Device *cur_device;
 
@@ -951,12 +952,12 @@ void State::isnotebook_a()
     for(i=0;i<Devices_list.size();i++)
     {
         cur_device=&Devices_list[i];
-        WCHAR *p;
+        wchar_t *p;
         char *s=textas.get(0);
 
         if(cur_device->getHardwareID())
         {
-            p=(WCHAR *)(s+cur_device->getHardwareID());
+            p=(wchar_t *)(s+cur_device->getHardwareID());
             while(*p)
             {
                 if(StrStrI(p,L"*ACPI0003"))batdev=1;
@@ -980,7 +981,7 @@ void State::isnotebook_a()
 //}
 
 //{ Monitor info
-int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon)
+int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon)
 {
     DWORD devMon = 0;
 
@@ -994,7 +995,7 @@ int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon)
     return *ddMon->DeviceID!=0;
 }
 
-int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height)
+int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
 {
     DISPLAY_DEVICE ddMon;
     ZeroMemory(&ddMon,sizeof(ddMon));
@@ -1004,14 +1005,14 @@ int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height)
     *Height=0;
     if(GetMonitorDevice(adapterName,&ddMon))
     {
-        WCHAR model[18];
-        WCHAR* s=wcschr(ddMon.DeviceID,L'\\')+1;
+        wchar_t model[18];
+        wchar_t* s=wcschr(ddMon.DeviceID,L'\\')+1;
         size_t len=wcschr(s,L'\\')-s;
         wcsncpy(model,s,len);
         model[len]=0;
 
-        WCHAR *path=wcschr(ddMon.DeviceID,L'\\')+1;
-        WCHAR str[MAX_PATH]=L"SYSTEM\\CurrentControlSet\\Enum\\DISPLAY\\";
+        wchar_t *path=wcschr(ddMon.DeviceID,L'\\')+1;
+        wchar_t str[MAX_PATH]=L"SYSTEM\\CurrentControlSet\\Enum\\DISPLAY\\";
         wcsncat(str,path,wcschr(path, L'\\')-path);
         path=wcschr(path,L'\\')+1;
         HKEY hKey;
@@ -1038,7 +1039,7 @@ int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height)
                                 if(RegQueryValueEx(hKey3,L"EDID",nullptr,nullptr,(LPBYTE)&EDID,&size)==ERROR_SUCCESS)
                                 {
                                     DWORD p=8;
-                                    WCHAR model2[9];
+                                    wchar_t model2[9];
 
                                     char byte1=EDID[p];
                                     char byte2=EDID[p+1];

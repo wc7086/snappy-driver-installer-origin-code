@@ -66,8 +66,8 @@ public:
 
 public:
     //driverpack
-    WCHAR *getdrp_packpath();
-    WCHAR *getdrp_packname();
+    wchar_t *getdrp_packpath();
+    wchar_t *getdrp_packname();
     int   getdrp_packontorrent();
     //inffile
     char *getdrp_infpath();
@@ -89,8 +89,8 @@ public:
     short getdrp_drvinfpos();
     char *getdrp_drvHWID();
 
-    int isvalid_usb30hub(State *state,const WCHAR *str);
-    int isblacklisted(State *state,const WCHAR *hwid,const char *section);
+    int isvalid_usb30hub(State *state,const wchar_t *str);
+    int isblacklisted(State *state,const wchar_t *hwid,const char *section);
     int isvalid_ver(State *state);
     int calc_notebook();
     int calc_altsectscore(State *state,int curscore);

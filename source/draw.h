@@ -53,7 +53,7 @@ private:
     int sx,sy,hasalpha;
     int iscopy;
 
-    void loadFromFile(WCHAR *filename);
+    void loadFromFile(wchar_t *filename);
     void loadFromRes(int id);
     void createBitmap(BYTE *data,int sz);
 

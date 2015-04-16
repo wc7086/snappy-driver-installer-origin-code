@@ -277,9 +277,9 @@ char *heap_load(heap_t *t,char *p)
 //}
 
 //{ Strings
-void strsub(WCHAR *str,const WCHAR *pattern,const WCHAR *rep)
+void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
 {
-    WCHAR buf[BUFLEN],*s;
+    wchar_t buf[BUFLEN],*s;
 
     s=StrStrIW(str,pattern);
     if(s)

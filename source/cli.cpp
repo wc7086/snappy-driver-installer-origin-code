@@ -5,10 +5,10 @@ HFONT CLIHelp_Font;
 CommandLineParam_t CLIParam;
 //}
 
-static void ExpandPath(WCHAR *Apath)
+static void ExpandPath(wchar_t *Apath)
 {
     #define INFO_BUFFER_SIZE 32767
-    WCHAR infoBuf[INFO_BUFFER_SIZE];
+    wchar_t infoBuf[INFO_BUFFER_SIZE];
 
     memset(infoBuf,0,sizeof(infoBuf));
     ExpandEnvironmentStringsW(Apath,infoBuf,INFO_BUFFER_SIZE);
@@ -16,7 +16,7 @@ static void ExpandPath(WCHAR *Apath)
     #undef INFO_BUFFER_SIZE
 }
 
-static WCHAR *ltrim(WCHAR *s)
+static wchar_t *ltrim(wchar_t *s)
 {
     while(iswspace(*s)) s++;
     return s;
@@ -84,7 +84,7 @@ static void ShowHelp(HINSTANCE AhInst)
     DeleteObject(CLIHelp_Font);
 }
 
-void SaveHWID(WCHAR *hwid)
+void SaveHWID(wchar_t *hwid)
 {
     if(CLIParam.SaveInstalledHWD)
     {
@@ -97,7 +97,7 @@ void SaveHWID(WCHAR *hwid)
     }
 }
 
-void Parse_save_installed_id_swith(const WCHAR *ParamStr)
+void Parse_save_installed_id_swith(const wchar_t *ParamStr)
 {
     unsigned tmpLen=wcslen(SAVE_INSTALLED_ID_DEF);
 
@@ -113,7 +113,7 @@ void Parse_save_installed_id_swith(const WCHAR *ParamStr)
     CLIParam.SaveInstalledHWD=TRUE;
 }
 
-void Parse_HWID_installed_swith(const WCHAR *ParamStr)
+void Parse_HWID_installed_swith(const wchar_t *ParamStr)
 {
     unsigned tmpLen=wcslen(HWIDINSTALLED_DEF);
     if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
@@ -125,9 +125,9 @@ void Parse_HWID_installed_swith(const WCHAR *ParamStr)
     }
     else
     {
-        WCHAR buf[BUFLEN];
+        wchar_t buf[BUFLEN];
         wcscpy(buf,ParamStr+tmpLen);
-        WCHAR *chB;
+        wchar_t *chB;
 
         chB=wcsrchr (buf,'=');
         if (chB==NULL)
@@ -154,7 +154,7 @@ void init_CLIParam()
 
 void RUN_CLI(CommandLineParam_t ACLIParam)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     if(ACLIParam.ShowHelp)
     {
         ShowHelp(ghInst);
@@ -175,7 +175,7 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
     {
         ExpandPath(CLIParam.SaveInstalledFileName);
         FILE *f;
-        WCHAR *RStr;
+        wchar_t *RStr;
         f=_wfopen(CLIParam.SaveInstalledFileName,L"rt");
         if(!f)log_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
         else
@@ -197,9 +197,9 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
     }
 }
 
-bool isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath)
+bool isCfgSwithExist(const wchar_t *cmdParams,wchar_t *cfgPath)
 {
-    WCHAR **argv,*pr;
+    wchar_t **argv,*pr;
     int argc;
     int i;
 
@@ -217,10 +217,10 @@ bool isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath)
     return false;
 }
 
-bool LoadCFGFile(const WCHAR *FileName,WCHAR *DestStr)
+bool LoadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
 {
     FILE *f;
-    WCHAR Buff[BUFLEN];
+    wchar_t Buff[BUFLEN];
 
     *DestStr=0;
 

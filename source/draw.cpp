@@ -165,7 +165,7 @@ void Image::makecopy(Image &t)
 
 void Image::load(int i)
 {
-    WCHAR *filename=D_STR(i);
+    wchar_t *filename=D_STR(i);
 
     release();
 
@@ -192,9 +192,9 @@ void Image::release()
     iscopy=0;
 }
 
-void Image::loadFromFile(WCHAR *filename)
+void Image::loadFromFile(wchar_t *filename)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     FILE *f;
     int sz;
     BYTE *imgbuf;
@@ -668,7 +668,7 @@ static void TextOutH(HDC hdc,int x,int y,LPCTSTR buf){TextOut(hdc,x,y,buf,wcslen
 
 void Panel::draw(HDC hdc)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     POINT p;
     HRGN rgn=nullptr;
     int cur_i;
