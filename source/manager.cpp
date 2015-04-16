@@ -1323,22 +1323,22 @@ void Manager::draw(HDC hdc,int ofsy)
     setscrollrange((maxpos>>16)+20);
 }
 
-int itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb)
+int itembar_cmp(itembar_t *a,itembar_t *b,WCHAR *ta,WCHAR *tb)
 {
     if(a->hwidmatch&&b->hwidmatch)
     {
         if(a->hwidmatch->HWID_index==b->hwidmatch->HWID_index)return 3;
         return 0;
     }
-    if(wcslen((WCHAR*)(ta+a->devicematch->device->getDriver()))>0)
+    if(wcslen(ta+a->devicematch->device->getDriver())>0)
     {
-        if(!wcscmp((WCHAR*)(ta+a->devicematch->device->getDriver()),(WCHAR*)(tb+b->devicematch->device->getDriver())))return wcslen((WCHAR*)(ta+a->devicematch->device->getDriver()))+10;
+        if(!wcscmp(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
     }
     else
     {
-        if(wcslen((WCHAR*)(ta+a->devicematch->device->getDescr()))>0)
+        if(wcslen(ta+a->devicematch->device->getDescr())>0)
         {
-            if(!wcscmp((WCHAR*)(ta+a->devicematch->device->getDescr()),(WCHAR*)(tb+b->devicematch->device->getDescr())))return 100+wcslen((WCHAR*)(ta+a->devicematch->device->getDescr()));
+            if(!wcscmp(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
         }
     }
 
@@ -1355,7 +1355,7 @@ int itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb)
 void Manager::restorepos(Manager *manager_old)
 {
     itembar_t *itembar_new,*itembar_old;
-    CHAR *t_new,*t_old;
+    WCHAR *t_new,*t_old;
     unsigned i,j;
     int show_changes=manager_old->items_list.size()>20;
 
@@ -1363,8 +1363,8 @@ void Manager::restorepos(Manager *manager_old)
     if((log_verbose&LOG_VERBOSE_DEVSYNC)==0)show_changes=0;
     //show_changes=1;
 
-    t_old=manager_old->matcher->state->textas.get(0);
-    t_new=matcher->state->textas.get(0);
+    t_old=manager_old->matcher->state->textas.getw(0);
+    t_new=matcher->state->textas.getw(0);
 
     if(manager_old->items_list[SLOT_EMPTY].curpos==1)
     {

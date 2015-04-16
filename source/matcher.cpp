@@ -429,7 +429,7 @@ int isMissing(Device *device,Driver *driver,State *state)
     if(device->problem==CM_PROB_DISABLED)return 0;
     if(driver)
     {
-        if(!StrCmpIW((WCHAR*)(state->textas.get(driver->MatchingDeviceId)),L"PCI\\CC_0300"))return 1;
+        if(!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
         if(device->problem&&device->HardwareID)return 1;
     }else
     {
