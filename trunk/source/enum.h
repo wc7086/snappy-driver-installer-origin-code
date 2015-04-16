@@ -26,10 +26,11 @@ public:
     int feature;
     int inf_pos;
     ofst cat;
+    int start_index;
 
 public:
-    infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat):
-        catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat){};
+    infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat,int vindex):
+        catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat),start_index(vindex){};
 };
 typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 
@@ -105,7 +106,7 @@ public:
     int identifierscore;
 
 private:
-    void read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val);
+    void read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val);
     void scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos);
 
 public:
@@ -178,17 +179,17 @@ private:
     void fakeOSversion();
 
 public:
-    WCHAR *getProduct();
-    WCHAR *getManuf();
-    WCHAR *getModel();
+    wchar_t *getProduct();
+    wchar_t *getManuf();
+    wchar_t *getModel();
 
     void init();
     void release();
     ~State();
     void print();
 
-    void save(const WCHAR *filename);
-    int  load(const WCHAR *filename);
+    void save(const wchar_t *filename);
+    int  load(const wchar_t *filename);
     void getsysinfo_fast();
     void getsysinfo_slow();
     void scanDevices();
@@ -199,12 +200,12 @@ public:
 };
 
 // Monitor info
-int GetMonitorDevice(WCHAR* adapterName,DISPLAY_DEVICE *ddMon);
-int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height);
+int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon);
+int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
 
 //  Misc (in baseboard.cpp)
-int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
+int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
 
 // Vector templates

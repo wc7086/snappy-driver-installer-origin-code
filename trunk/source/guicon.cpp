@@ -21,7 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 FILE *logfile=nullptr;
 int error_count=0;
 int log_console=0;
-WCHAR timestamp[BUFLEN];
+wchar_t timestamp[BUFLEN];
 monitor_t *mon_vir;
 
 int log_verbose=
@@ -70,7 +70,7 @@ void log_times()
 
 void gen_timestamp()
 {
-    WCHAR pcname[BUFLEN];
+    wchar_t pcname[BUFLEN];
     time_t rawtime;
     struct tm *ti;
     DWORD sz=BUFLEN;
@@ -86,9 +86,9 @@ void gen_timestamp()
              ti->tm_hour,ti->tm_min,ti->tm_sec,pcname);
 }
 
-void log_start(WCHAR *logdir)
+void log_start(wchar_t *logdir)
 {
-    WCHAR filename[BUFLEN];
+    wchar_t filename[BUFLEN];
 
     if(flags&FLAG_NOLOGFILE)return;
     setlocale(LC_ALL,"");
@@ -180,7 +180,7 @@ void log_nul(CHAR const *format,...)
 //}
 
 //{ Error handling
-const WCHAR *errno_str()
+const wchar_t *errno_str()
 {
     switch(errno)
     {
@@ -226,22 +226,22 @@ const WCHAR *errno_str()
     }
 }
 
-void print_error(int r,const WCHAR *s)
+void print_error(int r,const wchar_t *s)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
                     nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPWSTR)&buf,BUFLEN,nullptr);
     log_err("ERROR with %S:[%d]'%S'\n",s,r,buf);
     error_count++;
 }
 
-void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj)
+void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj)
 {
     if(!CloseHandle(h))
         log_err("ERROR in %S(): failed CloseHandle(%S)\n",func,obj);
 }
 
-void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj)
+void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj)
 {
     if(!UnregisterClass(lpClassName,hInstance))
         log_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
@@ -249,7 +249,7 @@ void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *fu
 
 static void myterminate()
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
 
     std::exception_ptr p;
     p=std::current_exception();
@@ -270,7 +270,7 @@ static void myterminate()
     {
         wsprintfW(buf,L"Exception: %S\n",str);
     }
-    catch(WCHAR const*str)
+    catch(wchar_t const*str)
     {
         wsprintfW(buf,L"Exception: %s\n",str);
     }
@@ -300,7 +300,7 @@ void start_exception_hadnlers()
 //}
 
 //{ Virus detection
-void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
+void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -352,7 +352,7 @@ void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam)
 
             if(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_HIDDEN)
             {
-                WCHAR bufw[BUFLEN];
+                wchar_t bufw[BUFLEN];
                 wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
                 if(PathFileExists(bufw))continue;
                 log_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
@@ -380,10 +380,10 @@ void virusmonitor_stop()
 //}
 
 //{ Misc
-int canWrite(const WCHAR *path)
+int canWrite(const wchar_t *path)
 {
     DWORD flagsv;
-    WCHAR drive[4];
+    wchar_t drive[4];
 
     wcscpy(drive,L"C:\\");
 
@@ -398,7 +398,7 @@ int canWrite(const WCHAR *path)
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
 
-DWORD run_command(const WCHAR* file,const WCHAR* cmd,int show,int wait)
+DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait)
 {
     DWORD ret;
 

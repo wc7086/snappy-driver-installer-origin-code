@@ -185,16 +185,16 @@ extern unsigned offset_target;
 extern int kbpanel,kbitem[KB_PANEL_CHK+1];
 
 // Settings
-extern WCHAR drp_dir   [BUFLEN];
-extern WCHAR index_dir [BUFLEN];
-extern WCHAR drpext_dir[BUFLEN];
-extern WCHAR data_dir  [BUFLEN];
-extern WCHAR log_dir   [BUFLEN];
-extern WCHAR state_file[BUFLEN];
-extern WCHAR finish    [BUFLEN];
-extern WCHAR finish_upd[BUFLEN];
-extern WCHAR finish_rb [BUFLEN];
-extern WCHAR HWIDs     [BUFLEN];
+extern wchar_t drp_dir   [BUFLEN];
+extern wchar_t index_dir [BUFLEN];
+extern wchar_t drpext_dir[BUFLEN];
+extern wchar_t data_dir  [BUFLEN];
+extern wchar_t log_dir   [BUFLEN];
+extern wchar_t state_file[BUFLEN];
+extern wchar_t finish    [BUFLEN];
+extern wchar_t finish_upd[BUFLEN];
+extern wchar_t finish_rb [BUFLEN];
+extern wchar_t HWIDs     [BUFLEN];
 extern int hintdelay;
 extern int filters;
 extern int flags;
@@ -214,11 +214,11 @@ typedef struct _bundle_t
 //}
 
 // Main
-void settings_parse(const WCHAR *str,int ind);
+void settings_parse(const wchar_t *str,int ind);
 void settings_save();
-int  settings_load(const WCHAR *filename);
+int  settings_load(const wchar_t *filename);
 void SignalHandler(int signum);
-void CALLBACK drp_callback(const WCHAR *szFile,DWORD action,LPARAM lParam);
+void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
 void checkupdates();
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
 
@@ -236,8 +236,8 @@ void bundle_load(bundle_t *bundle);
 void bundle_lowprioirity(bundle_t *bundle);
 
 // Windows
-HWND CreateWindowM(const WCHAR *type,const WCHAR *name,HWND hwnd,HMENU id);
-HWND CreateWindowMF(const WCHAR *type,const WCHAR *name,HWND hwnd,HMENU id,DWORD f);
+HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f);
 void setfont();
 void redrawfield();
 void redrawmainwnd();
@@ -249,15 +249,15 @@ void setscrollpos(int pos);
 
 // Helpers
 void get_resource(int id,void **data,int *size);
-const WCHAR *get_winverstr(Manager *manager);
-void mkdir_r(const WCHAR *path);
+const wchar_t *get_winverstr(Manager *manager);
+void mkdir_r(const wchar_t *path);
 void snapshot();
 void extractto();
 
 // GUI
 void tabadvance(int v);
 void gui(int nCmd);
-void checktimer(const WCHAR *str,long long t,int uMsg);
+void checktimer(const wchar_t *str,long long t,int uMsg);
 LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
@@ -267,11 +267,11 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
 
 //new
 void str_unicode2ansi(char *a);
-void str_unicode2ansi(const WCHAR *s,char *d);
+void str_unicode2ansi(const wchar_t *s,char *d);
 void set_rstpnt(int checked);
 void drvdir();
-const WCHAR *getHWIDby(int id,int num);
-void escapeAmpUrl(WCHAR *buf,WCHAR *source);
-void escapeAmp(WCHAR *buf,WCHAR *source);
+const wchar_t *getHWIDby(int id,int num);
+void escapeAmpUrl(wchar_t *buf,wchar_t *source);
+void escapeAmp(wchar_t *buf,wchar_t *source);
 void contextmenu2(int x,int y);
 void contextmenu(int x,int y);

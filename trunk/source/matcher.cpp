@@ -139,30 +139,30 @@ const markers_t markers[NUM_MARKERS]=
 char marker[BUFLEN];
 int isLaptop;
 
-const WCHAR *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",nullptr};
-const WCHAR *Filter_2[]={L"Apple",L"apple",nullptr};
-const WCHAR *Filter_3[]={L"Asus",L"asus",nullptr};
-const WCHAR *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",nullptr};
-const WCHAR *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",nullptr};
-const WCHAR *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",nullptr};
-const WCHAR *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",nullptr};
-const WCHAR *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",nullptr};
-const WCHAR *Filter_9[]={L"OEM",L"intel",L"wistron",nullptr};
-const WCHAR *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",nullptr};
-const WCHAR *Filter_11[]={L"LG",L"lg",nullptr};
-const WCHAR *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",nullptr};
-const WCHAR *Filter_13[]={L"MSI",L"msi",L"micro-star",nullptr};
-const WCHAR *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",nullptr};
-const WCHAR *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",nullptr};
-const WCHAR *Filter_16[]={L"OEM",L"pegatron",L"medion",nullptr};
-const WCHAR *Filter_17[]={L"Samsung",L"samsung",nullptr};
-const WCHAR *Filter_18[]={L"Gigabyte",L"gigabyte",nullptr};
-const WCHAR *Filter_19[]={L"Sony",L"sony",L"vaio",nullptr};
-const WCHAR *Filter_20[]={L"Toshiba",L"toshiba",nullptr};
-const WCHAR *Filter_21[]={L"OEM",L"twinhead",L"durabook",nullptr};
-const WCHAR *Filter_22[]={L"NEC",L"Nec_brand",L"nec",nullptr};
+const wchar_t *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",nullptr};
+const wchar_t *Filter_2[]={L"Apple",L"apple",nullptr};
+const wchar_t *Filter_3[]={L"Asus",L"asus",nullptr};
+const wchar_t *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",nullptr};
+const wchar_t *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",nullptr};
+const wchar_t *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",nullptr};
+const wchar_t *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",nullptr};
+const wchar_t *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",nullptr};
+const wchar_t *Filter_9[]={L"OEM",L"intel",L"wistron",nullptr};
+const wchar_t *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",nullptr};
+const wchar_t *Filter_11[]={L"LG",L"lg",nullptr};
+const wchar_t *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",nullptr};
+const wchar_t *Filter_13[]={L"MSI",L"msi",L"micro-star",nullptr};
+const wchar_t *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",nullptr};
+const wchar_t *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",nullptr};
+const wchar_t *Filter_16[]={L"OEM",L"pegatron",L"medion",nullptr};
+const wchar_t *Filter_17[]={L"Samsung",L"samsung",nullptr};
+const wchar_t *Filter_18[]={L"Gigabyte",L"gigabyte",nullptr};
+const wchar_t *Filter_19[]={L"Sony",L"sony",L"vaio",nullptr};
+const wchar_t *Filter_20[]={L"Toshiba",L"toshiba",nullptr};
+const wchar_t *Filter_21[]={L"OEM",L"twinhead",L"durabook",nullptr};
+const wchar_t *Filter_22[]={L"NEC",L"Nec_brand",L"nec",nullptr};
 
-const WCHAR **filter_list[]=
+const wchar_t **filter_list[]=
 {
     Filter_1, Filter_2, Filter_3, Filter_4, Filter_5, Filter_6, Filter_7,
     Filter_8, Filter_9, Filter_10,Filter_11,Filter_12,Filter_13,Filter_14,
@@ -175,7 +175,7 @@ const WCHAR **filter_list[]=
 void State::genmarker()
 {
     int i,j;
-    WCHAR *str;
+    wchar_t *str;
 
     *marker=0;
 
@@ -332,14 +332,14 @@ int calc_markerscore(State *state,char *path)
     return score;
 }
 
-int Hwidmatch::isvalid_usb30hub(State *state,const WCHAR *str)
+int Hwidmatch::isvalid_usb30hub(State *state,const wchar_t *str)
 {
     //log_con("Intel USB3.0 HUB '%S'\n",state->text+hwidmatch->devicematch->device->HardwareID);
     if(StrStrI(state->textas.getw(devicematch->device->HardwareID),str))return 1;
     return 0;
 }
 
-int Hwidmatch::isblacklisted(State *state,const WCHAR *hwid,const char *section)
+int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *section)
 {
     char buf[BUFLEN];
 
@@ -474,10 +474,10 @@ int Hwidmatch::calc_status(State *state)
 void findHWID_in_list(char *s,int list,int str,int *dev_pos)
 {
     *dev_pos=0;
-    WCHAR *p=(WCHAR *)(s+list);
+    wchar_t *p=(wchar_t *)(s+list);
     while(*p)
     {
-        if(!StrCmpIW(p,(WCHAR *)(s+str)))return;
+        if(!StrCmpIW(p,(wchar_t *)(s+str)))return;
         p+=lstrlen(p)+1;
         (*dev_pos)++;
     }
@@ -735,7 +735,7 @@ void Matcher::populate()
     devicematch_t *devicematch;
     Driver *cur_driver;
     Device *cur_device;
-    WCHAR *p;
+    wchar_t *p;
     char *s=state->textas.get(0);
     char buf[BUFLEN];
     int dev_pos;
@@ -758,7 +758,7 @@ void Matcher::populate()
         devicematch_init(devicematch,cur_device,cur_driver,hwidmatch_list.size());
         if(cur_device->HardwareID)
         {
-            p=(WCHAR *)(s+cur_device->HardwareID);
+            p=(wchar_t *)(s+cur_device->HardwareID);
             dev_pos=0;
             while(*p)
             {
@@ -771,7 +771,7 @@ void Matcher::populate()
 
         if(cur_device->CompatibleIDs)
         {
-            p=(WCHAR *)(s+cur_device->CompatibleIDs);
+            p=(wchar_t *)(s+cur_device->CompatibleIDs);
             dev_pos=0;
             while(*p)
             {
@@ -899,11 +899,11 @@ void Matcher::print()
 
 //{ Getters
 //driverpack
-WCHAR *Hwidmatch::getdrp_packpath()
+wchar_t *Hwidmatch::getdrp_packpath()
 {
     return drp->getPath();
 }
-WCHAR *Hwidmatch::getdrp_packname()
+wchar_t *Hwidmatch::getdrp_packname()
 {
     return drp->getFilename();
 }

@@ -21,7 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 //{ Global vars
 long long ar_total,ar_proceed;
 int itembar_act;
-WCHAR extractdir[BUFLEN];
+wchar_t extractdir[BUFLEN];
 int instflag;
 int needreboot=0;
 
@@ -174,10 +174,10 @@ int _7z_setcomplited(long long i)
     return S_OK;
 }
 
-void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
+void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
 {
-    WCHAR cmd[BUFLEN];
-    WCHAR buf[BUFLEN];
+    wchar_t cmd[BUFLEN];
+    wchar_t buf[BUFLEN];
     void *install64bin;
     HANDLE thr;
     int size;
@@ -228,10 +228,10 @@ void driver_install(WCHAR *hwid,const WCHAR *inf,int *ret,int *needrb)
     if(*ret==1)SaveHWID(hwid);
 }
 
-void removeextrainfs(WCHAR *inf)
+void removeextrainfs(wchar_t *inf)
 {
-    WCHAR buf[BUFLEN];
-    WCHAR *s=inf;
+    wchar_t buf[BUFLEN];
+    wchar_t *s=inf;
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
 
@@ -258,10 +258,10 @@ unsigned int __stdcall thread_install(void *arg)
     UNREFERENCED_PARAMETER(arg)
 
     itembar_t *itembar,*itembar1;
-    WCHAR cmd[BUFLEN];
-    WCHAR hwid[BUFLEN];
-    WCHAR inf[BUFLEN];
-    WCHAR buf[BUFLEN];
+    wchar_t cmd[BUFLEN];
+    wchar_t hwid[BUFLEN];
+    wchar_t inf[BUFLEN];
+    wchar_t buf[BUFLEN];
     unsigned i,j,downdrivers=0;
     RESTOREPOINTINFOW pRestorePtSpec;
     STATEMGRSTATUS pSMgrStatus;
@@ -539,7 +539,7 @@ goaround:
 
     if(instflag&OPENFOLDER)
     {
-        WCHAR *p=extractdir+wcslen(extractdir);
+        wchar_t *p=extractdir+wcslen(extractdir);
         while(*(--p)!='\\');
         *p=0;
         log_con("%S\n",extractdir);
@@ -625,7 +625,7 @@ int cmpclickdata(int *a,int *b)
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     WINDOWINFO pwi;
     wnddata_t w;
     int i;

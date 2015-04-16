@@ -97,7 +97,7 @@ void Manager::sorta(Matcher *m,int *v)
     }
 }
 
-int  manager_drplive(WCHAR *s)
+int  manager_drplive(wchar_t *s)
 {
     itembar_t *itembar;
     unsigned k,needle=0;
@@ -328,7 +328,7 @@ void Manager::print_tbl()
 
 void Manager::print_hr()
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     itembar_t *itembar;
     unsigned k,act=0;
 
@@ -630,7 +630,7 @@ void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *hwidmatc
     item->first=first;
 }
 
-void itembar_settext(Manager *manager,int i,const WCHAR *txt1,int percent)
+void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent)
 {
     itembar_t *itembar=&manager->items_list[i];
     wcscpy(itembar->txt1,txt1);
@@ -658,7 +658,7 @@ int isdrivervalid(Hwidmatch *hwidmatch)
     return 0;
 }
 
-void str_status(WCHAR *buf,itembar_t *itembar)
+void str_status(wchar_t *buf,itembar_t *itembar)
 {
     devicematch_t *devicematch=itembar->devicematch;
 
@@ -825,7 +825,7 @@ int box_status(int index)
     return BOX_DRVITEM;
 }
 
-void str_date(version_t *v,WCHAR *buf)
+void str_date(version_t *v,wchar_t *buf)
 {
     SYSTEMTIME tm;
     FILETIME ft;
@@ -843,8 +843,8 @@ void str_date(version_t *v,WCHAR *buf)
         GetDateFormat(manager_g->matcher->state->locale,0,&tm,nullptr,buf,100);
 }
 
-WCHAR unkver[128];
-const WCHAR *str_version(version_t *ver)
+wchar_t unkver[128];
+const wchar_t *str_version(version_t *ver)
 {
 
     wsprintf(unkver,L"%s%s",STR(STR_HINT_VERSION),STR(STR_HINT_UNKNOWN));
@@ -931,7 +931,7 @@ int Manager::groupsize(int index)
 }
 
 
-void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *str2)
+void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2)
 {
     pos+=D(ITEM_TEXT_OFS_Y);
     SetTextColor(hdc,D(boxindex[box_status(index)]+14));
@@ -943,7 +943,7 @@ void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *s
 int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 {
     HICON hIcon;
-    WCHAR bufw[BUFLEN];
+    wchar_t bufw[BUFLEN];
     HRGN hrgn=nullptr,hrgn2;
     int x=Xg(D(DRVITEM_OFSX));
     int wx=XG(D(DRVITEM_WX),x);
@@ -1083,7 +1083,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 #ifdef USE_TORRENT
             if(!torrentstatus.sessionpaused)
             {
-                WCHAR num1[64],num2[64];
+                wchar_t num1[64],num2[64];
 
                 format_size(num1,torrentstatus.downloaded,0);
                 format_size(num2,torrentstatus.downloadsize,0);
@@ -1323,7 +1323,7 @@ void Manager::draw(HDC hdc,int ofsy)
     setscrollrange((maxpos>>16)+20);
 }
 
-int itembar_cmp(itembar_t *a,itembar_t *b,WCHAR *ta,WCHAR *tb)
+int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
 {
     if(a->hwidmatch&&b->hwidmatch)
     {
@@ -1355,7 +1355,7 @@ int itembar_cmp(itembar_t *a,itembar_t *b,WCHAR *ta,WCHAR *tb)
 void Manager::restorepos(Manager *manager_old)
 {
     itembar_t *itembar_new,*itembar_old;
-    WCHAR *t_new,*t_old;
+    wchar_t *t_new,*t_old;
     unsigned i,j;
     int show_changes=manager_old->items_list.size()>20;
 
@@ -1458,7 +1458,7 @@ void Manager::restorepos(Manager *manager_old)
 //}
 
 //{ Draw
-void TextOut_CM(HDC hdcMem,int x,int y,const WCHAR *str,int color,int *maxsz,int mode)
+void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode)
 {
     SIZE ss;
     GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
@@ -1470,9 +1470,9 @@ void TextOut_CM(HDC hdcMem,int x,int y,const WCHAR *str,int color,int *maxsz,int
     //SetTextColor(hdcMem,0);
 }
 
-void TextOutP(textdata_t *td,const WCHAR *format,...)
+void TextOutP(textdata_t *td,const wchar_t *format,...)
 {
-    WCHAR buffer[BUFLEN];
+    wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
     _vsnwprintf(buffer,BUFLEN,format,args);
@@ -1483,9 +1483,9 @@ void TextOutP(textdata_t *td,const WCHAR *format,...)
     va_end(args);
 }
 
-void TextOutF(textdata_t *td,int col,const WCHAR *format,...)
+void TextOutF(textdata_t *td,int col,const wchar_t *format,...)
 {
-    WCHAR buffer[BUFLEN];
+    wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
     _vsnwprintf(buffer,BUFLEN,format,args);
@@ -1495,9 +1495,9 @@ void TextOutF(textdata_t *td,int col,const WCHAR *format,...)
     va_end(args);
 }
 
-void TextOutSF(textdata_t *td,const WCHAR *str,const WCHAR *format,...)
+void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...)
 {
-    WCHAR buffer[BUFLEN];
+    wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
     _vsnwprintf (buffer,BUFLEN,format,args);
@@ -1527,7 +1527,7 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
 {
     version_t *v;
     char buf[BUFLEN];
-    WCHAR bufw[BUFLEN];
+    wchar_t bufw[BUFLEN];
     textdata_t td;
 
     td.hdcMem=hdcMem;
@@ -1571,8 +1571,8 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
 {
     itembar_t *itembar;
     POINT p;
-    WCHAR i_hwid[BUFLEN];
-    WCHAR bufw[BUFLEN];
+    wchar_t i_hwid[BUFLEN];
+    wchar_t bufw[BUFLEN];
     int lne=D(POPUP_WY);
     unsigned k;
     int maxsz=0;
@@ -1692,13 +1692,13 @@ int isvalidcat(Hwidmatch *hwidmatch,State *state)
 
 void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
 {
-    WCHAR bufw[BUFLEN];
-    WCHAR i_hwid[BUFLEN];
-    WCHAR a_hwid[BUFLEN];
+    wchar_t bufw[BUFLEN];
+    wchar_t i_hwid[BUFLEN];
+    wchar_t a_hwid[BUFLEN];
     char *t=manager->matcher->state->textas.get(0);
     int maxln=0;
     int bolder=rect.right/2;
-    WCHAR *p;
+    wchar_t *p;
     devicematch_t *devicematch_f=nullptr;
     Hwidmatch *hwidmatch_f=nullptr;
     Driver *cur_driver=nullptr;
@@ -1774,7 +1774,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     if(devicematch_f->device->HardwareID)
     {
         td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_HARDWAREID));td.x=p1+bolder;
-        p=(WCHAR *)(t+devicematch_f->device->HardwareID);
+        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
         {
             int pp=0;
@@ -1788,7 +1788,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     if(devicematch_f->device->CompatibleIDs)
     {
         td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_COMPID));td.x=p1+bolder;
-        p=(WCHAR *)(t+devicematch_f->device->CompatibleIDs);
+        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
         {
             int pp=0;
@@ -1883,11 +1883,11 @@ void popup_about(HDC hdcMem)
 
 void popup_sysinfo(Manager *manager,HDC hdcMem)
 {
-    WCHAR bufw[BUFLEN];
+    wchar_t bufw[BUFLEN];
     textdata_t td;
     State *state=manager->matcher->state;
     SYSTEM_POWER_STATUS *battery;
-    WCHAR *buf;
+    wchar_t *buf;
     int i,x,y;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
 
@@ -1952,7 +1952,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     if(battery->BatteryFullLifeTime!=0xFFFFFFFF)
         TextOutSF(&td,STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
 
-    buf=(WCHAR *)(state->textas.get(state->monitors));
+    buf=(wchar_t *)(state->textas.get(state->monitors));
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_MONITORS));td.x=p1;
     for(i=0;i<buf[0];i++)
@@ -1978,7 +1978,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
 }
 #include <sstream>
-void format_size(WCHAR *buf,long long val,int isspeed)
+void format_size(wchar_t *buf,long long val,int isspeed)
 {
 #ifdef USE_TORRENT
     std::wstringbuf buffer;
@@ -1989,7 +1989,7 @@ void format_size(WCHAR *buf,long long val,int isspeed)
     if(val<(1<<20))os<<(double)val/(1<<10) <<' ' <<STR(STR_UPD_BYTES+1);else
     if(val<(1<<30))os<<(double)val/(1<<20) <<' ' <<STR(STR_UPD_BYTES+2);else
     if(val<((long long)1<<40))os<<(double)val/(1<<30) <<' ' <<STR(STR_UPD_BYTES+3);
-    const WCHAR* cstr = buffer.str().c_str();
+    const wchar_t* cstr = buffer.str().c_str();
     lstrcpy(buf,cstr);
 #else
     buf[0]=0;
@@ -1998,7 +1998,7 @@ void format_size(WCHAR *buf,long long val,int isspeed)
     if(isspeed)wcscat(buf,STR(STR_UPD_SEC));
 }
 
-void format_time(WCHAR *buf,long long val)
+void format_time(wchar_t *buf,long long val)
 {
     long long days,hours,mins,secs;
 
@@ -2025,7 +2025,7 @@ void popup_download(HDC hdcMem)
     torrent_status_t t;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
     int per=0;
-    WCHAR num1[BUFLEN],num2[BUFLEN];
+    wchar_t num1[BUFLEN],num2[BUFLEN];
 
 
     td.col=D(POPUP_TEXT_COLOR);

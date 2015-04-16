@@ -7,19 +7,19 @@ typedef struct _CommandLineParam_t
 {
     bool ShowHelp;
     bool SaveInstalledHWD;
-    WCHAR SaveInstalledFileName[BUFLEN];
+    wchar_t SaveInstalledFileName[BUFLEN];
     bool HWIDInstalled;
-    WCHAR HWIDSTR[BUFLEN];
+    wchar_t HWIDSTR[BUFLEN];
 } CommandLineParam_t;
 
 extern CommandLineParam_t CLIParam;
 
-void SaveHWID(WCHAR *hwid);
-void Parse_save_installed_id_swith(const WCHAR *ParamStr);
-void Parse_HWID_installed_swith(const WCHAR *ParamStr);
+void SaveHWID(wchar_t *hwid);
+void Parse_save_installed_id_swith(const wchar_t *ParamStr);
+void Parse_HWID_installed_swith(const wchar_t *ParamStr);
 
 void init_CLIParam();
 void RUN_CLI(CommandLineParam_t ACLIParam);
-bool isCfgSwithExist(const WCHAR *cmdParams,WCHAR *cfgPath);
-bool LoadCFGFile(const WCHAR *FileName,WCHAR *DestStr);
+bool isCfgSwithExist(const wchar_t *cmdParams,wchar_t *cfgPath);
+bool LoadCFGFile(const wchar_t *FileName,wchar_t *DestStr);
 

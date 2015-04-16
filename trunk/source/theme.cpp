@@ -24,11 +24,11 @@ int monitor_pause=0;
 //}
 
 //{ Vault
-int Vault::findvar(WCHAR *str)
+int Vault::findvar(wchar_t *str)
 {
     int i;
-    WCHAR *p;
-    WCHAR c;
+    wchar_t *p;
+    wchar_t c;
 
     while(*str&&(*str==L' '||*str==L'\t'))str++;
     p=str;
@@ -43,9 +43,9 @@ int Vault::findvar(WCHAR *str)
     return i;
 }
 
-WCHAR *Vault::findstr(WCHAR *str)
+wchar_t *Vault::findstr(wchar_t *str)
 {
-    WCHAR *b,*e;
+    wchar_t *b,*e;
 
     b=wcschr(str,L'\"');
     if(!b)return nullptr;
@@ -56,17 +56,17 @@ WCHAR *Vault::findstr(WCHAR *str)
     return b;
 }
 
-int Vault::readvalue(const WCHAR *str)
+int Vault::readvalue(const wchar_t *str)
 {
-    WCHAR *p;
+    wchar_t *p;
 
     p=wcsstr(str,L"0x");
     return p?wcstol(str,nullptr,16):_wtoi_my(str);
 }
 
-void Vault::parse(WCHAR *datav)
+void Vault::parse(wchar_t *datav)
 {
-    WCHAR *lhs,*rhs,*le;
+    wchar_t *lhs,*rhs,*le;
     le=lhs=datav;
 
     while(le)
@@ -94,7 +94,7 @@ void Vault::parse(WCHAR *datav)
             log_err("ERROR: unknown var '%S'\n",lhs);
         }else
         {
-            WCHAR *r1;
+            wchar_t *r1;
             int r2;
             r1=findstr(rhs);
             r2=findvar(rhs);
@@ -103,13 +103,13 @@ void Vault::parse(WCHAR *datav)
             {
                 while(wcsstr(r1,L"\\n"))
                 {
-                    WCHAR *yy=wcsstr(r1,L"\\n");
+                    wchar_t *yy=wcsstr(r1,L"\\n");
                     wcscpy(yy,yy+1);
                     *yy=L'\n';
                 }
                 while(wcsstr(r1,L"\\0"))
                 {
-                    WCHAR *yy=wcsstr(r1,L"\\0");
+                    wchar_t *yy=wcsstr(r1,L"\\0");
                     wcscpy(yy,yy+1);
                     *yy=1;
                 }
@@ -148,7 +148,7 @@ static void myswab(const char *s,char *d,int sz)
     }
 }
 
-void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
+void *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
 {
     FILE *f;
     void *dataloc;
@@ -211,7 +211,7 @@ void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
             free(dataloc);
             return nullptr;
         }
-        WCHAR *p=(WCHAR *)dataloc;(*sz)--;
+        wchar_t *p=(wchar_t *)dataloc;(*sz)--;
         while(!feof(f))
         {
             fgetws(p,*sz,f);
@@ -222,14 +222,14 @@ void *Vault::loadFromEncodedFile(const WCHAR *filename,int *sz)
     }
 }
 
-void Vault::loadFromFile(WCHAR *filename)
+void Vault::loadFromFile(wchar_t *filename)
 {
-    WCHAR *datav;
+    wchar_t *datav;
     int sz,i;
 
     if(!filename[0])return;
 
-    datav=(WCHAR *)loadFromEncodedFile(filename,&sz);
+    datav=(wchar_t *)loadFromEncodedFile(filename,&sz);
     if(!datav)
     {
         log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
@@ -244,12 +244,12 @@ void Vault::loadFromFile(WCHAR *filename)
 
 void Vault::loadFromRes(int id)
 {
-    WCHAR *datav;
+    wchar_t *datav;
     char *data1;
     int sz,i;
 
     get_resource(id,(void **)&data1,&sz);
-    datav=(WCHAR*)malloc(sz*2+2);
+    datav=(wchar_t*)malloc(sz*2+2);
     int j=0;
     for(i=0;i<sz;i++,j++)
     {
@@ -303,7 +303,7 @@ void theme_set(int i)
 
     for(i=0;i<BOX_NUM;i++)
     {
-        WCHAR *str=D_STR(boxindex[i]+4);
+        wchar_t *str=D_STR(boxindex[i]+4);
         int j;
         for(j=0;j<i;j++)
             if(!wcscmp(str,D_STR(boxindex[j]+4)))
@@ -320,7 +320,7 @@ void theme_set(int i)
     }
     for(i=0;i<ICON_NUM;i++)
     {
-        WCHAR *str=D_STR(iconindex[i]);
+        wchar_t *str=D_STR(iconindex[i]);
         int j;
         for(j=0;j<i;j++)
             if(!wcscmp(str,D_STR(iconindex[j])))
@@ -337,9 +337,9 @@ void theme_set(int i)
     }
 }
 
-void lang_enum(HWND hwnd,const WCHAR *path,int locale)
+void lang_enum(HWND hwnd,const wchar_t *path,int locale)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     int i=0;
@@ -347,7 +347,7 @@ void lang_enum(HWND hwnd,const WCHAR *path,int locale)
     if(flags&FLAG_NOGUI)return;
 
     int lang_auto=-1;
-    WCHAR lang_auto_str[BUFLEN];
+    wchar_t lang_auto_str[BUFLEN];
     wcscpy(lang_auto_str,L"Auto (English)");
 
     wsprintf(buf,L"%s\\%s\\*.txt",data_dir,path);
@@ -381,9 +381,9 @@ void lang_enum(HWND hwnd,const WCHAR *path,int locale)
     }
 }
 
-void theme_enum(HWND hwnd,const WCHAR *path)
+void theme_enum(HWND hwnd,const wchar_t *path)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     int i=0;
@@ -413,7 +413,7 @@ void theme_enum(HWND hwnd,const WCHAR *path)
 
 void vault_startmonitors()
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
 
     wsprintf(buf,L"%s\\langs",data_dir);
     mon_lang=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
@@ -427,7 +427,7 @@ void vault_stopmonitors()
     if(mon_theme)mon_theme->monitor_stop();
 }
 
-void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
+void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -436,7 +436,7 @@ void CALLBACK lang_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
     PostMessage(hMain,WM_UPDATELANG,0,0);
 }
 
-void CALLBACK theme_callback(const WCHAR *szFile,DWORD action,LPARAM lParam)
+void CALLBACK theme_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -498,12 +498,12 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 			pNotify=(PFILE_NOTIFY_INFORMATION)&pMonitor->buffer[offset];
 			offset+=pNotify->NextEntryOffset;
 
-            lstrcpynW(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(WCHAR)+1);
+            lstrcpynW(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(wchar_t)+1);
 
 			if(!monitor_pause)
 			{
                 FILE *f;
-                WCHAR buf[BUFLEN];
+                wchar_t buf[BUFLEN];
                 int m=0,sz=-1,flag;
 
                 errno=0;

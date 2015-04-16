@@ -34,7 +34,7 @@ enum LOG_VERBOSE
 extern int log_verbose;
 extern int log_console;
 extern int error_count;
-extern WCHAR timestamp[BUFLEN];
+extern wchar_t timestamp[BUFLEN];
 extern long
     time_total,
     time_startup,
@@ -56,7 +56,7 @@ extern long
 // Logging
 void log_times();
 void gen_timestamp();
-void log_start(WCHAR *log_dir);
+void log_start(wchar_t *log_dir);
 void log_save();
 void log_stop();
 void log_file(CHAR const *format,...);
@@ -65,17 +65,17 @@ void log_con(CHAR const *format,...);
 void log_nul(CHAR const *format,...);
 
 // Error handling
-const WCHAR *errno_str();
-void print_error(int r,const WCHAR *s);
-void CloseHandle_log(HANDLE h,const WCHAR *func,const WCHAR *obj);
-void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const WCHAR *func,const WCHAR *obj);
+const wchar_t *errno_str();
+void print_error(int r,const wchar_t *s);
+void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
+void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
 void start_exception_hadnlers();
 
 // Virus detection
-void CALLBACK viruscheck(const WCHAR *szFile,DWORD action,LPARAM lParam);
+void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam);
 void virusmonitor_start();
 void virusmonitor_stop();
 
 // Misc
-int canWrite(const WCHAR *path);
-DWORD run_command(const WCHAR* file,const WCHAR* cmd,int show,int wait);
+int canWrite(const wchar_t *path);
+DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);

@@ -21,8 +21,8 @@ typedef struct _torrent_status_t
     long long uploaded;
     int elapsed,remaining;
 
-    WCHAR *status;
-    WCHAR error[BUFLEN];
+    wchar_t *status;
+    wchar_t error[BUFLEN];
     int uploadspeed,downloadspeed;
     int seedstotal,seedsconnected;
     int peerstotal,peersconnected;
@@ -44,14 +44,14 @@ extern int finisheddownloading,finishedupdating;
 void upddlg_updatelang();
 void upddlg_setcheckboxes(HWND hList);
 void upddlg_setpriorities(HWND hList);
-void upddlg_setpriorities_driverpack(const WCHAR *name,int pri);
+void upddlg_setpriorities_driverpack(const wchar_t *name,int pri);
 void upddlg_calctotalsize(HWND hList);
 LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
 int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
 int  getnewver(const char *ptr);
 int  getcurver(const char *ptr);
-void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,WCHAR *str);
+void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str);
 int  upddlg_populatelist(HWND hList,int flags);
 
 // Update
@@ -64,4 +64,4 @@ void delolddrp(const char *ptr);
 void update_movefiles();
 unsigned int __stdcall thread_download(void *arg);
 
-int _wtoi_my(const WCHAR *str);
+int _wtoi_my(const wchar_t *str);

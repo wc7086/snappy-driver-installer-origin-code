@@ -133,7 +133,7 @@ char *heap_save(heap_t *t,char *p);
 char *heap_load(heap_t *t,char *p);
 
 // Strings
-void strsub(WCHAR *str,const WCHAR *pattern,const WCHAR *rep);
+void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
 char *strtolower_alloc(const char *s);
@@ -145,7 +145,7 @@ namespace N7z{
 extern void register7z();
 }}
 void registerall();
-extern int  Extract7z(WCHAR *str);
+extern int  Extract7z(wchar_t *str);
 extern void registercrc();
 extern void registerBCJ();
 extern void registerBCJ2();

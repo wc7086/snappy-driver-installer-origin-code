@@ -101,8 +101,8 @@ int getnewver(const char *ptr)
 
 int getcurver(const char *ptr)
 {
-    WCHAR bffw[BUFLEN];
-    WCHAR *s=bffw;
+    wchar_t bffw[BUFLEN];
+    wchar_t *s=bffw;
 
     wsprintf(bffw,L"%S",ptr);
     while(*s)
@@ -128,9 +128,9 @@ int getcurver(const char *ptr)
 
 void delolddrp(const char *ptr)
 {
-    WCHAR bffw[BUFLEN];
-    WCHAR buf[BUFLEN];
-    WCHAR *s=bffw;
+    wchar_t bffw[BUFLEN];
+    wchar_t buf[BUFLEN];
+    wchar_t *s=bffw;
 
     wsprintf(bffw,L"%S",ptr);
     log_con("dep '%S'\n",bffw);
@@ -153,7 +153,7 @@ void delolddrp(const char *ptr)
 void upddlg_updatelang()
 {
     LVCOLUMN lvc;
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     int i;
     HWND hwnd=hUpdate;
     if(!hwnd)return;
@@ -173,7 +173,7 @@ void upddlg_updatelang()
     lvc.mask=LVCF_TEXT;
     for(i=0;i<6;i++)
     {
-        lvc.pszText=(WCHAR *)STR(STR_UPD_COL_NAME+i);
+        lvc.pszText=(wchar_t *)STR(STR_UPD_COL_NAME+i);
         ListView_SetColumn(GetDlgItem(hwnd,IDLIST),i,&lvc);
     }
 }
@@ -186,10 +186,10 @@ void update_movefiles()
     int i;
     boost::intrusive_ptr<torrent_info const> ti;
     const char *filenamefull;
-    WCHAR buf [BUFLEN];
-    WCHAR filenamefull_src[BUFLEN];
-    WCHAR filenamefull_dst[BUFLEN];
-    WCHAR buf3[BUFLEN],*p;
+    wchar_t buf [BUFLEN];
+    wchar_t filenamefull_src[BUFLEN];
+    wchar_t filenamefull_dst[BUFLEN];
+    wchar_t buf3[BUFLEN],*p;
 
     ti=updatehandle.torrent_file();
 
@@ -320,7 +320,7 @@ unsigned int __stdcall thread_download(void *arg)
 
                 if(*finish_upd)
                 {
-                    WCHAR buf[BUFLEN];
+                    wchar_t buf[BUFLEN];
                     wsprintf(buf,L" /c %s",finish_upd);
                     run_command(L"cmd",buf,SW_HIDE,0);
                 }
@@ -355,9 +355,9 @@ int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
     return lParam1-lParam2;
 }
 
-void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,WCHAR *str)
+void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
 
     ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
     if(wcscmp(str,buf)!=0)
@@ -373,7 +373,7 @@ int upddlg_populatelist(HWND hList,int update)
     int basesize=0,basedownloaded=0;
     int indexsize=0,indexdownloaded=0;
     const char *filename,*filenamefull;
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     int newver=0;
     int ret=0;
     int missingindexes=0;
@@ -426,7 +426,7 @@ int upddlg_populatelist(HWND hList,int update)
     if(newver>SVN_REV)ret+=newver<<8;
     if(newver>SVN_REV&&hList)
     {
-        lvI.pszText=(WCHAR *)STR(STR_UPD_APP);
+        lvI.pszText=(wchar_t *)STR(STR_UPD_APP);
         if(!update)i=ListView_InsertItem(hList,&lvI);
         wsprintf(buf,L"%d %s",basesize/1024/1024,STR(STR_UPD_MB));
         ListView_SetItemTextUpdate(hList,i,1,buf);
@@ -436,20 +436,20 @@ int upddlg_populatelist(HWND hList,int update)
         ListView_SetItemTextUpdate(hList,i,3,buf);
         wsprintf(buf,L" SDI_R%d",SVN_REV);
         ListView_SetItemTextUpdate(hList,i,4,buf);
-        ListView_SetItemTextUpdate(hList,i,5,(WCHAR *)STR(STR_UPD_YES));
+        ListView_SetItemTextUpdate(hList,i,5,(wchar_t *)STR(STR_UPD_YES));
         i++;
     }
 
     lvI.lParam    =-1;
     if(missingindexes&&hList)
     {
-        lvI.pszText=(WCHAR *)STR(STR_UPD_INDEXES);
+        lvI.pszText=(wchar_t *)STR(STR_UPD_INDEXES);
         if(!update)i=ListView_InsertItem(hList,&lvI);
         wsprintf(buf,L"%d %s",indexsize/1024/1024,STR(STR_UPD_MB));
         ListView_SetItemTextUpdate(hList,i,1,buf);
         wsprintf(buf,L"%d%%",indexdownloaded*100/indexsize);
         ListView_SetItemTextUpdate(hList,i,2,buf);
-        ListView_SetItemTextUpdate(hList,i,5,(WCHAR *)STR(STR_UPD_YES));
+        ListView_SetItemTextUpdate(hList,i,5,(wchar_t *)STR(STR_UPD_YES));
         i++;
     }
 
@@ -621,8 +621,8 @@ void update_getstatus(torrent_status_t *t)
     t->uploaded=st.total_payload_upload;
 
     t->elapsed=13;
-    t->status=(WCHAR *)STR(STR_TR_ST0+(int)st.state);
-    if(sessionhandle->is_paused())t->status=(WCHAR *)STR(STR_TR_ST4);
+    t->status=(wchar_t *)STR(STR_TR_ST0+(int)st.state);
+    if(sessionhandle->is_paused())t->status=(wchar_t *)STR(STR_TR_ST4);
     finisheddownloading=st.is_finished;
 
     wcscpy(t->error,L"");
@@ -684,7 +684,7 @@ void update_resume()
 
 void upddlg_calctotalsize(HWND hList)
 {
-    WCHAR buf[BUFLEN];
+    wchar_t buf[BUFLEN];
     int i;
 
     totalsize=0;
@@ -738,7 +738,7 @@ void upddlg_setpriorities(HWND hList)
     }
 }
 
-void upddlg_setpriorities_driverpack(const WCHAR *name,int pri)
+void upddlg_setpriorities_driverpack(const wchar_t *name,int pri)
 {
     int i;
     char buf[BUFLEN];
@@ -820,7 +820,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
     UNREFERENCED_PARAMETER(lParam);
     LVCOLUMN lvc;
     HWND thispcbut,chk;
-    WCHAR buf[32];
+    wchar_t buf[32];
     int i;
 
     hListg=GetDlgItem(hwnd,IDLIST);
@@ -833,7 +833,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
 
             lvc.mask=LVCF_FMT|LVCF_WIDTH|LVCF_SUBITEM|LVCF_TEXT;
-            lvc.pszText=(WCHAR *)L"";
+            lvc.pszText=(wchar_t *)L"";
             for(i=0;i<6;i++)
             {
                 lvc.cx=cxn[i];
