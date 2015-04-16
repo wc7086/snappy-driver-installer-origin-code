@@ -33,9 +33,9 @@ CRITICAL_SECTION sync;
 HINSTANCE ghInst;
 MSG msg;
 HFONT hFont=nullptr;
-Canvas canvasMain;
-Canvas canvasField;
-Canvas canvasPopup;
+Canvas *canvasMain;
+Canvas *canvasField;
+Canvas *canvasPopup;
 const wchar_t classMain[]= L"classMain";
 const wchar_t classField[]=L"classField";
 const wchar_t classPopup[]=L"classPopup";
@@ -1316,7 +1316,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     {
         case WM_CREATE:
             // Canvas
-            canvasMain.init();
+            canvasMain=new Canvas;
             hMain=hwnd;
 
             // Field
@@ -1360,7 +1360,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(!DeleteObject(hFont))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
             vault_stopmonitors();
-            canvasMain.free();
+            delete canvasMain;
             PostQuitMessage(0);
             break;
 
@@ -1671,16 +1671,16 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_PAINT:
             GetClientRect(hwnd,&rect);
-            canvasMain.begin(hwnd,rect.right,rect.bottom);
+            canvasMain->begin(hwnd,rect.right,rect.bottom);
 
-            box_draw(canvasMain.getDC(),0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
-            SelectObject(canvasMain.getDC(),hFont);
-            panels[7].draw(canvasMain.getDC());// draw revision
+            box_draw(canvasMain->getDC(),0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
+            SelectObject(canvasMain->getDC(),hFont);
+            panels[7].draw(canvasMain->getDC());// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
             {
-                panels[i].draw(canvasMain.getDC());
+                panels[i].draw(canvasMain->getDC());
             }
-            canvasMain.end();
+            canvasMain->end();
             break;
 
         case WM_ERASEBKGND:
@@ -2115,23 +2115,23 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
     switch(message)
     {
         case WM_CREATE:
-            canvasField.init();
+            canvasField=new Canvas;
             break;
 
         case WM_PAINT:
             y=getscrollpos();
 
             GetClientRect(hwnd,&rect);
-            canvasField.begin(hwnd,rect.right,rect.bottom);
+            canvasField->begin(hwnd,rect.right,rect.bottom);
 
-            BitBlt(canvasField.getDC(),0,0,rect.right,rect.bottom,canvasMain.getDC(),Xm(D(DRVLIST_OFSX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
-            manager_g->draw(canvasField.getDC(),y);
+            BitBlt(canvasField->getDC(),0,0,rect.right,rect.bottom,canvasMain->getDC(),Xm(D(DRVLIST_OFSX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
+            manager_g->draw(canvasField->getDC(),y);
 
-            canvasField.end();
+            canvasField->end();
             break;
 
         case WM_DESTROY:
-            canvasField.free();
+            delete canvasField;
             break;
 
         case WM_ERASEBKGND:
@@ -2304,24 +2304,24 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             break;
 
         case WM_CREATE:
-            canvasPopup.init();
+            canvasPopup=new Canvas;
             break;
 
         case WM_DESTROY:
-            canvasPopup.free();
+            delete canvasPopup;
             break;
 
         case WM_PAINT:
             GetClientRect(hwnd,&rect);
-            canvasPopup.begin(hwnd,rect.right,rect.bottom);
+            canvasPopup->begin(hwnd,rect.right,rect.bottom);
 
             //log_con("Redraw Popup %d\n",cntd++);
-            box_draw(canvasPopup.getDC(),0,0,rect.right,rect.bottom,BOX_POPUP);
+            box_draw(canvasPopup->getDC(),0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
-                    SelectObject(canvasPopup.getDC(),hFont);
-                    popup_sysinfo(manager_g,canvasPopup.getDC());
+                    SelectObject(canvasPopup->getDC(),hFont);
+                    popup_sysinfo(manager_g,canvasPopup->getDC());
                     break;
 
                 case FLOATING_TOOLTIP:
@@ -2329,36 +2329,36 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
                     rect.top+=D(POPUP_OFSY);
                     rect.right-=D(POPUP_OFSX);
                     rect.bottom-=D(POPUP_OFSY);
-                    SelectObject(canvasPopup.getDC(),hFont);
-                    SetTextColor(canvasPopup.getDC(),D(POPUP_TEXT_COLOR));
-                    DrawText(canvasPopup.getDC(),STR(floating_itembar),-1,&rect,DT_WORDBREAK);
+                    SelectObject(canvasPopup->getDC(),hFont);
+                    SetTextColor(canvasPopup->getDC(),D(POPUP_TEXT_COLOR));
+                    DrawText(canvasPopup->getDC(),STR(floating_itembar),-1,&rect,DT_WORDBREAK);
                     break;
 
                 case FLOATING_CMPDRIVER:
-                    SelectObject(canvasPopup.getDC(),hFont);
-                    popup_drivercmp(manager_g,canvasPopup.getDC(),rect,floating_itembar);
+                    SelectObject(canvasPopup->getDC(),hFont);
+                    popup_drivercmp(manager_g,canvasPopup->getDC(),rect,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:
-                    SelectObject(canvasPopup.getDC(),hFont);
-                    popup_driverlist(manager_g,canvasPopup.getDC(),rect,floating_itembar);
+                    SelectObject(canvasPopup->getDC(),hFont);
+                    popup_driverlist(manager_g,canvasPopup->getDC(),rect,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:
-                    SelectObject(canvasPopup.getDC(),hFont);
-                    popup_about(canvasPopup.getDC());
+                    SelectObject(canvasPopup->getDC(),hFont);
+                    popup_about(canvasPopup->getDC());
                     break;
 
                 case FLOATING_DOWNLOAD:
-                    SelectObject(canvasPopup.getDC(),hFont);
-                    popup_download(canvasPopup.getDC());
+                    SelectObject(canvasPopup->getDC(),hFont);
+                    popup_download(canvasPopup->getDC());
                     break;
 
                 default:
                     break;
             }
 
-            canvasPopup.end();
+            canvasPopup->end();
             break;
 
         case WM_ERASEBKGND:

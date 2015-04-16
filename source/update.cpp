@@ -755,22 +755,17 @@ void upddlg_setpriorities_driverpack(const wchar_t *name,int pri)
 
 void upddlg_setcheckboxes(HWND hList)
 {
-    char filelist[BUFLEN];
     int i;
     LVITEM item;
 
     if(torrentstatus.sessionpaused)return;
     item.mask=LVIF_PARAM;
-    memset(filelist,0,BUFLEN);
     for(i=0;i<ListView_GetItemCount(hList);i++)
     {
         item.iItem=i;
         ListView_GetItem(hList,&item);
         if(item.lParam>=0)
-        {
-            filelist[item.lParam]=1;
             ListView_SetCheckState(hList,i,updatehandle.file_priority(item.lParam));
-        }
     }
 
     ListView_SetCheckState(hList,0,0);

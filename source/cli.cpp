@@ -175,7 +175,6 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
     {
         ExpandPath(CLIParam.SaveInstalledFileName);
         FILE *f;
-        wchar_t *RStr;
         f=_wfopen(CLIParam.SaveInstalledFileName,L"rt");
         if(!f)log_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
         else
@@ -183,8 +182,7 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
             while(fgetws(buf,sizeof(buf),f))
             {
                 //log_con("'%S'\n", buf);
-                RStr=wcsstr(buf,CLIParam.HWIDSTR);
-                if (RStr!=NULL)
+                if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)
                 {
                     ret_global=1;
                     break;

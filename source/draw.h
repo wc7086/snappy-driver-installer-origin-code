@@ -62,7 +62,7 @@ public:
     void release();
     void makecopy(Image &t);
     void load(int i);
-    bool isLoaded(){return ldc;}
+    bool isLoaded()const{return ldc;}
     void draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
 
@@ -78,8 +78,8 @@ private:
     HRGN clipping;
 
 public:
-    void init();
-    void free();
+    Canvas();
+    ~Canvas();
     HDC getDC(){return hdcMem;}
     void begin(HWND hwnd,int x,int y);
     void end();
@@ -100,7 +100,7 @@ private:
 
 public:
     Panel(panelitem_t *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
-    bool isChecked(int i){return items[i].checked;}
+    bool isChecked(int i)const{return items[i].checked;}
     void setChecked(int i,int val){items[i].checked=val;}
     void setfilters();
     int  hitscan(int x,int y);

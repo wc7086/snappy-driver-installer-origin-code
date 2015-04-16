@@ -783,7 +783,6 @@ void State::scanDevices()
     wchar_t buf[BUFLEN];
     Collection collection;
     Driverpack unpacked_drp;
-    inflist_tp inflist;
     unsigned i;
     int lr;
 
@@ -863,8 +862,6 @@ int State::opencatfile(Driver *cur_driver)
     wchar_t filename[BUFLEN];
     CHAR bufa[BUFLEN];
     FILE *f;
-    char *buft;
-    int len;
     *bufa=0;
 
     wcscpy(filename,textas.getw(windir));
@@ -878,9 +875,9 @@ int State::opencatfile(Driver *cur_driver)
     if(f)
     {
         fseek(f,0,SEEK_END);
-        len=ftell(f);
+        int len=ftell(f);
         fseek(f,0,SEEK_SET);
-        buft=(char *)malloc(len);
+        char *buft=(char *)malloc(len);
         fread(buft,len,1,f);
         fclose(f);
 
@@ -913,13 +910,10 @@ int State::opencatfile(Driver *cur_driver)
 void State::isnotebook_a()
 {
     unsigned int i;
-    int x,y;
     int min_v=99,min_x=0,min_y=0;
-    int diag;
     int batdev=0;
     wchar_t *buf;
     SYSTEM_POWER_STATUS *batteryloc;
-    Device *cur_device;
 
     buf=textas.getw(monitors);
     batteryloc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
@@ -937,9 +931,9 @@ void State::isnotebook_a()
 
     for(i=0;i<buf[0];i++)
     {
-        x=buf[1+i*2];
-        y=buf[2+i*2];
-        diag=sqrt(x*x+y*y)/2.54;
+        int x=buf[1+i*2];
+        int y=buf[2+i*2];
+        int diag=sqrt(x*x+y*y)/2.54;
 
         if(diag<min_v||(diag==min_v&&iswide(x,y)))
         {
@@ -949,15 +943,14 @@ void State::isnotebook_a()
         }
     }
 
-    for(i=0;i<Devices_list.size();i++)
+    for(auto &cur_device:Devices_list)
     {
-        cur_device=&Devices_list[i];
         wchar_t *p;
         char *s=textas.get(0);
 
-        if(cur_device->getHardwareID())
+        if(cur_device.getHardwareID())
         {
-            p=(wchar_t *)(s+cur_device->getHardwareID());
+            p=(wchar_t *)(s+cur_device.getHardwareID());
             while(*p)
             {
                 if(StrStrI(p,L"*ACPI0003"))batdev=1;
