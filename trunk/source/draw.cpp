@@ -177,12 +177,10 @@ void Image::load(int i)
 
 void Image::release()
 {
-    int r;
-
     if(bitmap&&!iscopy)
     {
         SelectObject(ldc,oldbitmap);
-        r=DeleteDC(ldc);
+        int r=DeleteDC(ldc);
             if(!r)log_err("ERROR in box_init(): failed DeleteDC\n");
         r=DeleteObject(bitmap);
             if(!r)log_err("ERROR in box_init(): failed DeleteObject\n");
@@ -356,12 +354,12 @@ int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
 
 int panels_hitscan(int hx,int hy,int *ii)
 {
-    int i,r=-1;
+    int i;
 
     *ii=-1;
     for(i=0;i<NUM_PANELS;i++)
     {
-        r=panels[i].hitscan(hx,hy);
+        int r=panels[i].hitscan(hx,hy);
         if(r>=0)
         {
             *ii=i;
@@ -519,26 +517,22 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
 //}
 
 //{ Canvas
-void Canvas::init()
+Canvas::Canvas()
 {
-    int r;
-
     hdcMem=CreateCompatibleDC(nullptr);
     if(!hdcMem)log_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
-    r=SetBkMode(hdcMem,TRANSPARENT);
+    int r=SetBkMode(hdcMem,TRANSPARENT);
     if(!r)log_err("ERROR in canvas_init(): failed SetBkMode\n");
     bitmap=nullptr;
     x=0;
     y=0;
 }
 
-void Canvas::free()
+Canvas::~Canvas()
 {
-    int r;
-
     if(hdcMem)
     {
-        r=DeleteDC(hdcMem);
+        int r=DeleteDC(hdcMem);
         if(!r)log_err("ERROR in canvas_free(): failed DeleteDC\n");
         hdcMem=nullptr;
     }
@@ -547,7 +541,7 @@ void Canvas::free()
     {
         //r=(int)SelectObject(hdcMem,oldbitmap);
         //if(!r)log_err("ERROR in canvas_free(): failed SelectObject\n");
-        r=DeleteObject(bitmap);
+        int r=DeleteObject(bitmap);
         if(!r)log_err("ERROR in canvas_free(): failed DeleteObject\n");
         bitmap=nullptr;
     }

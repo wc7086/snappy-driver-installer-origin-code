@@ -8,7 +8,7 @@ if /I exist c:\MinGW (set GCC_PATH=c:\MinGW& goto foundgcc)
 
 set GCC64_PATH=TDM-GCC-64
 if /I exist c:\TDM-GCC-64_492 (set GCC64_PATH=c:\TDM-GCC-64_492& goto foundgcc64)
-if /I exist c:\TDM-GCC-64 (set GCC64_PATH=c:\TDM-GCC-64_492& goto foundgcc64)
+if /I exist c:\TDM-GCC-64 (set GCC64_PATH=c:\TDM-GCC-64& goto foundgcc64)
 :foundgcc64
 
 cd torrent

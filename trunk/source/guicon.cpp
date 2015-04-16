@@ -260,7 +260,7 @@ static void myterminate()
     }
     catch(const std::exception& e)
     {
-        wsprintfW(buf,L"Exception: %s\n",e.what());
+        wsprintfW(buf,L"Exception: %S\n",e.what());
     }
     catch(int i)
     {

@@ -449,7 +449,7 @@ void CALLBACK theme_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 //{ FileMonitor
 monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
 {
-	monitor_t *pMonitor = (monitor_t*)HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor));
+	monitor_t *pMonitor = static_cast<monitor_t*>(HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor)));
 
 	wcscpy(pMonitor->dir,szDirectory);
 	pMonitor->hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
@@ -488,7 +488,7 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 
 	TCHAR szFile[MAX_PATH];
 	PFILE_NOTIFY_INFORMATION pNotify;
-	monitor_t *pMonitor=(monitor_t*)lpOverlapped;
+	monitor_t *pMonitor=reinterpret_cast<monitor_t*>(lpOverlapped);
 	size_t offset=0;
 
 	if(dwErrorCode==ERROR_SUCCESS)

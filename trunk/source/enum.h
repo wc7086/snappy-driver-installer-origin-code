@@ -71,10 +71,10 @@ private:
 
 public:
     void setDriverIndex(int v){driver_index=v;}
-    int  getDriverIndex(){return driver_index;}
-    ofst getHardwareID(){return HardwareID;}
-    ofst getDriver(){return Driver;}
-    ofst getDescr(){return Devicedesc;}
+    int  getDriverIndex()const{return driver_index;}
+    ofst getHardwareID()const{return HardwareID;}
+    ofst getDriver()const{return Driver;}
+    ofst getDescr()const{return Devicedesc;}
 
     int  print_status();
     void print(State *state);
