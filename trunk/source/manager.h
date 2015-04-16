@@ -204,7 +204,7 @@ void drawbutton(HDC hdc,int x,int pos,int index,const WCHAR *str1,const WCHAR *s
 void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
 void itembar_settext(Manager *manager,int i,const WCHAR *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
-int  itembar_cmp(itembar_t *a,itembar_t *b,CHAR *ta,CHAR *tb);
+int  itembar_cmp(itembar_t *a,itembar_t *b,WCHAR *ta,WCHAR *tb);
 int  isdrivervalid(Hwidmatch *hwidmatch);
 void str_status(WCHAR *buf,itembar_t *itembar);
 int  box_status(int index);

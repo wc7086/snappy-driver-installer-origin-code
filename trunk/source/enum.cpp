@@ -171,12 +171,9 @@ void Device::print(State *state)
 
 void Device::printHWIDS(State *state)
 {
-    WCHAR *p;
-    char *s=state->textas.get(0);
-
     if(HardwareID)
     {
-        p=(WCHAR *)(s+HardwareID);
+        WCHAR *p=state->textas.getw(HardwareID);
         log_file("HardwareID\n");
         while(*p)
         {
@@ -191,7 +188,7 @@ void Device::printHWIDS(State *state)
 
     if(CompatibleIDs)
     {
-        p=(WCHAR *)(s+CompatibleIDs);
+        WCHAR *p=state->textas.getw(CompatibleIDs);
         log_file("CompatibleID\n");
         while(*p)
         {
@@ -255,7 +252,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const WCHAR *key,ofst *val)
     }
 
     *val=state->textas.alloc(dwSize);
-    lr=RegQueryValueEx(hkey,key,nullptr,&dwType,(unsigned char *)(state->textas.get(*val)),&dwSize);
+    lr=RegQueryValueEx(hkey,key,nullptr,&dwType,reinterpret_cast<unsigned char*>(state->textas.get(*val)),&dwSize);
     if(lr!=ERROR_SUCCESS)
     {
         log_err("Key %S\n",key);
@@ -294,8 +291,10 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     got=inf_list->find(std::wstring(filename));
     if(got!=inf_list->end())
     {
-        //infdata_t *infdata=&got->second;
-        //log_file("Match_inf  '%S',%d\n",filename,infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
+        infdata_t *infdata=&got->second;
+        cat=infdata->cat;
+        catalogfile=infdata->catalogfile;
+        //log_file("Match_inf  '%S',%d\n",filename,cat,catalogfile);
     }
     else
     {
@@ -342,7 +341,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
         {
             feature=hwidmatch.getdrp_drvfeature();
-            catalogfile=hwidmatch.calc_catalogfile();
+            if(got==inf_list->end())catalogfile=hwidmatch.calc_catalogfile();
             if(inf_pos<0||inf_pos>hwidmatch.getdrp_drvinfpos())inf_pos=hwidmatch.getdrp_drvinfpos();
         }
     }
@@ -356,8 +355,8 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 
     //log_file("Added  %d,%d,%d,%d\n",feature,catalogfile,cat,inf_pos);
 
-    inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,cat,inf_pos)});
-    inf_list->insert({std::wstring(filename),infdata_t(0,0,0,0)});
+    inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,inf_pos,cat)});
+    inf_list->insert({std::wstring(filename),infdata_t(catalogfile,0,0,cat)});
 }
 
 void Driver::print(State *state)
@@ -402,7 +401,7 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
         scaninf(state,unpacked_drp,inf_pos);
 
     identifierscore=calc_identifierscore(dev_pos,ishw,inf_pos);
-    //log_file("%d,%d,%d\n",dev_pos,ishw,inf_pos);
+    //log_file("%d,%d,%d,(%x)\n",dev_pos,ishw,inf_pos,identifierscore);
 
     if(DriverDate)
     {
@@ -1070,6 +1069,6 @@ int GetMonitorSizeFromEDID(WCHAR* adapterName,int *Width,int *Height)
 
 int iswide(int x,int y)
 {
-    return ((double)y/x)>1.35?1:0;
+    return (static_cast<double>(y)/x)>1.35?1:0;
 }
 //}
