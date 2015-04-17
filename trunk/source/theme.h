@@ -43,7 +43,7 @@ public:
     int num;
     wchar_t namelist[64][250];
     wchar_t *data,*odata;
-    lookuptbl_t *lookuptbl;
+lookuptbl_t *lookuptbl;
     int res;
 
 private:
@@ -51,7 +51,7 @@ private:
     wchar_t *findstr(wchar_t *str);
     int  readvalue(const wchar_t *str);
     void parse(wchar_t *data);
-    void *loadFromEncodedFile(const wchar_t *filename,int *sz);
+    wchar_t *loadFromEncodedFile(const wchar_t *filename,int *sz);
     void loadFromFile(wchar_t *filename);
     void loadFromRes(int id);
 

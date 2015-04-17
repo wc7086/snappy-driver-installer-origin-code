@@ -300,7 +300,6 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     else
     {
         FILE *f;
-        char *buft;
         int len;
 
         //log_file("Reading '%S' for (%S)\n",filename,state->textas.get(MatchingDeviceId));
@@ -314,16 +313,15 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         len=ftell(f);
         if(len<0)len=0;
         fseek(f,0,SEEK_SET);
-        buft=(char *)malloc(len);
-        fread(buft,len,1,f);
+        std::unique_ptr<char[]> buft(new char[len]);
+        fread(buft.get(),len,1,f);
         fclose(f);
 
         if(len>0)
         {
             start_index=unpacked_drp->HWID_list.size();
-            unpacked_drp->indexinf(state->textas.getw(state->windir),state->textas.getw(InfPath),buft,len);
+            unpacked_drp->indexinf(state->textas.getw(state->windir),state->textas.getw(InfPath),buft.get(),len);
         }
-        free(buft);
 
         cat=state->opencatfile(this);
     }
@@ -584,7 +582,6 @@ void State::save(const wchar_t *filename)
     FILE *f;
     int sz;
     int version=VER_STATE;
-    char *mem,*p;
 
     if(flags&FLAG_NOSNAPSHOT)return;
     log_file("Saving state in '%S'...",filename);
@@ -607,7 +604,8 @@ void State::save(const wchar_t *filename)
         textas.text.size()+
         2*3*sizeof(int);  // 3 heaps
 
-    p=mem=(char *)malloc(sz);
+    std::unique_ptr<char[]> mem(new char[sz]);
+    char *p=mem.get();
 
     fwrite(VER_MARKER,3,1,f);
     fwrite(&version,sizeof(int),1,f);
@@ -619,14 +617,12 @@ void State::save(const wchar_t *filename)
 
     if(1)
     {
-        char *mem_pack=(char *)malloc(sz);
-        sz=encode(mem_pack,sz,mem,sz);
-        fwrite(mem_pack,sz,1,f);
-        free(mem_pack);
+        std::unique_ptr<char[]> mem_pack(new char[sz]);
+        sz=encode(mem_pack.get(),sz,mem.get(),sz);
+        fwrite(mem_pack.get(),sz,1,f);
     }
-    else fwrite(mem,sz,1,f);
+    else fwrite(mem.get(),sz,1,f);
 
-    free(mem);
     fclose(f);
     log_con("OK\n");
 }
@@ -637,7 +633,6 @@ int  State::load(const wchar_t *filename)
     FILE *f;
     int sz;
     int version;
-    char *mem,*p,*mem_unpack=nullptr;
 
     log_con("Loading state from '%S'...",filename);
     f=_wfopen(filename,L"rb");
@@ -666,18 +661,15 @@ int  State::load(const wchar_t *filename)
         return 0;
     }
 
-    p=mem=(char *)malloc(sz);
-    fread(mem,sz,1,f);
+    std::unique_ptr<char[]> mem(new char[sz]);
+    char *p=mem.get();
+    fread(mem.get(),sz,1,f);
 
-    if(1)
-    {
-        UInt64 sz_unpack;
-
-        Lzma86_GetUnpackSize((Byte *)p,sz,&sz_unpack);
-        mem_unpack=(char *)malloc(sz_unpack);
-        decode(mem_unpack,sz_unpack,mem,sz);
-        p=mem_unpack;
-    }
+    UInt64 sz_unpack;
+    Lzma86_GetUnpackSize((Byte *)p,sz,&sz_unpack);
+    std::unique_ptr<char[]> mem_unpack(new char[sz_unpack]);
+    decode(mem_unpack.get(),sz_unpack,mem.get(),sz);
+    p=mem_unpack.get();
 
     memcpy(this,p,sizeof(state_m_t));p+=sizeof(state_m_t);
     p=vector_load(&Devices_list,p);
@@ -686,8 +678,6 @@ int  State::load(const wchar_t *filename)
 
     fakeOSversion();
 
-    free(mem);
-    if(mem_unpack)free(mem_unpack);
     fclose(f);
     log_con("OK\n");
     return 1;
@@ -803,7 +793,7 @@ void State::scanDevices()
     while(1)
     {
         // Device
-        Devices_list.push_back(Device(hDevInfo,this,i++));
+        Devices_list.emplace_back((Device(hDevInfo,this,i++)));
         Device *cur_device=&Devices_list.back();
 
         lr=cur_device->ret;
@@ -877,12 +867,11 @@ int State::opencatfile(Driver *cur_driver)
         fseek(f,0,SEEK_END);
         int len=ftell(f);
         fseek(f,0,SEEK_SET);
-        char *buft=(char *)malloc(len);
-        fread(buft,len,1,f);
+        std::unique_ptr<char[]> buft(new char[len]);
+        fread(buft.get(),len,1,f);
         fclose(f);
 
-        findosattr(bufa,buft,len);
-        free(buft);
+        findosattr(bufa,buft.get(),len);
     }
 
     if(*bufa)

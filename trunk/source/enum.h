@@ -80,6 +80,9 @@ public:
     void print(State *state);
     void printHWIDS(State *state);
 
+    Device(const Device &)=delete;
+    Device &operator=(const Device &)=delete;
+    Device(Device &&)=default;
     Device(HDEVINFO hDevInfo,State *state,int i);
     Device():driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),

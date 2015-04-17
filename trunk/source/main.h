@@ -53,6 +53,7 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <string>
 #include <vector>
 #include <exception>
+#include <memory>
 
 // SDI
 #include "svnrev.h"
