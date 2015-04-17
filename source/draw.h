@@ -80,6 +80,9 @@ private:
 public:
     Canvas();
     ~Canvas();
+    Canvas(const Canvas &)=delete;
+    Canvas &operator=(const Canvas &)=delete;
+
     HDC getDC(){return hdcMem;}
     void begin(HWND hwnd,int x,int y);
     void end();

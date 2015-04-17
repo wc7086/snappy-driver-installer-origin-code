@@ -133,7 +133,7 @@ void Vault::parse(wchar_t *datav)
         }
         lhs=le+1; // next line
     }
-    if(odata)free(odata);
+    if(odata)delete []odata;
     odata=data;
     data=datav;
 }
@@ -148,10 +148,10 @@ static void myswab(const char *s,char *d,int sz)
     }
 }
 
-void *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
+wchar_t *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
 {
     FILE *f;
-    void *dataloc;
+    wchar_t *datav;
 
     f=_wfopen(filename,L"rb");
     if(!f)
@@ -169,38 +169,37 @@ void *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
         fclose(f);
         return nullptr;
     }
-    dataloc=malloc(*sz*2+2+1024);
+    datav=new wchar_t[*sz+1+1024];
     log_con("Read '%S':%d\n",filename,*sz);
 
-    fread(dataloc,2,1,f);
-    if(!memcmp(dataloc,"\xEF\xBB",2))// UTF-8
+    fread(datav,2,1,f);
+    if(!memcmp(datav,"\xEF\xBB",2))// UTF-8
     {
-        void *dataloc1;
         int szo;
-        fread(dataloc,1,1,f);
+        fread(datav,1,1,f);
         *sz-=3;
-        int q=fread(dataloc,1,*sz,f);
-        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,nullptr,0);
-        dataloc1=malloc(szo*2+2);
-        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)dataloc,q,(LPWSTR)dataloc1,szo);
-        free(dataloc);
+        int q=fread(datav,1,*sz,f);
+        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,nullptr,0);
+        wchar_t *dataloc1=new wchar_t[szo+1];
+        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,(LPWSTR)dataloc1,szo);
+        delete []datav;
         fclose(f);
         return dataloc1;
     }else
-    if(!memcmp(dataloc,"\xFF\xFE",2))// UTF-16 LE
+    if(!memcmp(datav,"\xFF\xFE",2))// UTF-16 LE
     {
-        fread(dataloc,*sz,1,f);
+        fread(datav,*sz,1,f);
         *sz>>=1;(*sz)--;
         fclose(f);
-        return dataloc;
+        return datav;
     }else
-    if(!memcmp(dataloc,"\xFE\xFF",2))// UTF-16 BE
+    if(!memcmp(datav,"\xFE\xFF",2))// UTF-16 BE
     {
-        fread(dataloc,*sz,1,f);
-        myswab((char *)dataloc,(char *)dataloc,*sz);
+        fread(datav,*sz,1,f);
+        myswab((char *)datav,(char *)datav,*sz);
         *sz>>=1;(*sz)--;
         fclose(f);
-        return dataloc;
+        return datav;
     }else                         // ANSI
     {
         fclose(f);
@@ -208,17 +207,17 @@ void *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
         if(!f)
         {
             log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
-            free(dataloc);
+            delete []datav;
             return nullptr;
         }
-        wchar_t *p=(wchar_t *)dataloc;(*sz)--;
+        wchar_t *p=(wchar_t *)datav;(*sz)--;
         while(!feof(f))
         {
             fgetws(p,*sz,f);
             p+=wcslen(p);
         }
         fclose(f);
-        return dataloc;
+        return datav;
     }
 }
 
@@ -249,12 +248,11 @@ void Vault::loadFromRes(int id)
     int sz,i;
 
     get_resource(id,(void **)&data1,&sz);
-    datav=(wchar_t*)malloc(sz*2+2);
-    int j=0;
-    for(i=0;i<sz;i++,j++)
+    datav=new wchar_t[sz+1];
+    for(i=0;i<sz;i++)
     {
         if(data1[i]==L'\r')datav[i]=L' ';else
-        datav[i]=data1[j];
+        datav[i]=data1[i];
     }
     datav[sz]=0;
     parse(datav);
@@ -277,8 +275,8 @@ void Vault::init1(entry_t *entryv,int numv,int resv)
 void Vault::free1()
 {
     delete lookuptbl;
-    if(odata)free(odata);
-    if(data)free(data);
+    if(odata)delete []odata;
+    if(data)delete []data;
 }
 
 void Vault::load(int i)

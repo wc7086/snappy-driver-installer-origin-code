@@ -195,7 +195,6 @@ void Image::loadFromFile(wchar_t *filename)
     wchar_t buf[BUFLEN];
     FILE *f;
     int sz;
-    BYTE *imgbuf;
 
     if(!filename||!*filename)return;
     wsprintf(buf,L"%s\\themes\\%s",data_dir,filename);
@@ -208,18 +207,16 @@ void Image::loadFromFile(wchar_t *filename)
     fseek(f,0,SEEK_END);
     sz=ftell(f);
     fseek(f,0,SEEK_SET);
-    imgbuf=new BYTE[sz];
+    std::unique_ptr<BYTE[]> imgbuf(new BYTE[sz]);
 
-    sz=fread(imgbuf,1,sz,f);
+    sz=fread(imgbuf.get(),1,sz,f);
     if(!sz)
     {
         log_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",buf);
-        delete[] imgbuf;
         return;
     }
     fclose(f);
-    createBitmap(imgbuf,sz);
-    delete[] imgbuf;
+    createBitmap(imgbuf.get(),sz);
 }
 
 void Image::loadFromRes(int id)
