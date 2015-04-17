@@ -136,8 +136,8 @@ char *heap_load(heap_t *t,char *p);
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
-char *strtolower_alloc(const char *s);
-char *memcpy_alloc(const char *s,int sz);
+//char *strtolower_alloc(const char *s);
+//char *memcpy_alloc(const char *s,int sz);
 
 // 7-zip
 namespace NArchive{

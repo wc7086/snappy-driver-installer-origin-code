@@ -266,7 +266,6 @@ void Parser_str::str_sub()
     int vers_len;
     char *v1b;
     char *res;
-    int isfound;
 
     v1b=strBeg;
 
@@ -279,11 +278,11 @@ void Parser_str::str_sub()
         if(vers_len<0)vers_len=0;
 
         strtolower(v1b,vers_len);
-        res=(char *)hash_find(&pack->string_list,v1b,vers_len,&isfound);
-        if(isfound)
+        auto rr=pack->string_list.find(std::string(v1b,vers_len));
+        if(rr!=pack->string_list.end())
         {
-            strBeg=res;
-            strEnd=res+strlen(res);
+            strBeg=const_cast<char *>(rr->second.c_str());
+            strEnd=strBeg+strlen(strBeg);
             return;
         }else
         {
@@ -307,9 +306,10 @@ void Parser_str::str_sub()
             if(*p=='%')
             {
                 strtolower(v1b+1,p-v1b-1);
-                res=(char *)hash_find(&pack->string_list,v1b+1,p-v1b-1,&isfound);
-                if(isfound)
+                auto rr=pack->string_list.find(std::string(v1b+1,p-v1b-1));
+                if(rr!=pack->string_list.end())
                 {
+                    res=const_cast<char *>(rr->second.c_str());
                     strcpy(p_s,res);
                     p_s+=strlen(res);
                     v1b=p+1;
@@ -741,28 +741,17 @@ void Driverpack::init(wchar_t const *driverpack_path,wchar_t const *driverpack_f
 
     col=col_v;
 
-    hash_init(&string_list,ID_STRINGS,1024,HASH_FLAG_KEYS_ARE_POINTERS|HASH_FLAG_STR_TO_LOWER);
-    hash_init(&cat_list,ID_CAT_LIST,512*8,HASH_FLAG_STR_TO_LOWER);
-
     wsprintfA(buf,"%ws",driverpack_path);
     drppath=texta.memcpy((char *)driverpack_path,wcslen(driverpack_path)*2+2);
 
     wsprintfA(buf,"%ws",driverpack_filename);
     drpfilename=texta.memcpy((char *)driverpack_filename,wcslen(driverpack_filename)*2+2);
-    indexes.size=0;
+    indexesold.size=0;
 }
 
 void Driverpack::release()
 {
-    /*inffile.clear();
-    manufacturer_list.clear();
-    desc_list.clear();
-    HWID_list.clear();*/
-
-    hash_free(&string_list);
-    hash_free(&cat_list);
-
-    if(indexes.size)hash_free(&indexes);
+    if(indexesold.size)hash_free(&indexesold);
 }
 
 Driverpack::~Driverpack()
@@ -792,7 +781,7 @@ void Driverpack::saveindex()
         desc_list.size()*sizeof(data_desc_t)+
         HWID_list.size()*sizeof(data_HWID_t)+
         texta.getSize()+
-        indexes.items_handle.used+sizeof(int)+
+        indexesold.items_handle.used+sizeof(int)+
         6*sizeof(int)*2;
 
     p=mem=(char *)malloc(sz);
@@ -804,7 +793,7 @@ void Driverpack::saveindex()
     p=vector_save(&desc_list,p);
     p=vector_save(&HWID_list,p);
     p=vector_save(texta.getVector(),p);
-    p=hash_save(&indexes,p);
+    p=hash_save(&indexesold,p);
     /*log_con("Sz:(%d,%d,%d,%d,%d,%d)=%d\n",
             inffile_handle.used,
             manufacturer_handle.used,
@@ -896,7 +885,7 @@ int Driverpack::loadindex()
     p=vector_load(&desc_list,p);
     p=vector_load(&HWID_list,p);
     p=vector_load(texta.getVector(),p);
-    p=hash_load(&indexes,p);
+    p=hash_load(&indexesold,p);
 
     free(mem);
     if(mem_unpack)free(mem_unpack);
@@ -1041,11 +1030,11 @@ void Driverpack::print()
 void Driverpack::genhashes()
 {
     char filename[BUFLEN];
-    int j,r;
+    int j;
     unsigned i;
 
 
-    hash_init(&indexes,ID_INDEXES,HWID_list.size()/2,HASH_FLAG_STRS_ARE_INTS);
+    hash_init(&indexesold,ID_INDEXES,HWID_list.size()/2,HASH_FLAG_STRS_ARE_INTS);
     //heap_expand(&t->indexes.strs_handle,64*1024);
     //log_file("Items: %d\n",pack->HWID_list_handle.items);
     for(i=0;i<inffile.size();i++)
@@ -1060,18 +1049,14 @@ void Driverpack::genhashes()
                 wsprintfA(filename,"%s%s",texta.get(inffile[i].infpath),texta.get(inffile[i].fields[j]));
                 strtolower(filename,strlen(filename));
                 //log_con("%d: (%s)\n",j,filename);
-                r=hash_find_str(&cat_list,filename);
-                if(r)
-                {
-                    //log_con("^^%d: %s\n",r,text+r);
-                    inffile[i].cats[j]=r;
-                }
+
+                auto got=cat_list.find(filename);
+                if(got!=cat_list.end())inffile[i].cats[j]=got->second;
                 //else log_con("Not found\n");
 
             }
         }
     }
-    //hash_stats(&cat_list);
 
     for(i=0;i<HWID_list.size();i++)
     {
@@ -1079,7 +1064,7 @@ void Driverpack::genhashes()
         char *vv=texta.get(HWID_list[i].HWID);
 
         val=hash_getcode(vv,strlen(vv));
-        hash_add(&indexes,(char *)&val,sizeof(int),i,HASH_MODE_ADD);
+        hash_add(&indexesold,(char *)&val,sizeof(int),i,HASH_MODE_ADD);
     }
 }
 
@@ -1171,7 +1156,7 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
         CHAR filename[BUFLEN];
         wsprintfA(filename,"%ws%ws",pathinf,inffilename);
         strtolower(filename,strlen(filename));
-        hash_add(&cat_list,filename,strlen(filename),texta.memcpyz_dup(bufa,strlen(bufa)),HASH_MODE_INTACT);
+        cat_list.insert({filename,texta.memcpyz_dup(bufa,strlen(bufa))});
         //log_con("(%s)\n##%s\n",filename,bufa);
     }
 }
@@ -1541,9 +1526,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
     Parser_str parse_info,parse_info2,parse_info3;
 
-    //hashtable_t *string_list=&string_list;
-    //hashtable_t *section_list=&section_list;
-    std::unordered_multimap<std::string,sect_data_t> section_list_n;
+    std::unordered_multimap<std::string,sect_data_t> section_list;
 
     parse_info.init(this);
     parse_info2.init(this);
@@ -1611,7 +1594,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 strlink.len=inf_len;
                 {
                     strtolower(p,sectnmend-p);
-                    auto a=section_list_n.insert({std::string(p,sectnmend-p),sect_data_t(strlink.ofs,strlink.len)});
+                    auto a=section_list.insert({std::string(p,sectnmend-p),sect_data_t(strlink.ofs,strlink.len)});
                     lnk_s2=&a->second;
                     //log_con("  %8d,%8d '%s' \n",strlink.ofs,strlink.len,std::string(p,sectnmend-p).c_str());
                 }
@@ -1627,7 +1610,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     }
 
     // Find [strings]
-    auto range=section_list_n.equal_range("strings");
+    auto range=section_list.equal_range("strings");
     if(range.first==range.second)log_index("ERROR: missing [strings] in %S%S\n",drpdir,inffilename);
     for(auto got=range.first;got!=range.second;++got)
     {
@@ -1640,7 +1623,9 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             parse_info.readStr(&s1b,&s1e);
             parse_info.parseField();
             parse_info.readStr(&s2b,&s2e);
-            hash_add(&string_list,s1b,s1e-s1b,(intptr_t)memcpy_alloc(s2b,s2e-s2b),HASH_MODE_INTACT);
+            strtolower(s1b,s1e-s1b);
+            string_list.insert({std::string(s1b,s1e-s1b),std::string(s2b,s2e-s2b)});
+            //hash_add(&string_list,s1b,s1e-s1b,(intptr_t)memcpy_alloc(s2b,s2e-s2b),HASH_MODE_INTACT);
         }
     }
 
@@ -1651,7 +1636,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     cur_ver->v1=-1;
     cur_ver->y=-1;
 
-    range=section_list_n.equal_range("version");
+    range=section_list.equal_range("version");
     if(range.first==range.second)log_index("ERROR: missing [version] in %S%S\n",drpdir,inffilename);
     //if(range.first==range.second)log_index("NOTE:  multiple [version] in %S%S\n",drpdir,inffilename);
     for(auto got=range.first;got!=range.second;++got)
@@ -1707,7 +1692,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S%S\n",drpdir,inffilename);
 
     // Find [manufacturer] section
-    range=section_list_n.equal_range("manufacturer");
+    range=section_list.equal_range("manufacturer");
     if(range.first==range.second)log_index("ERROR: missing [manufacturer] in %S%S\n",drpdir,inffilename);
     //if(lnk)log_index("NOTE:  multiple [manufacturer] in %S%S\n",drpdir,inffilename);
     for(auto got=range.first;got!=range.second;++got)
@@ -1742,7 +1727,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
                     strtolower(secttry,strlen(secttry));
 
-                    auto range2=section_list_n.equal_range(secttry);
+                    auto range2=section_list.equal_range(secttry);
                     if(range2.first==range2.second)log_index("ERROR: missing [%s] in %S%S\n",secttry,drpdir,inffilename);
                     for(auto got2=range2.first;got2!=range2.second;++got2)
                     {
@@ -1774,13 +1759,13 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             memcpy(installsection,s1b,s1e-s1b);installsection[s1e-s1b]=0;
                             strcat(installsection,".nt");
                             strtolower(installsection,strlen(installsection));
-                            auto range3=section_list_n.equal_range(installsection);
+                            auto range3=section_list.equal_range(installsection);
                             if(range3.first==range3.second)
                             {
                                 //sprintf(installsection,"%.*s",s1e-s1b,s1b);
                                 memcpy(installsection,s1b,s1e-s1b);installsection[s1e-s1b]=0;
                                 strtolower(installsection,strlen(installsection));
-                                range3=section_list_n.equal_range(installsection);
+                                range3=section_list.equal_range(installsection);
                             }
                             if(range3.first==range3.second)
                             {
@@ -1800,7 +1785,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                                 strtolower(installsection,strlen(installsection));
                                 while(strlen(installsection)>=(unsigned)(s1e-s1b))
                                 {
-                                    range3=section_list_n.equal_range(installsection);
+                                    range3=section_list.equal_range(installsection);
                                     if(range3.first!=range3.second)break;
                                     //log_file("Tried '%s'\n",installsection);
                                     installsection[strlen(installsection)-1]=0;
@@ -1818,7 +1803,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                                     memcpy(installsection,s1b,s1e-s1b);installsection[s1e-s1b]=0;
                                     strcat(installsection,".");strcat(installsection,nts[i]);
                                     strtolower(installsection,strlen(installsection));
-                                    auto range4=section_list_n.equal_range(installsection);
+                                    auto range4=section_list.equal_range(installsection);
                                     if(range4.first!=range4.second)
                                     {
                                         //lnk3=tlnk;
@@ -1904,7 +1889,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     //hash_stats(section_list);
     //hash_stats(dup_list);
 
-    hash_clear(&string_list,1);
+    //hash_clear(&string_list,1);
+    string_list.clear();
 }
 //}
 

@@ -718,14 +718,14 @@ void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int is
     for(i=0;i<col->driverpack_list.size();i++)
     {
         drp=&col->driverpack_list[i];
-        int val=hash_find(&drp->indexes,(char *)&code,4,&isfound);
+        int val=hash_find(&drp->indexesold,(char *)&code,4,&isfound);
         while(isfound)
         {
             hwidmatch_list.push_back(Hwidmatch());
             hwidmatch=&hwidmatch_list.back();
             hwidmatch->init(drp,val,dev_pos,ishw,state,devicematch);
             devicematch->num_matches++;
-            val=hash_findnext_b(&drp->indexes,&isfound);
+            val=hash_findnext_b(&drp->indexesold,&isfound);
         }
     }
 }
