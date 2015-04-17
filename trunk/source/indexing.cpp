@@ -755,10 +755,10 @@ void Driverpack::init(wchar_t const *driverpack_path,wchar_t const *driverpack_f
 
 void Driverpack::release()
 {
-    inffile.clear();
+    /*inffile.clear();
     manufacturer_list.clear();
     desc_list.clear();
-    HWID_list.clear();
+    HWID_list.clear();*/
 
     hash_free(&string_list);
     hash_free(&section_list);
@@ -1494,6 +1494,7 @@ int Driverpack::genindex()
 #endif
 
     driverpack_indexinf_async(this,col,L"",L"",nullptr,0);
+    texta.shrink();
     return 1;
 }
 
@@ -1545,6 +1546,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
     //hashtable_t *string_list=&string_list;
     //hashtable_t *section_list=&section_list;
+    std::unordered_multimap<std::string,sect_data_t> section_list_n;
 
     parse_info.init(this);
     parse_info2.init(this);
@@ -1553,6 +1555,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     char *p=inf_base,*strend=inf_base+inf_len;
     char *p2,*sectnmend;
     char *lnk_s=nullptr;
+    sect_data_t *lnk_s2=nullptr;
 
     cur_inffile_index=inffile.size();
     inffile.resize(cur_inffile_index+1);
@@ -1563,7 +1566,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     cur_inffile->inffilename=texta.strcpy(line);
     cur_inffile->infsize=inf_len;
     cur_inffile->infcrc=0;
-    //log_file("%S%S\n",drpdir,inffile);
+
+    //log_con("%S\n",inffilename);
 
     // Populate sections
     //char *b;
@@ -1583,6 +1587,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             case '[':
                 if(lnk_s)
                     ((sect_data_t *)lnk_s)->len=p-inf_base;
+                if(lnk_s2)
+                    lnk_s2->len=p-inf_base;
 #ifdef DEBUG_EXTRACHECKS
 /*					char *strings_base=inf_base+(*it).second.ofs;
 					int strings_len=(*it).second.len-(*it).second.ofs;
@@ -1611,6 +1617,10 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 strlink.len=inf_len;
                 {
                     lnk_s=memcpy_alloc((char *)(&strlink),sizeof(sect_data_t));
+                    strtolower(p,sectnmend-p);
+                    auto a=section_list_n.insert({std::string(p,sectnmend-p),sect_data_t(strlink.ofs,strlink.len)});
+                    lnk_s2=&a->second;
+                    //log_con("  %8d,%8d '%s' \n",strlink.ofs,strlink.len,std::string(p,sectnmend-p).c_str());
                     hash_add(&section_list,p,sectnmend-p,(intptr_t)lnk_s,HASH_MODE_ADD);
                 }
                 p=p2;
@@ -1625,10 +1635,11 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     }
 
     // Find [strings]
-    lnk=(sect_data_t *)hash_find_str(&section_list,"strings");
-    if(!lnk)log_index("ERROR: missing [strings] in %S%S\n",drpdir,inffilename);
-    while(lnk)
+    auto range=section_list_n.equal_range("strings");
+    if(range.first==range.second)log_index("ERROR: missing [strings] in %S%S\n",drpdir,inffilename);
+    for(auto got=range.first;got!=range.second;++got)
     {
+        lnk=&got->second;
         char *s1b,*s1e,*s2b,*s2e;
 
         parse_info.setRange(inf_base,lnk);
@@ -1639,8 +1650,6 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             parse_info.readStr(&s2b,&s2e);
             hash_add(&string_list,s1b,s1e-s1b,(intptr_t)memcpy_alloc(s2b,s2e-s2b),HASH_MODE_INTACT);
         }
-        lnk=(sect_data_t *)hash_findnext(&section_list);
-        if(lnk)log_index("NOTE: multiple [strings] in %S%S\n",drpdir,inffilename);
     }
 
     // Find [version]
@@ -1650,10 +1659,12 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     cur_ver->v1=-1;
     cur_ver->y=-1;
 
-    lnk=(sect_data_t *)hash_find_str(&section_list,"version");
-    if(!lnk)log_index("ERROR: missing [version] in %S%S\n",drpdir,inffilename);
-    while(lnk)
+    range=section_list_n.equal_range("version");
+    if(range.first==range.second)log_index("ERROR: missing [version] in %S%S\n",drpdir,inffilename);
+    //if(range.first==range.second)log_index("NOTE:  multiple [version] in %S%S\n",drpdir,inffilename);
+    for(auto got=range.first;got!=range.second;++got)
     {
+        lnk=&got->second;
         char *s1b,*s1e;
 
         parse_info.setRange(inf_base,lnk);
@@ -1661,6 +1672,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         {
             parse_info.readStr(&s1b,&s1e);
             strtolower(s1b,s1e-s1b);
+            //log_con("tolower '%.10s'\n",s1b);
 
             int i,sz=s1e-s1b;
             for(i=0;i<NUM_VER_NAMES;i++)
@@ -1698,20 +1710,17 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             }
             while(parse_info.parseField());
         }
-        lnk=(sect_data_t *)hash_findnext(&section_list);
-        if(lnk)log_index("NOTE:  multiple [version] in %S%S\n",drpdir,inffilename);
-        if(!lnk)
-        {
-            if(cur_ver->y==-1) log_index("ERROR: missing date in %S%S\n",drpdir,inffilename);
-            if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S%S\n",drpdir,inffilename);
-        }
     }
+    if(cur_ver->y==-1) log_index("ERROR: missing date in %S%S\n",drpdir,inffilename);
+    if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S%S\n",drpdir,inffilename);
 
     // Find [manufacturer] section
-    lnk=(sect_data_t *)hash_find_str(&section_list,"manufacturer");
-    if(!lnk)log_index("ERROR: missing [manufacturer] in %S%S\n",drpdir,inffilename);
-    while(lnk)
+    range=section_list_n.equal_range("manufacturer");
+    if(range.first==range.second)log_index("ERROR: missing [manufacturer] in %S%S\n",drpdir,inffilename);
+    //if(lnk)log_index("NOTE:  multiple [manufacturer] in %S%S\n",drpdir,inffilename);
+    for(auto got=range.first;got!=range.second;++got)
     {
+        lnk=&got->second;
         parse_info.setRange(inf_base,lnk);
         while(parse_info.parseItem())
         {
@@ -1741,10 +1750,14 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                         wsprintfA(secttry,"%s",texta.get(strs[0]));
 
                     memcpy(&savedfind0,&section_list.finddata,sizeof(find_t));
-                    lnk2=(sect_data_t *)hash_find_str(&section_list,secttry);
-                    if(!lnk2&&cur_manuf->sections_n>1)log_index("ERROR: missing [%s] in %S%S\n",secttry,drpdir,inffilename);
-                    while(lnk2)
+                    strtolower(secttry,strlen(secttry));
+
+                    auto range2=section_list_n.equal_range(secttry);
+                    if(range2.first==range2.second)log_index("ERROR: missing [%s] in %S%S\n",secttry,drpdir,inffilename);
+                    for(auto got2=range2.first;got2!=range2.second;++got2)
                     {
+                        lnk2=&got2->second;
+                        //log_con("%d,%d\n",lnk2->ofs,lnk2->len);
                         parse_info2.setRange(inf_base,lnk2);
                         while(parse_info2.parseItem())
                         {
@@ -1890,8 +1903,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                                 }*/
                             }
                         }
-                        lnk2=(sect_data_t *)hash_findnext(&section_list);
-                        if(lnk2)log_index("NOTE:  multiple [%s] in %S%S\n",secttry,drpdir,inffilename);
+                        //lnk2=(sect_data_t *)hash_findnext(&section_list);
+                        //if(lnk2)log_index("NOTE:  multiple [%s] in %S%S\n",secttry,drpdir,inffilename);
                     }
                     memcpy(&section_list.finddata,&savedfind0,sizeof(find_t));
 
@@ -1903,10 +1916,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 }
             }
             cur_manuf->sections=texta.memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n);
-
         }
-        lnk=(sect_data_t *)hash_findnext(&section_list);
-        if(lnk)log_index("NOTE:  multiple [manufacturer] in %S%S\n",drpdir,inffilename);
     }
     //hash_stats(string_list);
     //hash_stats(section_list);
@@ -1970,6 +1980,12 @@ int Txt::alloc(int sz)
 void Txt::reset(int sz)
 {
     text.resize(sz);
+    text.reserve(1024*1024);
 }
 
+void Txt::shrink()
+{
+    //log_con("Text_usage %d/%d\n",text.size(),text.capacity());
+//    text.shrink_to_fit();
+}
 
