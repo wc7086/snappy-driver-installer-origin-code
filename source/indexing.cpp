@@ -1034,7 +1034,7 @@ void Driverpack::genhashes()
     unsigned i;
 
 
-    hash_init(&indexesold,ID_INDEXES,HWID_list.size()/2,HASH_FLAG_STRS_ARE_INTS);
+    hash_init(&indexesold,HWID_list.size()/2);
     //heap_expand(&t->indexes.strs_handle,64*1024);
     //log_file("Items: %d\n",pack->HWID_list_handle.items);
     for(i=0;i<inffile.size();i++)
@@ -1064,7 +1064,7 @@ void Driverpack::genhashes()
         char *vv=texta.get(HWID_list[i].HWID);
 
         val=hash_getcode(vv,strlen(vv));
-        hash_add(&indexesold,(char *)&val,sizeof(int),i,HASH_MODE_ADD);
+        hash_add(&indexesold,val,i);
     }
 }
 

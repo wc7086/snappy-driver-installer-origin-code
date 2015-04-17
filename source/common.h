@@ -14,57 +14,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-enum hash_flags
-{
-    HASH_FLAG_KEYS_ARE_POINTERS= 1,
-    HASH_FLAG_STR_TO_LOWER = 2,
-    HASH_FLAG_STRS_ARE_INTS = 4,
-};
 
 extern int trap_mode;
 typedef struct _hashtable_t hashtable_t;
-
-enum
-{
-    HASH_MODE_INTACT,
-    HASH_MODE_REPLACE,
-    HASH_MODE_ADD
-};
 
 enum // heap_t
 {
     ID_HASH_ITEMS=0,    // 0
     ID_HASH_STR,        // 1
-
-    ID_STATE_DEVICES,   // 2
-    ID_STATE_DRIVERS,   // 3
-    ID_STATE_TEXT,      // 4
-
-    ID_DRIVERPACK_inffile,      // 5
-    ID_DRIVERPACK_manufacturer, // 6
-    ID_DRIVERPACK_desc_list,    // 7
-    ID_DRIVERPACK_HWID_list,    // 8
-    ID_DRIVERPACK_text,         // 9
-    ID_DRIVERPACK,          // 10
-
-    ID_PARSE,          // 11
-    ID_MATCHER,          // 12
-    ID_MANAGER,         // 13
     NUM_HEAPS
-};
-
-enum // hash_t
-{
-    ID_MEMCPYZ_DUP=0,// 0
-
-    ID_STRINGS,     // 1
-    ID_SECTIONS,    // 2
-    ID_INDEXES,     // 3
-    ID_DUP_LIST,    // 4
-    ID_INF_LIST,    // 5
-    ID_CAT_LIST,    // 6
-    ID_FILES,       // 7
-    NUM_HASHES
 };
 
 //{ Structs
@@ -81,25 +39,20 @@ typedef struct _heap_t
     //hashtable_t *dup;
 }heap_t;
 
-typedef struct _find_t
-{
-    int findnext,findstrlen;
-    const char *findstr;
-}find_t;
-
 typedef struct hashitem_type
 {
-    int string1;
     int key;
+    int value;
     int next;
-    int strlen;
+    int valuelen;
 }hashitem_t;
 
 typedef struct _hashtable_t
 {
-    int id;
-    int flags;
-    find_t finddata;
+//    int id;
+//    int flags;
+    int findnext;
+    int findstr;
     int size;
 
     hashitem_t *items;
@@ -107,9 +60,6 @@ typedef struct _hashtable_t
     char *strs;
     heap_t strs_handle;
 
-    int search_all,search_miss;
-    int cmp_all,cmp_miss;
-    int max_deep,used_1;
 }hashtable_t;
 //}
 
@@ -136,8 +86,6 @@ char *heap_load(heap_t *t,char *p);
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
-//char *strtolower_alloc(const char *s);
-//char *memcpy_alloc(const char *s,int sz);
 
 // 7-zip
 namespace NArchive{
@@ -160,15 +108,11 @@ extern void registerByteSwap();
 // Hash
 unsigned hash_getcode(const char *s,int sz);
 inline char *getstr(hashtable_t *t,hashitem_t *cur);
-void hash_init(hashtable_t *t,int id,int size,int flags);
+void hash_init(hashtable_t *t,int size);
 void hash_clear(hashtable_t *t,int zero);
 void hash_free(hashtable_t *t);
-void hash_stats(hashtable_t *t);
 char *hash_save(hashtable_t *t,char *p);
 char *hash_load(hashtable_t *t,char *p);
-void hash_add(hashtable_t *t,const char *s,int s_sz,intptr_t key,int mode);
-intptr_t  hash_find(hashtable_t *t,const char *s,int sz,int *isfound);
-intptr_t  hash_find_str(hashtable_t *t,const char *s);
-int  hash_findnext_rec(hashtable_t *t,const char *s);
-int  hash_findnext_b(hashtable_t *t,int *isfound);
-intptr_t  hash_findnext(hashtable_t *t);
+void hash_add(hashtable_t *t,int key,int value);
+int  hash_find(hashtable_t *t,int vl,int *isfound);
+int  hash_findnext(hashtable_t *t,int *isfound);

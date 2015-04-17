@@ -630,7 +630,7 @@ void Hwidmatch::print_tbl(int *limits)
 
     wsprintfA(buf,"%ws\\%ws",       getdrp_packpath(),getdrp_packname());
     log_file(" %-*s |",limits[1],buf);
-    log_file(" %8X |",              getdrp_infcrc());
+    log_file(" %8X|",              getdrp_infcrc());
     wsprintfA(buf,"%s%s",         getdrp_infpath(),getdrp_infname());
     log_file(" %-*s |",limits[2],buf);
     log_file(" %-*s |",limits[3],    getdrp_drvmanufacturer());
@@ -718,14 +718,14 @@ void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int is
     for(i=0;i<col->driverpack_list.size();i++)
     {
         drp=&col->driverpack_list[i];
-        int val=hash_find(&drp->indexesold,(char *)&code,4,&isfound);
+        int val=hash_find(&drp->indexesold,code,&isfound);
         while(isfound)
         {
             hwidmatch_list.push_back(Hwidmatch());
             hwidmatch=&hwidmatch_list.back();
             hwidmatch->init(drp,val,dev_pos,ishw,state,devicematch);
             devicematch->num_matches++;
-            val=hash_findnext_b(&drp->indexesold,&isfound);
+            val=hash_findnext(&drp->indexesold,&isfound);
         }
     }
 }
