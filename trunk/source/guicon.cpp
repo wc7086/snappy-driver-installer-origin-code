@@ -55,17 +55,17 @@ long
 void log_times()
 {
     if((log_verbose&LOG_VERBOSE_TIMES)==0)return;
-    log_file("Times\n");
-    log_file("  devicescan: %7ld (%d errors)\n",time_devicescan,error_count);
-    log_file("  indexes:    %7ld\n",time_indexes);
-    log_file("  sysinfo:    %7ld\n",time_sysinfo);
-    log_file("  matcher:    %7ld\n",time_matcher);
-    log_file("  chkupdate:  %7ld\n",time_chkupdate);
-    log_file("  startup:    %7ld (%ld)\n",time_startup,time_startup-time_devicescan-time_indexes-time_matcher-time_sysinfo);
-    log_file("  indexsave:  %7ld\n",time_indexsave);
-    log_file("  indexprint: %7ld\n",time_indexprint);
-    log_file("  total:      %7ld\n",time_total);
-    log_file("  test:       %7ld\n",time_test);
+    log_con("Times\n");
+    log_con("  devicescan: %7ld (%d errors)\n",time_devicescan,error_count);
+    log_con("  indexes:    %7ld\n",time_indexes);
+    log_con("  sysinfo:    %7ld\n",time_sysinfo);
+    log_con("  matcher:    %7ld\n",time_matcher);
+    log_con("  chkupdate:  %7ld\n",time_chkupdate);
+    log_con("  startup:    %7ld (%ld)\n",time_startup,time_startup-time_devicescan-time_indexes-time_matcher-time_sysinfo);
+    log_con("  indexsave:  %7ld\n",time_indexsave);
+    log_con("  indexprint: %7ld\n",time_indexprint);
+    log_con("  total:      %7ld\n",time_total);
+    log_con("  test:       %7ld\n",time_test);
 }
 
 void gen_timestamp()

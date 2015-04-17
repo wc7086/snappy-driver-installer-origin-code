@@ -456,13 +456,6 @@ wchar_t *State::getModel()
 
 void State::init()
 {
-    textas.text.reserve(1024*1024*1);
-    //Drivers_list.reserve(500);
-    //Devices_list.reserve(500);
-    textas.alloc(2);
-    textas.text[0]=0;
-    textas.text[1]=0;
-
     revision=SVN_REV;
 
     //log_file("sizeof(Device)=%d\nsizeof(Driver)=%d\n\n",sizeof(Device),sizeof(Driver));
@@ -601,7 +594,7 @@ void State::save(const wchar_t *filename)
         sizeof(state_m_t)+
         Drivers_list.size()*sizeof(Driver)+
         Devices_list.size()*sizeof(Device)+
-        textas.text.size()+
+        textas.getSize()+
         2*3*sizeof(int);  // 3 heaps
 
     std::unique_ptr<char[]> mem(new char[sz]);
@@ -613,7 +606,7 @@ void State::save(const wchar_t *filename)
     memcpy(p,this,sizeof(state_m_t));p+=sizeof(state_m_t);
     p=vector_save(&Devices_list,p);
     p=vector_save(&Drivers_list,p);
-    p=vector_save(&textas.text,p);
+    p=vector_save(textas.getVector(),p);
 
     if(1)
     {
@@ -674,7 +667,7 @@ int  State::load(const wchar_t *filename)
     memcpy(this,p,sizeof(state_m_t));p+=sizeof(state_m_t);
     p=vector_load(&Devices_list,p);
     p=vector_load(&Drivers_list,p);
-    p=vector_load(&textas.text,p);
+    p=vector_load(textas.getVector(),p);
 
     fakeOSversion();
 
@@ -857,7 +850,7 @@ int State::opencatfile(Driver *cur_driver)
     wcscpy(filename,textas.getw(windir));
     wsprintf(filename+wcslen(filename)-4,
              L"system32\\CatRoot\\{F750E6C3-38EE-11D1-85E5-00C04FC295EE}\\%ws",
-             textas.getw(cur_driver->InfPath));
+             textas.getw(cur_driver->getInfPath()));
     wcscpy(filename+wcslen(filename)-3,L"cat");
 
     f=_wfopen(filename,L"rb");

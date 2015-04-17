@@ -19,13 +19,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define PAN_ENT          18
 
 //{ Structs
-typedef struct _panelitem_t
+struct panelitem_t
 {
     int type;
     int str_id;
     int action_id;
     int checked;
-}panelitem_t;
+};
 
 class Image
 {
@@ -90,10 +90,8 @@ public:
 
 class Panel
 {
-public:
-    panelitem_t *items;
-
 private:
+    panelitem_t *items;
     int index,indofs;
 
     int Xp();
@@ -105,11 +103,15 @@ public:
     Panel(panelitem_t *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
     bool isChecked(int i)const{return items[i].checked;}
     void setChecked(int i,int val){items[i].checked=val;}
+    void flipChecked(int i){items[i].checked^=1;}
+
     void setfilters();
     int  hitscan(int x,int y);
     void draw_inv();
     void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);
+
+    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 };
 //}
 

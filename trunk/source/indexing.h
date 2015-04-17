@@ -126,10 +126,12 @@ enum DRIVERPACK_TYPE
 class Txt
 {
 private:
-    typedef std::unordered_map<std::string,ofst> stringmap;
-public:
+    std::unordered_map<std::string,ofst> dub;
     std::vector<char> text;
-    stringmap dub;
+
+public:
+    unsigned getSize()const{return text.size();}
+    std::vector<char> *getVector(){return &text;}
 
     char *get(ofst offset);
     wchar_t *getw(ofst offset);
@@ -139,6 +141,7 @@ public:
     int memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
 
+    Txt(){alloc(2);text[0]=text[1]=0;}
     int alloc(int sz);
     void reset(int sz);
 };
@@ -265,8 +268,7 @@ class Parser_str
 {
 private:
     Driverpack *pack;
-    heap_t strings;
-    char *text;
+    Txt textholder;
 
     char *blockBeg;
     char *blockEnd;
@@ -288,7 +290,6 @@ public:
     void readStr(char **vb,char **ve);
 
     void init(Driverpack *drp);
-    void release();
     void setRange(char *inf_base,sect_data_t *lnk);
     void setRange(char *vb,char *ve){strBeg=vb;strEnd=ve;}
 };
