@@ -161,7 +161,6 @@ public:
 
     Collection *col;
 
-    hashtable_t section_list;
     hashtable_t string_list;
     hashtable_t indexes;
     hashtable_t cat_list;
