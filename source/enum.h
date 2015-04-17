@@ -113,6 +113,7 @@ private:
     void scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos);
 
 public:
+    ofst getInfPath()const{return InfPath;}
     void print(State *state);
 
     Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp);

@@ -661,6 +661,7 @@ void bundle_lowprioirity(bundle_t *bundle)
 {
     wchar_t filename[BUFLEN];
     time_startup=GetTickCount()-time_startup;
+    log_times();
 
     redrawmainwnd();
 
@@ -1571,13 +1572,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(ctrl_down&&wParam==L'I')PostMessage(hMain,WM_COMMAND,ID_INSTALL,0);
             if(ctrl_down&&wParam==L'P')
             {
-                panels[11].items[2].checked^=1;
+                panels[11].flipChecked(2);
                 PostMessage(hMain,WM_COMMAND,ID_RESTPNT,0);
                 redrawmainwnd();
             }
             if(ctrl_down&&wParam==L'R')
             {
-                panels[11].items[3].checked^=1;
+                panels[11].flipChecked(3);
                 PostMessage(hMain,WM_COMMAND,ID_REBOOT,0);
                 redrawmainwnd();
             }
@@ -1722,10 +1723,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             //log_con("%d,%d\n",j,i);
             if(panels[j].items[i].type==TYPE_CHECKBOX||TYPE_BUTTON)
             {
-                panels[j].items[i].checked^=1;
+                panels[j].flipChecked(i);
                 if(panels[j].items[i].action_id==ID_EXPERT_MODE)
                 {
-                    expertmode=panels[j].items[i].checked;
+                    expertmode=panels[j].isChecked(i);
                     ShowWindow(GetConsoleWindow(),expertmode&&ctrl_down?SW_SHOWNOACTIVATE:hideconsole);
                 }
                 else
@@ -1796,7 +1797,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
                                manager_g->matcher->state->textas.get(manager_g->matcher->state->windir),
-                               manager_g->matcher->state->textas.get(cur_driver->InfPath));
+                               manager_g->matcher->state->textas.get(cur_driver->getInfPath()));
 
                         if(wp==ID_OPENINF)
                             run_command(buf,L"",SW_SHOW,0);
@@ -1954,11 +1955,11 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_RESTPNT:
-                    set_rstpnt(panels[11].items[2].checked);
+                    set_rstpnt(panels[11].isChecked(2));
                     break;
 
                 case ID_REBOOT:
-                    if(panels[11].items[3].checked)
+                    if(panels[11].isChecked(3))
                         flags|=FLAG_AUTOINSTALL;
                     else
                         flags&=~FLAG_AUTOINSTALL;

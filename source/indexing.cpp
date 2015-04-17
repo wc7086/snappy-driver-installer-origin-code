@@ -246,13 +246,6 @@ void Parser_str::readVersion(version_t *t)
 void Parser_str::init(Driverpack *drp)
 {
     pack=drp;
-    heap_init(&strings,ID_PARSE,(void **)&text,1024*64,1);
-}
-
-void Parser_str::release()
-{
-    if(strings.used)log_file("Parse_used %d\n",strings.used);
-    heap_free(&strings);
 }
 
 void Parser_str::setRange(char *inf_base,sect_data_t *lnk)
@@ -269,23 +262,20 @@ void Parser_str::readStr(char **vb,char **ve)
 
 void Parser_str::str_sub()
 {
-    static char static_buf[BUFLEN];
+    char static_buf[BUFLEN];
     int vers_len;
-    char *v1b,*v1e;
+    char *v1b;
     char *res;
     int isfound;
 
     v1b=strBeg;
-    v1e=strEnd;
 
-    strEnd=v1e;
-
-    if(*v1b=='%'/*&&v1e[-1]=='%'*/)
+    if(*v1b=='%'/*&&strEnd[-1]=='%'*/)
     {
-        //log_file("String '%.*s' %c\n",v1e-v1b,v1b,v1e[-1]);
+        //log_file("String '%.*s' %c\n",strEnd-v1b,v1b,strEnd[-1]);
         v1b++;
-        vers_len=v1e-v1b-1;
-        if(v1e[-1]!='%')vers_len++;
+        vers_len=strEnd-v1b-1;
+        if(strEnd[-1]!='%')vers_len++;
         if(vers_len<0)vers_len=0;
 
         strtolower(v1b,vers_len);
@@ -306,14 +296,14 @@ void Parser_str::str_sub()
     char *p,*p_s=static_buf;
     v1b=strBeg;
     int flag=0;
-    while(v1b<v1e)
+    while(v1b<strEnd)
     {
-        while(*v1b!='%'&&v1b<v1e)*p_s++=*v1b++;
+        while(*v1b!='%'&&v1b<strEnd)*p_s++=*v1b++;
         if(*v1b=='%')
         {
-            //log_file("Deep replace %.*s\n",v1e-v1b,v1b);
+            //log_file("Deep replace %.*s\n",strEnd-v1b,v1b);
             p=v1b+1;
-            while(*p!='%'&&p<v1e)p++;
+            while(*p!='%'&&p<strEnd)p++;
             if(*p=='%')
             {
                 strtolower(v1b+1,p-v1b-1);
@@ -326,16 +316,13 @@ void Parser_str::str_sub()
                     flag=1;
                 }
             }
-            if(v1b<v1e)*p_s++=*v1b++;
+            if(v1b<strEnd)*p_s++=*v1b++;
         }
     }
     if(!flag)return;
 
     *p_s++=0;*p_s=0;
-    p_s=static_buf;
-
-    p_s=text+heap_alloc(&strings,strlen(p_s)+1);
-    strcpy(p_s,static_buf);
+    p_s=textholder.get(textholder.strcpy(static_buf));
 
     strBeg=p_s;
     strEnd=p_s+strlen(p_s);
@@ -618,6 +605,7 @@ void Collection::print()
         drp.print();
 
     time_indexprint=GetTickCount()-time_indexprint;
+    log_times();
 }
 
 void Collection::printstates()
@@ -805,8 +793,7 @@ void Driverpack::saveindex()
         manufacturer_list.size()*sizeof(data_manufacturer_t)+
         desc_list.size()*sizeof(data_desc_t)+
         HWID_list.size()*sizeof(data_HWID_t)+
-        //text_old_handle.used+
-        texta.text.size()+
+        texta.getSize()+
         indexes.items_handle.used+sizeof(int)+
         6*sizeof(int)*2;
 
@@ -818,7 +805,7 @@ void Driverpack::saveindex()
     p=vector_save(&manufacturer_list,p);
     p=vector_save(&desc_list,p);
     p=vector_save(&HWID_list,p);
-    p=vector_save(&texta.text,p);
+    p=vector_save(texta.getVector(),p);
     p=hash_save(&indexes,p);
     /*log_con("Sz:(%d,%d,%d,%d,%d,%d)=%d\n",
             inffile_handle.used,
@@ -910,7 +897,7 @@ int Driverpack::loadindex()
     p=vector_load(&manufacturer_list,p);
     p=vector_load(&desc_list,p);
     p=vector_load(&HWID_list,p);
-    p=vector_load(&texta.text,p);
+    p=vector_load(texta.getVector(),p);
     p=hash_load(&indexes,p);
 
     free(mem);
@@ -953,19 +940,23 @@ void Driverpack::print()
     int cnts[NUM_DECS],plain;
     unsigned HWID_index_last=0;
     unsigned manuf_index_last=0;
+    //char  bufdata[1024*1024*2];
+    //char  *bufdata=new char[1024*1024*10];
     int i;
 
     hwidmatch.drp=this;
     getindexfilename(col->getIndex_linear_dir(),L"txt",filename);
     f=_wfopen(filename,L"wt");
+    //setvbuf(f,bufdata,_IOFBF,1024*1024*10);
 
+    log_con("Saving %S\n",filename);
     fprintf(f,"%S\\%S (%d inf files)\n",getPath(),getFilename(),n);
     for(inffile_index=0;inffile_index<n;inffile_index++)
     {
         d_i=&inffile[inffile_index];
         fprintf(f,"  %s%s (%d bytes)\n",texta.get(d_i->infpath),texta.get(d_i->inffilename),d_i->infsize);
-    for(i=0;i<(int)n;i++)if(i!=(int)inffile_index&&d_i->infcrc==inffile[i].infcrc)
-    fprintf(f,"**%s%s\n",texta.get(inffile[i].infpath),texta.get(inffile[i].inffilename));
+        for(i=0;i<(int)n;i++)if(i!=(int)inffile_index&&d_i->infcrc==inffile[i].infcrc)
+        fprintf(f,"**%s%s\n",texta.get(inffile[i].infpath),texta.get(inffile[i].inffilename));
         t=&d_i->version;
         fprintf(f,"    date\t\t\t%d/%d/%d\n",t->d,t->m,t->y);
         fprintf(f,"    version\t\t\t%d.%d.%d.%d\n",t->v1,t->v2,t->v3,t->v4);
@@ -1920,10 +1911,6 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     //hash_stats(string_list);
     //hash_stats(section_list);
     //hash_stats(dup_list);
-
-    parse_info.release();
-    parse_info2.release();
-    parse_info3.release();
 
     hash_clear(&string_list,1);
     hash_clear(&section_list,1);
