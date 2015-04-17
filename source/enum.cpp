@@ -756,6 +756,7 @@ void State::getsysinfo_slow()
     cs_manuf=textas.memcpy((char*)scs_manuf,wcslen(scs_manuf)*2+2);
     cs_model=textas.memcpy((char*)scs_model,wcslen(scs_model)*2+2);
 
+    textas.shrink();
     time_sysinfo=GetTickCount()-time_sysinfo;
 }
 

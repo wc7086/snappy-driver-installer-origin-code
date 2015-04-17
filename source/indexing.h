@@ -94,10 +94,14 @@ typedef struct _filedata_t
     wchar_t *str;
 }filedata_t;
 
-typedef struct _sect_data_t
+class sect_data_t
 {
+public:
     int ofs,len;
-}sect_data_t;
+
+    sect_data_t(int ofsv,int lenv):ofs(ofsv),len(lenv){}
+    sect_data_t():ofs(0),len(0){}
+};
 
 typedef struct _tbl_t
 {
@@ -141,9 +145,10 @@ public:
     int memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
 
-    Txt(){alloc(2);text[0]=text[1]=0;}
+    Txt(){reset(2);text[0]=text[1]=0;}
     int alloc(int sz);
     void reset(int sz);
+    void shrink();
 };
 
 class Driverpack
@@ -160,6 +165,10 @@ public:
     hashtable_t string_list;
     hashtable_t indexes;
     hashtable_t cat_list;
+
+    std::unordered_map<std::string,std::string> string_list_n;
+    //std::unordered_map<> indexes;
+    std::unordered_map<std::string,ofst> cat_list_n;
 
     std::vector<data_inffile_t> inffile;
     std::vector<data_manufacturer_t> manufacturer_list;
