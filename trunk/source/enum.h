@@ -116,6 +116,9 @@ public:
     ofst getInfPath()const{return InfPath;}
     void print(State *state);
 
+    Driver(const Driver &)=delete;
+    Driver &operator=(const Driver &)=delete;
+    Driver(Driver &&)=default;
     Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp);
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
@@ -189,6 +192,9 @@ public:
 
     void init();
     void release();
+    //State(const State &)=delete;
+    //State &operator=(const State &)=delete;
+    //State(State &&)=default;
     ~State();
     void print();
 

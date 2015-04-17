@@ -164,7 +164,7 @@ void Device::print(State *state)
     log_file("\n  Manufacturer: %S\n",s+Mfg);
     log_file("  HWID_reg      %S\n",s+Driver);
     log_file("  Class:        ");print_guid(&DeviceInfoData.ClassGuid);
-    log_file("  Location:\n");
+    log_file("  Location:     \n");
     log_file("  ConfigFlags:  %d\n", ConfigFlags);
     log_file("  Capabilities: %d\n", Capabilities);
 }
