@@ -309,7 +309,7 @@ void strtolower(char *s,int len)
     }
 }
 
-char *strtolower_alloc(const char *s)
+/*char *strtolower_alloc(const char *s)
 {
     char *d,*p;
 
@@ -332,7 +332,7 @@ char *memcpy_alloc(const char *s,int sz)
     memcpy(d,s,sz);
     d[sz]=0;
     return d;
-}
+}*/
 //}
 
 //{ 7-zip

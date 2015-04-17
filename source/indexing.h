@@ -161,13 +161,11 @@ public:
 
     Collection *col;
 
-    hashtable_t string_list;
-    hashtable_t indexes;
-    hashtable_t cat_list;
+    hashtable_t indexesold;
 
-    std::unordered_map<std::string,std::string> string_list_n;
     //std::unordered_map<> indexes;
-    std::unordered_map<std::string,ofst> cat_list_n;
+    std::unordered_map<std::string,std::string> string_list;
+    std::unordered_map<std::string,ofst> cat_list;
 
     std::vector<data_inffile_t> inffile;
     std::vector<data_manufacturer_t> manufacturer_list;
