@@ -31,7 +31,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system-mt" />
+					<Add library="boost_system32" />
 					<Add directory="../lib/ReleaseU" />
 				</Linker>
 			</Target>
@@ -57,7 +57,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system-mt" />
+					<Add library="boost_system32" />
 					<Add directory="../lib/DebugU" />
 				</Linker>
 			</Target>
@@ -82,7 +82,7 @@
 					<Add option="-s" />
 					<Add option="-m64" />
 					<Add library="webp64" />
-					<Add library="torrent64" />
+					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="boost_system64" />
@@ -109,7 +109,7 @@
 					<Add option="-pg -lgmon" />
 					<Add option="-m64" />
 					<Add library="webp64" />
-					<Add library="torrent64" />
+					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="boost_system64" />
