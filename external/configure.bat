@@ -21,7 +21,6 @@ set MSYS=%GCC_PATH%\msys\1.0\bin
 set BOOST_BUILD_PATH=%BOOST_ROOT%
 set LIBTORRENT_PATH=%CD%\libtorrent-rasterbar-1.0.4
 set WEBP_PATH=%CD%\webp
-set COL 9F
 
 set path=%GCC_PATH%\bin;%BOOST_ROOT%;%MSYS%;%path%
 
@@ -52,7 +51,7 @@ if /I "%menu%"=="D" call :delall
 if /I "%menu%"=="C" (color 7&cls&call :checkall)
 if /I "%menu%"=="T" (color 7&cls&goto installtorrent)
 if /I "%menu%"=="W" (color 7&cls&goto installwebp)
-if /I "%menu%"=="Q" exit
+if /I "%menu%"=="Q" (color 7&cls&exit)
 goto mainmenu
 
 :delall

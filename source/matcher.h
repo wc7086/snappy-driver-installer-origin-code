@@ -17,6 +17,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #define NUM_DECS 12*4
 #define NUM_MARKERS 31
+#define NUM_FILTERS 22
 
 enum DRIVER_STATUS
 {
@@ -132,7 +133,7 @@ unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
 unsigned calc_score_h(Driver *driver,State *state);
 int calc_secttype(const char *s);
 int calc_decorscore(int id,State *state);
-int calc_markerscore(State *state,char *path);
+int calc_markerscore(State *state,const char *path);
 
 // Misc
 void findHWID_in_list(char *s,int list,int str,int *dev_pos);

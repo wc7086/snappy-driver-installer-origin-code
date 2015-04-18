@@ -40,7 +40,7 @@ const char *nts[NUM_DECS]=
     "nt.6.1","ntx86.6.1","ntamd64.6.1","ntia64.6.1", // 7
     "nt.6.2","ntx86.6.2","ntamd64.6.2","ntia64.6.2", // 8
     "nt.6.3","ntx86.6.3","ntamd64.6.3","ntia64.6.3", // 10
-    "nt.10.0","ntx86.10.3","ntamd64.10.0","ntia64.10.0", // 10
+    "nt.10.0","ntx86.10.0","ntamd64.10.0","ntia64.10.0", // 10
     "nt",    "ntx86",    "ntamd64",    "ntia64",
     "nt..",  "ntx86..",  "ntamd64..",  "ntia64..",
 };
@@ -88,7 +88,7 @@ const int nts_score[NUM_DECS]=
     61,   161,   161,   161, // 7
     62,   162,   162,   162, // 8
     63,   163,   163,   163, // 10
-    10,   100,   100,   100, // 10
+    63,   163,   163,   163, // 10
     10,   100,   100,   100,
     10,   100,   100,   100,
 };
@@ -162,7 +162,7 @@ const wchar_t *Filter_20[]={L"Toshiba",L"toshiba",nullptr};
 const wchar_t *Filter_21[]={L"OEM",L"twinhead",L"durabook",nullptr};
 const wchar_t *Filter_22[]={L"NEC",L"Nec_brand",L"nec",nullptr};
 
-const wchar_t **filter_list[]=
+const wchar_t **filter_list[NUM_FILTERS]=
 {
     Filter_1, Filter_2, Filter_3, Filter_4, Filter_5, Filter_6, Filter_7,
     Filter_8, Filter_9, Filter_10,Filter_11,Filter_12,Filter_13,Filter_14,
@@ -174,28 +174,15 @@ const wchar_t **filter_list[]=
 //{ Calc
 void State::genmarker()
 {
-    int i,j;
-    wchar_t *str;
-
-    *marker=0;
-
-    str=getManuf();
+    wsprintfA(marker,"OEM_nb");
+    wchar_t *str=getManuf();
     if(!str)return;
 
-    //log_con("Manuf '%S'\n",str);
-    for(i=0;i<21;i++)
-    {
-        //log_con("%d: '%S'\n",i+1,filter_list[i][0]);
-        for(j=1;filter_list[i][j];j++)
-        {
-            if(StrStrI(str,filter_list[i][j]))
-            {
-                wsprintfA(marker,"%S_nb",filter_list[i][0]);
-                log_con("Matched marker: '%s'(%S)\n",marker,filter_list[i][j]);
-            }
-        }
-    }
-    if(!*marker)wsprintfA(marker,"OEM_nb");
+    for(int i=0;i<NUM_FILTERS;i++)
+    for(int j=1;filter_list[i][j];j++)
+        if(StrStrI(str,filter_list[i][j]))
+            wsprintfA(marker,"%S_nb",filter_list[i][0]);
+
     log_con("Marker: '%s'\n",marker);
 }
 
@@ -221,8 +208,6 @@ int Hwidmatch::calc_catalogfile()
     for(i=CatalogFile;i<=CatalogFile_ntamd64;i++)
         if(*getdrp_drvfield(i))r+=1<<i;
 
-    //if(!isvalidcat(hwidmatch,state))r=0;
-    //r=0;
     return r;
 }
 
@@ -258,29 +243,9 @@ unsigned calc_score_h(Driver *driver,State *state)
 
 int calc_secttype(const char *s)
 {
-    char buf[BUFLEN];
-    char *p=buf,*s1;
-    int i;
-
-    while(1)
-    {
-        s1=strchr(s,'.');
-        if(s1)
-        {
-            s=s1;
-            s++;
-            if(!memcmp(s,"nt",2))break;
-        }else break;
-
-    }
-
-    strcpy(buf,s);
-
-    if((p=strchr(p,'.')))
-        if((p=strchr(p+1,'.')))
-            if((p=strchr(p+1,'.')))*p=0;
-    for(i=0;i<NUM_DECS;i++)if(!StrCmpIA(buf,nts[i]))return i;
-//log_file("'%s'\n",buf);
+    s=StrStrIA(s,".nt");
+    if(!s)return -1;
+    for(int i=0;i<NUM_DECS;i++)if(!StrCmpIA(s+3,nts[i]+2))return i;
     return -1;
 }
 
@@ -290,16 +255,13 @@ int calc_decorscore(int id,State *state)
         minor=state->platform.dwMinorVersion,
         arch=state->architecture+1;
 
-    if(id<0)
-    {
-        return 1;
-    }
+    if(id<0)return 1;
     if(nts_version[id]&&major*10+minor<nts_version[id])return 0;
     if(nts_arch[id]&&arch!=nts_arch[id])return 0;
     return nts_score[id];
 }
 
-int calc_markerscore(State *state,char *path)
+int calc_markerscore(State *state,const char *path)
 {
     char buf[BUFLEN];
     int majver=state->platform.dwMajorVersion,
@@ -307,7 +269,6 @@ int calc_markerscore(State *state,char *path)
         arch=state->architecture,
         curmaj=-1,curmin=-1,curarch=-1;
     int i;
-    //int winall=0;
     int score=0;
 
     strcpy(buf,path);
@@ -318,13 +279,19 @@ int calc_markerscore(State *state,char *path)
         if(strstr(buf,markers[i].name))
         {
             score=1;
-            if(markers[i].major==0){/*winall=1;*/continue;}
+            if(markers[i].major==0){continue;}
             if(markers[i].major>curmaj)curmaj=markers[i].major;
             if(markers[i].minor>curmin)curmin=markers[i].minor;
             if(markers[i].arch>curarch)curarch=markers[i].arch;
         }
     }
-
+/*
+    +1  if at least one marker specified
+    +2  if OS version allows
+    +4  if arch allows
+    +8  if OS version matches
+    +16 if arch matches
+*/
     if(curmaj>=0&&curmin>=0&&majver>=curmaj&&minver>=curmin)score+=2+8;
     if(curmaj<0&&score)score+=2;
     if(curarch>=0&&curarch==arch)score+=4+16;
@@ -334,17 +301,15 @@ int calc_markerscore(State *state,char *path)
 
 int Hwidmatch::isvalid_usb30hub(State *state,const wchar_t *str)
 {
-    //log_con("Intel USB3.0 HUB '%S'\n",state->text+hwidmatch->devicematch->device->HardwareID);
     if(StrStrI(state->textas.getw(devicematch->device->HardwareID),str))return 1;
     return 0;
 }
 
 int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *section)
 {
-    char buf[BUFLEN];
-
     if(StrStrI(state->textas.getw(devicematch->device->HardwareID),hwid))
     {
+        char buf[BUFLEN];
         getdrp_drvsection(buf);
         if(StrStrIA(buf,section))return 1;
     }
@@ -382,15 +347,15 @@ int Hwidmatch::calc_notebook()
 
 int Hwidmatch::calc_altsectscore(State *state,int curscore)
 {
-    char buf[BUFLEN];
-    int pos;
     int desc_index,manufacturer_index;
 
     desc_index=drp->HWID_list[HWID_index].desc_index;
     manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    int numsects=drp->manufacturer_list[manufacturer_index].sections_n;
 
-    for(pos=0;pos<drp->manufacturer_list[manufacturer_index].sections_n;pos++)
+    for(int pos=0;pos<numsects;pos++)
     {
+        char buf[BUFLEN];
         getdrp_drvsectionAtPos(drp,buf,pos,manufacturer_index);
         if(calc_decorscore(calc_secttype(buf),state)>curscore)return 0;
     }
@@ -427,21 +392,14 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
 int isMissing(Device *device,Driver *driver,State *state)
 {
     if(device->problem==CM_PROB_DISABLED)return 0;
-    if(driver)
-    {
-        if(!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
-        if(device->problem&&device->HardwareID)return 1;
-    }else
-    {
-        if(device->problem&&device->HardwareID)return 1;
-    }
+    if(device->problem&&device->HardwareID)return 1;
+    if(driver&&!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
     return 0;
 }
 
 int Hwidmatch::calc_status(State *state)
 {
-    int r=0,res;
-    int scorev;
+    int r=0;
     Driver *cur_driver=devicematch->driver;
 
     if(isMissing(devicematch->device,cur_driver,state))return STATUS_MISSING;
@@ -450,14 +408,14 @@ int Hwidmatch::calc_status(State *state)
     {
         if(getdrp_drvversion())
         {
-            res=cmpdate(&devicematch->driver->version,getdrp_drvversion());
+            int res=cmpdate(&devicematch->driver->version,getdrp_drvversion());
             if(res<0)r+=STATUS_NEW;else
             if(res>0)r+=STATUS_OLD;else
                 r+=STATUS_CURRENT;
         }
 
-        scorev=calc_score_h(cur_driver,state);
-        res=cmpunsigned(scorev,score);
+        int scorev=calc_score_h(cur_driver,state);
+        int res=cmpunsigned(scorev,score);
         if(res>0)r+=STATUS_BETTER;else
         if(res<0)r+=STATUS_WORSE;else
             r+=STATUS_SAME;
@@ -974,14 +932,15 @@ char *Hwidmatch::getdrp_drvmanufacturer()
 }
 void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index)
 {
-    intptr_t rr=(intptr_t)drp->texta.get(drp->manufacturer_list[manuf_index].sections);
+    int *rr=reinterpret_cast<int *>(drp->texta.get(drp->manufacturer_list[manuf_index].sections));
     if(pos)
     {
-        char *ext=drp->texta.get(((int *)rr)[pos]);
-        wsprintfA(buf,"%s.%s",drp->texta.get(((int *)rr)[0]),ext);
+        strcpy(buf,drp->texta.get(rr[0]));
+        strcat(buf,".");
+        strcat(buf,drp->texta.get(rr[pos]));
     }
     else
-        wsprintfA(buf,"%s",drp->texta.get(((int *)rr)[pos]));
+        strcpy(buf,drp->texta.get(rr[pos]));
 }
 void Hwidmatch::getdrp_drvsection(char *buf)
 {
