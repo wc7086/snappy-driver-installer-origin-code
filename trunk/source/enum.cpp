@@ -334,9 +334,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     for(HWID_index=start_index;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
     if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),hwid))
     {
-        Hwidmatch hwidmatch;
-
-        hwidmatch.initbriefly(unpacked_drp,HWID_index);
+        Hwidmatch hwidmatch(unpacked_drp,HWID_index);
         if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
         {
             feature=hwidmatch.getdrp_drvfeature();

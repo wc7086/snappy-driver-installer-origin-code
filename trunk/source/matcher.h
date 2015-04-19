@@ -38,6 +38,8 @@ enum DRIVER_STATUS
 };
 
 extern const char *nts[NUM_DECS];
+class Devicematch;
+class Hwidmatch;
 
 struct markers_t
 {
@@ -45,6 +47,41 @@ struct markers_t
     int major,minor,arch;
 };
 
+// Calc
+int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
+int calc_signature(int catalogfile,State *state,int isnt);
+unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
+int calc_secttype(const char *s);
+int calc_decorscore(int id,State *state);
+int calc_markerscore(State *state,const char *path);
+
+// Misc
+int cmpunsigned(unsigned a,unsigned b);
+int cmpdate(version_t *t1,version_t *t2);
+int cmpversion(version_t *t1,version_t *t2);
+void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
+
+// Matcher is used as a storange for devicematch_list and hwidmatch_list
+class Matcher
+{
+public:
+    State *state;
+    Collection *col;
+
+    std::vector<Devicematch> devicematch_list;
+    std::vector<Hwidmatch> hwidmatch_list;
+
+private:
+    void findHWIDs(Devicematch *device_match,char *hwid,int dev_pos,int ishw);
+    void sort();
+
+public:
+    void init(State *state1,Collection *col1){state=state1;col=col1;}
+    void populate();
+    void print();
+};
+
+// Devicematch holds info about device and a list of alternative drivers
 class Devicematch
 {
 public:
@@ -55,10 +92,11 @@ public:
     int status;
 
 public:
-    void init(Device *cur_device,Driver *cur_driver,int items);
+    Devicematch(Device *cur_device,Driver *cur_driver,int items);
     int isMissing(State *state);
 };
 
+// Hwidmatch is used to extract info about an available driver from indexes
 class Hwidmatch
 {
 public:
@@ -69,8 +107,29 @@ public:
     int identifierscore,decorscore,markerscore,altsectscore,status;
     unsigned score;
 
-public:
+private:
+    int isvalid_usb30hub(State *state,const wchar_t *str);
+    int isblacklisted(State *state,const wchar_t *hwid,const char *section);
+    int isvalid_ver(State *state);
+    int calc_altsectscore(State *state,int curscore);
+    int calc_status(State *state);
 
+public:
+    Hwidmatch(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,Devicematch *devicematch);
+    Hwidmatch(Driverpack *drp1,int HWID_index1);
+    void setHWID_index(int index){HWID_index=index;}
+
+    int calc_catalogfile();
+    int calc_notebook();
+
+    void minlen(CHAR *s,int *len);
+    void calclen(int *limits);
+    void print_tbl(int *limits);
+    void print_hr();
+    int  cmp(Hwidmatch *match2);
+    int isdup(Hwidmatch *match2,char *sect1);
+
+// <<< GETTERS
     //driverpack
     wchar_t *getdrp_packpath();
     wchar_t *getdrp_packname();
@@ -94,57 +153,5 @@ public:
     //HWID
     short getdrp_drvinfpos();
     char *getdrp_drvHWID();
-
-    int isvalid_usb30hub(State *state,const wchar_t *str);
-    int isblacklisted(State *state,const wchar_t *hwid,const char *section);
-    int isvalid_ver(State *state);
-    int calc_notebook();
-    int calc_altsectscore(State *state,int curscore);
-    int calc_status(State *state);
-    int calc_catalogfile();
-
-    void init(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,Devicematch *devicematch);
-    void setHWID_index(int index){HWID_index=index;}
-    void initbriefly(Driverpack *drp,int HWID_index);
-    void minlen(CHAR *s,int *len);
-    void calclen(int *limits);
-    void print_tbl(int *limits);
-    void print_hr();
-    int  cmp(Hwidmatch *match2);
-    int isdup(Hwidmatch *match2,char *sect1);
+// <<< GETTERS
 };
-
-class Matcher
-{
-public:
-    State *state;
-    Collection *col;
-
-    std::vector<Devicematch> devicematch_list;
-    std::vector<Hwidmatch> hwidmatch_list;
-
-public:
-    void init(State *state,Collection *col);
-    void release();
-    void findHWIDs(Devicematch *device_match,char *hwid,int dev_pos,int ishw);
-    void populate();
-    void sort();
-    void print();
-};
-
-// Calc
-int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
-int calc_signature(int catalogfile,State *state,int isnt);
-unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
-int calc_secttype(const char *s);
-int calc_decorscore(int id,State *state);
-int calc_markerscore(State *state,const char *path);
-
-// Misc
-int  cmpunsigned(unsigned a,unsigned b);
-int  cmpdate(version_t *t1,version_t *t2);
-int  cmpversion(version_t *t1,version_t *t2);
-
-// Matcher
-void  getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
-
