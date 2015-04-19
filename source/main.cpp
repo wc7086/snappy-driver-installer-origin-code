@@ -1241,7 +1241,7 @@ void drvdir()
 
 const wchar_t *getHWIDby(int id,int num)
 {
-    devicematch_t *devicematch_f=manager_g->items_list[id].devicematch;
+    Devicematch *devicematch_f=manager_g->items_list[id].devicematch;
     wchar_t *p;
     char *t=manager_g->matcher->state->textas.get(0);
     int i=0;
@@ -1792,7 +1792,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         wchar_t buf[BUFLEN];
 
-                        devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
+                        Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
                         Driver *cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
@@ -2053,7 +2053,7 @@ void contextmenu(int x,int y)
     if(floating_itembar<RES_SLOTS)return;
     //printf("itembar %d\n",floating_itembar);
 
-    devicematch_t *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
+    Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
     Driver *cur_driver=nullptr;
     wchar_t *p;
     char *t=manager_g->matcher->state->textas.get(0);

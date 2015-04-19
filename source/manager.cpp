@@ -54,7 +54,7 @@ void Manager::release()
 
 void Manager::sorta(Matcher *m,int *v)
 {
-    devicematch_t *devicematch_i,*devicematch_j;
+    Devicematch *devicematch_i,*devicematch_j;
     Hwidmatch *hwidmatch_i,*hwidmatch_j;
     int i,j,num;
 
@@ -70,8 +70,8 @@ void Manager::sorta(Matcher *m,int *v)
             devicematch_j=&m->devicematch_list[v[j]];
             hwidmatch_i=(devicematch_i->num_matches)?&m->hwidmatch_list[devicematch_i->start_matches]:nullptr;
             hwidmatch_j=(devicematch_j->num_matches)?&m->hwidmatch_list[devicematch_j->start_matches]:nullptr;
-            int ismi=isMissing(devicematch_i->device,devicematch_i->driver,m->state);
-            int ismj=isMissing(devicematch_j->device,devicematch_j->driver,m->state);
+            int ismi=devicematch_i->isMissing(m->state);
+            int ismj=devicematch_j->isMissing(m->state);
 
             if(ismi<ismj)
             {
@@ -117,7 +117,7 @@ int  manager_drplive(wchar_t *s)
 
 void Manager::populate()
 {
-    devicematch_t *devicematch;
+    Devicematch *devicematch;
     Hwidmatch *hwidmatch;
     int id=RES_SLOTS;
     unsigned i,j;
@@ -152,7 +152,7 @@ void Manager::populate()
 
 void Manager::filter(int options)
 {
-    devicematch_t *devicematch;
+    Devicematch *devicematch;
     itembar_t *itembar,*itembar1,*itembar_drp=nullptr,*itembar_drpcur=nullptr;
     unsigned i,j,k;
     int cnt[NUM_STATUS+1];
@@ -618,7 +618,7 @@ void Manager::selectall()
 //}
 
 //{ Helpers
-void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *hwidmatch,int groupindex,int rm,int first)
+void itembar_init(itembar_t *item,Devicematch *devicematch,Hwidmatch *hwidmatch,int groupindex,int rm,int first)
 {
     memset(item,0,sizeof(itembar_t));
     item->devicematch=devicematch;
@@ -660,7 +660,7 @@ int isdrivervalid(Hwidmatch *hwidmatch)
 
 void str_status(wchar_t *buf,itembar_t *itembar)
 {
-    devicematch_t *devicematch=itembar->devicematch;
+    Devicematch *devicematch=itembar->devicematch;
 
     buf[0]=0;
 
@@ -707,7 +707,7 @@ void str_status(wchar_t *buf,itembar_t *itembar)
 int box_status(int index)
 {
     itembar_t *itembar=&manager_g->items_list[index];
-    devicematch_t *devicematch=itembar->devicematch;
+    Devicematch *devicematch=itembar->devicematch;
 
     switch(index)
     {
@@ -855,7 +855,7 @@ const wchar_t *str_version(version_t *ver)
 //{ Driver list
 void Manager::setpos()
 {
-    devicematch_t *devicematch;
+    Devicematch *devicematch;
     itembar_t *itembar,*lastitembar=nullptr;
     unsigned k;
     int cnt=0;
@@ -1613,7 +1613,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
         TextOutP(&td,L"$%04d",i);
         td.x+=limits[td.i++];
         td.col=c0;
-        TextOutP(&td,L"| %08X",calc_score_h(cur_driver,manager->matcher->state));
+        TextOutP(&td,L"| %08X",cur_driver->calc_score_h(manager->matcher->state));
         TextOutP(&td,L"| %s",bufw);
         for(k=0;k<6;k++)td.x+=limits[td.i++];
         TextOutP(&td,L"| %s%s",t+manager->matcher->state->windir,t+cur_driver->InfPath);
@@ -1699,7 +1699,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     int maxln=0;
     int bolder=rect.right/2;
     wchar_t *p;
-    devicematch_t *devicematch_f=nullptr;
+    Devicematch *devicematch_f=nullptr;
     Hwidmatch *hwidmatch_f=nullptr;
     Driver *cur_driver=nullptr;
     textdata_t td;
@@ -1737,7 +1737,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         if(r>0)cm_date=1;
         if(r<0)cm_date=2;
 
-        score=calc_score_h(cur_driver,manager->matcher->state);
+        score=cur_driver->calc_score_h(manager->matcher->state);
         if(score<hwidmatch_f->score)cm_score=1;
         if(score>hwidmatch_f->score)cm_score=2;
 

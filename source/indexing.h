@@ -87,12 +87,12 @@ typedef struct _inflist_t
     int type;
 }inflist_t;
 
-typedef struct _filedata_t
+/*typedef struct _filedata_t
 {
     int size;
     unsigned crc;
     wchar_t *str;
-}filedata_t;
+}filedata_t;*/
 
 class sect_data_t
 {

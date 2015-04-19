@@ -358,6 +358,35 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     inf_list->insert({std::wstring(filename),infdata_t(catalogfile,0,0,cat,start_index)});
 }
 
+int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
+{
+    int dev_pos=0;
+    while(*p)
+    {
+        if(!StrCmpIW(p,str))return dev_pos;
+        p+=lstrlen(p)+1;
+        dev_pos++;
+    }
+    return -1;
+}
+
+void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos)
+{
+    *ishw=1;
+    *dev_pos=findHWID_in_list(state->textas.getw(cur_device->HardwareID),state->textas.getw(MatchingDeviceId));
+    if(*dev_pos<0&&cur_device->CompatibleIDs)
+    {
+        *ishw=0;
+        *dev_pos=findHWID_in_list(state->textas.getw(cur_device->CompatibleIDs),state->textas.getw(MatchingDeviceId));
+    }
+}
+
+unsigned Driver::calc_score_h(State *state)
+{
+    return calc_score(catalogfile,feature,identifierscore,
+        state,StrStrI(state->textas.getw(InfSectionExt),L".nt")?1:0);
+}
+
 void Driver::print(State *state)
 {
     char *s=state->textas.get(0);
@@ -370,7 +399,7 @@ void Driver::print(State *state)
     log_file("  Version:  %d.%d.%d.%d\n",version.v1,version.v2,version.v3,version.v4);
     log_file("  HWID:     %S\n",s+MatchingDeviceId);
     log_file("  inf:      %S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
-    log_file("  Score:    %08X %04x\n",calc_score_h(this,state),identifierscore);
+    log_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);
 
     if(log_verbose&LOG_VERBOSE_BATCH)
         log_file("  Filter:   \"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);
@@ -394,7 +423,7 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
     read_reg_val(hkey,state,L"InfSection",         &InfSection);
     read_reg_val(hkey,state,L"InfSectionExt",      &InfSectionExt);
 
-    getdd(cur_device,this,state,&ishw,&dev_pos);
+    calc_dev_pos(cur_device,state,&ishw,&dev_pos);
 
     if(InfPath)
         scaninf(state,unpacked_drp,inf_pos);
