@@ -637,7 +637,6 @@ void bundle_prep(bundle_t *bundle)
 void bundle_free(bundle_t *bundle)
 {
     bundle->collection.release();
-    bundle->matcher.release();
     bundle->state.release();
 }
 
@@ -654,7 +653,6 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
     bundle->matcher.populate();
-    bundle->matcher.sort();
 }
 
 void bundle_lowprioirity(bundle_t *bundle)

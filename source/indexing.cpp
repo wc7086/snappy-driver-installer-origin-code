@@ -920,7 +920,7 @@ void Driverpack::print()
     unsigned n=inffile.size();
     version_t *t;
     data_inffile_t *d_i;
-    Hwidmatch hwidmatch;
+    Hwidmatch hwidmatch(this,0);
     char buf[BUFLEN];
     wchar_t filename[BUFLEN];
     FILE *f;
@@ -931,7 +931,6 @@ void Driverpack::print()
     //char  *bufdata=new char[1024*1024*10];
     int i;
 
-    hwidmatch.initbriefly(this,0);
     getindexfilename(col->getIndex_linear_dir(),L"txt",filename);
     f=_wfopen(filename,L"wt");
     //setvbuf(f,bufdata,_IOFBF,1024*1024*10);
