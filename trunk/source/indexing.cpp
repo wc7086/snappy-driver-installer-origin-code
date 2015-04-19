@@ -1949,6 +1949,12 @@ void Txt::reset(int sz)
     text.reserve(1024*1024);
 }
 
+Txt::Txt()
+{
+    reset(2);
+    text[0]=text[1]=0;
+}
+
 void Txt::shrink()
 {
     //log_con("Text_usage %d/%d\n",text.size(),text.capacity());

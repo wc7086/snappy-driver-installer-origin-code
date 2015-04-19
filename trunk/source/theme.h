@@ -42,23 +42,22 @@ public:
     entry_t *entry;
     int num;
     wchar_t namelist[64][250];
-    std::unique_ptr<wchar_t []> data_ptr,odata_ptr;
+    std::unique_ptr<wchar_t []> data_ptr,odata_ptr,datav_ptr;
 
-    lookuptbl_t *lookuptbl;
+    lookuptbl_t lookuptbl;
     int res;
 
 private:
     int  findvar(wchar_t *str);
     wchar_t *findstr(wchar_t *str);
     int  readvalue(const wchar_t *str);
-    void parse(wchar_t *data);
-    wchar_t *loadFromEncodedFile(const wchar_t *filename,int *sz);
+    void parse();
+    bool loadFromEncodedFile(const wchar_t *filename);
     void loadFromFile(wchar_t *filename);
     void loadFromRes(int id);
 
 public:
     void init1(entry_t *entry,int num,int res);
-    void free1();
     void load(int i);
 
     friend void lang_enum(HWND hwnd,const wchar_t *path,int locale);

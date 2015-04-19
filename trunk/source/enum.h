@@ -128,7 +128,7 @@ public:
 };
 
 // State (POD)
-typedef struct _state_m_t
+struct state_m_t
 {
     OSVERSIONINFOEX platform;
     int locale;
@@ -150,7 +150,7 @@ typedef struct _state_m_t
     char reserved[1024];
 
     char reserved1[676];
-}state_m_t;
+};
 
 // State
 class State
