@@ -43,7 +43,7 @@ void Manager::init(Matcher *matchera)
         items_list.push_back(itembar_t());
         itembar=&items_list.back();
         //itembar=(itembar_t *)heap_allocitem_ptr(&items_handle);
-        itembar_init(itembar,nullptr,nullptr,i,0,1);
+        itembar->itembar_init(nullptr,nullptr,i,0,1);
     }
 }
 
@@ -135,16 +135,16 @@ void Manager::populate()
         for(j=0;j<devicematch->num_matches;j++,hwidmatch++)
         {
             items_list.push_back(itembar_t());
-            itembar_init(&items_list.back(),devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?2:2);
+            items_list.back().itembar_init(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?2:2);
             items_list.push_back(itembar_t());
-            itembar_init(&items_list.back(),devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1);
+            items_list.back().itembar_init(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1);
 
             id++;
         }
         if(!devicematch->num_matches)
         {
             items_list.push_back(itembar_t());
-            itembar_init(&items_list.back(),devicematch,nullptr,i+RES_SLOTS,remap[i],1);
+            items_list.back().itembar_init(devicematch,nullptr,i+RES_SLOTS,remap[i],1);
             id++;
         }
     }
@@ -340,7 +340,7 @@ void Manager::print_hr()
         if(itembar->isactive&&(itembar->first&2)==0)
         {
             if(flags&FLAG_FILTERSP&&!isvalidcat(itembar->hwidmatch,matcher->state))continue;
-            str_status(buf,itembar);
+            itembar->str_status(buf);
             log_file("\n$%04d, %S\n",k,buf);
             if(itembar->devicematch->device)
             {
@@ -618,16 +618,16 @@ void Manager::selectall()
 //}
 
 //{ Helpers
-void itembar_init(itembar_t *item,Devicematch *devicematch,Hwidmatch *hwidmatch,int groupindex,int rm,int first)
+void itembar_t::itembar_init(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupindex,int rm1,int first1)
 {
-    memset(item,0,sizeof(itembar_t));
-    item->devicematch=devicematch;
-    item->hwidmatch=hwidmatch;
-    item->curpos=(-D(DRVITEM_DIST_Y0))<<16;
-    item->tagpos=(-D(DRVITEM_DIST_Y0))<<16;
-    item->index=groupindex;
-    item->rm=rm;
-    item->first=first;
+    memset(this,0,sizeof(itembar_t));
+    devicematch=devicematch1;
+    hwidmatch=hwidmatch1;
+    curpos=(-D(DRVITEM_DIST_Y0))<<16;
+    tagpos=(-D(DRVITEM_DIST_Y0))<<16;
+    index=groupindex;
+    rm=rm1;
+    first=first1;
 }
 
 void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent)
@@ -639,17 +639,17 @@ void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent)
     redrawfield();
 }
 
-void itembar_setpos(itembar_t *itembar,int *pos,int *cnt)
+void itembar_t::itembar_setpos(int *pos,int *cnt)
 {
-    if(itembar->isactive)
+    if(isactive)
     {
         *pos+=*cnt?D(DRVITEM_DIST_Y1):D(DRVITEM_DIST_Y0);
         (*cnt)--;
     }
-    itembar->oldpos=itembar->curpos;
-    itembar->tagpos=*pos<<16;
-    itembar->accel=(itembar->tagpos-itembar->curpos)/(1000/2);
-    if(itembar->accel==0)itembar->accel=(itembar->tagpos<itembar->curpos)?500:-500;
+    oldpos=curpos;
+    tagpos=*pos<<16;
+    accel=(tagpos-curpos)/(1000/2);
+    if(accel==0)accel=(tagpos<curpos)?500:-500;
 }
 
 int isdrivervalid(Hwidmatch *hwidmatch)
@@ -658,21 +658,19 @@ int isdrivervalid(Hwidmatch *hwidmatch)
     return 0;
 }
 
-void str_status(wchar_t *buf,itembar_t *itembar)
+void itembar_t::str_status(wchar_t *buf)
 {
-    Devicematch *devicematch=itembar->devicematch;
-
     buf[0]=0;
 
-    if(itembar->hwidmatch)
+    if(hwidmatch)
     {
-        int status=itembar->hwidmatch->status;
+        int status=hwidmatch->status;
         if(status&STATUS_INVALID)
             wcscat(buf,STR(STR_STATUS_INVALID));
         else
         {
             if(status&STATUS_MISSING)
-                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),itembar->devicematch->device->problem);
+                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),devicematch->device->problem);
             else
             {
                 if(status&STATUS_BETTER&&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_BETTER_NEW));
@@ -689,11 +687,11 @@ void str_status(wchar_t *buf,itembar_t *itembar)
             }
         }
         if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
-        if(itembar->hwidmatch->altsectscore<2/*&&manager_g->matcher->state->platform.dwMajorVersion>=6*/)
+        if(hwidmatch->altsectscore<2/*&&manager_g->matcher->state->platform.dwMajorVersion>=6*/)
         {
             wcscat(buf,STR(STR_STATUS_NOTSIGNED));
         }
-        if(itembar->hwidmatch->getdrp_packontorrent())wcscat(buf,STR(STR_UPD_WEBSTATUS));
+        if(hwidmatch->getdrp_packontorrent())wcscat(buf,STR(STR_UPD_WEBSTATUS));
     }
     else
     //if(devicematch)
@@ -876,7 +874,7 @@ void Manager::setpos()
         //if(lastitembar&&lastitembar->index<SLOT_RESTORE_POINT&&itembar->index<SLOT_RESTORE_POINT)cnt=1;
         if(devicematch&&!devicematch->num_matches&&!lastmatch&&lastitembar&&lastitembar->index>=SLOT_RESTORE_POINT)cnt=1;
 
-        itembar_setpos(itembar,&pos,&cnt);
+        itembar->itembar_setpos(&pos,&cnt);
         if(itembar->isactive)
         {
             lastitembar=itembar;
@@ -1160,7 +1158,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
                 // Available driver status
                 SetTextColor(hdc,D(boxindex[box_status(index)]+15));
-                str_status(bufw,itembar);
+                itembar->str_status(bufw);
                 switch(itembar->install_status)
                 {
                     case STR_INST_FAILED:
@@ -1222,7 +1220,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                     else
                         DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
 
-                    str_status(bufw,itembar);
+                    itembar->str_status(bufw);
                     SetTextColor(hdc,D(boxindex[box_status(index)]+15));
                     rect.left=x+D(ITEM_TEXT_OFS_X)+wx1/2;
                     rect.top=pos;

@@ -1952,6 +1952,6 @@ void Txt::reset(int sz)
 void Txt::shrink()
 {
     //log_con("Text_usage %d/%d\n",text.size(),text.capacity());
-//    text.shrink_to_fit();
+    text.shrink_to_fit();
 }
 

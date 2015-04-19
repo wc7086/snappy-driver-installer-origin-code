@@ -22,7 +22,7 @@ FILE *logfile=nullptr;
 int error_count=0;
 int log_console=0;
 wchar_t timestamp[BUFLEN];
-monitor_t *mon_vir;
+Filemon *mon_vir;
 
 int log_verbose=
     LOG_VERBOSE_ARGS|
@@ -375,7 +375,7 @@ void virusmonitor_start()
 
 void virusmonitor_stop()
 {
-    if(mon_vir)mon_vir->monitor_stop();
+    if(mon_vir)mon_vir->stop();
 }
 //}
 

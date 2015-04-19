@@ -18,7 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global vars
-monitor_t *mon_lang,*mon_theme;
+Filemon *mon_lang,*mon_theme;
 Vault vLang,vTheme;
 int monitor_pause=0;
 //}
@@ -133,9 +133,8 @@ void Vault::parse(wchar_t *datav)
         }
         lhs=le+1; // next line
     }
-    if(odata)delete []odata;
-    odata=data;
-    data=datav;
+    odata_ptr=std::move(data_ptr);
+    data_ptr.reset(datav);
 }
 
 static void myswab(const char *s,char *d,int sz)
@@ -170,7 +169,7 @@ wchar_t *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
         return nullptr;
     }
     datav=new wchar_t[*sz+1+1024];
-    log_con("Read '%S':%d\n",filename,*sz);
+    //log_con("Read '%S':%d\n",filename,*sz);
 
     fread(datav,2,1,f);
     if(!memcmp(datav,"\xEF\xBB",2))// UTF-8
@@ -275,13 +274,11 @@ void Vault::init1(entry_t *entryv,int numv,int resv)
 void Vault::free1()
 {
     delete lookuptbl;
-    if(odata)delete []odata;
-    if(data)delete []data;
 }
 
 void Vault::load(int i)
 {
-    log_con("vault %d,'%S'\n",i,namelist[i]);
+    //log_con("vault %d,'%S'\n",i,namelist[i]);
     loadFromRes(res);
     loadFromFile(namelist[i]);
 }
@@ -421,8 +418,8 @@ void vault_startmonitors()
 
 void vault_stopmonitors()
 {
-    if(mon_lang)mon_lang->monitor_stop();
-    if(mon_theme)mon_theme->monitor_stop();
+    if(mon_lang)mon_lang->stop();
+    if(mon_theme)mon_theme->stop();
 }
 
 void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
@@ -445,9 +442,9 @@ void CALLBACK theme_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 //}
 
 //{ FileMonitor
-monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
+Filemon *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
 {
-	monitor_t *pMonitor = static_cast<monitor_t*>(HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor)));
+	Filemon *pMonitor = static_cast<Filemon*>(HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor)));
 
 	wcscpy(pMonitor->dir,szDirectory);
 	pMonitor->hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
@@ -460,7 +457,7 @@ monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, F
 		pMonitor->callback     = callback;
 		pMonitor->subdirs      = subdirs;
 
-		if (pMonitor->monitor_refresh())
+		if (pMonitor->refresh())
 		{
 			return pMonitor;
 		}
@@ -474,19 +471,19 @@ monitor_t *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, F
 	return nullptr;
 }
 
-BOOL monitor_t::monitor_refresh()
+BOOL Filemon::refresh()
 {
 	return ReadDirectoryChangesW(hDir,buffer,sizeof(buffer),subdirs,
 	                      notifyFilter,nullptr,&ol,monitor_callback);
 }
 
-void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)
+void CALLBACK Filemon::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)
 {
     UNREFERENCED_PARAMETER(dwNumberOfBytesTransfered);
 
 	TCHAR szFile[MAX_PATH];
 	PFILE_NOTIFY_INFORMATION pNotify;
-	monitor_t *pMonitor=reinterpret_cast<monitor_t*>(lpOverlapped);
+	Filemon *pMonitor=reinterpret_cast<Filemon*>(lpOverlapped);
 	size_t offset=0;
 
 	if(dwErrorCode==ERROR_SUCCESS)
@@ -558,10 +555,10 @@ void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered
 			}
 		}while(pNotify->NextEntryOffset!=0);
 	}
-	if(!pMonitor->fStop)pMonitor->monitor_refresh();
+	if(!pMonitor->fStop)pMonitor->refresh();
 }
 
-void monitor_t::monitor_stop()
+void Filemon::stop()
 {
     fStop=TRUE;
     CancelIo(hDir);
