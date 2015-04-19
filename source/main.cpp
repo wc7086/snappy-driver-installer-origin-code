@@ -345,7 +345,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     UNREFERENCED_PARAMETER(pStr);
 
     bundle_t bundle[2];
-    monitor_t *mon_drp;
+    Filemon *mon_drp;
     HANDLE thr;
     HMODULE backtrace=nullptr;
     DWORD dwProcessId;
@@ -496,7 +496,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
 // Stop folder monitors
-    if(mon_drp)mon_drp->monitor_stop();
+    if(mon_drp)mon_drp->stop();
     virusmonitor_stop();
 
 // Bring the console window back

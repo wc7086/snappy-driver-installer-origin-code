@@ -115,14 +115,15 @@ enum SLOTS
 };
 
 #define NUM_STATUS 6
+class Manager;
 typedef struct _status_t
 {
     int filter,status;
 }status_t;
 
-
-typedef struct _itembar_t
+class itembar_t
 {
+public:
     Devicematch *devicematch;
     Hwidmatch *hwidmatch;
 
@@ -139,7 +140,14 @@ typedef struct _itembar_t
 
     int intend;
     int oldpos,curpos,tagpos,accel;
-}itembar_t;
+
+public:
+    void itembar_init(Devicematch *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
+    void itembar_setpos(int *pos,int *cnt);
+    void str_status(wchar_t *buf);
+};
+void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
+int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
 class Manager
 {
@@ -177,7 +185,7 @@ public:
     int groupsize(int index);
 };
 
-typedef struct _textdata_t
+struct textdata_t
 {
     HDC hdcMem;
     int x;
@@ -188,7 +196,7 @@ typedef struct _textdata_t
     int i;
     int *limits;
     int mode;
-}textdata_t;
+};
 
 //{ Global vars
 extern wchar_t extractdir[BUFLEN];
@@ -199,18 +207,11 @@ int  manager_drplive(wchar_t *s);
 void manager_install(int flags);
 void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2);
 
-
 // Helpers
-void itembar_init(itembar_t *item,Devicematch *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
-void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
-void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
-int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 int  isdrivervalid(Hwidmatch *hwidmatch);
-void str_status(wchar_t *buf,itembar_t *itembar);
 int  box_status(int index);
 void str_date(version_t *v,wchar_t *buf);
 const wchar_t *str_version(version_t *ver);
-
 
 // Draw
 void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);

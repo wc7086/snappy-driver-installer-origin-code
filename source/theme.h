@@ -42,8 +42,9 @@ public:
     entry_t *entry;
     int num;
     wchar_t namelist[64][250];
-    wchar_t *data,*odata;
-lookuptbl_t *lookuptbl;
+    std::unique_ptr<wchar_t []> data_ptr,odata_ptr;
+
+    lookuptbl_t *lookuptbl;
     int res;
 
 private:
@@ -70,12 +71,12 @@ extern Vault vLang,vTheme;
 extern int monitor_pause;
 
 // FileMonitor
+class Filemon;
 typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
-void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-
-class monitor_t
+Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+class Filemon
 {
-public:
+private:
 	OVERLAPPED ol;
 	HANDLE     hDir;
 	BYTE       buffer[32*1024];
@@ -86,10 +87,13 @@ public:
 	int        subdirs;
 	FileChangeCallback callback;
 
-    int           monitor_refresh();
-    void          monitor_stop();
+    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
+    int  refresh();
+
+public:
+    friend Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+    void stop();
 };
-monitor_t     *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
 
 // Lang/theme
 void lang_set(int i);
