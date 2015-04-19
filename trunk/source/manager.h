@@ -123,7 +123,7 @@ typedef struct _status_t
 
 typedef struct _itembar_t
 {
-    devicematch_t *devicematch;
+    Devicematch *devicematch;
     Hwidmatch *hwidmatch;
 
     wchar_t txt1[1024];
@@ -201,7 +201,7 @@ void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_
 
 
 // Helpers
-void itembar_init(itembar_t *item,devicematch_t *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
+void itembar_init(itembar_t *item,Devicematch *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
 void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
 void itembar_setpos(itembar_t *itembar,int *pos,int *cnt);
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);

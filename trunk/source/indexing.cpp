@@ -931,7 +931,7 @@ void Driverpack::print()
     //char  *bufdata=new char[1024*1024*10];
     int i;
 
-    hwidmatch.drp=this;
+    hwidmatch.initbriefly(this,0);
     getindexfilename(col->getIndex_linear_dir(),L"txt",filename);
     f=_wfopen(filename,L"wt");
     //setvbuf(f,bufdata,_IOFBF,1024*1024*10);
@@ -980,7 +980,7 @@ void Driverpack::print()
                     {
                         if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%d,%d\n",HWID_index_last,HWID_index);
                         HWID_index_last=HWID_index;
-                        hwidmatch.HWID_index=HWID_index_last;
+                        hwidmatch.setHWID_index(HWID_index_last);
 
                 //if(text+manufacturer_list[manuf_index].manufacturer!=get_manufacturer(&hwidmatch))
                 //fprintf(f,"*%s\n",get_manufacturer(&hwidmatch));

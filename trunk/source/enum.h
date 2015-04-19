@@ -111,9 +111,12 @@ public:
 private:
     void read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val);
     void scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos);
+    int findHWID_in_list(const wchar_t *p,const wchar_t *str);
+    void calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos);
 
 public:
     ofst getInfPath()const{return InfPath;}
+    unsigned calc_score_h(State *state);
     void print(State *state);
 
     Driver(const Driver &)=delete;

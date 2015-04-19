@@ -39,13 +39,13 @@ enum DRIVER_STATUS
 
 extern const char *nts[NUM_DECS];
 
-typedef struct _markers_t
+struct markers_t
 {
     const char *name;
     int major,minor,arch;
-}markers_t;
+};
 
-class devicematch_t
+class Devicematch
 {
 public:
     Device *device;
@@ -53,6 +53,10 @@ public:
     int start_matches;
     unsigned num_matches;
     int status;
+
+public:
+    void init(Device *cur_device,Driver *cur_driver,int items);
+    int isMissing(State *state);
 };
 
 class Hwidmatch
@@ -61,11 +65,12 @@ public:
     Driverpack *drp;
     int HWID_index;
 
-    devicematch_t *devicematch;
+    Devicematch *devicematch;
     int identifierscore,decorscore,markerscore,altsectscore,status;
     unsigned score;
 
 public:
+
     //driverpack
     wchar_t *getdrp_packpath();
     wchar_t *getdrp_packname();
@@ -98,12 +103,15 @@ public:
     int calc_status(State *state);
     int calc_catalogfile();
 
-    void init(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,devicematch_t *devicematch);
+    void init(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,Devicematch *devicematch);
+    void setHWID_index(int index){HWID_index=index;}
     void initbriefly(Driverpack *drp,int HWID_index);
+    void minlen(CHAR *s,int *len);
     void calclen(int *limits);
     void print_tbl(int *limits);
     void print_hr();
     int  cmp(Hwidmatch *match2);
+    int isdup(Hwidmatch *match2,char *sect1);
 };
 
 class Matcher
@@ -112,39 +120,30 @@ public:
     State *state;
     Collection *col;
 
-    std::vector<devicematch_t> devicematch_list;
+    std::vector<Devicematch> devicematch_list;
     std::vector<Hwidmatch> hwidmatch_list;
 
 public:
     void init(State *state,Collection *col);
     void release();
-    void findHWIDs(devicematch_t *device_match,char *hwid,int dev_pos,int ishw);
+    void findHWIDs(Devicematch *device_match,char *hwid,int dev_pos,int ishw);
     void populate();
     void sort();
     void print();
 };
 
 // Calc
-void genmarker(State *state);
-int isMissing(Device *device,Driver *driver,State *state);
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
 int calc_signature(int catalogfile,State *state,int isnt);
 unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
-unsigned calc_score_h(Driver *driver,State *state);
 int calc_secttype(const char *s);
 int calc_decorscore(int id,State *state);
 int calc_markerscore(State *state,const char *path);
 
 // Misc
-void findHWID_in_list(char *s,int list,int str,int *dev_pos);
-void getdd(Device *cur_device,Driver *cur_driver,State *state,int *ishw,int *dev_pos);
 int  cmpunsigned(unsigned a,unsigned b);
 int  cmpdate(version_t *t1,version_t *t2);
 int  cmpversion(version_t *t1,version_t *t2);
-void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driver,int items);
-
-// hwidmatch
-void minlen(CHAR *s,int *len);
 
 // Matcher
 void  getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);

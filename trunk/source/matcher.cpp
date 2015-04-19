@@ -235,12 +235,6 @@ unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
         return calc_signature(catalogfile,state,isnt)+rank;
 }
 
-unsigned calc_score_h(Driver *driver,State *state)
-{
-    return calc_score(driver->catalogfile,driver->feature,driver->identifierscore,
-        state,StrStrI(state->textas.getw(driver->InfSectionExt),L".nt")?1:0);
-}
-
 int calc_secttype(const char *s)
 {
     s=StrStrIA(s,".nt");
@@ -297,6 +291,14 @@ int calc_markerscore(State *state,const char *path)
     if(curarch>=0&&curarch==arch)score+=4+16;
     if(curarch<0&&score)score+=4;
     return score;
+}
+
+int Devicematch::isMissing(State *state)
+{
+    if(device->problem==CM_PROB_DISABLED)return 0;
+    if(device->problem&&device->HardwareID)return 1;
+    if(driver&&!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
+    return 0;
 }
 
 int Hwidmatch::isvalid_usb30hub(State *state,const wchar_t *str)
@@ -382,19 +384,10 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
     if(StrStrIA(getdrp_infpath(),"matchmarker\\"))
         if((calc_markerscore(state,getdrp_infpath())&7)!=7)return 0;
 
-    //log_file("Sc:%d\n\n",curscore);
     if(flags&FLAG_FILTERSP)return 2;
 
     if(StrStrIA(getdrp_infpath(),"tweak"))return 1;
     return isvalidcat(this,state)?2:1;
-}
-
-int isMissing(Device *device,Driver *driver,State *state)
-{
-    if(device->problem==CM_PROB_DISABLED)return 0;
-    if(device->problem&&device->HardwareID)return 1;
-    if(driver&&!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
-    return 0;
 }
 
 int Hwidmatch::calc_status(State *state)
@@ -402,7 +395,7 @@ int Hwidmatch::calc_status(State *state)
     int r=0;
     Driver *cur_driver=devicematch->driver;
 
-    if(isMissing(devicematch->device,cur_driver,state))return STATUS_MISSING;
+    if(devicematch->isMissing(state))return STATUS_MISSING;
 
     if(devicematch->driver)
     {
@@ -414,7 +407,7 @@ int Hwidmatch::calc_status(State *state)
                 r+=STATUS_CURRENT;
         }
 
-        int scorev=calc_score_h(cur_driver,state);
+        int scorev=cur_driver->calc_score_h(state);
         int res=cmpunsigned(scorev,score);
         if(res>0)r+=STATUS_BETTER;else
         if(res<0)r+=STATUS_WORSE;else
@@ -429,32 +422,6 @@ int Hwidmatch::calc_status(State *state)
 //}
 
 //{ Misc
-void findHWID_in_list(char *s,int list,int str,int *dev_pos)
-{
-    *dev_pos=0;
-    wchar_t *p=(wchar_t *)(s+list);
-    while(*p)
-    {
-        if(!StrCmpIW(p,(wchar_t *)(s+str)))return;
-        p+=lstrlen(p)+1;
-        (*dev_pos)++;
-    }
-    *dev_pos=-1;
-}
-
-void getdd(Device *cur_device,Driver *cur_driver,State *state,int *ishw,int *dev_pos)
-{
-    //Driver *cur_driver=&state->Drivers_list[cur_device->driver_index];
-
-    *ishw=1;
-    findHWID_in_list(state->textas.get(0),cur_device->HardwareID,cur_driver->MatchingDeviceId,dev_pos);
-    if(*dev_pos<0&&cur_device->CompatibleIDs)
-    {
-        *ishw=0;
-        findHWID_in_list(state->textas.get(0),cur_device->CompatibleIDs,cur_driver->MatchingDeviceId,dev_pos);
-    }
-}
-
 int cmpunsigned(unsigned a,unsigned b)
 {
     if(a>b)return 1;
@@ -502,17 +469,17 @@ int cmpversion(version_t *t1,version_t *t2)
 
 }
 
-void devicematch_init(devicematch_t *devicematch,Device *cur_device,Driver *driver,int items)
+void Devicematch::init(Device *cur_device,Driver *cur_driver,int items)
 {
-    devicematch->device=cur_device;
-    devicematch->driver=driver;
-    devicematch->start_matches=items;
-    devicematch->num_matches=0;
+    device=cur_device;
+    driver=cur_driver;
+    start_matches=items;
+    num_matches=0;
 }
 //}
 
 //{ hwidmatch
-void Hwidmatch::init(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State *state,devicematch_t *devicematch1)
+void Hwidmatch::init(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State *state,Devicematch *devicematch1)
 {
     char buf[BUFLEN];
 
@@ -546,7 +513,7 @@ void Hwidmatch::initbriefly(Driverpack *drp1,int HWID_index1)
 6 desc
 */
 
-void minlen(CHAR *s,int *len)
+void Hwidmatch::minlen(CHAR *s,int *len)
 {
     int l=strlen(s);
     if(*len<l)*len=l;
@@ -647,6 +614,17 @@ int Hwidmatch::cmp(Hwidmatch *match2)
 
     return 0;
 }
+
+int Hwidmatch::isdup(Hwidmatch *match2,char *sect1)
+{
+    char sect2[BUFLEN];
+    match2->getdrp_drvsection(sect2);
+
+    if(getdrp_infcrc()==match2->getdrp_infcrc()&&
+        !strcmp(getdrp_drvHWID(),match2->getdrp_drvHWID())&&
+        !strcmp(sect1,sect2))return 1;
+    return 0;
+}
 //}
 
 //{ Matcher
@@ -660,64 +638,52 @@ void Matcher::release()
 {
 }
 
-void Matcher::findHWIDs(devicematch_t *devicematch,char *hwid,int dev_pos,int ishw)
+void Matcher::findHWIDs(Devicematch *devicematch,char *hwid,int dev_pos,int ishw)
 {
-    Driverpack *drp;
-    Hwidmatch *hwidmatch;
-    unsigned i;
-    int code;
-    int sz;
-    int isfound;
-
-    sz=strlen(hwid);
+    int sz=strlen(hwid);
     strtoupper(hwid,sz);
-    code=hash_getcode(hwid,sz);
+    int code=hash_getcode(hwid,sz);
 
-    for(i=0;i<col->driverpack_list.size();i++)
+    for(auto &drp:col->driverpack_list)
     {
-        drp=&col->driverpack_list[i];
-        int val=hash_find(&drp->indexesold,code,&isfound);
+        int isfound;
+        int val=hash_find(&drp.indexesold,code,&isfound);
         while(isfound)
         {
+            Hwidmatch *hwidmatch;
             hwidmatch_list.push_back(Hwidmatch());
             hwidmatch=&hwidmatch_list.back();
-            hwidmatch->init(drp,val,dev_pos,ishw,state,devicematch);
+            hwidmatch->init(&drp,val,dev_pos,ishw,state,devicematch);
             devicematch->num_matches++;
-            val=hash_findnext(&drp->indexesold,&isfound);
+            val=hash_findnext(&drp.indexesold,&isfound);
         }
     }
 }
 
 void Matcher::populate()
 {
-    devicematch_t *devicematch;
+    Devicematch *devicematch;
     Driver *cur_driver;
-    Device *cur_device;
-    wchar_t *p;
-    char *s=state->textas.get(0);
     char buf[BUFLEN];
-    int dev_pos;
-    unsigned int i;
 
     time_matcher=GetTickCount();
-    cur_device=&state->Devices_list[0];
     devicematch_list.clear();
     hwidmatch_list.clear();
 
     isLaptop=state->isLaptop;
     //wcscpy(marker,state->marker);
 
-    for(i=0;i<state->Devices_list.size();i++,cur_device++)
+    for(auto &cur_device:state->Devices_list)
     {
         cur_driver=nullptr;
-        if(cur_device->driver_index>=0)cur_driver=&state->Drivers_list[cur_device->driver_index];
-        devicematch_list.push_back(devicematch_t());
+        if(cur_device.driver_index>=0)cur_driver=&state->Drivers_list[cur_device.driver_index];
+        devicematch_list.push_back(Devicematch());
         devicematch=&devicematch_list.back();
-        devicematch_init(devicematch,cur_device,cur_driver,hwidmatch_list.size());
-        if(cur_device->HardwareID)
+        devicematch->init(&cur_device,cur_driver,hwidmatch_list.size());
+        if(cur_device.HardwareID)
         {
-            p=(wchar_t *)(s+cur_device->HardwareID);
-            dev_pos=0;
+            wchar_t *p=state->textas.getw(cur_device.HardwareID);
+            int dev_pos=0;
             while(*p)
             {
                 wsprintfA(buf,"%ws",p);
@@ -727,10 +693,10 @@ void Matcher::populate()
             }
         }
 
-        if(cur_device->CompatibleIDs)
+        if(cur_device.CompatibleIDs)
         {
-            p=(wchar_t *)(s+cur_device->CompatibleIDs);
-            dev_pos=0;
+            wchar_t *p=state->textas.getw(cur_device.CompatibleIDs);
+            int dev_pos=0;
             while(*p)
             {
                 wsprintfA(buf,"%ws",p);
@@ -739,11 +705,11 @@ void Matcher::populate()
                 dev_pos++;
             }
         }
-        if(!devicematch->num_matches)
+        if(devicematch->num_matches==0)
         {
             hwidmatch_list.push_back(Hwidmatch());
 
-            if(isMissing(cur_device,cur_driver,state))devicematch->status=STATUS_NF_MISSING;else
+            if(devicematch->isMissing(state))devicematch->status=STATUS_NF_MISSING;else
             if(devicematch->driver)
             {
                 if(!wcscmp(state->textas.getw(devicematch->driver->ProviderName),L"Microsoft")||
@@ -770,23 +736,19 @@ void Matcher::populate()
 
 void Matcher::sort()
 {
-    devicematch_t *devicematch;
     Hwidmatch *match1,*match2,*bestmatch;
     Hwidmatch matchtmp;
+    char sect1[BUFLEN];
 
-    char sect1[BUFLEN],sect2[BUFLEN];
-    unsigned k;
-    unsigned i,j;
-    devicematch=&devicematch_list[0];
-    for(k=0;k<devicematch_list.size();k++,devicematch++)
+    for(auto &devicematch:devicematch_list)
     {
         // Sort
-        match1=&hwidmatch_list[devicematch->start_matches];
-        for(i=0;i+1<devicematch->num_matches;i++,match1++)
+        match1=&hwidmatch_list[devicematch.start_matches];
+        for(unsigned i=0;i+1<devicematch.num_matches;i++,match1++)
         {
-            match2=&hwidmatch_list[devicematch->start_matches+i+1];
+            match2=&hwidmatch_list[devicematch.start_matches+i+1];
             bestmatch=match1;
-            for(j=i+1;j<devicematch->num_matches;j++,match2++)
+            for(unsigned j=i+1;j<devicematch.num_matches;j++,match2++)
                 if(bestmatch->cmp(match2)<0)bestmatch=match2;
 
             if(bestmatch!=match1)
@@ -795,25 +757,17 @@ void Matcher::sort()
                 memcpy(match1,bestmatch,sizeof(Hwidmatch));
                 memcpy(bestmatch,&matchtmp,sizeof(Hwidmatch));
             }
-
         }
 
         // Mark dups
-        match1=&hwidmatch_list[devicematch->start_matches];
-        for(i=0;i+1<devicematch->num_matches;i++,match1++)
+        match1=&hwidmatch_list[devicematch.start_matches];
+        for(unsigned i=0;i+1<devicematch.num_matches;i++,match1++)
         {
             match1->getdrp_drvsection(sect1);
 
-            match2=&hwidmatch_list[devicematch->start_matches+i+1];
-            for(j=i+1;j<devicematch->num_matches;j++,match2++)
-            {
-                match2->getdrp_drvsection(sect2);
-
-                if(match1->getdrp_infcrc()==match2->getdrp_infcrc()&&
-                   !strcmp(match1->getdrp_drvHWID(),match2->getdrp_drvHWID())&&
-                   !strcmp(sect1,sect2))match2->status|=STATUS_DUP;
-
-            }
+            match2=&hwidmatch_list[devicematch.start_matches+i+1];
+            for(unsigned j=i+1;j<devicematch.num_matches;j++,match2++)
+                if(match1->isdup(match2,sect1))match2->status|=STATUS_DUP;
         }
     }
     time_matcher=GetTickCount()-time_matcher;
@@ -821,33 +775,27 @@ void Matcher::sort()
 
 void Matcher::print()
 {
-    devicematch_t *devicematch;
-    Device *cur_device;
     Hwidmatch *hwidmatch;
     int limits[7];
-    unsigned i;
-    unsigned j;
 
     if((log_verbose&LOG_VERBOSE_MATCHER)==0)return;
     log_file("\n{matcher_print[devices=%d,hwids=%d]\n",devicematch_list.size(),hwidmatch_list.size());
-    devicematch=&devicematch_list[0];
-    for(i=0;i<devicematch_list.size();i++,devicematch++)
+    for(auto &devicematch:devicematch_list)
     {
-        cur_device=devicematch->device;
-        cur_device->print(state);
+        devicematch.device->print(state);
         log_file("DriverInfo\n");
-        if(devicematch->driver)
-            devicematch->driver->print(state);
+        if(devicematch.driver)
+            devicematch.driver->print(state);
         else
             log_file("  NoDriver\n");
 
         memset(limits,0,sizeof(limits));
-        hwidmatch=&hwidmatch_list[devicematch->start_matches];
-        for(j=0;j<devicematch_list[i].num_matches;j++,hwidmatch++)
+        hwidmatch=&hwidmatch_list[devicematch.start_matches];
+        for(unsigned j=0;j<devicematch.num_matches;j++,hwidmatch++)
             hwidmatch->calclen(limits);
 
-        hwidmatch=&hwidmatch_list[devicematch->start_matches];
-        for(j=0;j<devicematch_list[i].num_matches;j++,hwidmatch++)
+        hwidmatch=&hwidmatch_list[devicematch.start_matches];
+        for(unsigned j=0;j<devicematch.num_matches;j++,hwidmatch++)
             hwidmatch->print_tbl(limits);
         log_file("\n");
     }
