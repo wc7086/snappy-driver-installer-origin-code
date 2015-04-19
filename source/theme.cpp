@@ -36,8 +36,8 @@ int Vault::findvar(wchar_t *str)
     c=*p;
     *p=0;
 
-    auto got=lookuptbl->find(std::wstring(str));
-    i=(got!=lookuptbl->end())?got->second:0;
+    auto got=lookuptbl.find(std::wstring(str));
+    i=(got!=lookuptbl.end())?got->second:0;
     i--;
     *p=c;
     return i;
@@ -64,10 +64,10 @@ int Vault::readvalue(const wchar_t *str)
     return p?wcstol(str,nullptr,16):_wtoi_my(str);
 }
 
-void Vault::parse(wchar_t *datav)
+void Vault::parse()
 {
     wchar_t *lhs,*rhs,*le;
-    le=lhs=datav;
+    le=lhs=datav_ptr.get();
 
     while(le)
     {
@@ -134,7 +134,8 @@ void Vault::parse(wchar_t *datav)
         lhs=le+1; // next line
     }
     odata_ptr=std::move(data_ptr);
-    data_ptr.reset(datav);
+    //data_ptr.reset(datav);
+    data_ptr=std::move(datav_ptr);
 }
 
 static void myswab(const char *s,char *d,int sz)
@@ -147,58 +148,59 @@ static void myswab(const char *s,char *d,int sz)
     }
 }
 
-wchar_t *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
+bool Vault::loadFromEncodedFile(const wchar_t *filename)
 {
-    FILE *f;
-    wchar_t *datav;
-
-    f=_wfopen(filename,L"rb");
+    FILE *f=_wfopen(filename,L"rb");
     if(!f)
     {
         log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
-        return nullptr;
+        return false;
     }
 
     fseek(f,0,SEEK_END);
-    *sz=ftell(f);
+    int sz=ftell(f);
     fseek(f,0,SEEK_SET);
-    if(*sz<10)
+    if(sz<10)
     {
         log_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
         fclose(f);
-        return nullptr;
+        return false;
     }
-    datav=new wchar_t[*sz+1+1024];
-    //log_con("Read '%S':%d\n",filename,*sz);
+    datav_ptr.reset(new wchar_t[sz+1]);
+    wchar_t *datav=datav_ptr.get();
+    //log_con("Read '%S':%d\n",filename,sz);
 
     fread(datav,2,1,f);
     if(!memcmp(datav,"\xEF\xBB",2))// UTF-8
     {
         int szo;
         fread(datav,1,1,f);
-        *sz-=3;
-        int q=fread(datav,1,*sz,f);
+        sz-=3;
+        int q=fread(datav,1,sz,f);
         szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,nullptr,0);
         wchar_t *dataloc1=new wchar_t[szo+1];
-        *sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,(LPWSTR)dataloc1,szo);
-        delete []datav;
+        sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,(LPWSTR)dataloc1,szo);
         fclose(f);
-        return dataloc1;
+        dataloc1[sz]=0;
+        datav_ptr.reset(dataloc1);
+        return true;
     }else
     if(!memcmp(datav,"\xFF\xFE",2))// UTF-16 LE
     {
-        fread(datav,*sz,1,f);
-        *sz>>=1;(*sz)--;
+        fread(datav,sz,1,f);
+        sz>>=1;(sz)--;
         fclose(f);
-        return datav;
+        datav[sz]=0;
+        return true;
     }else
     if(!memcmp(datav,"\xFE\xFF",2))// UTF-16 BE
     {
-        fread(datav,*sz,1,f);
-        myswab((char *)datav,(char *)datav,*sz);
-        *sz>>=1;(*sz)--;
+        fread(datav,sz,1,f);
+        myswab((char *)datav,(char *)datav,sz);
+        sz>>=1;(sz)--;
         fclose(f);
-        return datav;
+        datav[sz]=0;
+        return true;
     }else                         // ANSI
     {
         fclose(f);
@@ -206,74 +208,61 @@ wchar_t *Vault::loadFromEncodedFile(const wchar_t *filename,int *sz)
         if(!f)
         {
             log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
-            delete []datav;
-            return nullptr;
+            return false;
         }
-        wchar_t *p=(wchar_t *)datav;(*sz)--;
+        wchar_t *p=datav;(sz)--;
         while(!feof(f))
         {
-            fgetws(p,*sz,f);
+            fgetws(p,sz,f);
             p+=wcslen(p);
         }
         fclose(f);
-        return datav;
+        datav[sz]=0;
+        return true;
     }
 }
 
 void Vault::loadFromFile(wchar_t *filename)
 {
-    wchar_t *datav;
-    int sz,i;
-
     if(!filename[0])return;
-
-    datav=(wchar_t *)loadFromEncodedFile(filename,&sz);
-    if(!datav)
+    if(!loadFromEncodedFile(filename))
     {
         log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
         return;
     }
-    datav[sz]=0;
-    parse(datav);
+    parse();
 
-    for(i=0;i<num;i++)
+    for(int i=0;i<num;i++)
         if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
 }
 
 void Vault::loadFromRes(int id)
 {
-    wchar_t *datav;
     char *data1;
-    int sz,i;
+    int sz;
 
     get_resource(id,(void **)&data1,&sz);
-    datav=new wchar_t[sz+1];
-    for(i=0;i<sz;i++)
+    datav_ptr.reset(new wchar_t[sz+1]);
+    wchar_t *datav=datav_ptr.get();
+    for(int i=0;i<sz;i++)
     {
         if(data1[i]==L'\r')datav[i]=L' ';else
         datav[i]=data1[i];
     }
     datav[sz]=0;
-    parse(datav);
-    for(i=0;i<num;i++)
+    parse();
+    for(int i=0;i<num;i++)
         if(entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
 void Vault::init1(entry_t *entryv,int numv,int resv)
 {
-    memset(this,0,sizeof(Vault));
     entry=entryv;
     num=numv;
     res=resv;
 
-    lookuptbl=new lookuptbl_t;
     for(int i=0;i<num;i++)
-        lookuptbl->insert({std::wstring(entry[i].name),i+1});
-}
-
-void Vault::free1()
-{
-    delete lookuptbl;
+        lookuptbl.insert({std::wstring(entry[i].name),i+1});
 }
 
 void Vault::load(int i)

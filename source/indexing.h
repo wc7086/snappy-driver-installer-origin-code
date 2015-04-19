@@ -145,7 +145,7 @@ public:
     int memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
 
-    Txt(){reset(2);text[0]=text[1]=0;}
+    Txt();
     int alloc(int sz);
     void reset(int sz);
     void shrink();

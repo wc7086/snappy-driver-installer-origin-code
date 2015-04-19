@@ -485,8 +485,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     int i;
     for(i=0;i<BOX_NUM;i++)box[i].release();
     for(i=0;i<ICON_NUM;i++)icon[i].release();
-    vLang.free1();
-    vTheme.free1();
     manager_v[0].release();
     manager_v[1].release();
 
@@ -652,6 +650,7 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
+    bundle->matcher.state->textas.shrink();
     bundle->matcher.populate();
 }
 
