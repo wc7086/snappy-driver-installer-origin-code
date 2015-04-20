@@ -19,7 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global variables
 int trap_mode=0;
-
+/*
 const char *heaps[NUM_HEAPS]= // heap_t
 {
     "ID_HASH_ITEMS",      // 0
@@ -30,10 +30,11 @@ const int heapsz[NUM_HEAPS]=
 {
     1024, // auto
     1024, // auto
-};
+};*/
 //}
 
 //{ Heap
+/*
 void heap_refresh(heap_t *t)
 {
     void *p;
@@ -49,12 +50,12 @@ void heap_expand(heap_t *t,int sz)
 {
     if(t->used+sz>t->allocated)
     {
-        //printf("Expand[%-25s] +%d, (%d/%d) -> ",heaps[t->id],sz,t->used,t->allocated);
+        printf("Expand[%-25s] +%d, (%d/%d) -> ",heaps[t->id],sz,t->used,t->allocated);
         while(t->used+sz>t->allocated)
             t->allocated*=2;
-        //printf("(%d/%d)\n",t->used+sz,t->allocated);
-
-        heap_refresh(t);
+        printf("(%d/%d)\n",t->used+sz,t->allocated);
+*/
+//        heap_refresh(t);
 /*        t->base=realloc(t->base,t->allocated);
         if(!t->base)
         {
@@ -63,14 +64,15 @@ void heap_expand(heap_t *t,int sz)
             //t->base=realloc_wrap(t->base,t->used,t->allocated);
         }
         *t->membck=t->base;*/
-    }
+/*    }
 }
 
 void heap_init(heap_t *t,int id,void **mem,int sz, int itemsize)
 {
     t->id=id;
-    if(!sz)sz=heapsz[id];
-    //log_file("initsize %s: %d\n",heaps[t->id],sz);
+    //if(!sz)sz=heapsz[id];
+    sz=1024*1024*5;
+    log_con("initsize %s: %d\n",heaps[t->id],sz);
     t->base=malloc(sz);
     if(!t->base)log_err("No mem %d\n",sz);
     t->membck=mem;
@@ -81,8 +83,8 @@ void heap_init(heap_t *t,int id,void **mem,int sz, int itemsize)
     *t->membck=t->base;
 
 //    t->dup=0;
-}
-
+}*/
+/*
 void heap_free(heap_t *t)
 {
     if(t->base)free(t->base);
@@ -114,7 +116,7 @@ int heap_allocitem_i(heap_t *t)
     t->used+=t->itemsize;
     t->items++;
     return r/t->itemsize;
-}
+}*/
 /*
 void *heap_allocitem_ptr(heap_t *t)
 {
@@ -203,7 +205,7 @@ int heap_strtolowerz(heap_t *t,const char *s,int sz)
     t->used+=sz+1;
     return r;
 }*/
-
+/*
 char *heap_save(heap_t *t,char *p)
 {
     memcpy(p,&t->used,sizeof(t->used));p+=sizeof(t->used);
@@ -222,7 +224,7 @@ char *heap_load(heap_t *t,char *p)
     heap_alloc(t,sz);
     memcpy(t->base,p,t->used);p+=t->used;
     return p;
-}
+}*/
 
 //}
 
@@ -323,18 +325,26 @@ void hash_init(hashtable_t *t,int size)
     memset(t,0,sizeof(hashtable_t));
     t->size=size;
 
-    heap_init(&t->items_handle,ID_HASH_ITEMS,(void **)&t->items,t->size*sizeof(hashitem_t)*2,sizeof(hashitem_t));
-    heap_alloc(&t->items_handle,t->size*sizeof(hashitem_t));
-    t->items_handle.items=t->size;
-    memset(t->items,0,t->size*sizeof(hashitem_t));
-
-    heap_init(&t->strs_handle,ID_HASH_STR,(void **)&t->strs,4096,1);
-    heap_alloc(&t->strs_handle,1);
+    //heap_init(&t->items_handle,ID_HASH_ITEMS,(void **)&t->items,t->size*sizeof(hashitem_t)*2,sizeof(hashitem_t));
+    //heap_alloc(&t->items_handle,t->size*sizeof(hashitem_t));
+    //t->items_handle.items=t->size;
+    //memset(t->items,0,t->size*sizeof(hashitem_t));
+    t->items_new.clear();
+    t->items_new.resize(t->size);
+    t->items_new.reserve(t->size*4);
+    memset(t->items_new.data(),0,t->size*sizeof(hashitem_t));
+//log_con("hash_init %d\n",t->size);
+    //heap_init(&t->strs_handle,ID_HASH_STR,(void **)&t->strs,4096,1);
+    //heap_alloc(&t->strs_handle,1);
 }
 
 void hash_clear(hashtable_t *t,int zero)
 {
-    hashitem_t *cur;
+    //t->items_new.clear();
+    //t->items_new.resize(t->size);
+    //t->items_new.reserve(1024*1024);
+
+    /*hashitem_t *cur;
     int i=0;
 
     while(i<t->size)
@@ -347,23 +357,25 @@ void hash_clear(hashtable_t *t,int zero)
         }
     }
     if(zero)memset(t->items,0,t->size*sizeof(hashitem_t));
-    heap_reset(&t->items_handle,t->size*sizeof(hashitem_t));
-    heap_reset(&t->strs_handle,1);
+    heap_reset(&t->items_handle,t->size*sizeof(hashitem_t));*/
+    //heap_reset(&t->strs_handle,1);
 }
 
 void hash_free(hashtable_t *t)
 {
-    hash_clear(t,0);
-    heap_free(&t->items_handle);
-    heap_free(&t->strs_handle);
+    //hash_clear(t,0);
+    //heap_free(&t->items_handle);
+    //heap_free(&t->strs_handle);
 }
 
 char *hash_save(hashtable_t *t,char *p)
 {
     memcpy(p,&t->size,sizeof(int));p+=sizeof(int);
-    memcpy(p,&t->items_handle.used,sizeof(int));p+=sizeof(int);
+    /*memcpy(p,&t->items_handle.used,sizeof(int));p+=sizeof(int);
     memcpy(p,&t->items_handle.items,sizeof(int));p+=sizeof(int);
-    memcpy(p,t->items,t->items_handle.used);p+=t->items_handle.used;
+    memcpy(p,t->items,t->items_handle.used);p+=t->items_handle.used;*/
+    p=vector_save(&t->items_new,p);//p+=1024*9;
+    //log_con("Save %t->");
     return p;
 }
 
@@ -371,17 +383,17 @@ char *hash_load(hashtable_t *t,char *p)
 {
     memcpy(&t->size,p,sizeof(int));p+=sizeof(int);
     hash_init(t,t->size);
-    p=heap_load(&t->items_handle,p);
+    p=vector_load(&t->items_new,p);
     return p;
 }
 
 /*
 next
-     -1: used,next is free
       0: free,next is free
+     -1: used,next is free
   1..x : used,next is used
 */
-
+volatile int synchash=0;
 void hash_add(hashtable_t *t,int key,int value)
 {
     hashitem_t *cur;
@@ -390,27 +402,35 @@ void hash_add(hashtable_t *t,int key,int value)
     int cur_deep=0;
 
     curi=hash_getcode((char *)&key,sizeof(int))%t->size;
-    cur=&t->items[curi];
+    cur=&t->items_new[curi];
 
-    if(cur->next!=0)
+//log_con("hash_add(%d,%d) curi:%d, size:%d\n",key,value,curi,t->items_new.size());
+    if(cur->next!=0) // if used
     do
     {
-        cur_deep++;
-        cur=&t->items[curi];
+        //cur_deep++;
+        cur=&t->items_new[curi];
+        //log_con("curi: %d, previ:%d, next: %d\n",curi,previ,cur->next);
         previ=curi;
     }
     while((curi=cur->next)>0);
 
     if(cur->next==-1)
     {
-        curi=heap_allocitem_i(&t->items_handle);
-        cur=&t->items[curi];
+        //curi=heap_allocitem_i(&t->items_handle);
+        //cur=&t->items_new[curi];
+        t->items_new.emplace_back(hashitem_t());
+        cur=&t->items_new.back();
+        curi=t->items_new.size()-1;
+        //log_con("Emplace curi: %d\n",curi);
     }
 
     cur->key=key;
     cur->value=value;
     cur->next=-1;
-    if(previ>=0)(&t->items[previ])->next=curi;
+    if(previ>=0)(&t->items_new[previ])->next=curi;
+//log_con("<-- %d/%d\n",curi,t->items_new.size());
+    synchash--;
 }
 
 int hash_find(hashtable_t *t,int key,int *isfound)
@@ -424,7 +444,7 @@ int hash_find(hashtable_t *t,int key,int *isfound)
         return 0;
     }
     curi=hash_getcode((char *)&key,sizeof(int))%t->size;
-    cur=&t->items[curi];
+    cur=&t->items_new[curi];
 
     if(cur->next<0)
     {
@@ -445,7 +465,7 @@ int hash_find(hashtable_t *t,int key,int *isfound)
 
     do
     {
-        cur=&t->items[curi];
+        cur=&t->items_new[curi];
         if(key==cur->key)
         {
             t->findnext=cur->next;
@@ -468,10 +488,10 @@ int hash_findnext(hashtable_t *t,int *isfound)
     *isfound=0;
     if(curi<=0)return 0;
 
-    cur=&t->items[curi];
+    cur=&t->items_new[curi];
     do
     {
-        cur=&t->items[curi];
+        cur=&t->items_new[curi];
         if(cur->key==t->findstr)
         {
             t->findnext=cur->next;

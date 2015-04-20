@@ -215,7 +215,7 @@ public:
     int sections_n;
 };
 
-class data_desc_t // 12+1
+class data_desc_t // 24
 {
 public:
     unsigned manufacturer_index;
@@ -224,14 +224,14 @@ public:
     ofst desc;
     ofst install;
     ofst install_picked;
-    unsigned char feature;
+    unsigned int feature;
 };
 
 class data_HWID_t // 8
 {
 public:
     unsigned desc_index;
-    short inf_pos;
+    int inf_pos;
 
     ofst HWID;
 };

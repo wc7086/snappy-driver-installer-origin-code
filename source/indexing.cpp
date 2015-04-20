@@ -751,7 +751,7 @@ void Driverpack::init(wchar_t const *driverpack_path,wchar_t const *driverpack_f
 
 void Driverpack::release()
 {
-    if(indexesold.size)hash_free(&indexesold);
+//    if(indexesold.size)hash_free(&indexesold);
 }
 
 Driverpack::~Driverpack()
@@ -781,9 +781,10 @@ void Driverpack::saveindex()
         desc_list.size()*sizeof(data_desc_t)+
         HWID_list.size()*sizeof(data_HWID_t)+
         texta.getSize()+
-        indexesold.items_handle.used+sizeof(int)+
+        //indexesold.items_handle.used+sizeof(int)+
+        indexesold.items_new.size()*sizeof(hashitem_t)+sizeof(int)+
         6*sizeof(int)*2;
-
+//log_con("\n%8d,%ws\n",texta.getSize()/1024,filename);
     p=mem=(char *)malloc(sz);
     fwrite("SDW",3,1,f);
     fwrite(&version,sizeof(int),1,f);
@@ -794,6 +795,7 @@ void Driverpack::saveindex()
     p=vector_save(&HWID_list,p);
     p=vector_save(texta.getVector(),p);
     p=hash_save(&indexesold,p);
+    //memset(aa-4,0xDD,4);
     /*log_con("Sz:(%d,%d,%d,%d,%d,%d)=%d\n",
             inffile_handle.used,
             manufacturer_handle.used,
@@ -927,13 +929,10 @@ void Driverpack::print()
     int cnts[NUM_DECS],plain;
     unsigned HWID_index_last=0;
     unsigned manuf_index_last=0;
-    //char  bufdata[1024*1024*2];
-    //char  *bufdata=new char[1024*1024*10];
     int i;
 
     getindexfilename(col->getIndex_linear_dir(),L"txt",filename);
     f=_wfopen(filename,L"wt");
-    //setvbuf(f,bufdata,_IOFBF,1024*1024*10);
 
     log_con("Saving %S\n",filename);
     fprintf(f,"%S\\%S (%d inf files)\n",getPath(),getFilename(),n);
@@ -1082,6 +1081,8 @@ unsigned int __stdcall thread_indexinf(void *arg)
         if(!*t->inffile)
         {
             t->drp->genhashes();
+            t->drp->texta.shrink();
+
             free(t->adr);
             SetEvent(t->slotvacant);
             continue;
@@ -1476,7 +1477,6 @@ int Driverpack::genindex()
 #endif
 
     driverpack_indexinf_async(this,col,L"",L"",nullptr,0);
-    texta.shrink();
     return 1;
 }
 
@@ -1946,7 +1946,7 @@ int Txt::alloc(int sz)
 void Txt::reset(int sz)
 {
     text.resize(sz);
-    text.reserve(1024*1024);
+    text.reserve(1024*1024*2);
 }
 
 Txt::Txt()

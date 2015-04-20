@@ -17,15 +17,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 extern int trap_mode;
 typedef struct _hashtable_t hashtable_t;
-
+/*
 enum // heap_t
 {
     ID_HASH_ITEMS=0,    // 0
     ID_HASH_STR,        // 1
     NUM_HEAPS
-};
+};*/
 
 //{ Structs
+/*
 typedef struct _heap_t
 {
     int id;
@@ -38,14 +39,15 @@ typedef struct _heap_t
 
     //hashtable_t *dup;
 }heap_t;
-
-typedef struct hashitem_type
+*/
+struct hashitem_t
 {
     int key;
     int value;
     int next;
     int valuelen;
-}hashitem_t;
+    hashitem_t(){key=value=next=valuelen=0;}
+};
 
 typedef struct _hashtable_t
 {
@@ -54,16 +56,20 @@ typedef struct _hashtable_t
     int findnext;
     int findstr;
     int size;
+    int used;
 
-    hashitem_t *items;
-    heap_t items_handle;
-    char *strs;
-    heap_t strs_handle;
+    //hashitem_t *items;
+    //heap_t items_handle;
+
+    std::vector<hashitem_t> items_new;
+    //char *strs;
+    //heap_t strs_handle;
 
 }hashtable_t;
 //}
 
 // Heap
+/*
 void heap_refresh(heap_t *t);
 void heap_expand(heap_t *t,int sz);
 void heap_init(heap_t *t,int id,void **mem,int initsize,int itemsize);
@@ -81,7 +87,7 @@ int  heap_memcpyz(heap_t *t,const void *mem,int sz);
 int  heap_strtolowerz(heap_t *t,const char *s,int sz);
 char *heap_save(heap_t *t,char *p);
 char *heap_load(heap_t *t,char *p);
-
+*/
 // Strings
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);

@@ -227,9 +227,19 @@ unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
 
 int calc_secttype(const char *s)
 {
+    char buf[BUFLEN];
+    char *p=buf;
+
     s=StrStrIA(s,".nt");
     if(!s)return -1;
-    for(int i=0;i<NUM_DECS;i++)if(!StrCmpIA(s+3,nts[i]+2))return i;
+
+    strcpy(buf,s);
+
+    if((p=strchr(p+1,'.')))
+        if((p=strchr(p+1,'.')))
+            if((p=strchr(p+1,'.')))*p=0;
+
+    for(int i=0;i<NUM_DECS;i++)if(!StrCmpIA(buf+3,nts[i]+2))return i;
     return -1;
 }
 
