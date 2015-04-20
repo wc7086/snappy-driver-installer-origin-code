@@ -163,7 +163,6 @@ public:
 
     hashtable_t indexesold;
 
-    //std::unordered_map<> indexes;
     std::unordered_map<std::string,std::string> string_list;
     std::unordered_map<std::string,ofst> cat_list;
 
@@ -177,8 +176,7 @@ public:
     wchar_t *getPath(){return texta.getw(drppath);}
     wchar_t *getFilename(){return texta.getw(drpfilename);}
 
-    void init(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
-    void release();
+    Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
     ~Driverpack();
 
     void saveindex();

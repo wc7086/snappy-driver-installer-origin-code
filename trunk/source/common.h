@@ -16,88 +16,43 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 extern int trap_mode;
-typedef struct _hashtable_t hashtable_t;
-/*
-enum // heap_t
-{
-    ID_HASH_ITEMS=0,    // 0
-    ID_HASH_STR,        // 1
-    NUM_HEAPS
-};*/
 
-//{ Structs
-/*
-typedef struct _heap_t
-{
-    int id;
-    void **membck;
-    void *base;
-    int used;
-    int allocated;
-    int itemsize;
-    int items;
-
-    //hashtable_t *dup;
-}heap_t;
-*/
 struct hashitem_t
 {
     int key;
     int value;
     int next;
     int valuelen;
-    hashitem_t(){key=value=next=valuelen=0;}
+    hashitem_t():key(0),value(0),next(0),valuelen(0){}
 };
-
-typedef struct _hashtable_t
+class Test
 {
-//    int id;
-//    int flags;
+public:
+    std::string s;
+    Test();
+    ~Test();
+};
+struct hashtable_t
+{
     int findnext;
     int findstr;
     int size;
-    int used;
-
-    //hashitem_t *items;
-    //heap_t items_handle;
-
     std::vector<hashitem_t> items_new;
-    //char *strs;
-    //heap_t strs_handle;
+};
 
-}hashtable_t;
-//}
-
-// Heap
-/*
-void heap_refresh(heap_t *t);
-void heap_expand(heap_t *t,int sz);
-void heap_init(heap_t *t,int id,void **mem,int initsize,int itemsize);
-void heap_free(heap_t *t);
-void heap_reset(heap_t *t,int sz);
-
-int  heap_alloc(heap_t *t,int sz);
-int  heap_allocitem_i(heap_t *t);
-void *heap_allocitem_ptr(heap_t *t);
-void heap_freelastitem(heap_t *t);
-int  heap_memcpy(heap_t *t,const void *mem,int sz);
-int  heap_strcpy(heap_t *t,const char *s);
-int  heap_memcpyz(heap_t *t,const void *mem,int sz);
-//int  heap_memcpyz_dup(heap_t *t,const void *mem,int sz);
-int  heap_strtolowerz(heap_t *t,const char *s,int sz);
-char *heap_save(heap_t *t,char *p);
-char *heap_load(heap_t *t,char *p);
-*/
 // Strings
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
 
 // 7-zip
-namespace NArchive{
-namespace N7z{
-extern void register7z();
-}}
+namespace NArchive
+{
+    namespace N7z
+    {
+        extern void register7z();
+    }
+}
 void registerall();
 extern int  Extract7z(wchar_t *str);
 extern void registercrc();
@@ -113,10 +68,7 @@ extern void registerByteSwap();
 
 // Hash
 unsigned hash_getcode(const char *s,int sz);
-inline char *getstr(hashtable_t *t,hashitem_t *cur);
 void hash_init(hashtable_t *t,int size);
-void hash_clear(hashtable_t *t,int zero);
-void hash_free(hashtable_t *t);
 char *hash_save(hashtable_t *t,char *p);
 char *hash_load(hashtable_t *t,char *p);
 void hash_add(hashtable_t *t,int key,int value);

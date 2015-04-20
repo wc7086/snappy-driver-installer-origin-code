@@ -197,14 +197,13 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
 
 bool isCfgSwithExist(const wchar_t *cmdParams,wchar_t *cfgPath)
 {
-    wchar_t **argv,*pr;
+    wchar_t **argv;
     int argc;
-    int i;
 
     argv=CommandLineToArgvW(cmdParams,&argc);
-    for(i=1;i<argc;i++)
+    for(int i=1;i<argc;i++)
     {
-        pr=argv[i];
+        wchar_t *pr=argv[i];
         if(pr[0]=='/')pr[0]='-';
         if(StrCmpIW(pr,GFG_DEF)==0)
         {
