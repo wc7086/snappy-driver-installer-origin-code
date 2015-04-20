@@ -15,11 +15,24 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define NUM_PANELS          13
-#define PAN_ENT          18
+#define NUM_PANELS  13
+#define PAN_ENT     18
+
+class Image;
+class Panel;
+class Panelitem;
+
+//{ Global vars
+extern Image box[BOX_NUM];
+extern Image icon[ICON_NUM];
+
+extern Panelitem panel3[];
+extern Panelitem panel3_w[];
+extern Panel panels[NUM_PANELS];
+//}
 
 //{ Structs
-struct panelitem_t
+struct Panelitem
 {
     int type;
     int str_id;
@@ -91,7 +104,7 @@ public:
 class Panel
 {
 private:
-    panelitem_t *items;
+    Panelitem *items;
     int index,indofs;
 
     int Xp();
@@ -100,7 +113,7 @@ private:
     int YP();
 
 public:
-    Panel(panelitem_t *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
+    Panel(Panelitem *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
     bool isChecked(int i)const{return items[i].checked;}
     void setChecked(int i,int val){items[i].checked=val;}
     void flipChecked(int i){items[i].checked^=1;}
@@ -115,15 +128,7 @@ public:
 };
 //}
 
-//{ Global vars
-extern Image box[BOX_NUM];
-extern Image icon[ICON_NUM];
-
-extern panelitem_t panel3[];
-extern panelitem_t panel3_w[];
-extern Panel panels[NUM_PANELS];
-//}
-
+// Draw
 int Xm(int x);
 int Ym(int y);
 int XM(int x,int o);
@@ -137,7 +142,6 @@ int YG(int y,int o);
 int  panels_hitscan(int hx,int hy,int *ii);
 void panel_setfilters(Panel *panel);
 
-// Draw
 void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);
 void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int i);
 void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);

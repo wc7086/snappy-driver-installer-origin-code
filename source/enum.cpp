@@ -88,7 +88,6 @@ void Device::print_guid(GUID *g)
 void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *val)
 {
     DWORD buffersize=0;
-    int lr;
     DWORD DataT=0;
     PBYTE p;
     auto DeviceInfoDataloc=(SP_DEVINFO_DATA *)&DeviceInfoData;
@@ -96,12 +95,12 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
     *val=0;
     if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,nullptr,0,&buffersize))
     {
-        lr=GetLastError();
-        if(lr==ERROR_INVALID_DATA)return;
-        if(lr!=ERROR_INSUFFICIENT_BUFFER)
+        int ret_er=GetLastError();
+        if(ret_er==ERROR_INVALID_DATA)return;
+        if(ret_er!=ERROR_INSUFFICIENT_BUFFER)
         {
             log_file("Property %d\n",id);
-            print_error(lr,L"read_device_property()");
+            print_error(ret_er,L"read_device_property()");
             return;
         }
     }
@@ -118,9 +117,9 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
     }
     if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,(PBYTE)p,buffersize,&buffersize))
     {
-        lr=GetLastError();
+        int ret_er=GetLastError();
         log_file("Property %d\n",id);
-        print_error(lr,L"read_device_property()");
+        print_error(ret_er,L"read_device_property()");
         return;
     }
 }
@@ -792,13 +791,10 @@ void State::scanDevices()
     HKEY   hkey;
     wchar_t buf[BUFLEN];
     Collection collection;
-    Driverpack unpacked_drp;
-    unsigned i;
-    int lr;
+    Driverpack unpacked_drp{L"",L"windir.7z",&collection};
 
     time_devicescan=GetTickCount();
     collection.init(textas.getw(windir),L"",L"",0);
-    unpacked_drp.init(L"",L"windir.7z",&collection);
     Devices_list.clear();
     inf_list_new.clear();
 
@@ -809,18 +805,17 @@ void State::scanDevices()
         return;
     }
 
-    i=0;
-    while(1)
+    for(unsigned i=0;;i++)
     {
         // Device
-        Devices_list.emplace_back((Device(hDevInfo,this,i++)));
+        Devices_list.emplace_back((Device(hDevInfo,this,i)));
         Device *cur_device=&Devices_list.back();
 
-        lr=cur_device->ret;
-        if(lr)
+        int ret=cur_device->ret;
+        if(ret)
         {
             Devices_list.pop_back();
-            if(lr==ERROR_NO_MORE_ITEMS)
+            if(ret==ERROR_NO_MORE_ITEMS)
                 break;
             else
                 continue;
@@ -829,8 +824,8 @@ void State::scanDevices()
         // Driver
         if(!cur_device->getDriver())continue;
         wsprintf(buf,L"SYSTEM\\CurrentControlSet\\Control\\Class\\%s",textas.getw(cur_device->getDriver()));
-        lr=RegOpenKeyEx(HKEY_LOCAL_MACHINE,buf,0,KEY_QUERY_VALUE,&hkey);
-        switch(lr)
+        ret=RegOpenKeyEx(HKEY_LOCAL_MACHINE,buf,0,KEY_QUERY_VALUE,&hkey);
+        switch(ret)
         {
             case ERROR_SUCCESS:
                 cur_device->setDriverIndex(Drivers_list.size());
@@ -838,7 +833,7 @@ void State::scanDevices()
                 break;
 
             default:
-                print_error(lr,L"RegOpenKeyEx()");
+                print_error(ret,L"RegOpenKeyEx()");
 
             case ERROR_FILE_NOT_FOUND:
                 break;

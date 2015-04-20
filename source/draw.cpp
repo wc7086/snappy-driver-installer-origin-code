@@ -21,7 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 Image box[BOX_NUM];
 Image icon[ICON_NUM];
 
-panelitem_t panel1[]=
+Panelitem panel1[]=
 {
     {TYPE_GROUP,0,3,0},
     {TYPE_TEXT,STR_SHOW_SYSINFO,0,0},
@@ -29,7 +29,7 @@ panelitem_t panel1[]=
     {TYPE_TEXT,0,0,0},
 };
 
-panelitem_t panel2[]=
+Panelitem panel2[]=
 {
     {TYPE_GROUP,0,3,0},
     {0,STR_INSTALL,               ID_INSTALL,0},
@@ -37,7 +37,7 @@ panelitem_t panel2[]=
     {0,STR_SELECT_NONE,           ID_SELECT_NONE,0},
 };
 
-panelitem_t panel3[]=
+Panelitem panel3[]=
 {
     {TYPE_GROUP,KB_EXPERT,5,0},
     {TYPE_TEXT,STR_LANG,0,0},
@@ -47,7 +47,7 @@ panelitem_t panel3[]=
     {TYPE_CHECKBOX,STR_EXPERT,              ID_EXPERT_MODE,0},
 };
 
-panelitem_t panel3_w[]=
+Panelitem panel3_w[]=
 {
     {TYPE_GROUP,0,3,0},
     {TYPE_TEXT,STR_LANG,0,0},
@@ -55,7 +55,7 @@ panelitem_t panel3_w[]=
     {TYPE_CHECKBOX,STR_EXPERT,              ID_EXPERT_MODE,0},
 };
 
-panelitem_t panel4[]=
+Panelitem panel4[]=
 {
     {TYPE_GROUP_BREAK,KB_ACTIONS,4,0},
     {TYPE_BUTTON,STR_OPENLOGS,              ID_OPENLOGS,0},
@@ -64,7 +64,7 @@ panelitem_t panel4[]=
     {TYPE_BUTTON,STR_DRVDIR,                ID_DRVDIR,0},
 };
 
-panelitem_t panel5[]=
+Panelitem panel5[]=
 {
     {TYPE_GROUP_BREAK,KB_PANEL1,7,0},
     {TYPE_TEXT,STR_SHOW_FOUND,0,0},
@@ -76,7 +76,7 @@ panelitem_t panel5[]=
     {TYPE_CHECKBOX, STR_SHOW_WORSE_RANK,    ID_SHOW_WORSE_RANK,0},
 };
 
-panelitem_t panel6[]=
+Panelitem panel6[]=
 {
     {TYPE_GROUP_BREAK,KB_PANEL2,4,0},
     {TYPE_TEXT,STR_SHOW_NOTFOUND,0,0},
@@ -85,7 +85,7 @@ panelitem_t panel6[]=
     {TYPE_CHECKBOX, STR_SHOW_NF_STANDARD,   ID_SHOW_NF_STANDARD,0},
 };
 
-panelitem_t panel7[]=
+Panelitem panel7[]=
 {
     {TYPE_GROUP_BREAK,KB_PANEL3,3,0},
     {TYPE_CHECKBOX, STR_SHOW_ONE,           ID_SHOW_ONE,0},
@@ -94,32 +94,32 @@ panelitem_t panel7[]=
 
 };
 
-panelitem_t panel8[]=
+Panelitem panel8[]=
 {
     {TYPE_GROUP,0,1,0},
     {TYPE_TEXT,0,0,0},
 };
 
-panelitem_t panel9[]=
+Panelitem panel9[]=
 {
 
     {TYPE_GROUP,KB_INSTALL,1,0},
     {TYPE_BUTTON,STR_INSTALL,               ID_INSTALL,0},
 };
 
-panelitem_t panel10[]=
+Panelitem panel10[]=
 {
     {TYPE_GROUP,KB_INSTALL,1,0},
     {TYPE_BUTTON,STR_SELECT_ALL,            ID_SELECT_ALL,0},
 };
 
-panelitem_t panel11[]=
+Panelitem panel11[]=
 {
     {TYPE_GROUP,KB_INSTALL,1,0},
     {TYPE_BUTTON,STR_SELECT_NONE,           ID_SELECT_NONE,0},
 };
 
-panelitem_t panel12[]=
+Panelitem panel12[]=
 {
     {TYPE_GROUP,KB_PANEL_CHK,3,0},
     {TYPE_TEXT,STR_OPTIONS,0,0},
@@ -127,7 +127,7 @@ panelitem_t panel12[]=
     {TYPE_CHECKBOX,STR_REBOOT,              ID_REBOOT,0},
 };
 
-panelitem_t panel13[]=
+Panelitem panel13[]=
 {
     {TYPE_GROUP,0,1,0},
     {TYPE_TEXT,0,0,0},
@@ -239,7 +239,6 @@ void Image::createBitmap(BYTE *data,int sz)
     BYTE *bits;
     BYTE *big;
     BYTE *p1,*p2;
-    int ret;
     int i;
 
     hasalpha=sx=sy=0;
@@ -247,10 +246,10 @@ void Image::createBitmap(BYTE *data,int sz)
 #ifdef CONSOLE_MODE
     return;
 #else
-    ret=WebPGetInfo((PBYTE)data,sz,&sx,&sy);
+    int ret=WebPGetInfo((PBYTE)data,sz,&sx,&sy);
     if(!ret)
     {
-        log_err("ERROR in image_load(): failed WebPGetInfo\n");
+        log_err("ERROR in image_load(): failed WebPGetInfo(%d)\n",ret);
         return;
     }
     big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);

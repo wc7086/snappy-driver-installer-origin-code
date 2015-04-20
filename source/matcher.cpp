@@ -403,7 +403,6 @@ void Matcher::sort()
 void Matcher::populate()
 {
     Devicematch *devicematch;
-    Driver *cur_driver;
     char buf[BUFLEN];
 
     time_matcher=GetTickCount();
@@ -415,8 +414,7 @@ void Matcher::populate()
 
     for(auto &cur_device:state->Devices_list)
     {
-        cur_driver=nullptr;
-        if(cur_device.driver_index>=0)cur_driver=&state->Drivers_list[cur_device.driver_index];
+        Driver *cur_driver=(cur_device.driver_index>=0)?&state->Drivers_list[cur_device.driver_index]:nullptr;
         devicematch_list.push_back(Devicematch(&cur_device,cur_driver,hwidmatch_list.size()));
         devicematch=&devicematch_list.back();
         if(cur_device.HardwareID)
@@ -477,7 +475,6 @@ void Matcher::populate()
 
 void Matcher::print()
 {
-    Hwidmatch *hwidmatch;
     int limits[7];
 
     if((log_verbose&LOG_VERBOSE_MATCHER)==0)return;
@@ -492,6 +489,7 @@ void Matcher::print()
             log_file("  NoDriver\n");
 
         memset(limits,0,sizeof(limits));
+        Hwidmatch *hwidmatch;
         hwidmatch=&hwidmatch_list[devicematch.start_matches];
         for(unsigned j=0;j<devicematch.num_matches;j++,hwidmatch++)
             hwidmatch->calclen(limits);

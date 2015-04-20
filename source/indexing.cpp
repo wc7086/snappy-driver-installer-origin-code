@@ -365,7 +365,6 @@ wchar_t *finddrp(wchar_t *s)
 //{ Collection
 void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv,int flags_l)
 {
-    driverpack_list.reserve(100);
     flags=flags_l;
 
     driverpack_dir=driverpacks_dirv;
@@ -375,9 +374,6 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
 
 void Collection::release()
 {
-    for(auto &drp:driverpack_list)
-        drp.release();
-
     driverpack_list.clear();
 }
 
@@ -473,7 +469,6 @@ int Collection::scanfolder_count(const wchar_t *path)
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     wchar_t buf[BUFLEN];
-    Driverpack drp;
     int cnt;
     int i;
 
@@ -501,10 +496,8 @@ int Collection::scanfolder_count(const wchar_t *path)
             }
             if(i==5&&StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
-                drp.init(path,FindFileData.cFileName,this);
-                //log_con("<%ws><%ws>\n",path,FindFileData.cFileName);
+                Driverpack drp{path,FindFileData.cFileName,this};
                 if(flags&COLLECTION_FORCE_REINDEXING||!drp.checkindex())cnt++;
-                drp.release();
             }
         }
     }
@@ -536,9 +529,9 @@ void Collection::updatedindexes()
             continue;
         }
 
-        driverpack_list.push_back(Driverpack());
+        driverpack_list.push_back(Driverpack(driverpack_dir,filename,this));
         drp=&driverpack_list.back();
-        drp->init(driverpack_dir,filename,this);
+        //drp->init(driverpack_dir,filename,this);
 //        drp=driverpack_list.emplace_back({driverpack_dir,filename,this});
 //        log_con("Load '%S'\n",filename);
         drp->loadindex();
@@ -552,9 +545,9 @@ void Collection::load()
 
     time_indexes=GetTickCount();
     registerall();
-    driverpack_list.push_back(Driverpack());
+    driverpack_list.push_back(Driverpack(driverpack_dir,L"unpacked.7z",this));
     unpacked_drp=&driverpack_list.back();
-    unpacked_drp->init(driverpack_dir,L"unpacked.7z",this);
+    //unpacked_drp->init(driverpack_dir,L"unpacked.7z",this);
 
 //{thread
     int i;
@@ -574,6 +567,7 @@ void Collection::load()
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
     drp_count=scanfolder_count(driverpack_dir);
+    driverpack_list.reserve(drp_count+1);
     drp_cur=0;
     scanfolder(driverpack_dir);
     updatedindexes();
@@ -676,9 +670,9 @@ void Collection::scanfolder(const wchar_t *path)
             int len=lstrlen(FindFileData.cFileName);
             if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
-                driverpack_list.push_back(Driverpack());
+                driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
                 drp=&driverpack_list.back();
-                drp->init(path,FindFileData.cFileName,this);
+                //drp->init(path,FindFileData.cFileName,this);
                 if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
                 {
                     wchar_t bufw1[BUFLEN];
@@ -735,7 +729,7 @@ void Collection::scanfolder(const wchar_t *path)
 //}
 
 //{ Driverpack
-void Driverpack::init(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col_v)
+Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col_v)
 {
     char buf[BUFLEN];
 
@@ -747,11 +741,6 @@ void Driverpack::init(wchar_t const *driverpack_path,wchar_t const *driverpack_f
     wsprintfA(buf,"%ws",driverpack_filename);
     drpfilename=texta.memcpy((char *)driverpack_filename,wcslen(driverpack_filename)*2+2);
     indexesold.size=0;
-}
-
-void Driverpack::release()
-{
-//    if(indexesold.size)hash_free(&indexesold);
 }
 
 Driverpack::~Driverpack()
@@ -1946,7 +1935,7 @@ int Txt::alloc(int sz)
 void Txt::reset(int sz)
 {
     text.resize(sz);
-    text.reserve(1024*1024*2);
+    text.reserve(1024*1024*2); //TODO
 }
 
 Txt::Txt()
