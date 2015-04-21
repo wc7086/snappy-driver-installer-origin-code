@@ -741,6 +741,7 @@ Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_
     wsprintfA(buf,"%ws",driverpack_filename);
     drpfilename=texta.memcpy((char *)driverpack_filename,wcslen(driverpack_filename)*2+2);
     indexesold.size=0;
+    type=DRIVERPACK_TYPE_PENDING_SAVE;
 }
 
 Driverpack::~Driverpack()
@@ -770,10 +771,9 @@ void Driverpack::saveindex()
         desc_list.size()*sizeof(data_desc_t)+
         HWID_list.size()*sizeof(data_HWID_t)+
         texta.getSize()+
-        //indexesold.items_handle.used+sizeof(int)+
         indexesold.items_new.size()*sizeof(hashitem_t)+sizeof(int)+
         6*sizeof(int)*2;
-//log_con("\n%8d,%ws\n",texta.getSize()/1024,filename);
+
     p=mem=(char *)malloc(sz);
     fwrite("SDW",3,1,f);
     fwrite(&version,sizeof(int),1,f);
@@ -1016,41 +1016,29 @@ void Driverpack::print()
 
 void Driverpack::genhashes()
 {
-    char filename[BUFLEN];
-    int j;
-    unsigned i;
-
-
-    hash_init(&indexesold,HWID_list.size()/2);
-    //heap_expand(&t->indexes.strs_handle,64*1024);
-    //log_file("Items: %d\n",pack->HWID_list_handle.items);
-    for(i=0;i<inffile.size();i++)
+    // Driver signatures
+    for(auto &it:inffile)
     {
-        wsprintfA(filename,"%s%s",texta.get(inffile[i].infpath),texta.get(inffile[i].inffilename));
-        strtolower(filename,strlen(filename));
-        //log_con("%s\n",filename);
-        for(j=CatalogFile;j<=CatalogFile_ntamd64;j++)
+        char filename[BUFLEN];
+        strcpy(filename,texta.get(it.infpath));
+        char *field=filename+strlen(filename);
+
+        for(int j=CatalogFile;j<=CatalogFile_ntamd64;j++)if(it.fields[j])
         {
-            if(inffile[i].fields[j])
-            {
-                wsprintfA(filename,"%s%s",texta.get(inffile[i].infpath),texta.get(inffile[i].fields[j]));
-                strtolower(filename,strlen(filename));
-                //log_con("%d: (%s)\n",j,filename);
+            strcpy(field,texta.get(it.fields[j]));
+            strtolower(filename,strlen(filename));
 
-                auto got=cat_list.find(filename);
-                if(got!=cat_list.end())inffile[i].cats[j]=got->second;
-                //else log_con("Not found\n");
-
-            }
+            auto got=cat_list.find(filename);
+            if(got!=cat_list.end())it.cats[j]=got->second;
         }
     }
 
-    for(i=0;i<HWID_list.size();i++)
+    // Hashtable for fast search
+    hash_init(&indexesold,HWID_list.size()/2);
+    for(unsigned i=0;i<HWID_list.size();i++)
     {
-        int val=0;
         char *vv=texta.get(HWID_list[i].HWID);
-
-        val=hash_getcode(vv,strlen(vv));
+        int val=hash_getcode(vv,strlen(vv));
         hash_add(&indexesold,val,i);
     }
 }
@@ -1122,7 +1110,7 @@ void findosattr(char *bufa,char *adr,int len)
     *bufa=0;
     while(p+11<adr+len)
     {
-        if(*p=='O'&&!memcmp(p,L"OSAttr",11))
+        if(*p=='O'&&!memcmp(p,L"OSAttr",10))
         {
             int ofs=p[19]=='2'||p[19]=='1'?1:0;
             if(!*bufa||bufal<wcslen((wchar_t *)(p+18+ofs)))
@@ -1148,6 +1136,11 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
         cat_list.insert({filename,texta.memcpyz_dup(bufa,strlen(bufa))});
         //log_con("(%s)\n##%s\n",filename,bufa);
     }
+    else
+    {
+        log_con("Not found singature in '%ws%ws'(%d)\n",pathinf,inffilename,len);
+    }
+
 }
 
 #ifdef MERGE_FINDER

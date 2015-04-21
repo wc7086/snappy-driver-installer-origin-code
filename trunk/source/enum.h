@@ -244,6 +244,7 @@ char *vector_load(std::vector<T> *v,char *p)
 
     memcpy(&sz,p,sizeof(int));p+=sizeof(int);
     memcpy(&num,p,sizeof(int));p+=sizeof(int);
+    if(!num)num=sz;
     v->resize(num);
     memcpy(v->data(),p,sz);p+=sz;
     return p;

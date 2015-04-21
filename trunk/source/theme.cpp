@@ -405,12 +405,6 @@ void vault_startmonitors()
     mon_theme=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
 }
 
-void vault_stopmonitors()
-{
-    if(mon_lang)mon_lang->stop();
-    if(mon_theme)mon_theme->stop();
-}
-
 void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
