@@ -243,15 +243,24 @@ void Parser_str::readVersion(version_t *t)
     t->v4=readNumber();
 }
 
-void Parser_str::init(Driverpack *drp)
+/*void Parser_str::init(Driverpack *drp)
 {
     pack=drp;
+}*/
+
+Parser_str::Parser_str(sect_data_t *lnk,Driverpack *drpv)
+{
+    blockBeg=lnk->blockbeg;
+    //blockEnd=lnk->base+lnk->len;
+    blockEnd=lnk->blockend;
+    pack=drpv;
 }
 
-void Parser_str::setRange(char *inf_base,sect_data_t *lnk)
+Parser_str::Parser_str(char *vb,char *ve)
 {
-    blockBeg=inf_base+lnk->ofs;
-    blockEnd=inf_base+lnk->len;
+    strBeg=vb;
+    strEnd=ve;
+    pack=nullptr;
 }
 
 void Parser_str::readStr(char **vb,char **ve)
@@ -269,6 +278,7 @@ void Parser_str::str_sub()
 
     v1b=strBeg;
 
+    if(!pack)return;
     if(*v1b=='%'/*&&strEnd[-1]=='%'*/)
     {
         //log_file("String '%.*s' %c\n",strEnd-v1b,v1b,strEnd[-1]);
@@ -731,15 +741,9 @@ void Collection::scanfolder(const wchar_t *path)
 //{ Driverpack
 Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col_v)
 {
-    char buf[BUFLEN];
-
     col=col_v;
-
-    wsprintfA(buf,"%ws",driverpack_path);
-    drppath=texta.memcpy((char *)driverpack_path,wcslen(driverpack_path)*2+2);
-
-    wsprintfA(buf,"%ws",driverpack_filename);
-    drpfilename=texta.memcpy((char *)driverpack_filename,wcslen(driverpack_filename)*2+2);
+    drppath=texta.strcpyw(driverpack_path);
+    drpfilename=texta.strcpyw(driverpack_filename);
     indexesold.size=0;
     type=DRIVERPACK_TYPE_PENDING_SAVE;
 }
@@ -1484,11 +1488,11 @@ void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char
         indexinf_ansi(drpdir,iinfdilename,bb,inf_len);
     }
 }
+
 // http://msdn.microsoft.com/en-us/library/ff547485(v=VS.85).aspx
 void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,char *inf_base,int inf_len)
 {
     version_t *cur_ver;
-    sect_data_t strlink;
 
     int cur_inffile_index;
     data_inffile_t *cur_inffile;
@@ -1505,13 +1509,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     char line[2048];
     int  strs[16];
 
-    Parser_str parse_info,parse_info2,parse_info3;
-
     std::unordered_multimap<std::string,sect_data_t> section_list;
-
-    parse_info.init(this);
-    parse_info2.init(this);
-    parse_info3.init(this);
 
     char *p=inf_base,*strend=inf_base+inf_len;
     char *p2,*sectnmend;
@@ -1530,7 +1528,6 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     //log_con("%S%S\n",drpdir,inffilename);
 
     // Populate sections
-    //char *b;
     while(p<strend)
     {
         switch(*p)
@@ -1546,7 +1543,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
             case '[':
                 if(lnk_s2)
-                    lnk_s2->len=p-inf_base;
+                    lnk_s2->blockend=p;
 #ifdef DEBUG_EXTRACHECKS
 /*					char *strings_base=inf_base+(*it).second.ofs;
 					int strings_len=(*it).second.len-(*it).second.ofs;
@@ -1571,11 +1568,9 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 sectnmend=p2;
                 p2++;
 
-                strlink.ofs=p2-inf_base;
-                strlink.len=inf_len;
                 {
                     strtolower(p,sectnmend-p);
-                    auto a=section_list.insert({std::string(p,sectnmend-p),sect_data_t(strlink.ofs,strlink.len)});
+                    auto a=section_list.insert({std::string(p,sectnmend-p),sect_data_t(p2,inf_base+inf_len)});
                     lnk_s2=&a->second;
                     //log_con("  %8d,%8d '%s' \n",strlink.ofs,strlink.len,std::string(p,sectnmend-p).c_str());
                 }
@@ -1598,7 +1593,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         sect_data_t *lnk=&got->second;
         char *s1b,*s1e,*s2b,*s2e;
 
-        parse_info.setRange(inf_base,lnk);
+        Parser_str parse_info{lnk,this};
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
@@ -1606,7 +1601,6 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             parse_info.readStr(&s2b,&s2e);
             strtolower(s1b,s1e-s1b);
             string_list.insert({std::string(s1b,s1e-s1b),std::string(s2b,s2e-s2b)});
-            //hash_add(&string_list,s1b,s1e-s1b,(intptr_t)memcpy_alloc(s2b,s2e-s2b),HASH_MODE_INTACT);
         }
     }
 
@@ -1625,7 +1619,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         sect_data_t *lnk=&got->second;
         char *s1b,*s1e;
 
-        parse_info.setRange(inf_base,lnk);
+        Parser_str parse_info{lnk,this};
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
@@ -1657,7 +1651,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 {
                     parse_info.parseField();
                     parse_info.readStr(&s1b,&s1e);
-                    cur_inffile->fields[i]=texta.memcpyz(s1b,s1e-s1b);
+                    cur_inffile->fields[i]=texta.t_memcpyz(s1b,s1e-s1b);
                 }
                 break;
             }
@@ -1679,7 +1673,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
-        parse_info.setRange(inf_base,lnk);
+        Parser_str parse_info{lnk,this};
         while(parse_info.parseItem())
         {
             char *s1b,*s1e;
@@ -1689,14 +1683,14 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             manufacturer_list.resize(cur_manuf_index+1);
             cur_manuf=&manufacturer_list[cur_manuf_index];
             cur_manuf->inffile_index=cur_inffile_index;
-            cur_manuf->manufacturer=texta.memcpyz(s1b,s1e-s1b);
+            cur_manuf->manufacturer=texta.t_memcpyz(s1b,s1e-s1b);
             cur_manuf->sections_n=0;
 
             if(parse_info.parseField())
             {
                 parse_info.readStr(&s1b,&s1e);
                 strtolower(s1b,s1e-s1b);
-                strs[cur_manuf->sections_n++]=texta.memcpyz(s1b,s1e-s1b);
+                strs[cur_manuf->sections_n++]=texta.t_memcpyz(s1b,s1e-s1b);
                 while(1)
                 {
                     if(cur_manuf->sections_n>1)
@@ -1713,8 +1707,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     for(auto got2=range2.first;got2!=range2.second;++got2)
                     {
                         sect_data_t *lnk2=&got2->second;
-                        //log_con("%d,%d\n",lnk2->ofs,lnk2->len);
-                        parse_info2.setRange(inf_base,lnk2);
+                        Parser_str parse_info2{lnk2,this};
                         while(parse_info2.parseItem())
                         {
                             parse_info2.readStr(&s1b,&s1e);
@@ -1810,7 +1803,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             for(auto got3=range3.first;got3!=range3.second;++got3)
                             {
                                 lnk3=&got3->second;
-                                parse_info3.setRange(inf_base,lnk3);
+                                Parser_str parse_info3{lnk3,this};
                                 if(!strcmp(secttry,installsection))
                                 {
                                     log_index("ERROR: [%s] refers to itself in %S%S\n",installsection,drpdir,inffilename);
@@ -1860,17 +1853,12 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     parse_info.readStr(&s1b,&s1e);
                     if(s1b>s1e)break;
                     strtolower(s1b,s1e-s1b);
-                    strs[cur_manuf->sections_n++]=texta.memcpyz(s1b,s1e-s1b);
+                    strs[cur_manuf->sections_n++]=texta.t_memcpyz(s1b,s1e-s1b);
                 }
             }
-            cur_manuf->sections=texta.memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n);
+            cur_manuf->sections=texta.t_memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n);
         }
     }
-    //hash_stats(string_list);
-    //hash_stats(section_list);
-    //hash_stats(dup_list);
-
-    //hash_clear(&string_list,1);
     string_list.clear();
 }
 //}
@@ -1884,13 +1872,19 @@ int Txt::strcpy(const char *str)
     text.insert(text.end(),str,str+strlen(str)+1);
     return r;
 }
-int Txt::memcpy(const char *mem,int sz)
+int Txt::strcpyw(const wchar_t *str)
+{
+    int r=text.size();
+    text.insert(text.end(),(char *)str,(char *)(str+wcslen(str)+1));
+    return r;
+}
+int Txt::t_memcpy(const char *mem,int sz)
 {
     int r=text.size();
     text.insert(text.end(),mem,mem+sz);
     return r;
 }
-int Txt::memcpyz(const char *mem,int sz)
+int Txt::t_memcpyz(const char *mem,int sz)
 {
     int r=text.size();
     text.insert(text.end(),mem,mem+sz);
@@ -1937,9 +1931,12 @@ Txt::Txt()
     text[0]=text[1]=0;
 }
 
+Txt::~Txt()
+{
+}
+
 void Txt::shrink()
 {
     //log_con("Text_usage %d/%d\n",text.size(),text.capacity());
     text.shrink_to_fit();
 }
-

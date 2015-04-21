@@ -87,20 +87,11 @@ typedef struct _inflist_t
     int type;
 }inflist_t;
 
-/*typedef struct _filedata_t
-{
-    int size;
-    unsigned crc;
-    wchar_t *str;
-}filedata_t;*/
-
 class sect_data_t
 {
 public:
-    int ofs,len;
-
-    sect_data_t(int ofsv,int lenv):ofs(ofsv),len(lenv){}
-    sect_data_t():ofs(0),len(0){}
+    char *blockbeg,*blockend;
+    sect_data_t(char *bb,char *be):blockbeg(bb),blockend(be){}
 };
 
 typedef struct _tbl_t
@@ -141,11 +132,13 @@ public:
     wchar_t *getw(ofst offset);
 
     int strcpy(const char *mem);
-    int memcpy(const char *mem,int sz);
-    int memcpyz(const char *mem,int sz);
+    int strcpyw(const wchar_t *mem);
+    int t_memcpy(const char *mem,int sz);
+    int t_memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
 
     Txt();
+    ~Txt();
     int alloc(int sz);
     void reset(int sz);
     void shrink();
@@ -191,7 +184,7 @@ public:
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
 };
 
-class data_inffile_t // 80
+class data_inffile_t // 132
 {
 public:
     ofst infpath;
@@ -225,7 +218,7 @@ public:
     unsigned int feature;
 };
 
-class data_HWID_t // 8
+class data_HWID_t // 12
 {
 public:
     unsigned desc_index;
@@ -293,14 +286,12 @@ public:
     void readVersion(version_t *t);
     void readStr(char **vb,char **ve);
 
-    void init(Driverpack *drp);
-    void setRange(char *inf_base,sect_data_t *lnk);
-    void setRange(char *vb,char *ve){strBeg=vb;strEnd=ve;}
+    Parser_str(sect_data_t *lnk,Driverpack *drp);
+    Parser_str(char *vb,char *ve);
 };
 
 // Misc
 int  unicode2ansi(char *s,char *out,int size);
-void extracttest();
 int  encode(char *dest,int dest_sz,char *src,int src_sz);
 int  decode(char *dest,int dest_sz,char *src,int src_sz);
 int  checkfolders(wchar_t *folder1,wchar_t *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);

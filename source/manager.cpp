@@ -32,24 +32,15 @@ const status_t statustnl[NUM_STATUS]=
 //{ Manager
 void Manager::init(Matcher *matchera)
 {
-    itembar_t *itembar;
-    int i;
     matcher=matchera;
+    items_list.clear();
 
-    //heap_init(&items_handle,ID_MANAGER,(void **)&items_list,0,sizeof(itembar_t));
-
-    for(i=0;i<RES_SLOTS;i++)
-    {
-        items_list.push_back(itembar_t());
-        itembar=&items_list.back();
-        //itembar=(itembar_t *)heap_allocitem_ptr(&items_handle);
-        itembar->itembar_init(nullptr,nullptr,i,0,1);
-    }
+    for(int i=0;i<RES_SLOTS;i++)
+        items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
 }
 
 void Manager::release()
 {
-//    heap_free(&items_handle);
 }
 
 void Manager::sorta(Matcher *m,int *v)
@@ -117,35 +108,23 @@ int  manager_drplive(wchar_t *s)
 
 void Manager::populate()
 {
-    Devicematch *devicematch;
-    Hwidmatch *hwidmatch;
-    int id=RES_SLOTS;
-    unsigned i,j;
     int remap[1024];
-
+    sorta(matcher,remap);
     items_list.resize(RES_SLOTS);
 
-    sorta(matcher,remap);
-
-    devicematch=&matcher->devicematch_list[0];
-    for(i=0;i<matcher->devicematch_list.size();i++)
+    for(unsigned i=0;i<matcher->devicematch_list.size();i++)
     {
-        devicematch=&matcher->devicematch_list[remap[i]];
-        hwidmatch=&matcher->hwidmatch_list[devicematch->start_matches];
-        for(j=0;j<devicematch->num_matches;j++,hwidmatch++)
-        {
-            items_list.push_back(itembar_t());
-            items_list.back().itembar_init(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?2:2);
-            items_list.push_back(itembar_t());
-            items_list.back().itembar_init(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1);
+        Devicematch *devicematch=&matcher->devicematch_list[remap[i]];
+        Hwidmatch *hwidmatch=&matcher->hwidmatch_list[devicematch->start_matches];
 
-            id++;
+        for(unsigned j=0;j<devicematch->num_matches;j++,hwidmatch++)
+        {
+            items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?2:2));
+            items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1));
         }
         if(!devicematch->num_matches)
         {
-            items_list.push_back(itembar_t());
-            items_list.back().itembar_init(devicematch,nullptr,i+RES_SLOTS,remap[i],1);
-            id++;
+            items_list.push_back(itembar_t(devicematch,nullptr,i+RES_SLOTS,remap[i],1));
         }
     }
 }
@@ -295,21 +274,19 @@ void Manager::filter(int options)
 
 void Manager::print_tbl()
 {
-    itembar_t *itembar;
-    unsigned k,act=0;
     int limits[7];
 
     if((log_verbose&LOG_VERBOSE_MANAGER)==0)return;
     log_file("{manager_print\n");
     memset(limits,0,sizeof(limits));
 
-    itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
+    for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar)
         if(itembar->isactive&&itembar->hwidmatch)
             itembar->hwidmatch->calclen(limits);
 
-    itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
+
+    unsigned k=0,act=0;
+    for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
             log_file("$%04d|",k);
@@ -328,18 +305,15 @@ void Manager::print_tbl()
 
 void Manager::print_hr()
 {
-    wchar_t buf[BUFLEN];
-    itembar_t *itembar;
-    unsigned k,act=0;
-
     if((log_verbose&LOG_VERBOSE_MANAGER)==0)return;
     log_file("{manager_print\n");
 
-    itembar=&items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
+    unsigned k=0,act=0;
+    for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
             if(flags&FLAG_FILTERSP&&!isvalidcat(itembar->hwidmatch,matcher->state))continue;
+            wchar_t buf[BUFLEN];
             itembar->str_status(buf);
             log_file("\n$%04d, %S\n",k,buf);
             if(itembar->devicematch->device)
@@ -618,7 +592,7 @@ void Manager::selectall()
 //}
 
 //{ Helpers
-void itembar_t::itembar_init(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupindex,int rm1,int first1)
+itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupindex,int rm1,int first1)
 {
     memset(this,0,sizeof(itembar_t));
     devicematch=devicematch1;
@@ -628,6 +602,10 @@ void itembar_t::itembar_init(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int
     index=groupindex;
     rm=rm1;
     first=first1;
+}
+
+itembar_t::itembar_t()
+{
 }
 
 void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent)

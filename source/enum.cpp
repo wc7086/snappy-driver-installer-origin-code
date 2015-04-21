@@ -406,7 +406,6 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
 {
     char bufa[BUFLEN];
     int dev_pos,ishw,inf_pos=-1;
-    Parser_str pi;
     DriverDate=0;
     DriverVersion=0;
 
@@ -431,14 +430,14 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
     if(DriverDate)
     {
         wsprintfA(bufa,"%ws",state->textas.get(DriverDate));
-        pi.setRange(bufa,bufa+strlen(bufa));
+        Parser_str pi{bufa,bufa+strlen(bufa)};
         pi.readDate(&version);
     }
 
     if(DriverVersion)
     {
         wsprintfA(bufa,"%ws",state->textas.get(DriverVersion));
-        pi.setRange(bufa,bufa+strlen(bufa));
+        Parser_str pi{bufa,bufa+strlen(bufa)};
         pi.readVersion(&version);
     }
 }
@@ -732,7 +731,7 @@ void State::getsysinfo_fast()
         }
         i++;
     }
-    monitors=textas.memcpy((char *)buf,(1+buf[0]*2)*2);
+    monitors=textas.t_memcpy((char *)buf,(1+buf[0]*2)*2);
 
     // Windows version
     platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
@@ -747,10 +746,10 @@ void State::getsysinfo_fast()
     // Environment
     GetEnvironmentVariable(L"windir",buf,BUFLEN);
     wcscat(buf,L"\\inf\\");
-    windir=textas.memcpy((char *)buf,wcslen(buf)*2+2);
+    windir=textas.strcpyw(buf);
 
     GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
-    temp=textas.memcpy((char *)buf,wcslen(buf)*2+2);
+    temp=textas.strcpyw(buf);
 
     // 64-bit detection
     architecture=0;
@@ -776,11 +775,11 @@ void State::getsysinfo_slow()
 
     getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
 
-    manuf=textas.memcpy((char*)smanuf,wcslen(smanuf)*2+2);
-    product=textas.memcpy((char*)sproduct,wcslen(sproduct)*2+2);
-    model=textas.memcpy((char*)smodel,wcslen(smodel)*2+2);
-    cs_manuf=textas.memcpy((char*)scs_manuf,wcslen(scs_manuf)*2+2);
-    cs_model=textas.memcpy((char*)scs_model,wcslen(scs_model)*2+2);
+    manuf=textas.strcpyw(smanuf);
+    product=textas.strcpyw(sproduct);
+    model=textas.strcpyw(smodel);
+    cs_manuf=textas.strcpyw(scs_manuf);
+    cs_model=textas.strcpyw(scs_model);
 
     time_sysinfo=GetTickCount()-time_sysinfo;
 }
