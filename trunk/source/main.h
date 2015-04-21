@@ -206,12 +206,12 @@ extern int virtual_arch_type;
 //}
 
 //{ Structs
-typedef struct _bundle_t
+struct bundle_t
 {
     State state;
     Collection collection;
     Matcher matcher;
-}bundle_t;
+};
 //}
 
 // Main
