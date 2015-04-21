@@ -1357,7 +1357,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_DESTROY:
             if(!DeleteObject(hFont))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
-            vault_stopmonitors();
+            if(mon_lang)mon_lang->stop();
+            if(mon_theme)mon_theme->stop();
             delete canvasMain;
             PostQuitMessage(0);
             break;

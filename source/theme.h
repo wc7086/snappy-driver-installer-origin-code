@@ -23,6 +23,18 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define D(A) theme[A].val
 #define D_STR(A) theme[A].valstr
 
+class Filemon;
+class Vault;
+struct entry_t;
+
+//{ Global vars
+extern entry_t language[STR_NM];
+extern entry_t theme[THEME_NM];
+extern Filemon *mon_lang,*mon_theme;
+extern Vault vLang,vTheme;
+extern int monitor_pause;
+//}
+
 struct entry_t
 {
     const wchar_t *name;
@@ -64,11 +76,6 @@ public:
     friend void theme_enum(HWND hwnd,const wchar_t *path);
 };
 
-extern entry_t language[STR_NM];
-extern entry_t theme[THEME_NM];
-extern Vault vLang,vTheme;
-extern int monitor_pause;
-
 // FileMonitor
 class Filemon;
 typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
@@ -101,6 +108,5 @@ void lang_enum(HWND hwnd,const wchar_t *path,int locale);
 void theme_enum(HWND hwnd,const wchar_t *path);
 
 void vault_startmonitors();
-void vault_stopmonitors();
 void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
 void CALLBACK theme_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
