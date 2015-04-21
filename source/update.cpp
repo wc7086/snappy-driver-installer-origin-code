@@ -81,14 +81,13 @@ int finisheddownloading=0,finishedupdating=0;
 int averageSpeed;
 torrent_status_t torrentstatus;
 
+UpdateDialog_t UpdateDialog;
+
+
 int yes1(libtorrent::torrent_status const&);
 
-int getnewver(const char *ptr)
+int UpdateDialog_t::getnewver(const char *s)
 {
-    char bff[BUFLEN];
-    char *s=bff;
-
-    strcpy(bff,ptr);
     while(*s)
     {
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
@@ -99,7 +98,7 @@ int getnewver(const char *ptr)
     return 0;
 }
 
-int getcurver(const char *ptr)
+int UpdateDialog_t::getcurver(const char *ptr)
 {
     wchar_t bffw[BUFLEN];
     wchar_t *s=bffw;
@@ -126,6 +125,11 @@ int getcurver(const char *ptr)
     return 0;
 }
 
+void UpdateDialog_t::open_dialog()
+{
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
+}
+
 void delolddrp(const char *ptr)
 {
     wchar_t bffw[BUFLEN];
@@ -133,7 +137,7 @@ void delolddrp(const char *ptr)
     wchar_t *s=bffw;
 
     wsprintf(bffw,L"%S",ptr);
-    log_con("dep '%S'\n",bffw);
+    log_con("del '%S'\n",bffw);
     while(*s)
     {
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
@@ -150,31 +154,29 @@ void delolddrp(const char *ptr)
     }
 }
 
-void upddlg_updatelang()
+void UpdateDialog_t::upddlg_updatelang()
 {
-    LVCOLUMN lvc;
+    if(!hUpdate)return;
+
+    SetWindowText(hUpdate,STR(STR_UPD_TITLE));
+    SetWindowText(GetDlgItem(hUpdate,IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
+    SetWindowText(GetDlgItem(hUpdate,IDCHECKALL),STR(STR_UPD_BTN_ALL));
+    SetWindowText(GetDlgItem(hUpdate,IDUNCHECKALL),STR(STR_UPD_BTN_NONE));
+    SetWindowText(GetDlgItem(hUpdate,IDCHECKTHISPC),STR(STR_UPD_BTN_THISPC));
+    SetWindowText(GetDlgItem(hUpdate,IDOK),STR(STR_UPD_BTN_OK));
+    SetWindowText(GetDlgItem(hUpdate,IDCANCEL),STR(STR_UPD_BTN_CANCEL));
+    SetWindowText(GetDlgItem(hUpdate,IDACCEPT),STR(STR_UPD_BTN_ACCEPT));
+
     wchar_t buf[BUFLEN];
-    int i;
-    HWND hwnd=hUpdate;
-    if(!hwnd)return;
-
     wsprintf(buf,STR(STR_UPD_TOTALSIZE),totalsize);
+    SetWindowText(GetDlgItem(hUpdate,IDTOTALSIZE),buf);
 
-    SetWindowText(hwnd,STR(STR_UPD_TITLE));
-    SetWindowText(GetDlgItem(hwnd,IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
-    SetWindowText(GetDlgItem(hwnd,IDCHECKALL),STR(STR_UPD_BTN_ALL));
-    SetWindowText(GetDlgItem(hwnd,IDUNCHECKALL),STR(STR_UPD_BTN_NONE));
-    SetWindowText(GetDlgItem(hwnd,IDCHECKTHISPC),STR(STR_UPD_BTN_THISPC));
-    SetWindowText(GetDlgItem(hwnd,IDOK),STR(STR_UPD_BTN_OK));
-    SetWindowText(GetDlgItem(hwnd,IDCANCEL),STR(STR_UPD_BTN_CANCEL));
-    SetWindowText(GetDlgItem(hwnd,IDACCEPT),STR(STR_UPD_BTN_ACCEPT));
-    SetWindowText(GetDlgItem(hwnd,IDTOTALSIZE),buf);
-
+    LVCOLUMN lvc;
     lvc.mask=LVCF_TEXT;
-    for(i=0;i<6;i++)
+    for(int i=0;i<6;i++)
     {
-        lvc.pszText=(wchar_t *)STR(STR_UPD_COL_NAME+i);
-        ListView_SetColumn(GetDlgItem(hwnd,IDLIST),i,&lvc);
+        lvc.pszText=const_cast<wchar_t *>(STR(STR_UPD_COL_NAME+i));
+        ListView_SetColumn(GetDlgItem(hUpdate,IDLIST),i,&lvc);
     }
 }
 
@@ -182,25 +184,20 @@ void upddlg_updatelang()
 
 void update_movefiles()
 {
-    file_entry fe;
     int i;
     boost::intrusive_ptr<torrent_info const> ti;
-    const char *filenamefull;
-    wchar_t buf [BUFLEN];
-    wchar_t filenamefull_src[BUFLEN];
-    wchar_t filenamefull_dst[BUFLEN];
-    wchar_t buf3[BUFLEN],*p;
 
     ti=updatehandle.torrent_file();
-
     monitor_pause=1;
+
+    // Delete old online idexes if new are downloaded
     for(i=0;i<numfiles;i++)
         if(updatehandle.file_priority(i)&&
            StrStrIA(ti->file_at(i).path.c_str(),"indexes\\SDI"))
             break;
-    log_con("New index files: %d\n",i!=numfiles);
     if(i!=numfiles)
     {
+        wchar_t buf [BUFLEN];
         wsprintf(buf,L"/c del %ws\\_*.bin",index_dir);
         run_command(L"cmd",buf,SW_HIDE,1);
     }
@@ -208,42 +205,45 @@ void update_movefiles()
     for(i=0;i<numfiles;i++)
     if(updatehandle.file_priority(i))
     {
-        fe=ti->file_at(i);
-        filenamefull=strchr(fe.path.c_str(),'\\')+1;
+        file_entry fe=ti->file_at(i);
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
+
+        // Skip autorun.inf and del_old_driverpacks.bat
+        if(!StrStrIA(filenamefull,"autorun.inf")&&
+           !StrStrIA(filenamefull,".bat"))
+            continue;
+
+        // Determine destination dirs
+        wchar_t filenamefull_src[BUFLEN];
+        wchar_t filenamefull_dst[BUFLEN];
         wsprintf(filenamefull_src,L"update\\%S",fe.path.c_str());
         wsprintf(filenamefull_dst,L"%S",filenamefull);
-
         strsub(filenamefull_dst,L"indexes\\SDI",index_dir);
         strsub(filenamefull_dst,L"drivers",drp_dir);
         strsub(filenamefull_dst,L"tools\\SDI",data_dir);
-        //wsprintf(buf2,L"res\\%S",filename);
-        wsprintf(buf3,L"%s",filenamefull_dst);
-        p=filenamefull_dst;
-        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
 
+        // Delete old driverpacks
         if(StrStrIA(filenamefull,"drivers\\"))delolddrp(filenamefull+8);
 
-        if(p&&wcsstr(filenamefull_src,L"indexes\\SDI\\"))
-        {
-            //CopyFile(filenamefull_src,buf2,0);
-            *p=L'_';
-        }
-        p=buf3;
+        // Prepare online indexes
+        wchar_t *p=filenamefull_dst;
         while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        //log_con("Complited '%s' [%S][%S]{%S}\n",filename,buf1,buf2,buf3);
+        if(p&&StrStrIW(filenamefull_src,L"indexes\\SDI\\"))*p=L'_';
+
+        // Create dirs for the file
+        wchar_t dirs[BUFLEN];
+        wcscpy(dirs,filenamefull_dst);
+        p=dirs;
+        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
         if(p[-1]==L'\\')
         {
             *--p=0;
-            mkdir_r(buf3);
+            mkdir_r(dirs);
         }
-        //CopyFile(buf1,buf2,0);
-        log_con("File '%S'\n",filenamefull_dst);
-        if(!StrStrIA(filenamefull,"autorun.inf")&&
-           !StrStrIA(filenamefull,".bat"))
-        {
-            int r=MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING);
-            if(!r)log_err("ERROR in MoveFile:%d\n",GetLastError());
-        }
+
+        // Move file
+        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
+            print_error(GetLastError(),L"MoveFileEx()");
     }
     run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
@@ -253,7 +253,6 @@ unsigned int __stdcall thread_download(void *arg)
     UNREFERENCED_PARAMETER(arg)
 
     log_con("{thread_download\n");
-
     WaitForSingleObject(downloadmangar_event,INFINITE);
     if(downloadmangar_exitflag)return 0;
 
@@ -264,38 +263,37 @@ unsigned int __stdcall thread_download(void *arg)
     while(!downloadmangar_exitflag)
     {
         if(flags&FLAG_AUTOUPDATE&&canWrite(L"update"))
-        {
-            log_con("Event 1\n");
-            //downloadmangar_exitflag=1;
-            DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
-        }
+            UpdateDialog.open_dialog();
         else
             WaitForSingleObject(downloadmangar_event,INFINITE);
+
         if(downloadmangar_exitflag)break;
         log_con("{torrent_start\n");
-
-        while(sessionhandle)
+        while(!downloadmangar_exitflag&&sessionhandle)
         {
+            Sleep(500);
+
+            // Show progress
             update_getstatus(&torrentstatus);
             ShowProgressInTaskbar(hMain,TBPF_NORMAL,torrentstatus.downloaded,torrentstatus.downloadsize);
             InvalidateRect(hPopup,nullptr,0);
-            Sleep(500);
-           {
-                std::unique_ptr<alert> holder;
+
+            // Send libtorrent messages to log
+            std::unique_ptr<alert> holder;
+            holder=sessionhandle->pop_alert();
+            while(holder.get())
+            {
+                log_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
                 holder=sessionhandle->pop_alert();
-                while(holder.get())
-                {
-                    log_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
-                    holder=sessionhandle->pop_alert();
-                }
             }
-            if(downloadmangar_exitflag)break;
+
             if(finisheddownloading)
             {
-                log_con("-torrent_finished\n");
+                log_con("Torrent: finished\n");
                 sessionhandle->pause();
 
-                log_con("Flushing cache...");
+                // Flash cache
+                log_con("Torrent: flushing cache...");
                 updatehandle.flush_cache();
                 while(1)
                 {
@@ -305,7 +303,7 @@ unsigned int __stdcall thread_download(void *arg)
                         log_con("time out\n");
                         break;
                     }
-                    std::unique_ptr<alert> holder=sessionhandle->pop_alert();
+                    std::unique_ptr<alert> holder2=sessionhandle->pop_alert();
                     if(alert_cast<cache_flushed_alert>(a))
                     {
                         log_con("done\n");
@@ -313,11 +311,15 @@ unsigned int __stdcall thread_download(void *arg)
                     }
                 }
 
+                // Move files
                 update_movefiles();
                 updatehandle.force_recheck();
-                ListView_DeleteAllItems(hListg);
-                upddlg_populatelist(hListg,0);
 
+                // Update list
+                ListView_DeleteAllItems(hListg);
+                UpdateDialog.upddlg_populatelist(hListg,0);
+
+                // Execute user cmd
                 if(*finish_upd)
                 {
                     wchar_t buf[BUFLEN];
@@ -326,6 +328,7 @@ unsigned int __stdcall thread_download(void *arg)
                 }
                 if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
 
+                // Flash in taskbar
                 ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
                 FLASHWINFO fi;
                 fi.cbSize=sizeof(FLASHWINFO);
@@ -349,13 +352,13 @@ unsigned int __stdcall thread_download(void *arg)
     return 0;
 }
 
-int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
+int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
 {
     UNREFERENCED_PARAMETER(lParamSort)
     return lParam1-lParam2;
 }
 
-void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str)
+void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str)
 {
     wchar_t buf[BUFLEN];
 
@@ -364,7 +367,7 @@ void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str)
         ListView_SetItemText(hwnd,iItem,iSubItem,str);
 }
 
-int upddlg_populatelist(HWND hList,int update)
+int UpdateDialog_t::upddlg_populatelist(HWND hList,int update)
 {
     error_code ec;
     file_entry fe;
@@ -529,50 +532,43 @@ void update_start()
     sessionhandle->start_natpmp();
 
     sessionhandle->listen_on(std::make_pair(torrentport,torrentport),ec);
-    if(ec)
-    {
-        log_con("failed to open listen socket: %s\n",ec.message().c_str());
-    }
+    if(ec)log_err("ERROR: failed to open listen socket: %s\n",ec.message().c_str());
+
     log_con("Listen port: %d (%s)\nDownload limit: %dKb\nUpload limit: %dKb\n",
             sessionhandle->listen_port(),sessionhandle->is_listening()?"connected":"disconnected",
             downlimit,uplimit);
 
     dht.privacy_lookups=true;
     sessionhandle->set_dht_settings(dht);
-    settings.use_dht_as_fallback = false;
+    settings.use_dht_as_fallback=false;
     sessionhandle->add_dht_router(std::make_pair(std::string("router.bittorrent.com"),6881));
     sessionhandle->add_dht_router(std::make_pair(std::string("router.utorrent.com"),6881));
     sessionhandle->add_dht_router(std::make_pair(std::string("router.bitcomet.com"),6881));
     sessionhandle->start_dht();
     sessionhandle->set_alert_mask(
         alert::error_notification|
-        //alert::port_mapping_notification|
         alert::tracker_notification|
         alert::ip_block_notification|
         alert::dht_notification|
         alert::performance_warning|
         alert::storage_notification);
 
-    settings.user_agent = "Snappy Driver Installer/" SVN_REV2;
+    settings.user_agent="Snappy Driver Installer/" SVN_REV2;
     settings.always_send_user_agent=true;
     settings.anonymous_mode=false;
-    settings.choking_algorithm = session_settings::auto_expand_choker;
-    settings.disk_cache_algorithm = session_settings::avoid_readback;
-    settings.volatile_read_cache = false;
+    settings.choking_algorithm=session_settings::auto_expand_choker;
+    settings.disk_cache_algorithm=session_settings::avoid_readback;
+    settings.volatile_read_cache=false;
     sessionhandle->set_settings(settings);
 
     params.save_path="update";
     params.url=TORRENT_URL;
-    if(ec)
-    {
-        log_con("failed to init torrentinfo: %s\n",ec.message().c_str());
-    }
+    if(ec)log_err("ERROR: failed to init torrentinfo: %s\n",ec.message().c_str());
+
     params.flags=add_torrent_params::flag_paused;
     updatehandle=sessionhandle->add_torrent(params,ec);
-    if(ec)
-    {
-        log_con("failed to add torrent: %s\n",ec.message().c_str());
-    }
+    if(ec)log_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
+
     sessionhandle->pause();
     updatehandle.set_download_limit(downlimit*1024);
     updatehandle.set_upload_limit(uplimit*1024);
@@ -590,10 +586,10 @@ void update_start()
         Sleep(100);
     }
     log_con(updatehandle.torrent_file()?"":"FAILED\n");
-    i=upddlg_populatelist(nullptr,0);
+
+    i=UpdateDialog.upddlg_populatelist(nullptr,0);
     log_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
     for(i=0;i<numfiles;i++)updatehandle.file_priority(i,0);
-
     time_chkupdate=GetTickCount()-time_chkupdate;
 }
 
@@ -621,7 +617,7 @@ void update_getstatus(torrent_status_t *t)
     t->uploaded=st.total_payload_upload;
 
     t->elapsed=13;
-    t->status=(wchar_t *)STR(STR_TR_ST0+(int)st.state);
+    t->status=STR(STR_TR_ST0+(int)st.state);
     if(sessionhandle->is_paused())t->status=(wchar_t *)STR(STR_TR_ST4);
     finisheddownloading=st.is_finished;
 
@@ -682,7 +678,7 @@ void update_resume()
     torrenttime=GetTickCount();
 }
 
-void upddlg_calctotalsize(HWND hList)
+void UpdateDialog_t::upddlg_calctotalsize(HWND hList)
 {
     wchar_t buf[BUFLEN];
     int i;
@@ -696,7 +692,7 @@ void upddlg_calctotalsize(HWND hList)
     }
 }
 
-void upddlg_setpriorities(HWND hList)
+void UpdateDialog_t::upddlg_setpriorities(HWND hList)
 {
     int i;
     LVITEM item;
@@ -738,7 +734,7 @@ void upddlg_setpriorities(HWND hList)
     }
 }
 
-void upddlg_setpriorities_driverpack(const wchar_t *name,int pri)
+void UpdateDialog_t::upddlg_setpriorities_driverpack(const wchar_t *name,int pri)
 {
     int i;
     char buf[BUFLEN];
@@ -753,7 +749,7 @@ void upddlg_setpriorities_driverpack(const wchar_t *name,int pri)
     }
 }
 
-void upddlg_setcheckboxes(HWND hList)
+void UpdateDialog_t::upddlg_setcheckboxes(HWND hList)
 {
     int i;
     LVITEM item;
@@ -777,7 +773,7 @@ void upddlg_setcheckboxes(HWND hList)
     }
 }
 
-LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     short x,y;
 
@@ -788,6 +784,7 @@ LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     {
         case WM_MOUSEMOVE:
             drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
+            ShowWindow(hPopup,SW_SHOWNOACTIVATE);
             if(!bMouseInWindow)
             {
                 bMouseInWindow=1;
@@ -810,7 +807,7 @@ LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     return true;
 }
 
-BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
+BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(lParam);
     LVCOLUMN lvc;
@@ -838,9 +835,9 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             }
 
             hUpdate=hwnd;
-            upddlg_populatelist(hListg,0);
-            upddlg_updatelang();
-            upddlg_setcheckboxes(hListg);
+            UpdateDialog.upddlg_populatelist(hListg,0);
+            UpdateDialog.upddlg_updatelang();
+            UpdateDialog.upddlg_setcheckboxes(hListg);
             if(flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
@@ -852,8 +849,8 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
         case WM_NOTIFY:
             if(((LPNMHDR)lParam)->code==LVN_ITEMCHANGED)
             {
-                upddlg_calctotalsize(hListg);
-                upddlg_updatelang();
+                UpdateDialog.upddlg_calctotalsize(hListg);
+                UpdateDialog.upddlg_updatelang();
                 return TRUE;
             }
             break;
@@ -864,7 +861,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             break;
 
         case WM_TIMER:
-            if(sessionhandle&&sessionhandle->is_paused()==0)upddlg_populatelist(hListg,1);
+            if(sessionhandle&&sessionhandle->is_paused()==0)UpdateDialog.upddlg_populatelist(hListg,1);
             //log_con(".");
             break;
 
@@ -873,7 +870,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
             {
                 case IDOK:
                     hUpdate=nullptr;
-                    upddlg_setpriorities(hListg);
+                    UpdateDialog.upddlg_setpriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
                     update_resume();
@@ -881,7 +878,7 @@ BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam
                     return TRUE;
 
                 case IDACCEPT:
-                    upddlg_setpriorities(hListg);
+                    UpdateDialog.upddlg_setpriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
                     update_resume();

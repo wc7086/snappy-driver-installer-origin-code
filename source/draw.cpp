@@ -507,7 +507,6 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
         tme.dwHoverTime=(ctrl_down||space_down)?1:hintdelay;
         TrackMouseEvent(&tme);
     }
-    //ShowWindow(hPopup,type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
     if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
 }
 //}

@@ -344,11 +344,11 @@ int unicode2ansi(char *s,char *out,int size)
 {
     int ret,flag;
     size/=2;
-    if(!out)log_err("Error out:\n");
+    /*if(!out)log_err("Error out:\n");
     if(!s)log_err("Error in:\n");
-    if(size<0)log_err("Error size:\n");
+    if(size<0)log_err("Error size:\n");*/
     ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,nullptr,&flag);
-    if(!ret)log_err("Error:%d\n",GetLastError());
+    if(!ret)print_error(GetLastError(),L"unicode2ansi()");
     out[size]=0;
     return ret;
 }

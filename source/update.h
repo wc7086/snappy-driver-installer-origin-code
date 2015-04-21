@@ -15,13 +15,13 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-typedef struct _torrent_status_t
+struct torrent_status_t
 {
     long long downloaded,downloadsize;
     long long uploaded;
     int elapsed,remaining;
 
-    wchar_t *status;
+    const wchar_t *status;
     wchar_t error[BUFLEN];
     int uploadspeed,downloadspeed;
     int seedstotal,seedsconnected;
@@ -29,7 +29,7 @@ typedef struct _torrent_status_t
     int wasted,wastedhashfailes;
 
     int sessionpaused,torrentpaused;
-}torrent_status_t;
+};
 
 extern volatile int downloadmangar_exitflag;
 extern int torrentport;
@@ -40,19 +40,28 @@ extern torrent_status_t torrentstatus;
 extern int finisheddownloading,finishedupdating;
 
 // Dialog
+class UpdateDialog_t
+{
+private:
+    int  getnewver(const char *ptr);
+    int  getcurver(const char *ptr);
 
-void upddlg_updatelang();
-void upddlg_setcheckboxes(HWND hList);
-void upddlg_setpriorities(HWND hList);
-void upddlg_setpriorities_driverpack(const wchar_t *name,int pri);
-void upddlg_calctotalsize(HWND hList);
-LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
-int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
-int  getnewver(const char *ptr);
-int  getcurver(const char *ptr);
-void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str);
-int  upddlg_populatelist(HWND hList,int flags);
+    void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str);
+    static LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    static BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
+    static int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
+
+public:
+    void upddlg_updatelang();
+    void upddlg_setcheckboxes(HWND hList);
+    void upddlg_setpriorities(HWND hList);
+    void upddlg_setpriorities_driverpack(const wchar_t *name,int pri);
+    void upddlg_calctotalsize(HWND hList);
+    int  upddlg_populatelist(HWND hList,int flags);
+
+    void open_dialog();
+};
+extern UpdateDialog_t UpdateDialog;
 
 // Update
 int istorrentready();
