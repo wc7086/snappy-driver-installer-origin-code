@@ -839,23 +839,7 @@ void State::scanDevices()
         }
         RegCloseKey(hkey);
     }
-/*
-    SP_DRVINFO_DATA drvinfo;
-    drvinfo.cbSize=sizeof(SP_DRVINFO_DATA);
-    SP_DRVINSTALL_PARAMS drvparams;
-    drvparams.cbSize=sizeof(SP_DRVINSTALL_PARAMS);
-    SetupDiBuildDriverInfoList(hDevInfo,DeviceInfoData,SPDIT_CLASSDRIVER);
-    for (j=0;SetupDiEnumDriverInfo(hDevInfo,DeviceInfoData,SPDIT_CLASSDRIVER,j,&drvinfo);j++)
-    {
-        SYSTEMTIME t;
-        SetupDiGetDriverInstallParams(hDevInfo,DeviceInfoData,&drvinfo,&drvparams);
-        SP_DRVINFO_DETAIL_DATA drvdet;
-        drvdet.cbSize=sizeof(SP_DRVINFO_DETAIL_DATA);
-        SetupDiGetDriverInfoDetail(hDevInfo,DeviceInfoData,&drvinfo,&drvdet,BUFLEN,0);
-    //Error(GetLastError());
-        FileTimeToSystemTime(&drvinfo.DriverDate,&t);
-    }*/
-    //driverpack_print(&unpacked_drp);
+
     collection.release();
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;

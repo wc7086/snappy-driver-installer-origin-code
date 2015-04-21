@@ -302,7 +302,7 @@ unsigned int __stdcall thread_install(void *arg)
             }
             if(!istorrentready())break;
         }
-        upddlg_setpriorities_driverpack(itembar->hwidmatch->getdrp_packname(),1);
+        UpdateDialog.upddlg_setpriorities_driverpack(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)

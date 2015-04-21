@@ -748,7 +748,7 @@ void lang_refresh()
     redrawfield();
     InvalidateRect(hPopup,nullptr,1);
 #ifdef USE_TORRENT
-    upddlg_updatelang();
+    UpdateDialog.upddlg_updatelang();
 #endif
 
     POINT p;
@@ -1417,7 +1417,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 LeaveCriticalSection(&sync);
 
 #ifdef USE_TORRENT
-                upddlg_populatelist(nullptr,0);
+                UpdateDialog.upddlg_populatelist(nullptr,0);
 #endif
                 //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
                 if(flags&FLAG_AUTOINSTALL)
@@ -2184,7 +2184,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             if(floating_itembar==SLOT_DOWNLOAD)
             {
 #ifdef USE_TORRENT
-                DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hwnd,(DLGPROC)UpdateProcedure);
+                UpdateDialog.open_dialog();
                 break;
 #endif
             }
