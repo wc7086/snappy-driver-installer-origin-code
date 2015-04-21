@@ -76,6 +76,31 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam);
 void virusmonitor_start();
 void virusmonitor_stop();
 
+// FileMonitor
+class Filemon;
+typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
+Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+class Filemon
+{
+private:
+	OVERLAPPED ol;
+	HANDLE     hDir;
+	BYTE       buffer[32*1024];
+	LPARAM     lParam;
+	DWORD      notifyFilter;
+	BOOL       fStop;
+	wchar_t      dir[BUFLEN];
+	int        subdirs;
+	FileChangeCallback callback;
+
+    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
+    int  refresh();
+
+public:
+    friend Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+    void stop();
+};
+
 // Misc
 int canWrite(const wchar_t *path);
 DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);

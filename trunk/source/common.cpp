@@ -25,6 +25,87 @@ Test::~Test()
 {
     log_con("Test destroyed\n");
 }
+
+//{ Txt
+int Txt::strcpy(const char *str)
+{
+    int r=text.size();
+    text.insert(text.end(),str,str+strlen(str)+1);
+    return r;
+}
+
+int Txt::strcpyw(const wchar_t *str)
+{
+    int r=text.size();
+    text.insert(text.end(),(char *)str,(char *)(str+wcslen(str)+1));
+    return r;
+}
+
+int Txt::t_memcpy(const char *mem,int sz)
+{
+    int r=text.size();
+    text.insert(text.end(),mem,mem+sz);
+    return r;
+}
+
+int Txt::t_memcpyz(const char *mem,int sz)
+{
+    int r=text.size();
+    text.insert(text.end(),mem,mem+sz);
+    text.insert(text.end(),0);
+    return r;
+}
+
+int Txt::memcpyz_dup(const char *mem,int sz)
+{
+    std::string str(mem,sz);
+    auto it=dub.find(str);
+
+    if(it==dub.end())
+    {
+        int r=text.size();
+        text.insert(text.end(),mem,mem+sz);
+        text.insert(text.end(),0);
+
+        dub.insert({{std::move(str),r}});
+        return r;
+    }
+    else
+    {
+        return it->second;
+    }
+}
+
+int Txt::alloc(int sz)
+{
+    int r=text.size();
+    text.resize(r+sz);
+    return r;
+}
+
+void Txt::reset(int sz)
+{
+    text.resize(sz);
+    text.reserve(1024*1024*2); //TODO
+}
+
+Txt::Txt()
+{
+    reset(2);
+    text[0]=text[1]=0;
+}
+
+Txt::~Txt()
+{
+}
+
+void Txt::shrink()
+{
+    //log_con("Text_usage %d/%d\n",text.size(),text.capacity());
+    text.shrink_to_fit();
+}
+//}
+
 //{ Strings
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
 {
@@ -57,24 +138,6 @@ void strtolower(char *s,int len)
         *s=tolower(*s);
         s++;
     }
-}
-
-//{ 7-zip
-void registerall()
-{
-#ifndef CONSOLE_MODE
-    registercrc();
-    NArchive::N7z::register7z();
-    registerBCJ();
-    registerBCJ2();
-    registerBranch();
-    registerCopy();
-    registerLZMA();
-    registerLZMA2();
-//  registerPPMD();
-    registerDelta();
-    registerByteSwap();
-#endif
 }
 //}
 
@@ -219,3 +282,23 @@ int hash_findnext(hashtable_t *t,int *isfound)
     while((curi=cur->next)>0);
     return 0;
 }
+//}
+
+//{ 7-zip
+void registerall()
+{
+#ifndef CONSOLE_MODE
+    registercrc();
+    NArchive::N7z::register7z();
+    registerBCJ();
+    registerBCJ2();
+    registerBranch();
+    registerCopy();
+    registerLZMA();
+    registerLZMA2();
+//  registerPPMD();
+    registerDelta();
+    registerByteSwap();
+#endif
+}
+//}
