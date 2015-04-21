@@ -15,10 +15,13 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Misc struct
+// Declarations
 class State;
 class Device;
+class infdata_t;
+typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 
+// Misc struct
 class infdata_t
 {
 public:
@@ -32,7 +35,6 @@ public:
     infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat,int vindex):
         catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat),start_index(vindex){};
 };
-typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 
 struct SP_DEVINFO_DATA_32
 {
@@ -220,32 +222,3 @@ int iswide(int x,int y);
 //  Misc (in baseboard.cpp)
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
-
-// Vector templates
-template <class T>
-char *vector_save(std::vector<T> *v,char *p)
-{
-    int used=v->size()*sizeof(T);
-    int val;
-
-    memcpy(p,&used,sizeof(int));p+=sizeof(int);
-
-    val=v->size();
-    memcpy(p,&val,sizeof(int));p+=sizeof(int);
-
-    memcpy(p,&v->front(),used);p+=used;
-    return p;
-}
-
-template <class T>
-char *vector_load(std::vector<T> *v,char *p)
-{
-    int sz,num;
-
-    memcpy(&sz,p,sizeof(int));p+=sizeof(int);
-    memcpy(&num,p,sizeof(int));p+=sizeof(int);
-    if(!num)num=sz;
-    v->resize(num);
-    memcpy(v->data(),p,sz);p+=sz;
-    return p;
-}

@@ -118,32 +118,6 @@ enum DRIVERPACK_TYPE
 };
 
 //{ Indexing strucures
-class Txt
-{
-private:
-    std::unordered_map<std::string,ofst> dub;
-    std::vector<char> text;
-
-public:
-    unsigned getSize()const{return text.size();}
-    std::vector<char> *getVector(){return &text;}
-
-    char *get(ofst offset);
-    wchar_t *getw(ofst offset);
-
-    int strcpy(const char *mem);
-    int strcpyw(const wchar_t *mem);
-    int t_memcpy(const char *mem,int sz);
-    int t_memcpyz(const char *mem,int sz);
-    int memcpyz_dup(const char *mem,int sz);
-
-    Txt();
-    ~Txt();
-    int alloc(int sz);
-    void reset(int sz);
-    void shrink();
-};
-
 class Driverpack
 {
 private:

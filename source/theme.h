@@ -76,31 +76,6 @@ public:
     friend void theme_enum(HWND hwnd,const wchar_t *path);
 };
 
-// FileMonitor
-class Filemon;
-typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
-Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
-class Filemon
-{
-private:
-	OVERLAPPED ol;
-	HANDLE     hDir;
-	BYTE       buffer[32*1024];
-	LPARAM     lParam;
-	DWORD      notifyFilter;
-	BOOL       fStop;
-	wchar_t      dir[BUFLEN];
-	int        subdirs;
-	FileChangeCallback callback;
-
-    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-    int  refresh();
-
-public:
-    friend Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
-    void stop();
-};
-
 // Lang/theme
 void lang_set(int i);
 void theme_set(int i);
