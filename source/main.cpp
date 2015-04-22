@@ -149,11 +149,9 @@ void settings_parse(const wchar_t *str,int ind)
         if( wcsstr(pr,L"-theme:"))       wcscpy(curtheme,pr+7);else
         if(!wcscmp(pr,L"-expertmode"))   expertmode=1;else
         if( wcsstr(pr,L"-hintdelay:"))   hintdelay=_wtoi_my(pr+11);else
-#ifdef USE_TORRENT
         if( wcsstr(pr,L"-port:"))        Updater.torrentport=_wtoi_my(pr+6);else
         if( wcsstr(pr,L"-downlimit:"))   Updater.downlimit=_wtoi_my(pr+11);else
         if( wcsstr(pr,L"-uplimit:"))     Updater.uplimit=_wtoi_my(pr+9);else
-#endif
         if( wcsstr(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
         if(!wcscmp(pr,L"-license"))      license=1;else
         if(!wcscmp(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
@@ -265,11 +263,7 @@ void settings_save()
             finish,finish_rb,
             curlang,curtheme,
             hintdelay,
-#ifdef USE_TORRENT
             Updater.torrentport,Updater.downlimit,Updater.uplimit,
-#else
-            50171,0,0,
-#endif
             filters);
 
     if(license)fwprintf(f,L"-license ");
@@ -585,6 +579,9 @@ unsigned int __stdcall thread_loadall(void *arg)
 //}
 
 //{ Bundle
+
+bundle_t::~bundle_t(){}
+
 void bundle_init(bundle_t *bundle)
 {
     bundle->state.init();
@@ -712,9 +709,6 @@ void lang_refresh()
     redrawmainwnd();
     redrawfield();
     InvalidateRect(hPopup,nullptr,1);
-#ifdef USE_TORRENT
-    UpdateDialog.upddlg_updatelang();
-#endif
 
     POINT p;
     GetCursorPos(&p);
@@ -1203,14 +1197,12 @@ void drvdir()
 
 const wchar_t *getHWIDby(int id,int num)
 {
-    Devicematch *devicematch_f=manager_g->items_list[id].devicematch;
-    wchar_t *p;
-    char *t=manager_g->matcher->state->textas.get(0);
+    Device *device=manager_g->items_list[id].devicematch->device;
     int i=0;
 
-    if(devicematch_f->device->HardwareID)
+    if(device->HardwareID)
     {
-        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
+        wchar_t *p=manager_g->matcher->state->textas.getw(device->HardwareID);
         while(*p)
         {
             if(i==num)return p;
@@ -1218,9 +1210,9 @@ const wchar_t *getHWIDby(int id,int num)
             i++;
         }
     }
-    if(devicematch_f->device->CompatibleIDs)
+    if(device->CompatibleIDs)
     {
-        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
+        wchar_t *p=manager_g->matcher->state->textas.getw(device->CompatibleIDs);
         while(*p)
         {
             if(i==num)return p;
@@ -1382,7 +1374,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 LeaveCriticalSection(&sync);
 
 #ifdef USE_TORRENT
-                UpdateDialog.upddlg_populatelist(nullptr,0);
+                UpdateDialog.populate(0);
 #endif
                 //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
                 if(flags&FLAG_AUTOINSTALL)

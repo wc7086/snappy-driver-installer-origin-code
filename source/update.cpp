@@ -78,7 +78,6 @@ HANDLE Updater_t::downloadmangar_event=nullptr;
 HANDLE Updater_t::thandle_download=nullptr;
 //}
 
-static int yes1(libtorrent::torrent_status const&){return true;}
 
 //{ UpdateDialog
 int UpdateDialog_t::getnewver(const char *s)
@@ -120,11 +119,40 @@ int UpdateDialog_t::getcurver(const char *ptr)
     return 0;
 }
 
+static int yes1(libtorrent::torrent_status const&){return true;}
 
-void UpdateDialog_t::upddlg_updatelang()
+int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
+{
+    UNREFERENCED_PARAMETER(lParamSort)
+    return lParam1-lParam2;
+}
+
+void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,const wchar_t *str)
+{
+    wchar_t buf[BUFLEN];
+
+    ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
+    if(wcscmp(str,buf)!=0)
+        ListView_SetItemText(hwnd,iItem,iSubItem,const_cast<wchar_t *>(str));
+}
+
+void UpdateDialog_t::calctotalsize()
+{
+    totalsize=0;
+    for(int i=0;i<ListView_GetItemCount(hListg);i++)
+    if(ListView_GetCheckState(hListg,i))
+    {
+        wchar_t buf[BUFLEN];
+        ListView_GetItemText(hListg,i,1,buf,32);
+        totalsize+=_wtoi_my(buf);
+    }
+}
+
+void UpdateDialog_t::updateTexts()
 {
     if(!hUpdate)return;
 
+    // Buttons
     SetWindowText(hUpdate,STR(STR_UPD_TITLE));
     SetWindowText(GetDlgItem(hUpdate,IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
     SetWindowText(GetDlgItem(hUpdate,IDCHECKALL),STR(STR_UPD_BTN_ALL));
@@ -134,10 +162,12 @@ void UpdateDialog_t::upddlg_updatelang()
     SetWindowText(GetDlgItem(hUpdate,IDCANCEL),STR(STR_UPD_BTN_CANCEL));
     SetWindowText(GetDlgItem(hUpdate,IDACCEPT),STR(STR_UPD_BTN_ACCEPT));
 
+    // Total size
     wchar_t buf[BUFLEN];
     wsprintf(buf,STR(STR_UPD_TOTALSIZE),totalsize);
     SetWindowText(GetDlgItem(hUpdate,IDTOTALSIZE),buf);
 
+    // Column headers
     LVCOLUMN lvc;
     lvc.mask=LVCF_TEXT;
     for(int i=0;i<6;i++)
@@ -147,205 +177,7 @@ void UpdateDialog_t::upddlg_updatelang()
     }
 }
 
-void UpdateDialog_t::openDialog()
-{
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
-}
-int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
-{
-    UNREFERENCED_PARAMETER(lParamSort)
-    return lParam1-lParam2;
-}
-
-void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str)
-{
-    wchar_t buf[BUFLEN];
-
-    ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
-    if(wcscmp(str,buf)!=0)
-        ListView_SetItemText(hwnd,iItem,iSubItem,str);
-}
-
-int UpdateDialog_t::upddlg_populatelist(HWND hList,int update)
-{
-    error_code ec;
-    file_entry fe;
-    LVITEM lvI;
-    int i,j;
-    int basesize=0,basedownloaded=0;
-    int indexsize=0,indexdownloaded=0;
-    const char *filename,*filenamefull;
-    wchar_t buf[BUFLEN];
-    int newver=0;
-    int ret=0;
-    int missingindexes=0;
-
-    boost::intrusive_ptr<torrent_info const> ti;
-    std::vector<size_type> file_progress;
-    ti=hTorrent.torrent_file();
-    numfiles=0;
-    if(!ti)return 0;
-    hTorrent.file_progress(file_progress);
-
-    numfiles=ti->num_files();
-    for(i=0;i<numfiles;i++)
-    {
-        fe=ti->file_at(i);
-        filenamefull=strchr(fe.path.c_str(),'\\')+1;
-
-        if(StrStrIA(filenamefull,"indexes\\"))
-        {
-            indexsize+=fe.size;
-            indexdownloaded+=file_progress[i];
-            wsprintf(buf,L"%S",filenamefull);
-            *wcsstr(buf,L"DP_")=L'_';
-            strsub(buf,L"indexes\\SDI",index_dir);
-            if(!PathFileExists(buf))
-            {
-                //log_con("Missing index: '%S'\n",buf);
-                missingindexes=1;
-            }
-        }
-        else if(!StrStrIA(filenamefull,"drivers\\"))
-        {
-            basesize+=fe.size;
-            basedownloaded+=file_progress[i];
-            if(StrStrIA(filenamefull,"sdi_R"))
-                newver=atol(StrStrIA(filenamefull,"sdi_R")+5);
-        }
-    }
-
-    if(hList)SendMessage(hList,WM_SETREDRAW,0,0);
-
-    lvI.mask      =LVIF_TEXT|LVIF_STATE|LVIF_PARAM;
-    lvI.stateMask =0;
-    lvI.iSubItem  =0;
-    lvI.state     =0;
-    lvI.iItem     =0;
-    lvI.lParam    =-2;
-    newver=300;
-    i=0;
-    if(newver>SVN_REV)ret+=newver<<8;
-    if(newver>SVN_REV&&hList)
-    {
-        lvI.pszText=(wchar_t *)STR(STR_UPD_APP);
-        if(!update)i=ListView_InsertItem(hList,&lvI);
-        wsprintf(buf,L"%d %s",basesize/1024/1024,STR(STR_UPD_MB));
-        ListView_SetItemTextUpdate(hList,i,1,buf);
-        wsprintf(buf,L"%d%%",basedownloaded*100/basesize);
-        ListView_SetItemTextUpdate(hList,i,2,buf);
-        wsprintf(buf,L" SDI_R%d",newver);
-        ListView_SetItemTextUpdate(hList,i,3,buf);
-        wsprintf(buf,L" SDI_R%d",SVN_REV);
-        ListView_SetItemTextUpdate(hList,i,4,buf);
-        ListView_SetItemTextUpdate(hList,i,5,(wchar_t *)STR(STR_UPD_YES));
-        i++;
-    }
-
-    lvI.lParam    =-1;
-    if(missingindexes&&hList)
-    {
-        lvI.pszText=(wchar_t *)STR(STR_UPD_INDEXES);
-        if(!update)i=ListView_InsertItem(hList,&lvI);
-        wsprintf(buf,L"%d %s",indexsize/1024/1024,STR(STR_UPD_MB));
-        ListView_SetItemTextUpdate(hList,i,1,buf);
-        wsprintf(buf,L"%d%%",indexdownloaded*100/indexsize);
-        ListView_SetItemTextUpdate(hList,i,2,buf);
-        ListView_SetItemTextUpdate(hList,i,5,(wchar_t *)STR(STR_UPD_YES));
-        i++;
-    }
-
-    j=i;
-    for(i=0;i<numfiles;i++)
-    {
-        fe=ti->file_at(i);
-        filenamefull=strchr(fe.path.c_str(),'\\')+1;
-        filename=strchr(filenamefull,'\\')+1;
-        if(!filename)filename=filenamefull;
-
-        if(StrStrIA(filenamefull,".7z"))
-        {
-            int oldver;
-
-            wsprintf(buf,L"%S",filename);
-            lvI.pszText=buf;
-            int sz=fe.size/1024/1024;
-            if(!sz)sz=1;
-
-            newver=getnewver(filenamefull);
-            oldver=getcurver(filename);
-
-            if(flags&FLAG_ONLYUPDATES)
-                {if(newver>oldver&&oldver)ret++;}
-            else
-                if(newver>oldver)ret++;
-
-            if(newver>oldver&&hList)
-            {
-                lvI.lParam=i;
-                if(!update)j=ListView_InsertItem(hList,&lvI);
-                wsprintf(buf,L"%d %s",sz,STR(STR_UPD_MB));
-                ListView_SetItemTextUpdate(hList,j,1,buf);
-                wsprintf(buf,L"%d%%",file_progress[i]*100/ti->file_at(i).size);
-                ListView_SetItemTextUpdate(hList,j,2,buf);
-                wsprintf(buf,L"%d",newver);
-                ListView_SetItemTextUpdate(hList,j,3,buf);
-                wsprintf(buf,L"%d",oldver);
-                if(!oldver)wsprintf(buf,L"%ws",STR(STR_UPD_MISSING));
-                ListView_SetItemTextUpdate(hList,j,4,buf);
-                wsprintf(buf,L"%S",filename);
-                wsprintf(buf,L"%ws",STR(STR_UPD_YES+manager_drplive(buf)));
-                ListView_SetItemTextUpdate(hList,j,5,buf);
-                j++;
-            }
-        }
-    }
-    if(hList)
-    {
-        SendMessage(hList,WM_SETREDRAW,1,0);
-        //InvalidateRect(hList,0,0);
-    }
-    if(update)return ret;
-    ListView_SortItems(hList,CompareFunc,0);
-
-    manager_g->items_list[SLOT_DOWNLOAD].isactive=ret?1:0;
-    if(ret)manager_g->items_list[SLOT_NODRIVERS].isactive=0;
-    manager_g->setpos();
-    manager_g->items_list[SLOT_DOWNLOAD].val1=ret;
-    return ret;
-}
-
-void UpdateDialog_t::upddlg_calctotalsize(HWND hList)
-{
-    wchar_t buf[BUFLEN];
-    int i;
-
-    totalsize=0;
-    for(i=0;i<ListView_GetItemCount(hList);i++)
-    if(ListView_GetCheckState(hList,i))
-    {
-        ListView_GetItemText(hList,i,1,buf,32);
-        totalsize+=_wtoi_my(buf);
-    }
-}
-
-
-void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
-{
-    int i;
-    char buf[BUFLEN];
-
-    wsprintfA(buf,"%S",name);
-    //log_con("<%s> %d\n",buf,pri);
-    for(i=0;i<numfiles;i++)
-    if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),buf))
-    {
-        hTorrent.file_priority(i,pri);
-        log_con("%S,%d\n",name,pri);
-    }
-}
-
-void UpdateDialog_t::setCheckboxes(HWND hList)
+void UpdateDialog_t::setCheckboxes()
 {
     if(Updater.isPaused())return;
 
@@ -361,23 +193,23 @@ void UpdateDialog_t::setCheckboxes(HWND hList)
     }
 
     // Driverpacks
-    for(int i=0;i<ListView_GetItemCount(hList);i++)
+    for(int i=0;i<ListView_GetItemCount(hListg);i++)
     {
         LVITEM item;
         item.mask=LVIF_PARAM;
         item.iItem=i;
-        ListView_GetItem(hList,&item);
+        ListView_GetItem(hListg,&item);
         int val=0;
 
         if(item.lParam==-2)val=baseChecked;
         if(item.lParam==-1)val=indexesChecked;
         if(item.lParam>=0)val=hTorrent.file_priority(item.lParam);
 
-        ListView_SetCheckState(hList,i,val);
+        ListView_SetCheckState(hListg,i,val);
     }
 }
 
-void UpdateDialog_t::setPriorities(HWND hList)
+void UpdateDialog_t::setPriorities()
 {
     // Clear priorities for driverpacks
     for(int i=0;i<numfiles;i++)
@@ -386,13 +218,13 @@ void UpdateDialog_t::setPriorities(HWND hList)
 
     // Set priorities for driverpacks
     int base_pri=0,indexes_pri=0;
-    for(int i=0;i<ListView_GetItemCount(hList);i++)
+    for(int i=0;i<ListView_GetItemCount(hListg);i++)
     {
         LVITEM item;
         item.mask=LVIF_PARAM;
         item.iItem=i;
-        ListView_GetItem(hList,&item);
-        int val=ListView_GetCheckState(hList,i);
+        ListView_GetItem(hListg,&item);
+        int val=ListView_GetCheckState(hListg,i);
 
         if(item.lParam==-2)base_pri=val?2:0;
         if(item.lParam==-1)indexes_pri=val?2:0;
@@ -467,9 +299,9 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             }
 
             hUpdate=hwnd;
-            UpdateDialog.upddlg_populatelist(hListg,0);
-            UpdateDialog.upddlg_updatelang();
-            UpdateDialog.setCheckboxes(hListg);
+            UpdateDialog.populate(0);
+            UpdateDialog.updateTexts();
+            UpdateDialog.setCheckboxes();
             if(flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
@@ -481,8 +313,8 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
         case WM_NOTIFY:
             if(((LPNMHDR)lParam)->code==LVN_ITEMCHANGED)
             {
-                UpdateDialog.upddlg_calctotalsize(hListg);
-                UpdateDialog.upddlg_updatelang();
+                UpdateDialog.calctotalsize();
+                UpdateDialog.updateTexts();
                 return TRUE;
             }
             break;
@@ -493,7 +325,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             break;
 
         case WM_TIMER:
-            if(hSession&&hSession->is_paused()==0)UpdateDialog.upddlg_populatelist(hListg,1);
+            if(hSession&&hSession->is_paused()==0)UpdateDialog.populate(1);
             //log_con(".");
             break;
 
@@ -502,7 +334,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             {
                 case IDOK:
                     hUpdate=nullptr;
-                    UpdateDialog.setPriorities(hListg);
+                    UpdateDialog.setPriorities();
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
                     Updater.resumeDownloading();
@@ -510,7 +342,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     return TRUE;
 
                 case IDACCEPT:
-                    UpdateDialog.setPriorities(hListg);
+                    UpdateDialog.setPriorities();
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
                     Updater.resumeDownloading();
@@ -550,6 +382,173 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
     }
     return FALSE;
 }
+
+int UpdateDialog_t::populate(int update)
+{
+    error_code ec;
+    file_entry fe;
+    LVITEM lvI;
+    int i,j;
+    int basesize=0,basedownloaded=0;
+    int indexsize=0,indexdownloaded=0;
+    const char *filename,*filenamefull;
+    wchar_t buf[BUFLEN];
+    int newver=0;
+    int ret=0;
+    int missingindexes=0;
+
+    boost::intrusive_ptr<torrent_info const> ti;
+    std::vector<size_type> file_progress;
+    ti=hTorrent.torrent_file();
+    numfiles=0;
+    if(!ti)return 0;
+    hTorrent.file_progress(file_progress);
+
+    numfiles=ti->num_files();
+    for(i=0;i<numfiles;i++)
+    {
+        fe=ti->file_at(i);
+        filenamefull=strchr(fe.path.c_str(),'\\')+1;
+
+        if(StrStrIA(filenamefull,"indexes\\"))
+        {
+            indexsize+=fe.size;
+            indexdownloaded+=file_progress[i];
+            wsprintf(buf,L"%S",filenamefull);
+            *wcsstr(buf,L"DP_")=L'_';
+            strsub(buf,L"indexes\\SDI",index_dir);
+            if(!PathFileExists(buf))
+            {
+                //log_con("Missing index: '%S'\n",buf);
+                missingindexes=1;
+            }
+        }
+        else if(!StrStrIA(filenamefull,"drivers\\"))
+        {
+            basesize+=fe.size;
+            basedownloaded+=file_progress[i];
+            if(StrStrIA(filenamefull,"sdi_R"))
+                newver=atol(StrStrIA(filenamefull,"sdi_R")+5);
+        }
+    }
+
+    if(hListg)SendMessage(hListg,WM_SETREDRAW,0,0);
+
+    lvI.mask      =LVIF_TEXT|LVIF_STATE|LVIF_PARAM;
+    lvI.stateMask =0;
+    lvI.iSubItem  =0;
+    lvI.state     =0;
+    lvI.iItem     =0;
+    lvI.lParam    =-2;
+    newver=300;
+    i=0;
+    if(newver>SVN_REV)ret+=newver<<8;
+    if(newver>SVN_REV&&hListg)
+    {
+        lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
+        if(!update)i=ListView_InsertItem(hListg,&lvI);
+        wsprintf(buf,L"%d %s",basesize/1024/1024,STR(STR_UPD_MB));
+        ListView_SetItemTextUpdate(hListg,i,1,buf);
+        wsprintf(buf,L"%d%%",basedownloaded*100/basesize);
+        ListView_SetItemTextUpdate(hListg,i,2,buf);
+        wsprintf(buf,L" SDI_R%d",newver);
+        ListView_SetItemTextUpdate(hListg,i,3,buf);
+        wsprintf(buf,L" SDI_R%d",SVN_REV);
+        ListView_SetItemTextUpdate(hListg,i,4,buf);
+        ListView_SetItemTextUpdate(hListg,i,5,STR(STR_UPD_YES));
+        i++;
+    }
+
+    lvI.lParam    =-1;
+    if(missingindexes&&hListg)
+    {
+        lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_INDEXES));
+        if(!update)i=ListView_InsertItem(hListg,&lvI);
+        wsprintf(buf,L"%d %s",indexsize/1024/1024,STR(STR_UPD_MB));
+        ListView_SetItemTextUpdate(hListg,i,1,buf);
+        wsprintf(buf,L"%d%%",indexdownloaded*100/indexsize);
+        ListView_SetItemTextUpdate(hListg,i,2,buf);
+        ListView_SetItemTextUpdate(hListg,i,5,STR(STR_UPD_YES));
+        i++;
+    }
+
+    j=i;
+    for(i=0;i<numfiles;i++)
+    {
+        fe=ti->file_at(i);
+        filenamefull=strchr(fe.path.c_str(),'\\')+1;
+        filename=strchr(filenamefull,'\\')+1;
+        if(!filename)filename=filenamefull;
+
+        if(StrStrIA(filenamefull,".7z"))
+        {
+            int oldver;
+
+            wsprintf(buf,L"%S",filename);
+            lvI.pszText=buf;
+            int sz=fe.size/1024/1024;
+            if(!sz)sz=1;
+
+            newver=getnewver(filenamefull);
+            oldver=getcurver(filename);
+
+            if(flags&FLAG_ONLYUPDATES)
+                {if(newver>oldver&&oldver)ret++;}
+            else
+                if(newver>oldver)ret++;
+
+            if(newver>oldver&&hListg)
+            {
+                lvI.lParam=i;
+                if(!update)j=ListView_InsertItem(hListg,&lvI);
+                wsprintf(buf,L"%d %s",sz,STR(STR_UPD_MB));
+                ListView_SetItemTextUpdate(hListg,j,1,buf);
+                wsprintf(buf,L"%d%%",file_progress[i]*100/ti->file_at(i).size);
+                ListView_SetItemTextUpdate(hListg,j,2,buf);
+                wsprintf(buf,L"%d",newver);
+                ListView_SetItemTextUpdate(hListg,j,3,buf);
+                wsprintf(buf,L"%d",oldver);
+                if(!oldver)wsprintf(buf,L"%ws",STR(STR_UPD_MISSING));
+                ListView_SetItemTextUpdate(hListg,j,4,buf);
+                wsprintf(buf,L"%S",filename);
+                wsprintf(buf,L"%ws",STR(STR_UPD_YES+manager_drplive(buf)));
+                ListView_SetItemTextUpdate(hListg,j,5,buf);
+                j++;
+            }
+        }
+    }
+    if(hListg)
+    {
+        SendMessage(hListg,WM_SETREDRAW,1,0);
+        //InvalidateRect(hListg,0,0);
+    }
+    if(update)return ret;
+    ListView_SortItems(hListg,CompareFunc,0);
+
+    manager_g->items_list[SLOT_DOWNLOAD].isactive=ret?1:0;
+    if(ret)manager_g->items_list[SLOT_NODRIVERS].isactive=0;
+    manager_g->setpos();
+    manager_g->items_list[SLOT_DOWNLOAD].val1=ret;
+    return ret;
+}
+
+void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
+{
+    char buf[BUFLEN];
+    wsprintfA(buf,"%S",name);
+
+    for(int i=0;i<numfiles;i++)
+    if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),buf))
+    {
+        hTorrent.file_priority(i,pri);
+        log_con("Req(%S,%d)\n",name,pri);
+    }
+}
+
+void UpdateDialog_t::openDialog()
+{
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
+}
 //}
 
 //{ Updater
@@ -579,7 +578,7 @@ void Updater_t::updateTorrentStatus()
 
     t->elapsed=13;
     t->status=STR(STR_TR_ST0+(int)st.state);
-    if(hSession->is_paused())t->status=(wchar_t *)STR(STR_TR_ST4);
+    if(hSession->is_paused())t->status=STR(STR_TR_ST4);
     finisheddownloading=st.is_finished;
 
     wcscpy(t->error,L"");
@@ -808,7 +807,7 @@ void Updater_t::downloadTorrent()
     log_con(hTorrent.torrent_file()?"":"FAILED\n");
 
     // Pupulate list
-    i=UpdateDialog.upddlg_populatelist(nullptr,0);
+    i=UpdateDialog.populate(0);
     log_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
     for(i=0;i<numfiles;i++)hTorrent.file_priority(i,0);
     time_chkupdate=GetTickCount()-time_chkupdate;
@@ -907,7 +906,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
 
                 // Update list
                 ListView_DeleteAllItems(UpdateDialog.hListg);
-                UpdateDialog.upddlg_populatelist(UpdateDialog.hListg,0);
+                UpdateDialog.populate(0);
 
                 // Execute user cmd
                 if(*finish_upd)
@@ -943,4 +942,11 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     return 0;
 }
 //}
+#else
+
+#include "main.h"
+Updater_t Updater;
+int Updater_t::torrentport=50171;
+int Updater_t::downlimit=0;
+int Updater_t::uplimit=0;
 #endif

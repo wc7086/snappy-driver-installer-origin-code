@@ -255,6 +255,8 @@ void Vault::loadFromRes(int id)
         if(entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
+Vault::Vault(){}
+
 void Vault::init1(entry_t *entryv,int numv,int resv)
 {
     entry=entryv;

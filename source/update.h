@@ -54,21 +54,21 @@ class UpdateDialog_t
 private:
     int  getnewver(const char *ptr);
     int  getcurver(const char *ptr);
+    static int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
+    void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,const wchar_t *str);
+    void calctotalsize();
+    void updateTexts();
 
-    void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,wchar_t *str);
+    void setCheckboxes();
+    void setPriorities();
     static LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
     static BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
-    static int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
-    void upddlg_calctotalsize(HWND hList);
-    void setPriorities(HWND hList);
-    void setCheckboxes(HWND hList);
 
 public:
     static HWND hListg;
 
+    int  populate(int flags);
     void setPriorities(const wchar_t *name,int pri);
-    int  upddlg_populatelist(HWND hList,int flags);
-    void upddlg_updatelang();
     void openDialog();
 };
 

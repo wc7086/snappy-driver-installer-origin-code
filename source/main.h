@@ -211,6 +211,8 @@ struct bundle_t
     State state;
     Collection collection;
     Matcher matcher;
+
+    ~bundle_t();
 };
 //}
 
