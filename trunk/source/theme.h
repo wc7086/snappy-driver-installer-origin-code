@@ -19,7 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "langlist.h"
 
 // Theme/lang
-#define STR(A) (language[A].valstr?(wchar_t *)language[A].valstr:L"")
+#define STR(A) (language[A].valstr?language[A].valstr:L"")
 #define D(A) theme[A].val
 #define D_STR(A) theme[A].valstr
 
@@ -69,6 +69,9 @@ private:
     void loadFromRes(int id);
 
 public:
+    Vault(const Vault&)=delete;
+    Vault &operator=(const Vault&)=delete;
+    Vault();
     void init1(entry_t *entry,int num,int res);
     void load(int i);
 

@@ -143,6 +143,8 @@ public:
     wchar_t *getPath(){return texta.getw(drppath);}
     wchar_t *getFilename(){return texta.getw(drpfilename);}
 
+    //Driverpack(const Driverpack&)=delete;
+    Driverpack &operator=(const Driverpack&)=delete;
     Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
     ~Driverpack();
 
@@ -260,6 +262,8 @@ public:
     void readVersion(version_t *t);
     void readStr(char **vb,char **ve);
 
+    Parser_str(const Parser_str&)=delete;
+    Parser_str &operator=(const Parser_str&)=delete;
     Parser_str(sect_data_t *lnk,Driverpack *drp);
     Parser_str(char *vb,char *ve);
 };

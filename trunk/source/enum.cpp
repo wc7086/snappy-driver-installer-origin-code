@@ -933,12 +933,9 @@ void State::isnotebook_a()
 
     for(auto &cur_device:Devices_list)
     {
-        wchar_t *p;
-        char *s=textas.get(0);
-
         if(cur_device.getHardwareID())
         {
-            p=(wchar_t *)(s+cur_device.getHardwareID());
+            wchar_t *p=textas.getw(cur_device.getHardwareID());
             while(*p)
             {
                 if(StrStrI(p,L"*ACPI0003"))batdev=1;
