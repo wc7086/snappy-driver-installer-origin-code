@@ -149,9 +149,11 @@ void settings_parse(const wchar_t *str,int ind)
         if( wcsstr(pr,L"-theme:"))       wcscpy(curtheme,pr+7);else
         if(!wcscmp(pr,L"-expertmode"))   expertmode=1;else
         if( wcsstr(pr,L"-hintdelay:"))   hintdelay=_wtoi_my(pr+11);else
-        if( wcsstr(pr,L"-port:"))        torrentport=_wtoi_my(pr+6);else
-        if( wcsstr(pr,L"-downlimit:"))   downlimit=_wtoi_my(pr+11);else
-        if( wcsstr(pr,L"-uplimit:"))     uplimit=_wtoi_my(pr+9);else
+#ifdef USE_TORRENT
+        if( wcsstr(pr,L"-port:"))        Updater.torrentport=_wtoi_my(pr+6);else
+        if( wcsstr(pr,L"-downlimit:"))   Updater.downlimit=_wtoi_my(pr+11);else
+        if( wcsstr(pr,L"-uplimit:"))     Updater.uplimit=_wtoi_my(pr+9);else
+#endif
         if( wcsstr(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
         if(!wcscmp(pr,L"-license"))      license=1;else
         if(!wcscmp(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
@@ -263,7 +265,11 @@ void settings_save()
             finish,finish_rb,
             curlang,curtheme,
             hintdelay,
-            torrentport,downlimit,uplimit,
+#ifdef USE_TORRENT
+            Updater.torrentport,Updater.downlimit,Updater.uplimit,
+#else
+            50171,0,0,
+#endif
             filters);
 
     if(license)fwprintf(f,L"-license ");
@@ -414,7 +420,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
 
 // Check updates
-    Updater.checkupdates();
+#ifdef USE_TORRENT
+    Updater.createThreads();
+#endif
 
 // Start folder monitors
     mon_drp=monitor_start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
@@ -433,7 +441,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 // Stop libtorrent
     #ifdef USE_TORRENT
-    Updater.shutdown();
+    Updater.destroyThreads();
     #endif
 
 // Free allocated resources
@@ -626,10 +634,10 @@ void bundle_lowprioirity(bundle_t *bundle)
     manager_g->print_hr();
 
 #ifdef USE_TORRENT
-    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate&&canWrite(L"update"))
+    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate)
     {
         log_con("Event 1\n");
-        Updater.start_torrent();
+        Updater.checkUpdates();
     }
 #endif
     bundle->collection.save();
@@ -918,9 +926,9 @@ void gui(int nCmd)
         //if(MessageBox(0,STR(STR_UPD_DIALOG_MSG),STR(STR_UPD_DIALOG_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
         {
             flags|=FLAG_CHECKUPDATES;
-            Updater.checkupdates();
 #ifdef USE_TORRENT
-            if(canWrite(L"update"))Updater.start_torrent();
+            Updater.createThreads();
+            Updater.checkUpdates();
 #endif
         }
     }
@@ -2141,7 +2149,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             if(floating_itembar==SLOT_DOWNLOAD)
             {
 #ifdef USE_TORRENT
-                UpdateDialog.open_dialog();
+                UpdateDialog.openDialog();
                 break;
 #endif
             }

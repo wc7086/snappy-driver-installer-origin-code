@@ -15,7 +15,18 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-struct torrent_status_t
+// Declarations
+struct TorrentStatus_t;
+class UpdateDialog_t;
+class Updater_t;
+
+// Global variables
+extern Updater_t Updater;
+extern UpdateDialog_t UpdateDialog;
+extern TorrentStatus_t TorrentStatus;
+
+// TorrentStatus
+struct TorrentStatus_t
 {
     long long downloaded,downloadsize;
     long long uploaded;
@@ -31,13 +42,15 @@ struct torrent_status_t
     int sessionpaused,torrentpaused;
 };
 
-extern volatile int downloadmangar_exitflag;
-extern int torrentport;
-extern int downlimit,uplimit;
-
-// Dialog
+// UpdateDialog
 class UpdateDialog_t
 {
+    static const int cxn[];
+    static WNDPROC wpOrigButtonProc;
+    static int bMouseInWindow;
+    static HWND hUpdate;
+    int totalsize;
+
 private:
     int  getnewver(const char *ptr);
     int  getcurver(const char *ptr);
@@ -46,48 +59,49 @@ private:
     static LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
     static BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
     static int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
+    void upddlg_calctotalsize(HWND hList);
+    void setPriorities(HWND hList);
+    void setCheckboxes(HWND hList);
 
 public:
-    void upddlg_updatelang();
-    void upddlg_setcheckboxes(HWND hList);
-    void upddlg_setpriorities(HWND hList);
-    void upddlg_setpriorities_driverpack(const wchar_t *name,int pri);
-    void upddlg_calctotalsize(HWND hList);
+    static HWND hListg;
+
+    void setPriorities(const wchar_t *name,int pri);
     int  upddlg_populatelist(HWND hList,int flags);
-
-    void open_dialog();
+    void upddlg_updatelang();
+    void openDialog();
 };
-extern UpdateDialog_t UpdateDialog;
 
-// Update
+// Updater
 class Updater_t
 {
-private:
     static HANDLE downloadmangar_event;
     static HANDLE thandle_download;
 
-static int finisheddownloading;
-static int finishedupdating;
-int averageSpeed;
+    static int downloadmangar_exitflag;
+    static int finishedupdating;
+    static int finisheddownloading;
+
+    int averageSpeed;
+    long long torrenttime;
 
 private:
-    void update_movefiles();
+    void updateTorrentStatus();
+    void removeOldDriverpacks(const wchar_t *ptr);
+    void moveNewFiles();
 
 public:
-    static torrent_status_t torrentstatus;
+    static int torrentport,downlimit,uplimit;
 
-    int istorrentready();
-    void update_start();
-    void update_stop();
-    void update_resume();
-    void update_getstatus(torrent_status_t *t);
-    void delolddrp(const char *ptr);
+    void checkUpdates(){if(canWrite(L"update"))SetEvent(downloadmangar_event);}
+    void createThreads();
+    void destroyThreads();
+
+    void downloadTorrent();
+    void resumeDownloading();
     static unsigned int __stdcall thread_download(void *arg);
-    void checkupdates();
-    void shutdown();
-    void start_torrent();
-    bool isPaused(){return torrentstatus.sessionpaused;}
-    bool isReady(){return finishedupdating;}
-};
-extern Updater_t Updater;
 
+    bool istorrentready();
+    bool isPaused(){return TorrentStatus.sessionpaused;}
+    bool isUpdateCompleted(){return finishedupdating;}
+};
