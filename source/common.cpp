@@ -139,6 +139,29 @@ void strtolower(char *s,int len)
         s++;
     }
 }
+
+/*void str_unicode2ansi(char *a)
+{
+    wchar_t *u=(wchar_t *)a;
+    while((*a++=*u++));
+}
+void str_unicode2ansi(const wchar_t *s,char *d)
+{
+    while((*d++=*s++));
+}
+void str_ansi2unicode(const wchar_t *a)
+{
+    wchar_t *u=(wchar_t *)a;
+    while((*a++=*u++));
+}*/
+
+int _wtoi_my(const wchar_t *str)
+{
+    int val;
+    swscanf(str,L"%d",&val);
+    return val;
+}
+
 //}
 
 //{ Hash

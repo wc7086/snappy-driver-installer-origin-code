@@ -109,6 +109,7 @@ int  hash_findnext(hashtable_t *t,int *isfound);
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
+int _wtoi_my(const wchar_t *str);
 
 // 7-zip
 namespace NArchive

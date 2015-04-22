@@ -34,10 +34,6 @@ struct torrent_status_t
 extern volatile int downloadmangar_exitflag;
 extern int torrentport;
 extern int downlimit,uplimit;
-extern HANDLE downloadmangar_event;
-extern HANDLE thandle_download;
-extern torrent_status_t torrentstatus;
-extern int finisheddownloading,finishedupdating;
 
 // Dialog
 class UpdateDialog_t
@@ -64,13 +60,34 @@ public:
 extern UpdateDialog_t UpdateDialog;
 
 // Update
-int istorrentready();
-void update_start();
-void update_stop();
-void update_resume();
-void update_getstatus(torrent_status_t *t);
-void delolddrp(const char *ptr);
-void update_movefiles();
-unsigned int __stdcall thread_download(void *arg);
+class Updater_t
+{
+private:
+    static HANDLE downloadmangar_event;
+    static HANDLE thandle_download;
 
-int _wtoi_my(const wchar_t *str);
+static int finisheddownloading;
+static int finishedupdating;
+int averageSpeed;
+
+private:
+    void update_movefiles();
+
+public:
+    static torrent_status_t torrentstatus;
+
+    int istorrentready();
+    void update_start();
+    void update_stop();
+    void update_resume();
+    void update_getstatus(torrent_status_t *t);
+    void delolddrp(const char *ptr);
+    static unsigned int __stdcall thread_download(void *arg);
+    void checkupdates();
+    void shutdown();
+    void start_torrent();
+    bool isPaused(){return torrentstatus.sessionpaused;}
+    bool isReady(){return finishedupdating;}
+};
+extern Updater_t Updater;
+
