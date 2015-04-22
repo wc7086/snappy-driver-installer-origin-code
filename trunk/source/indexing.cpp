@@ -577,7 +577,7 @@ void Collection::load()
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
     drp_count=scanfolder_count(driverpack_dir);
-    driverpack_list.reserve(drp_count+1);
+    driverpack_list.reserve(drp_count+1+100); // TODO
     drp_cur=0;
     scanfolder(driverpack_dir);
     updatedindexes();

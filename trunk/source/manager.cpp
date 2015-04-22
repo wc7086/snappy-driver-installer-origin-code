@@ -1061,13 +1061,13 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             {
                 wchar_t num1[64],num2[64];
 
-                format_size(num1,Updater.torrentstatus.downloaded,0);
-                format_size(num2,Updater.torrentstatus.downloadsize,0);
+                format_size(num1,TorrentStatus.downloaded,0);
+                format_size(num2,TorrentStatus.downloadsize,0);
 
                 wsprintf(bufw,STR(STR_UPD_PROGRES),
                          num1,
                          num2,
-                         (Updater.torrentstatus.downloadsize)?Updater.torrentstatus.downloaded*100/Updater.torrentstatus.downloadsize:0);
+                         (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
 
                 drawbutton(hdc,x,pos,index,bufw,STR(STR_UPD_MODIFY));
             }
@@ -1998,7 +1998,7 @@ void popup_download(HDC hdcMem)
 {
 #ifdef USE_TORRENT
     textdata_t td;
-    torrent_status_t t;
+    TorrentStatus_t t;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
     int per=0;
     wchar_t num1[BUFLEN],num2[BUFLEN];
@@ -2012,7 +2012,7 @@ void popup_download(HDC hdcMem)
     td.x=p0;
 
     //update_getstatus(&t);
-    t=Updater.torrentstatus;
+    t=TorrentStatus;
 
     format_size(num1,t.downloaded,0);
     format_size(num2,t.downloadsize,0);

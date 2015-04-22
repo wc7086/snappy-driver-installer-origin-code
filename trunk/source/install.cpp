@@ -302,14 +302,14 @@ unsigned int __stdcall thread_install(void *arg)
             }
             if(!Updater.istorrentready())break;
         }
-        UpdateDialog.upddlg_setpriorities_driverpack(itembar->hwidmatch->getdrp_packname(),1);
+        UpdateDialog.setPriorities(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)
     {
-        Updater.update_resume();
+        Updater.resumeDownloading();
         log_con("{{{{{{{{\n");
-        while(installmode&&!Updater.isReady())
+        while(installmode&&!Updater.isUpdateCompleted())
         {
             Sleep(500);
         }

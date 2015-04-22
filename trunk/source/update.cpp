@@ -15,9 +15,6 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-int torrentport=50171;
-int downlimit=0,uplimit=0;
-
 #ifdef USE_TORRENT
 
 #define BOOST_ALL_NO_LIB
@@ -45,81 +42,45 @@ int downlimit=0,uplimit=0;
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
-using namespace libtorrent;
 
 #define _WIN32_IE 0x0400
 #include "main.h"
 
-int cxn[]=
-{
-    199,
-    60,
-    44,
-    70,
-    70,
-    90,
-};
+using namespace libtorrent;
 
-session *sessionhandle=nullptr;
-torrent_handle updatehandle;
-
-volatile int downloadmangar_exitflag=0;
-long long torrenttime=0;
-
+//{ Global variables
+session *hSession=nullptr;
+torrent_handle hTorrent;
 session_settings settings;
 dht_settings dht;
 
 int numfiles;
-int totalsize=0;
-HWND hUpdate=nullptr;
-HWND hListg;
-int bMouseInWindow=0;
-WNDPROC wpOrigButtonProc;
-
-int averageSpeed;
 
 UpdateDialog_t UpdateDialog;
 Updater_t Updater;
+TorrentStatus_t TorrentStatus;
 
-int yes1(libtorrent::torrent_status const&);
+// UpdateDialog (static)
+const int UpdateDialog_t::cxn[]={199,60,44,70,70,90};
+HWND UpdateDialog_t::hListg;
+HWND UpdateDialog_t::hUpdate=nullptr;
+WNDPROC UpdateDialog_t::wpOrigButtonProc;
+int UpdateDialog_t::bMouseInWindow=0;
 
-
-
-int Updater_t::finisheddownloading;
+// Updater (static)
+int Updater_t::torrentport=50171;
+int Updater_t::downlimit=0;
+int Updater_t::uplimit=0;
+int Updater_t::downloadmangar_exitflag;
 int Updater_t::finishedupdating;
-torrent_status_t Updater_t::torrentstatus;
+int Updater_t::finisheddownloading;
 HANDLE Updater_t::downloadmangar_event=nullptr;
 HANDLE Updater_t::thandle_download=nullptr;
+//}
 
-void Updater_t::start_torrent(){SetEvent(downloadmangar_event);}
+static int yes1(libtorrent::torrent_status const&){return true;}
 
-void Updater_t::shutdown()
-{
-    if(flags&FLAG_CHECKUPDATES)
-    {
-        downloadmangar_exitflag=1;
-        SetEvent(Updater.downloadmangar_event);
-        WaitForSingleObject(Updater.thandle_download,INFINITE);
-        CloseHandle_log(Updater.thandle_download,L"thandle_download",L"thr");
-        CloseHandle_log(Updater.downloadmangar_event,L"downloadmangar_event",L"event");
-    }
-    Updater.update_stop();
-}
-
-void Updater_t::checkupdates()
-{
-#ifdef USE_TORRENT
-    if(downloadmangar_event)return;
-
-    torrentstatus.sessionpaused=1;
-    if(flags&FLAG_CHECKUPDATES)
-    {
-        downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
-        thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
-    }
-#endif
-}
-
+//{ UpdateDialog
 int UpdateDialog_t::getnewver(const char *s)
 {
     while(*s)
@@ -159,34 +120,6 @@ int UpdateDialog_t::getcurver(const char *ptr)
     return 0;
 }
 
-void UpdateDialog_t::open_dialog()
-{
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
-}
-
-void Updater_t::delolddrp(const char *ptr)
-{
-    wchar_t bffw[BUFLEN];
-    wchar_t buf[BUFLEN];
-    wchar_t *s=bffw;
-
-    wsprintf(bffw,L"%S",ptr);
-    log_con("del '%S'\n",bffw);
-    while(*s)
-    {
-        if(*s=='_'&&s[1]>='0'&&s[1]<='9')
-        {
-            *s=0;
-            s=finddrp(bffw);
-            if(!s)return;
-            wsprintf(buf,L"%ws\\%s",drp_dir,s);
-            log_con("'del %S'\n",buf);
-            _wremove(buf);
-            return;
-        }
-        s++;
-    }
-}
 
 void UpdateDialog_t::upddlg_updatelang()
 {
@@ -214,178 +147,10 @@ void UpdateDialog_t::upddlg_updatelang()
     }
 }
 
-//}
-
-void Updater_t::update_movefiles()
+void UpdateDialog_t::openDialog()
 {
-    int i;
-    boost::intrusive_ptr<torrent_info const> ti;
-
-    ti=updatehandle.torrent_file();
-    monitor_pause=1;
-
-    // Delete old online idexes if new are downloaded
-    for(i=0;i<numfiles;i++)
-        if(updatehandle.file_priority(i)&&
-           StrStrIA(ti->file_at(i).path.c_str(),"indexes\\SDI"))
-            break;
-    if(i!=numfiles)
-    {
-        wchar_t buf [BUFLEN];
-        wsprintf(buf,L"/c del %ws\\_*.bin",index_dir);
-        run_command(L"cmd",buf,SW_HIDE,1);
-    }
-
-    for(i=0;i<numfiles;i++)
-    if(updatehandle.file_priority(i))
-    {
-        file_entry fe=ti->file_at(i);
-        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
-
-        // Skip autorun.inf and del_old_driverpacks.bat
-        if(!StrStrIA(filenamefull,"autorun.inf")&&
-           !StrStrIA(filenamefull,".bat"))
-            continue;
-
-        // Determine destination dirs
-        wchar_t filenamefull_src[BUFLEN];
-        wchar_t filenamefull_dst[BUFLEN];
-        wsprintf(filenamefull_src,L"update\\%S",fe.path.c_str());
-        wsprintf(filenamefull_dst,L"%S",filenamefull);
-        strsub(filenamefull_dst,L"indexes\\SDI",index_dir);
-        strsub(filenamefull_dst,L"drivers",drp_dir);
-        strsub(filenamefull_dst,L"tools\\SDI",data_dir);
-
-        // Delete old driverpacks
-        if(StrStrIA(filenamefull,"drivers\\"))delolddrp(filenamefull+8);
-
-        // Prepare online indexes
-        wchar_t *p=filenamefull_dst;
-        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        if(p&&StrStrIW(filenamefull_src,L"indexes\\SDI\\"))*p=L'_';
-
-        // Create dirs for the file
-        wchar_t dirs[BUFLEN];
-        wcscpy(dirs,filenamefull_dst);
-        p=dirs;
-        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        if(p[-1]==L'\\')
-        {
-            *--p=0;
-            mkdir_r(dirs);
-        }
-
-        // Move file
-        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
-            print_error(GetLastError(),L"MoveFileEx()");
-    }
-    run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
 }
-
-unsigned int __stdcall Updater_t::thread_download(void *arg)
-{
-    UNREFERENCED_PARAMETER(arg)
-
-    log_con("{thread_download\n");
-    WaitForSingleObject(downloadmangar_event,INFINITE);
-    if(downloadmangar_exitflag)return 0;
-
-    Updater.update_start();
-    Updater.update_getstatus(&torrentstatus);
-
-    ResetEvent(downloadmangar_event);
-    while(!downloadmangar_exitflag)
-    {
-        if(flags&FLAG_AUTOUPDATE&&canWrite(L"update"))
-            UpdateDialog.open_dialog();
-        else
-            WaitForSingleObject(downloadmangar_event,INFINITE);
-
-        if(downloadmangar_exitflag)break;
-        log_con("{torrent_start\n");
-        while(!downloadmangar_exitflag&&sessionhandle)
-        {
-            Sleep(500);
-
-            // Show progress
-            Updater.update_getstatus(&torrentstatus);
-            ShowProgressInTaskbar(hMain,TBPF_NORMAL,torrentstatus.downloaded,torrentstatus.downloadsize);
-            InvalidateRect(hPopup,nullptr,0);
-
-            // Send libtorrent messages to log
-            std::unique_ptr<alert> holder;
-            holder=sessionhandle->pop_alert();
-            while(holder.get())
-            {
-                log_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
-                holder=sessionhandle->pop_alert();
-            }
-
-            if(finisheddownloading)
-            {
-                log_con("Torrent: finished\n");
-                sessionhandle->pause();
-
-                // Flash cache
-                log_con("Torrent: flushing cache...");
-                updatehandle.flush_cache();
-                while(1)
-                {
-                    alert const* a=sessionhandle->wait_for_alert(seconds(60*2));
-                    if(!a)
-                    {
-                        log_con("time out\n");
-                        break;
-                    }
-                    std::unique_ptr<alert> holder2=sessionhandle->pop_alert();
-                    if(alert_cast<cache_flushed_alert>(a))
-                    {
-                        log_con("done\n");
-                        break;
-                    }
-                }
-
-                // Move files
-                Updater.update_movefiles();
-                updatehandle.force_recheck();
-
-                // Update list
-                ListView_DeleteAllItems(hListg);
-                UpdateDialog.upddlg_populatelist(hListg,0);
-
-                // Execute user cmd
-                if(*finish_upd)
-                {
-                    wchar_t buf[BUFLEN];
-                    wsprintf(buf,L" /c %s",finish_upd);
-                    run_command(L"cmd",buf,SW_HIDE,0);
-                }
-                if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
-
-                // Flash in taskbar
-                ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
-                FLASHWINFO fi;
-                fi.cbSize=sizeof(FLASHWINFO);
-                fi.hwnd=hMain;
-                fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
-                fi.uCount=1;
-                fi.dwTimeout=0;
-                FlashWindowEx(&fi);
-                break;
-            }
-        }
-        finishedupdating=1;
-        sessionhandle->pause();
-        Updater.update_getstatus(&torrentstatus);
-        monitor_pause=0;
-        PostMessage(hMain,WM_DEVICECHANGE,7,2);
-        log_con("}torrent_stop\n");
-        ResetEvent(downloadmangar_event);
-    }
-    log_con("}thread_download\n");
-    return 0;
-}
-
 int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
 {
     UNREFERENCED_PARAMETER(lParamSort)
@@ -417,10 +182,10 @@ int UpdateDialog_t::upddlg_populatelist(HWND hList,int update)
 
     boost::intrusive_ptr<torrent_info const> ti;
     std::vector<size_type> file_progress;
-    ti=updatehandle.torrent_file();
+    ti=hTorrent.torrent_file();
     numfiles=0;
     if(!ti)return 0;
-    updatehandle.file_progress(file_progress);
+    hTorrent.file_progress(file_progress);
 
     numfiles=ti->num_files();
     for(i=0;i<numfiles;i++)
@@ -458,7 +223,7 @@ int UpdateDialog_t::upddlg_populatelist(HWND hList,int update)
     lvI.state     =0;
     lvI.iItem     =0;
     lvI.lParam    =-2;
-    //newver=200;
+    newver=300;
     i=0;
     if(newver>SVN_REV)ret+=newver<<8;
     if(newver>SVN_REV&&hList)
@@ -550,168 +315,6 @@ int UpdateDialog_t::upddlg_populatelist(HWND hList,int update)
     return ret;
 }
 
-int yes1(libtorrent::torrent_status const&){return true;}
-int Updater_t::istorrentready(){return updatehandle.torrent_file()!=nullptr;}
-void Updater_t::update_start()
-{
-    error_code ec;
-    int i;
-    add_torrent_params params;
-
-    time_chkupdate=GetTickCount();
-    sessionhandle=new session();
-
-    sessionhandle->start_lsd();
-    sessionhandle->start_upnp();
-    sessionhandle->start_natpmp();
-
-    sessionhandle->listen_on(std::make_pair(torrentport,torrentport),ec);
-    if(ec)log_err("ERROR: failed to open listen socket: %s\n",ec.message().c_str());
-
-    log_con("Listen port: %d (%s)\nDownload limit: %dKb\nUpload limit: %dKb\n",
-            sessionhandle->listen_port(),sessionhandle->is_listening()?"connected":"disconnected",
-            downlimit,uplimit);
-
-    dht.privacy_lookups=true;
-    sessionhandle->set_dht_settings(dht);
-    settings.use_dht_as_fallback=false;
-    sessionhandle->add_dht_router(std::make_pair(std::string("router.bittorrent.com"),6881));
-    sessionhandle->add_dht_router(std::make_pair(std::string("router.utorrent.com"),6881));
-    sessionhandle->add_dht_router(std::make_pair(std::string("router.bitcomet.com"),6881));
-    sessionhandle->start_dht();
-    sessionhandle->set_alert_mask(
-        alert::error_notification|
-        alert::tracker_notification|
-        alert::ip_block_notification|
-        alert::dht_notification|
-        alert::performance_warning|
-        alert::storage_notification);
-
-    settings.user_agent="Snappy Driver Installer/" SVN_REV2;
-    settings.always_send_user_agent=true;
-    settings.anonymous_mode=false;
-    settings.choking_algorithm=session_settings::auto_expand_choker;
-    settings.disk_cache_algorithm=session_settings::avoid_readback;
-    settings.volatile_read_cache=false;
-    sessionhandle->set_settings(settings);
-
-    params.save_path="update";
-    params.url=TORRENT_URL;
-    if(ec)log_err("ERROR: failed to init torrentinfo: %s\n",ec.message().c_str());
-
-    params.flags=add_torrent_params::flag_paused;
-    updatehandle=sessionhandle->add_torrent(params,ec);
-    if(ec)log_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
-
-    sessionhandle->pause();
-    updatehandle.set_download_limit(downlimit*1024);
-    updatehandle.set_upload_limit(uplimit*1024);
-    updatehandle.resume();
-    log_con("Waiting for torrent");
-    for(i=0;i<100;i++)
-    {
-        log_con(".");
-        if(updatehandle.torrent_file())
-        {
-            log_con("DONE\n");
-            break;
-        }
-        if(downloadmangar_exitflag)break;
-        Sleep(100);
-    }
-    log_con(updatehandle.torrent_file()?"":"FAILED\n");
-
-    i=UpdateDialog.upddlg_populatelist(nullptr,0);
-    log_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
-    for(i=0;i<numfiles;i++)updatehandle.file_priority(i,0);
-    time_chkupdate=GetTickCount()-time_chkupdate;
-}
-
-void Updater_t::update_getstatus(torrent_status_t *t)
-{
-    std::vector<torrent_status> temp;
-
-    memset(t,0,sizeof(torrent_status_t));
-    if(sessionhandle==nullptr)
-    {
-        wcscpy(t->error,STR(STR_DWN_ERRSES));
-        return;
-    }
-    sessionhandle->get_torrent_status(&temp,&yes1,0);
-
-    if(temp.empty())
-    {
-        wcscpy(t->error,STR(STR_DWN_ERRTOR));
-        return;
-    }
-    torrent_status& st=temp[0];
-
-    t->downloaded=st.total_wanted_done;
-    t->downloadsize=st.total_wanted;
-    t->uploaded=st.total_payload_upload;
-
-    t->elapsed=13;
-    t->status=STR(STR_TR_ST0+(int)st.state);
-    if(sessionhandle->is_paused())t->status=(wchar_t *)STR(STR_TR_ST4);
-    finisheddownloading=st.is_finished;
-
-    wcscpy(t->error,L"");
-
-    t->uploadspeed=st.upload_payload_rate;
-    t->downloadspeed=st.download_payload_rate;
-
-    t->seedstotal=st.list_seeds;
-    t->peerstotal=st.list_peers;
-    t->seedsconnected=st.num_seeds;
-    t->peersconnected=st.num_peers;
-
-    t->wasted=st.total_redundant_bytes;
-    t->wastedhashfailes=st.total_failed_bytes;
-
-    if(torrenttime)t->elapsed=GetTickCount()-torrenttime;
-    if(t->downloadspeed)
-    {
-        averageSpeed=SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed;
-        if(averageSpeed)t->remaining=(t->downloadsize-t->downloaded)/averageSpeed*1000;
-    }
-
-    t->sessionpaused=sessionhandle->is_paused();
-    t->torrentpaused=st.paused;
-
-    if(torrentstatus.downloadsize)
-        manager_g->items_list[SLOT_DOWNLOAD].percent=torrentstatus.downloaded*1000/torrentstatus.downloadsize;
-    redrawfield();
-}
-
-void Updater_t::update_stop()
-{
-    if(!sessionhandle)return;
-
-    log_con("Closing torrent session...");
-    delete sessionhandle;
-    log_con("DONE\n");
-}
-
-void Updater_t::update_resume()
-{
-    if(!sessionhandle||!updatehandle.torrent_file())
-    {
-        finisheddownloading=1;
-        finishedupdating=1;
-        return;
-    }
-    if(sessionhandle->is_paused())
-    {
-        updatehandle.force_recheck();
-        log_con("torrent_resume\n");
-        SetEvent(downloadmangar_event);
-    }
-    sessionhandle->resume();
-    finisheddownloading=0;
-    finishedupdating=0;
-    torrenttime=GetTickCount();
-}
-
 void UpdateDialog_t::upddlg_calctotalsize(HWND hList)
 {
     wchar_t buf[BUFLEN];
@@ -726,49 +329,8 @@ void UpdateDialog_t::upddlg_calctotalsize(HWND hList)
     }
 }
 
-void UpdateDialog_t::upddlg_setpriorities(HWND hList)
-{
-    int i;
-    LVITEM item;
-    int base_pri=0,indexes_pri=0;
 
-    item.mask=LVIF_PARAM;
-    for(i=0;i<ListView_GetItemCount(hList);i++)
-    {
-        item.iItem=i;
-        ListView_GetItem(hList,&item);
-        if(item.lParam==-2)base_pri=ListView_GetCheckState(hList,i)?2:0;
-        if(item.lParam==-1)indexes_pri=ListView_GetCheckState(hList,i)?2:0;
-    }
-
-    for(i=0;i<numfiles;i++)
-    if(StrStrIA(updatehandle.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
-    {
-        updatehandle.file_priority(i,0);
-    }
-    else
-    {
-        updatehandle.file_priority(i,StrStrIA(updatehandle.torrent_file()->file_at(i).path.c_str(),"indexes\\")?
-                                   indexes_pri:base_pri);
-        //updatehandle.file_priority(i,ListView_GetCheckState(hList,0)?2:0);
-        //if(ListView_GetCheckState(hList,0))
-        //    log_con("Needs %s\n",updatehandle.torrent_file()->file_at(i).path.c_str());
-    }
-
-    item.mask=LVIF_PARAM;
-    for(i=0;i<ListView_GetItemCount(hList);i++)
-    {
-        item.iItem=i;
-        ListView_GetItem(hList,&item);
-        if(item.lParam>=0&&ListView_GetCheckState(hList,i))
-        {
-            updatehandle.file_priority(item.lParam,1);
-            //log_con("Needs %s\n",updatehandle.torrent_file()->file_at(i).path.c_str());
-        }
-    }
-}
-
-void UpdateDialog_t::upddlg_setpriorities_driverpack(const wchar_t *name,int pri)
+void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
 {
     int i;
     char buf[BUFLEN];
@@ -776,35 +338,71 @@ void UpdateDialog_t::upddlg_setpriorities_driverpack(const wchar_t *name,int pri
     wsprintfA(buf,"%S",name);
     //log_con("<%s> %d\n",buf,pri);
     for(i=0;i<numfiles;i++)
-    if(StrStrIA(updatehandle.torrent_file()->file_at(i).path.c_str(),buf))
+    if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),buf))
     {
-        updatehandle.file_priority(i,pri);
+        hTorrent.file_priority(i,pri);
         log_con("%S,%d\n",name,pri);
     }
 }
 
-void UpdateDialog_t::upddlg_setcheckboxes(HWND hList)
+void UpdateDialog_t::setCheckboxes(HWND hList)
 {
-    int i;
-    LVITEM item;
-
     if(Updater.isPaused())return;
-    item.mask=LVIF_PARAM;
-    for(i=0;i<ListView_GetItemCount(hList);i++)
+
+    // The app and indexes
+    int baseChecked=0,indexesChecked=0;
+    for(int i=0;i<numfiles;i++)
+    if(hTorrent.file_priority(i)==2)
     {
+        if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))
+            indexesChecked=1;
+        else
+            baseChecked=1;
+    }
+
+    // Driverpacks
+    for(int i=0;i<ListView_GetItemCount(hList);i++)
+    {
+        LVITEM item;
+        item.mask=LVIF_PARAM;
         item.iItem=i;
         ListView_GetItem(hList,&item);
-        if(item.lParam>=0)
-            ListView_SetCheckState(hList,i,updatehandle.file_priority(item.lParam));
+        int val=0;
+
+        if(item.lParam==-2)val=baseChecked;
+        if(item.lParam==-1)val=indexesChecked;
+        if(item.lParam>=0)val=hTorrent.file_priority(item.lParam);
+
+        ListView_SetCheckState(hList,i,val);
+    }
+}
+
+void UpdateDialog_t::setPriorities(HWND hList)
+{
+    // Clear priorities for driverpacks
+    for(int i=0;i<numfiles;i++)
+    if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
+        hTorrent.file_priority(i,0);
+
+    // Set priorities for driverpacks
+    int base_pri=0,indexes_pri=0;
+    for(int i=0;i<ListView_GetItemCount(hList);i++)
+    {
+        LVITEM item;
+        item.mask=LVIF_PARAM;
+        item.iItem=i;
+        ListView_GetItem(hList,&item);
+        int val=ListView_GetCheckState(hList,i);
+
+        if(item.lParam==-2)base_pri=val?2:0;
+        if(item.lParam==-1)indexes_pri=val?2:0;
+        if(item.lParam>= 0)hTorrent.file_priority(item.lParam,val);
     }
 
-    ListView_SetCheckState(hList,0,0);
-    for(i=0;i<numfiles;i++)
-    if(updatehandle.file_priority(i)==2)
-    {
-        ListView_SetCheckState(hList,0,1);
-        break;
-    }
+    // Set priorities for the app and indexes
+    for(int i=0;i<numfiles;i++)
+    if(!StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
+        hTorrent.file_priority(i,StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\")?indexes_pri:base_pri);
 }
 
 LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
@@ -871,7 +469,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             hUpdate=hwnd;
             UpdateDialog.upddlg_populatelist(hListg,0);
             UpdateDialog.upddlg_updatelang();
-            UpdateDialog.upddlg_setcheckboxes(hListg);
+            UpdateDialog.setCheckboxes(hListg);
             if(flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
@@ -895,7 +493,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             break;
 
         case WM_TIMER:
-            if(sessionhandle&&sessionhandle->is_paused()==0)UpdateDialog.upddlg_populatelist(hListg,1);
+            if(hSession&&hSession->is_paused()==0)UpdateDialog.upddlg_populatelist(hListg,1);
             //log_con(".");
             break;
 
@@ -904,18 +502,18 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             {
                 case IDOK:
                     hUpdate=nullptr;
-                    UpdateDialog.upddlg_setpriorities(hListg);
+                    UpdateDialog.setPriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
-                    Updater.update_resume();
+                    Updater.resumeDownloading();
                     EndDialog(hwnd,IDOK);
                     return TRUE;
 
                 case IDACCEPT:
-                    UpdateDialog.upddlg_setpriorities(hListg);
+                    UpdateDialog.setPriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
-                    Updater.update_resume();
+                    Updater.resumeDownloading();
                     return TRUE;
 
                 case IDCANCEL:
@@ -952,5 +550,397 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
     }
     return FALSE;
 }
+//}
 
+//{ Updater
+void Updater_t::updateTorrentStatus()
+{
+    std::vector<torrent_status> temp;
+    TorrentStatus_t *t=&TorrentStatus;
+
+    memset(t,0,sizeof(TorrentStatus_t));
+    if(hSession==nullptr)
+    {
+        wcscpy(t->error,STR(STR_DWN_ERRSES));
+        return;
+    }
+    hSession->get_torrent_status(&temp,&yes1,0);
+
+    if(temp.empty())
+    {
+        wcscpy(t->error,STR(STR_DWN_ERRTOR));
+        return;
+    }
+    torrent_status& st=temp[0];
+
+    t->downloaded=st.total_wanted_done;
+    t->downloadsize=st.total_wanted;
+    t->uploaded=st.total_payload_upload;
+
+    t->elapsed=13;
+    t->status=STR(STR_TR_ST0+(int)st.state);
+    if(hSession->is_paused())t->status=(wchar_t *)STR(STR_TR_ST4);
+    finisheddownloading=st.is_finished;
+
+    wcscpy(t->error,L"");
+
+    t->uploadspeed=st.upload_payload_rate;
+    t->downloadspeed=st.download_payload_rate;
+
+    t->seedstotal=st.list_seeds;
+    t->peerstotal=st.list_peers;
+    t->seedsconnected=st.num_seeds;
+    t->peersconnected=st.num_peers;
+
+    t->wasted=st.total_redundant_bytes;
+    t->wastedhashfailes=st.total_failed_bytes;
+
+    if(torrenttime)t->elapsed=GetTickCount()-torrenttime;
+    if(t->downloadspeed)
+    {
+        averageSpeed=SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed;
+        if(averageSpeed)t->remaining=(t->downloadsize-t->downloaded)/averageSpeed*1000;
+    }
+
+    t->sessionpaused=hSession->is_paused();
+    t->torrentpaused=st.paused;
+
+    if(TorrentStatus.downloadsize)
+        manager_g->items_list[SLOT_DOWNLOAD].percent=TorrentStatus.downloaded*1000/TorrentStatus.downloadsize;
+    redrawfield();
+}
+
+void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
+{
+    wchar_t bffw[BUFLEN];
+    wchar_t *s=bffw;
+
+    wcscpy(bffw,ptr);
+    while(*s)
+    {
+        if(*s=='_'&&s[1]>='0'&&s[1]<='9')
+        {
+            *s=0;
+            s=finddrp(bffw);
+            if(!s)return;
+            wchar_t buf[BUFLEN];
+            wsprintf(buf,L"%ws\\%s",drp_dir,s);
+            log_con("Old file: %S\n",buf);
+            _wremove(buf);
+            return;
+        }
+        s++;
+    }
+}
+
+void Updater_t::moveNewFiles()
+{
+    int i;
+    boost::intrusive_ptr<torrent_info const> ti;
+
+    ti=hTorrent.torrent_file();
+    monitor_pause=1;
+
+    // Delete old online idexes if new are downloaded
+    for(i=0;i<numfiles;i++)
+        if(hTorrent.file_priority(i)&&
+           StrStrIA(ti->file_at(i).path.c_str(),"indexes\\SDI"))
+            break;
+    if(i!=numfiles)
+    {
+        wchar_t buf [BUFLEN];
+        wsprintf(buf,L"/c del %ws\\_*.bin",index_dir);
+        run_command(L"cmd",buf,SW_HIDE,1);
+    }
+
+    for(i=0;i<numfiles;i++)
+    if(hTorrent.file_priority(i))
+    {
+        file_entry fe=ti->file_at(i);
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
+
+        // Skip autorun.inf and del_old_driverpacks.bat
+        if(StrStrIA(filenamefull,"autorun.inf")||StrStrIA(filenamefull,".bat"))continue;
+
+        // Determine destination dirs
+        wchar_t filenamefull_src[BUFLEN];
+        wchar_t filenamefull_dst[BUFLEN];
+        wsprintf(filenamefull_src,L"update\\%S",fe.path.c_str());
+        wsprintf(filenamefull_dst,L"%S",filenamefull);
+        strsub(filenamefull_dst,L"indexes\\SDI",index_dir);
+        strsub(filenamefull_dst,L"drivers",drp_dir);
+        strsub(filenamefull_dst,L"tools\\SDI",data_dir);
+
+        // Delete old driverpacks
+        if(StrStrIA(filenamefull,"drivers\\"))removeOldDriverpacks(filenamefull_dst+8);
+
+        // Prepare online indexes
+        wchar_t *p=filenamefull_dst;
+        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
+        if(p&&StrStrIW(filenamefull_src,L"indexes\\SDI\\"))*p=L'_';
+
+        // Create dirs for the file
+        wchar_t dirs[BUFLEN];
+        wcscpy(dirs,filenamefull_dst);
+        p=dirs;
+        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
+        if(p[-1]==L'\\')
+        {
+            *--p=0;
+            mkdir_r(dirs);
+        }
+
+        // Move file
+        log_con("New file: %S\n",filenamefull_dst);
+        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
+            print_error(GetLastError(),L"MoveFileEx()");
+    }
+    run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
+}
+
+void Updater_t::createThreads()
+{
+    if(thandle_download)return;
+
+    TorrentStatus.sessionpaused=1;
+    downloadmangar_exitflag=0;
+    if(flags&FLAG_CHECKUPDATES)
+    {
+        downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
+        thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
+    }
+}
+
+void Updater_t::destroyThreads()
+{
+    if(thandle_download)
+    {
+        log_con("Stopping torrent thread...");
+        downloadmangar_exitflag=1;
+        SetEvent(downloadmangar_event);
+        WaitForSingleObject(thandle_download,INFINITE);
+        CloseHandle_log(thandle_download,L"thandle_download",L"thr");
+        CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
+        log_con("DONE\n");
+    }
+
+    if(hSession)
+    {
+        log_con("Closing torrent session...");
+        delete hSession;
+        log_con("DONE\n");
+    }
+}
+
+bool Updater_t::istorrentready(){return hTorrent.torrent_file()!=nullptr;}
+
+void Updater_t::downloadTorrent()
+{
+    error_code ec;
+    int i;
+    add_torrent_params params;
+
+    time_chkupdate=GetTickCount();
+    hSession=new session();
+
+    hSession->start_lsd();
+    hSession->start_upnp();
+    hSession->start_natpmp();
+
+    // Connecting
+    hSession->listen_on(std::make_pair(torrentport,torrentport),ec);
+    if(ec)log_err("ERROR: failed to open listen socket: %s\n",ec.message().c_str());
+    log_con("Listen port: %d (%s)\nDownload limit: %dKb\nUpload limit: %dKb\n",
+            hSession->listen_port(),hSession->is_listening()?"connected":"disconnected",
+            downlimit,uplimit);
+
+    // Session settings
+    dht.privacy_lookups=true;
+    hSession->set_dht_settings(dht);
+    settings.use_dht_as_fallback=false;
+    hSession->add_dht_router(std::make_pair(std::string("router.bittorrent.com"),6881));
+    hSession->add_dht_router(std::make_pair(std::string("router.utorrent.com"),6881));
+    hSession->add_dht_router(std::make_pair(std::string("router.bitcomet.com"),6881));
+    hSession->start_dht();
+    hSession->set_alert_mask(
+        alert::error_notification|
+        alert::tracker_notification|
+        alert::ip_block_notification|
+        alert::dht_notification|
+        alert::performance_warning|
+        alert::storage_notification);
+
+    // Settings
+    settings.user_agent="Snappy Driver Installer/" SVN_REV2;
+    settings.always_send_user_agent=true;
+    settings.anonymous_mode=false;
+    settings.choking_algorithm=session_settings::auto_expand_choker;
+    settings.disk_cache_algorithm=session_settings::avoid_readback;
+    settings.volatile_read_cache=false;
+    hSession->set_settings(settings);
+
+    // Setup path and URL
+    params.save_path="update";
+    params.url=TORRENT_URL;
+    params.flags=add_torrent_params::flag_paused;
+    hTorrent=hSession->add_torrent(params,ec);
+    if(ec)log_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
+
+    // Pause and set speed limits
+    hSession->pause();
+    hTorrent.set_download_limit(downlimit*1024);
+    hTorrent.set_upload_limit(uplimit*1024);
+    hTorrent.resume();
+
+    // Download torrent
+    log_con("Waiting for torrent");
+    for(i=0;i<100;i++)
+    {
+        log_con(".");
+        if(hTorrent.torrent_file())
+        {
+            log_con("DONE\n");
+            break;
+        }
+        if(downloadmangar_exitflag)break;
+        Sleep(100);
+    }
+    log_con(hTorrent.torrent_file()?"":"FAILED\n");
+
+    // Pupulate list
+    i=UpdateDialog.upddlg_populatelist(nullptr,0);
+    log_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
+    for(i=0;i<numfiles;i++)hTorrent.file_priority(i,0);
+    time_chkupdate=GetTickCount()-time_chkupdate;
+}
+
+void Updater_t::resumeDownloading()
+{
+    if(!hSession||!hTorrent.torrent_file())
+    {
+        finisheddownloading=1;
+        finishedupdating=1;
+        return;
+    }
+    if(hSession->is_paused())
+    {
+        hTorrent.force_recheck();
+        log_con("torrent_resume\n");
+        SetEvent(downloadmangar_event);
+    }
+    hSession->resume();
+    finisheddownloading=0;
+    finishedupdating=0;
+    torrenttime=GetTickCount();
+}
+
+unsigned int __stdcall Updater_t::thread_download(void *arg)
+{
+    UNREFERENCED_PARAMETER(arg)
+
+    // Wait till is allowed to download the torrent
+    log_con("{thread_download\n");
+    WaitForSingleObject(downloadmangar_event,INFINITE);
+    if(downloadmangar_exitflag)return 0;
+
+    // Download torrent
+    Updater.downloadTorrent();
+    Updater.updateTorrentStatus();
+    ResetEvent(downloadmangar_event);
+
+    while(!downloadmangar_exitflag)
+    {
+        // Wait till is allowed to download driverpacks
+        if(flags&FLAG_AUTOUPDATE&&canWrite(L"update"))
+            UpdateDialog.openDialog();
+        else
+            WaitForSingleObject(downloadmangar_event,INFINITE);
+        if(downloadmangar_exitflag)break;
+
+        // Downloading loop
+        log_con("{torrent_start\n");
+        while(!downloadmangar_exitflag&&hSession)
+        {
+            Sleep(500);
+
+            // Show progress
+            Updater.updateTorrentStatus();
+            ShowProgressInTaskbar(hMain,TBPF_NORMAL,TorrentStatus.downloaded,TorrentStatus.downloadsize);
+            InvalidateRect(hPopup,nullptr,0);
+
+            // Send libtorrent messages to log
+            std::unique_ptr<alert> holder;
+            holder=hSession->pop_alert();
+            while(holder.get())
+            {
+                log_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
+                holder=hSession->pop_alert();
+            }
+
+            if(finisheddownloading)
+            {
+                log_con("Torrent: finished\n");
+                hSession->pause();
+
+                // Flash cache
+                log_con("Torrent: flushing cache...");
+                hTorrent.flush_cache();
+                while(1)
+                {
+                    alert const* a=hSession->wait_for_alert(seconds(60*2));
+                    if(!a)
+                    {
+                        log_con("time out\n");
+                        break;
+                    }
+                    std::unique_ptr<alert> holder2=hSession->pop_alert();
+                    if(alert_cast<cache_flushed_alert>(a))
+                    {
+                        log_con("done\n");
+                        break;
+                    }
+                }
+
+                // Move files
+                Updater.moveNewFiles();
+                hTorrent.force_recheck();
+
+                // Update list
+                ListView_DeleteAllItems(UpdateDialog.hListg);
+                UpdateDialog.upddlg_populatelist(UpdateDialog.hListg,0);
+
+                // Execute user cmd
+                if(*finish_upd)
+                {
+                    wchar_t buf[BUFLEN];
+                    wsprintf(buf,L" /c %s",finish_upd);
+                    run_command(L"cmd",buf,SW_HIDE,0);
+                }
+                if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
+
+                // Flash in taskbar
+                ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
+                FLASHWINFO fi;
+                fi.cbSize=sizeof(FLASHWINFO);
+                fi.hwnd=hMain;
+                fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
+                fi.uCount=1;
+                fi.dwTimeout=0;
+                FlashWindowEx(&fi);
+                break;
+            }
+        }
+        // Download is completed
+        finishedupdating=1;
+        hSession->pause();
+        Updater.updateTorrentStatus();
+        monitor_pause=0;
+        PostMessage(hMain,WM_DEVICECHANGE,7,2);
+        log_con("}torrent_stop\n");
+        ResetEvent(downloadmangar_event);
+    }
+    log_con("}thread_download\n");
+    return 0;
+}
+//}
 #endif
