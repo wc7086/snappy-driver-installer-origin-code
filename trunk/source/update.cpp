@@ -64,27 +64,61 @@ session *sessionhandle=nullptr;
 torrent_handle updatehandle;
 
 volatile int downloadmangar_exitflag=0;
-HANDLE downloadmangar_event=nullptr;
-HANDLE thandle_download=nullptr;
 long long torrenttime=0;
 
 session_settings settings;
 dht_settings dht;
 
-int totalsize=0,numfiles;
+int numfiles;
+int totalsize=0;
 HWND hUpdate=nullptr;
 HWND hListg;
 int bMouseInWindow=0;
 WNDPROC wpOrigButtonProc;
 
-int finisheddownloading=0,finishedupdating=0;
 int averageSpeed;
-torrent_status_t torrentstatus;
 
 UpdateDialog_t UpdateDialog;
-
+Updater_t Updater;
 
 int yes1(libtorrent::torrent_status const&);
+
+
+
+int Updater_t::finisheddownloading;
+int Updater_t::finishedupdating;
+torrent_status_t Updater_t::torrentstatus;
+HANDLE Updater_t::downloadmangar_event=nullptr;
+HANDLE Updater_t::thandle_download=nullptr;
+
+void Updater_t::start_torrent(){SetEvent(downloadmangar_event);}
+
+void Updater_t::shutdown()
+{
+    if(flags&FLAG_CHECKUPDATES)
+    {
+        downloadmangar_exitflag=1;
+        SetEvent(Updater.downloadmangar_event);
+        WaitForSingleObject(Updater.thandle_download,INFINITE);
+        CloseHandle_log(Updater.thandle_download,L"thandle_download",L"thr");
+        CloseHandle_log(Updater.downloadmangar_event,L"downloadmangar_event",L"event");
+    }
+    Updater.update_stop();
+}
+
+void Updater_t::checkupdates()
+{
+#ifdef USE_TORRENT
+    if(downloadmangar_event)return;
+
+    torrentstatus.sessionpaused=1;
+    if(flags&FLAG_CHECKUPDATES)
+    {
+        downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
+        thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
+    }
+#endif
+}
 
 int UpdateDialog_t::getnewver(const char *s)
 {
@@ -130,7 +164,7 @@ void UpdateDialog_t::open_dialog()
     DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
 }
 
-void delolddrp(const char *ptr)
+void Updater_t::delolddrp(const char *ptr)
 {
     wchar_t bffw[BUFLEN];
     wchar_t buf[BUFLEN];
@@ -182,7 +216,7 @@ void UpdateDialog_t::upddlg_updatelang()
 
 //}
 
-void update_movefiles()
+void Updater_t::update_movefiles()
 {
     int i;
     boost::intrusive_ptr<torrent_info const> ti;
@@ -248,7 +282,7 @@ void update_movefiles()
     run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
 
-unsigned int __stdcall thread_download(void *arg)
+unsigned int __stdcall Updater_t::thread_download(void *arg)
 {
     UNREFERENCED_PARAMETER(arg)
 
@@ -256,8 +290,8 @@ unsigned int __stdcall thread_download(void *arg)
     WaitForSingleObject(downloadmangar_event,INFINITE);
     if(downloadmangar_exitflag)return 0;
 
-    update_start();
-    update_getstatus(&torrentstatus);
+    Updater.update_start();
+    Updater.update_getstatus(&torrentstatus);
 
     ResetEvent(downloadmangar_event);
     while(!downloadmangar_exitflag)
@@ -274,7 +308,7 @@ unsigned int __stdcall thread_download(void *arg)
             Sleep(500);
 
             // Show progress
-            update_getstatus(&torrentstatus);
+            Updater.update_getstatus(&torrentstatus);
             ShowProgressInTaskbar(hMain,TBPF_NORMAL,torrentstatus.downloaded,torrentstatus.downloadsize);
             InvalidateRect(hPopup,nullptr,0);
 
@@ -312,7 +346,7 @@ unsigned int __stdcall thread_download(void *arg)
                 }
 
                 // Move files
-                update_movefiles();
+                Updater.update_movefiles();
                 updatehandle.force_recheck();
 
                 // Update list
@@ -342,7 +376,7 @@ unsigned int __stdcall thread_download(void *arg)
         }
         finishedupdating=1;
         sessionhandle->pause();
-        update_getstatus(&torrentstatus);
+        Updater.update_getstatus(&torrentstatus);
         monitor_pause=0;
         PostMessage(hMain,WM_DEVICECHANGE,7,2);
         log_con("}torrent_stop\n");
@@ -517,8 +551,8 @@ int UpdateDialog_t::upddlg_populatelist(HWND hList,int update)
 }
 
 int yes1(libtorrent::torrent_status const&){return true;}
-int istorrentready(){return updatehandle.torrent_file()!=nullptr;}
-void update_start()
+int Updater_t::istorrentready(){return updatehandle.torrent_file()!=nullptr;}
+void Updater_t::update_start()
 {
     error_code ec;
     int i;
@@ -593,7 +627,7 @@ void update_start()
     time_chkupdate=GetTickCount()-time_chkupdate;
 }
 
-void update_getstatus(torrent_status_t *t)
+void Updater_t::update_getstatus(torrent_status_t *t)
 {
     std::vector<torrent_status> temp;
 
@@ -649,7 +683,7 @@ void update_getstatus(torrent_status_t *t)
     redrawfield();
 }
 
-void update_stop()
+void Updater_t::update_stop()
 {
     if(!sessionhandle)return;
 
@@ -658,7 +692,7 @@ void update_stop()
     log_con("DONE\n");
 }
 
-void update_resume()
+void Updater_t::update_resume()
 {
     if(!sessionhandle||!updatehandle.torrent_file())
     {
@@ -754,7 +788,7 @@ void UpdateDialog_t::upddlg_setcheckboxes(HWND hList)
     int i;
     LVITEM item;
 
-    if(torrentstatus.sessionpaused)return;
+    if(Updater.isPaused())return;
     item.mask=LVIF_PARAM;
     for(i=0;i<ListView_GetItemCount(hList);i++)
     {
@@ -873,7 +907,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     UpdateDialog.upddlg_setpriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
-                    update_resume();
+                    Updater.update_resume();
                     EndDialog(hwnd,IDOK);
                     return TRUE;
 
@@ -881,7 +915,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     UpdateDialog.upddlg_setpriorities(hListg);
                     flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
-                    update_resume();
+                    Updater.update_resume();
                     return TRUE;
 
                 case IDCANCEL:

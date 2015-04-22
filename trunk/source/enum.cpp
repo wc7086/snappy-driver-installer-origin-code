@@ -380,7 +380,7 @@ void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos
 
 unsigned Driver::calc_score_h(State *state)
 {
-    return calc_score(catalogfile,feature,identifierscore,
+    return calc_score(catalogfile,feature,identifierscore, // TODO: check signature
         state,StrStrI(state->textas.getw(InfSectionExt),L".nt")?1:0);
 }
 
@@ -397,6 +397,7 @@ void Driver::print(State *state)
     log_file("  HWID:     %S\n",s+MatchingDeviceId);
     log_file("  inf:      %S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
     log_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);
+    //log_file("  Sign:     '%s'(%d)\n",s+cat,catalogfile);
 
     if(log_verbose&LOG_VERBOSE_BATCH)
         log_file("  Filter:   \"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);

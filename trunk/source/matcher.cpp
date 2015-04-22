@@ -446,27 +446,12 @@ void Matcher::populate()
         {
             hwidmatch_list.push_back(Hwidmatch(nullptr,0));
 
-            if(devicematch->isMissing(state))devicematch->status=STATUS_NF_MISSING;else
-            if(devicematch->driver)
-            {
-                if(!wcscmp(state->textas.getw(devicematch->driver->ProviderName),L"Microsoft")||
-                   !wcscmp(state->textas.getw(devicematch->driver->ProviderName),L"Майкрософт"))
-                    devicematch->status=STATUS_NF_STANDARD;
-                else
-                {
-                    if(*state->textas.get(devicematch->driver->MatchingDeviceId))
-                        devicematch->status=STATUS_NF_UNKNOWN;
-                    else
-                        devicematch->status=STATUS_NF_STANDARD;
-                }
-            }
+            if(devicematch->isMissing(state))
+                devicematch->status=STATUS_NF_MISSING;
+            else if(devicematch->driver&&StrStrIW(state->textas.getw(devicematch->driver->InfPath),L"oem"))
+                devicematch->status=STATUS_NF_UNKNOWN;
             else
-            {
-                if(devicematch->device->problem)
-                    devicematch->status=devicematch->device->HardwareID?STATUS_NF_MISSING:STATUS_NF_STANDARD;
-                else
-                    devicematch->status=STATUS_NF_STANDARD;
-            }
+                devicematch->status=STATUS_NF_STANDARD;
         }
     }
     sort();

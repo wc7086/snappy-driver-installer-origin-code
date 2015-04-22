@@ -487,7 +487,7 @@ void Manager::toggle(int index)
     int group;
 
 #ifdef USE_TORRENT
-    if(installmode&&!torrentstatus.sessionpaused)
+    if(installmode&&!Updater.isPaused())
         return;
 #endif
 
@@ -551,7 +551,7 @@ void Manager::selectnone()
     unsigned i;
 
 #ifdef USE_TORRENT
-    if(installmode&&!torrentstatus.sessionpaused)
+    if(installmode&&!Updater.isPaused())
         return;
 #endif
 
@@ -570,7 +570,7 @@ void Manager::selectall()
     int group=-1;
 
 #ifdef USE_TORRENT
-    if(installmode&&!torrentstatus.sessionpaused)
+    if(installmode&&!Updater.isPaused())
         return;
 #endif
 
@@ -1057,17 +1057,17 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 wsprintf(bufw,STR(STR_UPD_AVAIL2),itembar->val1&0xFF);
 
 #ifdef USE_TORRENT
-            if(!torrentstatus.sessionpaused)
+            if(!Updater.isPaused())
             {
                 wchar_t num1[64],num2[64];
 
-                format_size(num1,torrentstatus.downloaded,0);
-                format_size(num2,torrentstatus.downloadsize,0);
+                format_size(num1,Updater.torrentstatus.downloaded,0);
+                format_size(num2,Updater.torrentstatus.downloadsize,0);
 
                 wsprintf(bufw,STR(STR_UPD_PROGRES),
                          num1,
                          num2,
-                         (torrentstatus.downloadsize)?torrentstatus.downloaded*100/torrentstatus.downloadsize:0);
+                         (Updater.torrentstatus.downloadsize)?Updater.torrentstatus.downloaded*100/Updater.torrentstatus.downloadsize:0);
 
                 drawbutton(hdc,x,pos,index,bufw,STR(STR_UPD_MODIFY));
             }
@@ -2012,7 +2012,7 @@ void popup_download(HDC hdcMem)
     td.x=p0;
 
     //update_getstatus(&t);
-    t=torrentstatus;
+    t=Updater.torrentstatus;
 
     format_size(num1,t.downloaded,0);
     format_size(num2,t.downloadsize,0);

@@ -121,27 +121,6 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 
 //{ Main
 int main2(int argc, char* argv[]);
-/*void str_unicode2ansi(char *a)
-{
-    wchar_t *u=(wchar_t *)a;
-    while((*a++=*u++));
-}
-void str_unicode2ansi(const wchar_t *s,char *d)
-{
-    while((*d++=*s++));
-}
-void str_ansi2unicode(const wchar_t *a)
-{
-    wchar_t *u=(wchar_t *)a;
-    while((*a++=*u++));
-}*/
-
-int _wtoi_my(const wchar_t *str)
-{
-    int val;
-    swscanf(str,L"%d",&val);
-    return val;
-}
 
 void settings_parse(const wchar_t *str,int ind)
 {
@@ -325,20 +304,6 @@ void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
     //if(StrStrIW(szFile,L".7z")||StrStrIW(szFile,L".inf"))SetEvent(event);
 }
 
-void checkupdates()
-{
-#ifdef USE_TORRENT
-    if(downloadmangar_event)return;
-
-    torrentstatus.sessionpaused=1;
-    if(flags&FLAG_CHECKUPDATES)
-    {
-        downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
-        thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
-    }
-#endif
-}
-
 int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 {
     UNREFERENCED_PARAMETER(hinst);
@@ -449,7 +414,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
 
 // Check updates
-    checkupdates();
+    Updater.checkupdates();
 
 // Start folder monitors
     mon_drp=monitor_start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
@@ -468,15 +433,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 // Stop libtorrent
     #ifdef USE_TORRENT
-    if(flags&FLAG_CHECKUPDATES)
-    {
-        downloadmangar_exitflag=1;
-        SetEvent(downloadmangar_event);
-        WaitForSingleObject(thandle_download,INFINITE);
-        CloseHandle_log(thandle_download,L"thandle_download",L"thr");
-        CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
-    }
-    update_stop();
+    Updater.shutdown();
     #endif
 
 // Free allocated resources
@@ -672,7 +629,7 @@ void bundle_lowprioirity(bundle_t *bundle)
     if(flags&FLAG_CHECKUPDATES&&!time_chkupdate&&canWrite(L"update"))
     {
         log_con("Event 1\n");
-        SetEvent(downloadmangar_event);
+        Updater.start_torrent();
     }
 #endif
     bundle->collection.save();
@@ -961,9 +918,9 @@ void gui(int nCmd)
         //if(MessageBox(0,STR(STR_UPD_DIALOG_MSG),STR(STR_UPD_DIALOG_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
         {
             flags|=FLAG_CHECKUPDATES;
-            checkupdates();
+            Updater.checkupdates();
 #ifdef USE_TORRENT
-            if(canWrite(L"update"))SetEvent(downloadmangar_event);
+            if(canWrite(L"update"))Updater.start_torrent();
 #endif
         }
     }

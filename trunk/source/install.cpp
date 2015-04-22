@@ -287,29 +287,29 @@ unsigned int __stdcall thread_install(void *arg)
     for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
         if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
     {
-        if(!istorrentready())
+        if(!Updater.istorrentready())
         {
             log_con("Waiting for torrent");
             for(j=0;j<100;j++)
             {
                 log_con("*");
-                if(istorrentready())
+                if(Updater.istorrentready())
                 {
                     log_con("DONE\n");
                     break;
                 }
                 Sleep(100);
             }
-            if(!istorrentready())break;
+            if(!Updater.istorrentready())break;
         }
         UpdateDialog.upddlg_setpriorities_driverpack(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)
     {
-        update_resume();
+        Updater.update_resume();
         log_con("{{{{{{{{\n");
-        while(installmode&&!finishedupdating)
+        while(installmode&&!Updater.isReady())
         {
             Sleep(500);
         }
