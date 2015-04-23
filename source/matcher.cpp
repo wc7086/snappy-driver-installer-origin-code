@@ -343,8 +343,11 @@ int cmpversion(version_t *t1,version_t *t2)
 //}
 
 //{ Matcher
-void Matcher::findHWIDs(Devicematch *devicematch,char *hwid,int dev_pos,int ishw)
+void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int ishw)
 {
+    char hwid[BUFLEN];
+    wsprintfA(hwid,"%ws",hwidv);
+
     int sz=strlen(hwid);
     strtoupper(hwid,sz);
     int code=hash_getcode(hwid,sz);
@@ -402,9 +405,6 @@ void Matcher::sort()
 
 void Matcher::populate()
 {
-    Devicematch *devicematch;
-    char buf[BUFLEN];
-
     time_matcher=GetTickCount();
     devicematch_list.clear();
     hwidmatch_list.clear();
@@ -416,15 +416,14 @@ void Matcher::populate()
     {
         Driver *cur_driver=(cur_device.driver_index>=0)?&state->Drivers_list[cur_device.driver_index]:nullptr;
         devicematch_list.push_back(Devicematch(&cur_device,cur_driver,hwidmatch_list.size()));
-        devicematch=&devicematch_list.back();
+        Devicematch *devicematch=&devicematch_list.back();
         if(cur_device.HardwareID)
         {
             wchar_t *p=state->textas.getw(cur_device.HardwareID);
             int dev_pos=0;
             while(*p)
             {
-                wsprintfA(buf,"%ws",p);
-                findHWIDs(devicematch,buf,dev_pos,1);
+                findHWIDs(devicematch,p,dev_pos,1);
                 p+=lstrlen(p)+1;
                 dev_pos++;
             }
@@ -436,8 +435,7 @@ void Matcher::populate()
             int dev_pos=0;
             while(*p)
             {
-                wsprintfA(buf,"%ws",p);
-                findHWIDs(devicematch,buf,dev_pos,0);
+                findHWIDs(devicematch,p,dev_pos,0);
                 p+=lstrlen(p)+1;
                 dev_pos++;
             }

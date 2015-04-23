@@ -47,7 +47,7 @@ const wchar_t *olddrps[]=
 };
 //}
 
-//{ Parse
+//{ Parser
 void Parser_str::parseWhitespace(bool eatnewline=false)
 {
     while(blockBeg<blockEnd)
@@ -243,15 +243,9 @@ void Parser_str::readVersion(version_t *t)
     t->v4=readNumber();
 }
 
-/*void Parser_str::init(Driverpack *drp)
-{
-    pack=drp;
-}*/
-
 Parser_str::Parser_str(sect_data_t *lnk,Driverpack *drpv)
 {
     blockBeg=lnk->blockbeg;
-    //blockEnd=lnk->base+lnk->len;
     blockEnd=lnk->blockend;
     pack=drpv;
 }
@@ -337,39 +331,6 @@ void Parser_str::str_sub()
     strBeg=p_s;
     strEnd=p_s+strlen(p_s);
 }
-//}
-
-//{ Misc
-int unicode2ansi(char *s,char *out,int size)
-{
-    int ret,flag;
-    size/=2;
-    /*if(!out)log_err("Error out:\n");
-    if(!s)log_err("Error in:\n");
-    if(size<0)log_err("Error size:\n");*/
-    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,nullptr,&flag);
-    if(!ret)print_error(GetLastError(),L"unicode2ansi()");
-    out[size]=0;
-    return ret;
-}
-
-int encode(char *dest,int dest_sz,char *src,int src_sz)
-{
-    Lzma86_Encode((Byte *)dest,(SizeT *)&dest_sz,(const Byte *)src,src_sz,0,1<<23,SZ_FILTER_AUTO);
-    return dest_sz;
-}
-
-int decode(char *dest,int dest_sz,char *src,int src_sz)
-{
-    Lzma86_Decode((Byte *)dest,(SizeT *)&dest_sz,(const Byte *)src,(SizeT *)&src_sz);
-    return dest_sz;
-}
-
-wchar_t *finddrp(wchar_t *s)
-{
-    return manager_g->matcher->col->finddrp(s);
-}
-
 //}
 
 //{ Collection
@@ -599,6 +560,7 @@ void Collection::load()
     }
     free(inflist);
 //}thread
+    driverpack_list.shrink_to_fit();// TODO
 }
 
 void Collection::print()
