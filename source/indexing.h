@@ -42,8 +42,7 @@ enum
 };
 
 //{ Misc
-#define LSTCNT 1000
-typedef struct _inflist_t
+struct obj
 {
     Driverpack *drp;
     wchar_t pathinf[BUFLEN];
@@ -51,10 +50,8 @@ typedef struct _inflist_t
     char *adr;
     int len;
 
-    HANDLE dataready;
-    HANDLE slotvacant;
     int type;
-}inflist_t;
+};
 
 class sect_data_t
 {
@@ -182,12 +179,12 @@ public:
 
     std::vector<Driverpack> driverpack_list;
 
-    inflist_t *inflist;
-    int pos_in,pos_out;
+    //inflist_t *inflist;
+    //int pos_in,pos_out;
 
 public:
     friend unsigned int __stdcall thread_indexinf(void *arg);
-    friend void driverpack_indexinf_async(Driverpack *drp,Collection *colv,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
     wchar_t *getDriverpack_dir()const{return driverpack_dir;}
     const wchar_t *getIndex_bin_dir()const{return index_bin_dir;}
@@ -196,7 +193,7 @@ public:
     void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
     void release();
     void save();
-    void updatedindexes();
+    void loadOnlineIndexes();
     void load();
     void print();
     wchar_t *finddrp(wchar_t *s);
@@ -239,6 +236,6 @@ public:
 };
 
 // Misc
-void driverpack_indexinf_async(Driverpack *drp,Collection *colv,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 unsigned int __stdcall thread_indexinf(void *arg);
 void findosattr(char *bufa,char *adr,int len);

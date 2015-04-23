@@ -148,6 +148,7 @@ public:
     void str_status(wchar_t *buf);
 };
 void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
+void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1);
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
 class Manager

@@ -617,6 +617,19 @@ void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent)
     redrawfield();
 }
 
+void itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v)
+{
+    itembar_t *itembar=&manager_g->items_list[i];
+    if(txt1)wcscpy(itembar->txt1,txt1);
+    itembar->val1=val1v;
+    itembar->val2=val2v;
+    if(!val2v)val2v++;
+    itembar->percent=val1v*1000/val2v;
+    itembar->isactive=act;
+    manager_g->setpos();
+    redrawfield();
+}
+
 void itembar_t::itembar_setpos(int *pos,int *cnt)
 {
     if(isactive)
