@@ -94,6 +94,38 @@ extern "C"
 #define VER_STATE           0x102
 #define VER_INDEX           0x204
 
+// Global flags
+enum FLAG
+{
+    COLLECTION_FORCE_REINDEXING = 0x00000001,
+    COLLECTION_USE_LZMA         = 0x00000002,
+    COLLECTION_PRINT_INDEX      = 0x00000004,
+    FLAG_NOGUI                  = 0x00000010,
+    FLAG_CHECKUPDATES           = 0x00000020,
+    FLAG_DISABLEINSTALL         = 0x00000040,
+    FLAG_AUTOINSTALL            = 0x00000080,
+    FLAG_FAILSAFE               = 0x00000100,
+    FLAG_AUTOCLOSE              = 0x00000200,
+    FLAG_NORESTOREPOINT         = 0x00000400,
+    FLAG_NOLOGFILE              = 0x00000800,
+    FLAG_NOSNAPSHOT             = 0x00001000,
+    FLAG_NOSTAMP                = 0x00002000,
+    FLAG_NOVIRUSALERTS          = 0x00004000,
+    FLAG_PRESERVECFG            = 0x00008000,
+    FLAG_EXTRACTONLY            = 0x00010000,
+    FLAG_KEEPUNPACKINDEX        = 0x00020000,
+    FLAG_KEEPTEMPFILES          = 0x00040000,
+    FLAG_SHOWDRPNAMES1          = 0x00080000,
+    FLAG_DPINSTMODE             = 0x00100000,
+    FLAG_SHOWCONSOLE            = 0x00200000,
+    FLAG_DELEXTRAINFS           = 0x00400000,
+    FLAG_SHOWDRPNAMES2          = 0x00800000,
+    FLAG_ONLYUPDATES            = 0x01000000,
+    FLAG_AUTOUPDATE             = 0x02000000,
+    FLAG_FILTERSP               = 0x04000000,
+    FLAG_OLDSTYLE               = 0x08000000,
+};
+
 // Mode
 enum STATEMODE
 {

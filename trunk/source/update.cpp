@@ -439,7 +439,7 @@ int UpdateDialog_t::populate(int update)
 
     // Add the app to the list
     lvI.lParam    =-2;
-    newver=300;
+    //newver=300;
     int row=0;
     if(newver>SVN_REV)ret+=newver<<8;
     if(newver>SVN_REV&&hListg)
