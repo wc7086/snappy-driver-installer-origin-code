@@ -23,6 +23,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 int drp_count;
 int drp_cur;
 int loaded_unpacked=0;
+
 const tbl_t table_version[NUM_VER_NAMES]=
 {
     {"classguid",                  9},
@@ -48,7 +49,7 @@ const wchar_t *olddrps[]=
 //}
 
 //{ Parser
-void Parser_str::parseWhitespace(bool eatnewline=false)
+void Parser::parseWhitespace(bool eatnewline=false)
 {
     while(blockBeg<blockEnd)
     {
@@ -80,21 +81,82 @@ void Parser_str::parseWhitespace(bool eatnewline=false)
     }
 }
 
-void Parser_str::trimtoken()
+void Parser::trimtoken()
 {
     while(strEnd>strBeg&&(strEnd[-1]==32||strEnd[-1]=='\t')&&strEnd[-1]!='\"')strEnd--;
     if(*strBeg=='\"')strBeg++;
     if(*(strEnd-1)=='\"')strEnd--;
 }
 
-int Parser_str::parseItem()
+void Parser::subStr()
+{
+    if(!pack)return;
+
+    // Fast string substitution
+    char *v1b=strBeg;
+    if(*v1b=='%')
+    {
+        v1b++;
+        int vers_len=strEnd-v1b-1;
+        if(strEnd[-1]!='%')vers_len++;
+        if(vers_len<0)vers_len=0;
+
+        strtolower(v1b,vers_len);
+        auto rr=pack->string_list.find(std::string(v1b,vers_len));
+        if(rr!=pack->string_list.end())
+        {
+            strBeg=const_cast<char *>(rr->second.c_str());
+            strEnd=strBeg+strlen(strBeg);
+            return;
+        }
+    }
+
+    // Advanced string substitution
+    char static_buf[BUFLEN];
+    char *p_s=static_buf;
+    int flag=0;
+    v1b=strBeg;
+    while(v1b<strEnd)
+    {
+        while(*v1b!='%'&&v1b<strEnd)*p_s++=*v1b++;
+        if(*v1b=='%')
+        {
+            char *p=v1b+1;
+            while(*p!='%'&&p<strEnd)p++;
+            if(*p=='%')
+            {
+                strtolower(v1b+1,p-v1b-1);
+                auto rr=pack->string_list.find(std::string(v1b+1,p-v1b-1));
+                if(rr!=pack->string_list.end())
+                {
+                    char *res=const_cast<char *>(rr->second.c_str());
+                    strcpy(p_s,res);
+                    p_s+=strlen(res);
+                    v1b=p+1;
+                    flag=1;
+                }
+#ifdef DEBUG_EXTRACHECKS
+                else log_con("String '%s' not found in %S(%S)\n",std::string(v1b+1,p-v1b-1).c_str(),pack->getFilename(),inffile);
+#endif
+            }
+            if(v1b<strEnd)*p_s++=*v1b++;
+        }
+    }
+    if(!flag)return;
+
+    *p_s=0;
+    strBeg=textholder.get(textholder.strcpy(static_buf));
+    strEnd=strBeg+strlen(strBeg);
+}
+
+int Parser::parseItem()
 {
     parseWhitespace(true);
     strBeg=blockBeg;
 
     char *p=blockBeg;
 
-    while(p<blockEnd)
+    while(p<blockEnd-1)
     {
         switch(*p)
         {
@@ -102,15 +164,15 @@ int Parser_str::parseItem()
                 blockBeg=p;
                 strEnd=p;
                 trimtoken();
-                str_sub();
+                subStr();
                 return 1;
 
             case '\n':case '\r':    // No item found
-                p++;
-                blockBeg=p;
+                blockBeg=p++;
+                parseWhitespace(true);
                 strBeg=blockBeg;
 #ifdef DEBUG_EXTRACHECKS
-                log_file("ERR1 '%.*s'\n",30,s1b);
+                log_con("ERROR: no item '%s' found in %S(%S){%s}\n\n",std::string(blockBeg,30).c_str(),pack->getFilename(),inffile,std::string(blockEnd,30).c_str());
 #endif
                 break;
             default:
@@ -122,7 +184,7 @@ int Parser_str::parseItem()
     return 0;
 }
 
-int Parser_str::parseField()
+int Parser::parseField()
 {
     if(blockBeg[0]!='='&&blockBeg[0]!=',')return 0;
     blockBeg++;
@@ -149,7 +211,7 @@ int Parser_str::parseField()
                 case '\"':          // "str"
                     strEnd=p;
                     blockBeg=strEnd+1;
-                    str_sub();
+                    subStr();
                     return 1;
 
                 default:
@@ -169,7 +231,7 @@ int Parser_str::parseField()
                     strEnd=p;
                     blockBeg=p;
                     trimtoken();
-                    str_sub();
+                    subStr();
                     return strEnd!=strBeg||*p==',';
 
                 default:
@@ -180,7 +242,7 @@ int Parser_str::parseField()
     return 0;
 }
 
-int Parser_str::readNumber()
+int Parser::readNumber()
 {
     int n=atoi(strBeg);
 
@@ -189,7 +251,7 @@ int Parser_str::readNumber()
     return n;
 }
 
-int Parser_str::readHex()
+int Parser::readHex()
 {
     int val=0;
 
@@ -206,7 +268,7 @@ int Parser_str::readHex()
     return val;
 }
 
-int Parser_str::readDate(version_t *t)
+int Parser::readDate(version_t *t)
 {
     int flag=0;
 
@@ -235,7 +297,7 @@ int Parser_str::readDate(version_t *t)
     return flag;
 }
 
-void Parser_str::readVersion(version_t *t)
+void Parser::readVersion(version_t *t)
 {
     t->v1=readNumber();
     t->v2=readNumber();
@@ -243,101 +305,31 @@ void Parser_str::readVersion(version_t *t)
     t->v4=readNumber();
 }
 
-Parser_str::Parser_str(sect_data_t *lnk,Driverpack *drpv)
-{
-    blockBeg=lnk->blockbeg;
-    blockEnd=lnk->blockend;
-    pack=drpv;
-}
-
-Parser_str::Parser_str(char *vb,char *ve)
-{
-    strBeg=vb;
-    strEnd=ve;
-    pack=nullptr;
-}
-
-void Parser_str::readStr(char **vb,char **ve)
+void Parser::readStr(char **vb,char **ve)
 {
     *vb=strBeg;
     *ve=strEnd;
 }
 
-void Parser_str::str_sub()
+Parser::Parser(sect_data_t *lnk,Driverpack *drpv,const wchar_t *inf)
 {
-    char static_buf[BUFLEN];
-    int vers_len;
-    char *v1b;
-    char *res;
+    blockBeg=lnk->blockbeg;
+    blockEnd=lnk->blockend;
+    pack=drpv;
+    inffile=inf;
+}
 
-    v1b=strBeg;
-
-    if(!pack)return;
-    if(*v1b=='%'/*&&strEnd[-1]=='%'*/)
-    {
-        //log_file("String '%.*s' %c\n",strEnd-v1b,v1b,strEnd[-1]);
-        v1b++;
-        vers_len=strEnd-v1b-1;
-        if(strEnd[-1]!='%')vers_len++;
-        if(vers_len<0)vers_len=0;
-
-        strtolower(v1b,vers_len);
-        auto rr=pack->string_list.find(std::string(v1b,vers_len));
-        if(rr!=pack->string_list.end())
-        {
-            strBeg=const_cast<char *>(rr->second.c_str());
-            strEnd=strBeg+strlen(strBeg);
-            return;
-        }else
-        {
-            //if(memcmp(v1b,"system",5))
-            //log_file("ERROR: string '%.*s' not found\n",vers_len+2,v1b-1);
-            //return;
-        }
-    }
-
-    char *p,*p_s=static_buf;
-    v1b=strBeg;
-    int flag=0;
-    while(v1b<strEnd)
-    {
-        while(*v1b!='%'&&v1b<strEnd)*p_s++=*v1b++;
-        if(*v1b=='%')
-        {
-            //log_file("Deep replace %.*s\n",strEnd-v1b,v1b);
-            p=v1b+1;
-            while(*p!='%'&&p<strEnd)p++;
-            if(*p=='%')
-            {
-                strtolower(v1b+1,p-v1b-1);
-                auto rr=pack->string_list.find(std::string(v1b+1,p-v1b-1));
-                if(rr!=pack->string_list.end())
-                {
-                    res=const_cast<char *>(rr->second.c_str());
-                    strcpy(p_s,res);
-                    p_s+=strlen(res);
-                    v1b=p+1;
-                    flag=1;
-                }
-            }
-            if(v1b<strEnd)*p_s++=*v1b++;
-        }
-    }
-    if(!flag)return;
-
-    *p_s++=0;*p_s=0;
-    p_s=textholder.get(textholder.strcpy(static_buf));
-
-    strBeg=p_s;
-    strEnd=p_s+strlen(p_s);
+Parser::Parser(char *vb,char *ve)
+{
+    strBeg=vb;
+    strEnd=ve;
+    pack=nullptr;
 }
 //}
 
 //{ Collection
-void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv,int flags_l)
+void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv)
 {
-    flags=flags_l;
-
     driverpack_dir=driverpacks_dirv;
     index_bin_dir=index_bin_dirv;
     index_linear_dir=index_linear_dirv;
@@ -350,88 +342,77 @@ void Collection::release()
 
 void Collection::save()
 {
-    HANDLE hFind;
-    WIN32_FIND_DATA FindFileData;
-    wchar_t buf1[BUFLEN];
-    wchar_t buf2[BUFLEN];
-    wchar_t buf3[BUFLEN];
     unsigned i;
 
     time_indexsave=GetTickCount();
 
-#ifndef CONSOLE_MODE
-    // Save indexes
-    if(*drpext_dir==0)
-    {
-        int count=0,cur=1;
-
-        for(i=0;i<driverpack_list.size();i++)
-            if(driverpack_list[i].type==DRIVERPACK_TYPE_PENDING_SAVE)count++;
-
-        log_con("Saving indexes...");
-        for(i=0;i<driverpack_list.size();i++)
-        {
-            if((flags&FLAG_KEEPUNPACKINDEX)==0&&!i)
-            {
-                cur++;
-                continue;
-            }
-            if(driverpack_list[i].type==DRIVERPACK_TYPE_PENDING_SAVE)
-            {
-                //if(flags&COLLECTION_USE_LZMA)
-                {
-                    wchar_t bufw2[BUFLEN];
-
-                    wsprintf(bufw2,L"%ws\\%ws",
-                        driverpack_list[i].getPath(),
-                        driverpack_list[i].getFilename());
-
-                    log_con("Saving indexes for '%S'\n",bufw2);
-                    manager_g->items_list[SLOT_INDEXING].isactive=2;
-                    manager_g->items_list[SLOT_INDEXING].val1=cur-1;
-                    manager_g->items_list[SLOT_INDEXING].val2=count-1;
-                    wcscpy(manager_g->items_list[SLOT_INDEXING].txt1,bufw2);
-                    manager_g->items_list[SLOT_INDEXING].percent=(cur)*1000/count;
-                    manager_g->setpos();
-                    redrawfield();
-                    cur++;
-                }
-
-                driverpack_list[i].saveindex();
-            }
-        }
-        manager_g->items_list[SLOT_INDEXING].isactive=0;
-        manager_g->setpos();
-        log_con("DONE\n");
-    }
-
-    // Delete unused indexes
+#ifdef CONSOLE_MODE
+    return;
+#endif
     if(*drpext_dir)return;
     if(!canWrite(index_bin_dir))
     {
         log_err("ERROR in collection_save(): Write-protected,'%S'\n",index_bin_dir);
         return;
     }
-    wsprintf(buf1,L"%ws\\*.*",index_bin_dir);
-    hFind=FindFirstFile(buf1,&FindFileData);
+
+    // Save indexes
+    int count=0,cur=1;
+    if((flags&FLAG_KEEPUNPACKINDEX)==0)
+        driverpack_list[0].type=DRIVERPACK_TYPE_INDEXED;
+    for(auto &driverpack:driverpack_list)
+        if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)count++;
+
+    log_con("Saving indexes...\n");
+    for(auto &driverpack:driverpack_list)
+    if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)
+    {
+        if(flags&COLLECTION_USE_LZMA)
+        {
+            wchar_t bufw2[BUFLEN];
+
+            wsprintf(bufw2,L"%ws\\%ws",driverpack.getPath(),driverpack.getFilename());
+            log_con("Saving indexes for '%S'\n",bufw2);
+            manager_g->items_list[SLOT_INDEXING].isactive=2;
+            manager_g->items_list[SLOT_INDEXING].val1=cur;
+            manager_g->items_list[SLOT_INDEXING].val2=count;
+            log_con("%d/%d\n",cur,count);
+            wcscpy(manager_g->items_list[SLOT_INDEXING].txt1,bufw2);
+            manager_g->items_list[SLOT_INDEXING].percent=(cur)*1000/count;
+            manager_g->setpos();
+            redrawfield();
+            cur++;
+        }
+        driverpack.saveindex();
+    }
+    manager_g->items_list[SLOT_INDEXING].isactive=0;
+    manager_g->setpos();
+    log_con("DONE\n");
+
+    // Delete unused indexes
+    WIN32_FIND_DATA FindFileData;
+    wchar_t filename[BUFLEN];
+    wchar_t buf[BUFLEN];
+    wsprintf(buf,L"%ws\\*.*",index_bin_dir);
+    HANDLE hFind=FindFirstFile(buf,&FindFileData);
     while(FindNextFile(hFind,&FindFileData)!=0)
     {
         if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
         {
-            wsprintf(buf3,L"%s\\%s",index_bin_dir,FindFileData.cFileName);
+            if(StrStrIW(FindFileData.cFileName,L"\\_"))continue;
+            wsprintf(filename,L"%s\\%s",index_bin_dir,FindFileData.cFileName);
             for(i=flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
             {
-                driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf2);
-                if(!wcscmp(buf2,buf3))break;
+                driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf);
+                if(!wcscmp(buf,filename))break;
             }
-            if(i==driverpack_list.size()&&!StrStrIW(buf3,L"\\_"))
+            if(i==driverpack_list.size())
             {
-                log_con("Deleting %S\n",buf3);
-                _wremove(buf3);
+                log_con("Deleting %S\n",filename);
+                _wremove(filename);
             }
         }
     }
-#endif
     time_indexsave=GetTickCount()-time_indexsave;
 }
 
@@ -760,7 +741,7 @@ void Driverpack::saveindex()
             indexes.items_handle.used,
             sz);*/
 
-    if(col->getFlags()&COLLECTION_USE_LZMA)
+    if(flags&COLLECTION_USE_LZMA)
     {
         mem_pack=(char *)malloc(sz);
         sz=encode(mem_pack,sz,mem,sz);
@@ -827,7 +808,7 @@ int Driverpack::loadindex()
     p=mem=(char *)malloc(sz);
     fread(mem,sz,1,f);
 
-    if(col->getFlags()&COLLECTION_USE_LZMA)
+    if(flags&COLLECTION_USE_LZMA)
     {
         UInt64 sz_unpack;
 
@@ -847,6 +828,7 @@ int Driverpack::loadindex()
     free(mem);
     if(mem_unpack)free(mem_unpack);
     fclose(f);
+    texta.shrink();
 
     type=StrStrIW(filename,L"\\_")?DRIVERPACK_TYPE_UPDATE:DRIVERPACK_TYPE_INDEXED;
     return 1;
@@ -1487,6 +1469,10 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     cur_inffile->infsize=inf_len;
     cur_inffile->infcrc=0;
 
+    wchar_t inffull[BUFLEN];
+    wcscpy(inffull,drpdir);
+    wcscat(inffull,inffilename);
+
     //log_con("%S%S\n",drpdir,inffilename);
 
     // Populate sections
@@ -1555,7 +1541,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         sect_data_t *lnk=&got->second;
         char *s1b,*s1e,*s2b,*s2e;
 
-        Parser_str parse_info{lnk,this};
+        Parser parse_info{lnk,this,inffull};
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
@@ -1581,7 +1567,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         sect_data_t *lnk=&got->second;
         char *s1b,*s1e;
 
-        Parser_str parse_info{lnk,this};
+        Parser parse_info{lnk,this,inffull};
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
@@ -1635,7 +1621,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
-        Parser_str parse_info{lnk,this};
+        Parser parse_info{lnk,this,inffull};
         while(parse_info.parseItem())
         {
             char *s1b,*s1e;
@@ -1669,7 +1655,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     for(auto got2=range2.first;got2!=range2.second;++got2)
                     {
                         sect_data_t *lnk2=&got2->second;
-                        Parser_str parse_info2{lnk2,this};
+                        Parser parse_info2{lnk2,this,inffull};
                         while(parse_info2.parseItem())
                         {
                             parse_info2.readStr(&s1b,&s1e);
@@ -1765,7 +1751,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             for(auto got3=range3.first;got3!=range3.second;++got3)
                             {
                                 lnk3=&got3->second;
-                                Parser_str parse_info3{lnk3,this};
+                                Parser parse_info3{lnk3,this,inffull};
                                 if(!strcmp(secttry,installsection))
                                 {
                                     log_index("ERROR: [%s] refers to itself in %S%S\n",installsection,drpdir,inffilename);

@@ -585,7 +585,7 @@ bundle_t::~bundle_t(){}
 void bundle_init(bundle_t *bundle)
 {
     bundle->state.init();
-    bundle->collection.init(drp_dir,index_dir,output_dir,flags);
+    bundle->collection.init(drp_dir,index_dir,output_dir);
     bundle->matcher.init(&bundle->state,&bundle->collection);
 }
 

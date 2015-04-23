@@ -431,14 +431,14 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
     if(DriverDate)
     {
         wsprintfA(bufa,"%ws",state->textas.get(DriverDate));
-        Parser_str pi{bufa,bufa+strlen(bufa)};
+        Parser pi{bufa,bufa+strlen(bufa)};
         pi.readDate(&version);
     }
 
     if(DriverVersion)
     {
         wsprintfA(bufa,"%ws",state->textas.get(DriverVersion));
-        Parser_str pi{bufa,bufa+strlen(bufa)};
+        Parser pi{bufa,bufa+strlen(bufa)};
         pi.readVersion(&version);
     }
 }
@@ -794,7 +794,7 @@ void State::scanDevices()
     Driverpack unpacked_drp{L"",L"windir.7z",&collection};
 
     time_devicescan=GetTickCount();
-    collection.init(textas.getw(windir),L"",L"",0);
+    collection.init(textas.getw(windir),L"",L"");
     Devices_list.clear();
     inf_list_new.clear();
 

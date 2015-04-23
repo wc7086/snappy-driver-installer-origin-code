@@ -18,37 +18,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 typedef int ofst;
 //#define MERGE_FINDER
 
-enum FLAG
-{
-    COLLECTION_FORCE_REINDEXING = 0x00000001,
-    COLLECTION_USE_LZMA         = 0x00000002,
-    COLLECTION_PRINT_INDEX      = 0x00000004,
-    FLAG_NOGUI                  = 0x00000010,
-    FLAG_CHECKUPDATES           = 0x00000020,
-    FLAG_DISABLEINSTALL         = 0x00000040,
-    FLAG_AUTOINSTALL            = 0x00000080,
-    FLAG_FAILSAFE               = 0x00000100,
-    FLAG_AUTOCLOSE              = 0x00000200,
-    FLAG_NORESTOREPOINT         = 0x00000400,
-    FLAG_NOLOGFILE              = 0x00000800,
-    FLAG_NOSNAPSHOT             = 0x00001000,
-    FLAG_NOSTAMP                = 0x00002000,
-    FLAG_NOVIRUSALERTS          = 0x00004000,
-    FLAG_PRESERVECFG            = 0x00008000,
-    FLAG_EXTRACTONLY            = 0x00010000,
-    FLAG_KEEPUNPACKINDEX        = 0x00020000,
-    FLAG_KEEPTEMPFILES          = 0x00040000,
-    FLAG_SHOWDRPNAMES1          = 0x00080000,
-    FLAG_DPINSTMODE             = 0x00100000,
-    FLAG_SHOWCONSOLE            = 0x00200000,
-    FLAG_DELEXTRAINFS           = 0x00400000,
-    FLAG_SHOWDRPNAMES2          = 0x00800000,
-    FLAG_ONLYUPDATES            = 0x01000000,
-    FLAG_AUTOUPDATE             = 0x02000000,
-    FLAG_FILTERSP               = 0x04000000,
-    FLAG_OLDSTYLE               = 0x08000000,
-};
-
 class Collection;
 class Driverpack;
 class data_manufacturer_t;
@@ -209,7 +178,7 @@ public:
     wchar_t *driverpack_dir;
     const wchar_t *index_bin_dir;
     const wchar_t *index_linear_dir;
-    int flags;
+    //int flags;
 
     std::vector<Driverpack> driverpack_list;
 
@@ -223,9 +192,8 @@ public:
     wchar_t *getDriverpack_dir()const{return driverpack_dir;}
     const wchar_t *getIndex_bin_dir()const{return index_bin_dir;}
     const wchar_t *getIndex_linear_dir()const{return index_linear_dir;}
-    int getFlags()const{return flags;}
 
-    void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir,int flags);
+    void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
     void release();
     void save();
     void updatedindexes();
@@ -237,10 +205,12 @@ public:
     int  scanfolder_count(const wchar_t *path);
 };
 
-class Parser_str
+// Parser
+class Parser
 {
 private:
     Driverpack *pack;
+    const wchar_t *inffile;
     Txt textholder;
 
     char *blockBeg;
@@ -248,9 +218,9 @@ private:
     char *strBeg;
     char *strEnd;
 
-    void str_sub();
-    void trimtoken();
     void parseWhitespace(bool eatnewline);
+    void trimtoken();
+    void subStr();
 
 public:
     int  parseItem();
@@ -262,10 +232,10 @@ public:
     void readVersion(version_t *t);
     void readStr(char **vb,char **ve);
 
-    Parser_str(const Parser_str&)=delete;
-    Parser_str &operator=(const Parser_str&)=delete;
-    Parser_str(sect_data_t *lnk,Driverpack *drp);
-    Parser_str(char *vb,char *ve);
+    Parser(const Parser&)=delete;
+    Parser &operator=(const Parser&)=delete;
+    Parser(sect_data_t *lnk,Driverpack *drp,const wchar_t *inf);
+    Parser(char *vb,char *ve);
 };
 
 // Misc
