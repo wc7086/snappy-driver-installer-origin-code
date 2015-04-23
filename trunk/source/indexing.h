@@ -269,13 +269,6 @@ public:
 };
 
 // Misc
-int  unicode2ansi(char *s,char *out,int size);
-int  encode(char *dest,int dest_sz,char *src,int src_sz);
-int  decode(char *dest,int dest_sz,char *src,int src_sz);
-int  checkfolders(wchar_t *folder1,wchar_t *folder2,hashtable_t *filename2path,hashtable_t *path2filename,int sub);
-void hash_clearfiles(hashtable_t *t);
-wchar_t *finddrp(wchar_t *s);
-void findosattr(char *bufa,char *adr,int len);
-
 void driverpack_indexinf_async(Driverpack *drp,Collection *colv,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 unsigned int __stdcall thread_indexinf(void *arg);
+void findosattr(char *bufa,char *adr,int len);

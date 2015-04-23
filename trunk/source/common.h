@@ -110,8 +110,12 @@ void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
 int _wtoi_my(const wchar_t *str);
+int  unicode2ansi(char *s,char *out,int size);
 
 // 7-zip
+int  encode(char *dest,int dest_sz,char *src,int src_sz);
+int  decode(char *dest,int dest_sz,char *src,int src_sz);
+
 namespace NArchive
 {
     namespace N7z

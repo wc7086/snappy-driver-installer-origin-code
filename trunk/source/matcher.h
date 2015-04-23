@@ -72,7 +72,7 @@ public:
     std::vector<Hwidmatch> hwidmatch_list;
 
 private:
-    void findHWIDs(Devicematch *device_match,char *hwid,int dev_pos,int ishw);
+    void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
     void sort();
 
 public:

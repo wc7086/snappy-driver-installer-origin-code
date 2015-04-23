@@ -103,7 +103,7 @@ int UpdateDialog_t::getcurver(const char *ptr)
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=finddrp(bffw);
+            s=manager_g->matcher->col->finddrp(bffw);
             if(!s)return 0;
             while(*s)
             {
@@ -385,30 +385,27 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 
 int UpdateDialog_t::populate(int update)
 {
-    error_code ec;
-    file_entry fe;
-    LVITEM lvI;
-    int i,j;
-    int basesize=0,basedownloaded=0;
-    int indexsize=0,indexdownloaded=0;
-    const char *filename,*filenamefull;
     wchar_t buf[BUFLEN];
-    int newver=0;
     int ret=0;
-    int missingindexes=0;
 
+    // Read torrent info
     boost::intrusive_ptr<torrent_info const> ti;
     std::vector<size_type> file_progress;
     ti=hTorrent.torrent_file();
     numfiles=0;
     if(!ti)return 0;
     hTorrent.file_progress(file_progress);
-
     numfiles=ti->num_files();
-    for(i=0;i<numfiles;i++)
+
+    // Calculate size and progress for the app and indexes
+    int missingindexes=0;
+    int newver=0;
+    int basesize=0,basedownloaded=0;
+    int indexsize=0,indexdownloaded=0;
+    for(int i=0;i<numfiles;i++)
     {
-        fe=ti->file_at(i);
-        filenamefull=strchr(fe.path.c_str(),'\\')+1;
+        file_entry fe=ti->file_at(i);
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
 
         if(StrStrIA(filenamefull,"indexes\\"))
         {
@@ -418,10 +415,7 @@ int UpdateDialog_t::populate(int update)
             *wcsstr(buf,L"DP_")=L'_';
             strsub(buf,L"indexes\\SDI",index_dir);
             if(!PathFileExists(buf))
-            {
-                //log_con("Missing index: '%S'\n",buf);
                 missingindexes=1;
-            }
         }
         else if(!StrStrIA(filenamefull,"drivers\\"))
         {
@@ -432,52 +426,58 @@ int UpdateDialog_t::populate(int update)
         }
     }
 
+    // Disable redrawing of the list
     if(hListg)SendMessage(hListg,WM_SETREDRAW,0,0);
 
+    // Setup LVITEM
+    LVITEM lvI;
     lvI.mask      =LVIF_TEXT|LVIF_STATE|LVIF_PARAM;
     lvI.stateMask =0;
     lvI.iSubItem  =0;
     lvI.state     =0;
     lvI.iItem     =0;
+
+    // Add the app to the list
     lvI.lParam    =-2;
     newver=300;
-    i=0;
+    int row=0;
     if(newver>SVN_REV)ret+=newver<<8;
     if(newver>SVN_REV&&hListg)
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
-        if(!update)i=ListView_InsertItem(hListg,&lvI);
+        if(!update)row=ListView_InsertItem(hListg,&lvI);
         wsprintf(buf,L"%d %s",basesize/1024/1024,STR(STR_UPD_MB));
-        ListView_SetItemTextUpdate(hListg,i,1,buf);
+        ListView_SetItemTextUpdate(hListg,row,1,buf);
         wsprintf(buf,L"%d%%",basedownloaded*100/basesize);
-        ListView_SetItemTextUpdate(hListg,i,2,buf);
+        ListView_SetItemTextUpdate(hListg,row,2,buf);
         wsprintf(buf,L" SDI_R%d",newver);
-        ListView_SetItemTextUpdate(hListg,i,3,buf);
+        ListView_SetItemTextUpdate(hListg,row,3,buf);
         wsprintf(buf,L" SDI_R%d",SVN_REV);
-        ListView_SetItemTextUpdate(hListg,i,4,buf);
-        ListView_SetItemTextUpdate(hListg,i,5,STR(STR_UPD_YES));
-        i++;
+        ListView_SetItemTextUpdate(hListg,row,4,buf);
+        ListView_SetItemTextUpdate(hListg,row,5,STR(STR_UPD_YES));
+        row++;
     }
 
+    // Add indexes to the list
     lvI.lParam    =-1;
     if(missingindexes&&hListg)
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_INDEXES));
-        if(!update)i=ListView_InsertItem(hListg,&lvI);
+        if(!update)row=ListView_InsertItem(hListg,&lvI);
         wsprintf(buf,L"%d %s",indexsize/1024/1024,STR(STR_UPD_MB));
-        ListView_SetItemTextUpdate(hListg,i,1,buf);
+        ListView_SetItemTextUpdate(hListg,row,1,buf);
         wsprintf(buf,L"%d%%",indexdownloaded*100/indexsize);
-        ListView_SetItemTextUpdate(hListg,i,2,buf);
-        ListView_SetItemTextUpdate(hListg,i,5,STR(STR_UPD_YES));
-        i++;
+        ListView_SetItemTextUpdate(hListg,row,2,buf);
+        ListView_SetItemTextUpdate(hListg,row,5,STR(STR_UPD_YES));
+        row++;
     }
 
-    j=i;
-    for(i=0;i<numfiles;i++)
+    // Add driverpacks to the list
+    for(int i=0;i<numfiles;i++)
     {
-        fe=ti->file_at(i);
-        filenamefull=strchr(fe.path.c_str(),'\\')+1;
-        filename=strchr(filenamefull,'\\')+1;
+        file_entry fe=ti->file_at(i);
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
+        const char *filename=strchr(filenamefull,'\\')+1;
         if(!filename)filename=filenamefull;
 
         if(StrStrIA(filenamefull,".7z"))
@@ -500,30 +500,32 @@ int UpdateDialog_t::populate(int update)
             if(newver>oldver&&hListg)
             {
                 lvI.lParam=i;
-                if(!update)j=ListView_InsertItem(hListg,&lvI);
+                if(!update)row=ListView_InsertItem(hListg,&lvI);
                 wsprintf(buf,L"%d %s",sz,STR(STR_UPD_MB));
-                ListView_SetItemTextUpdate(hListg,j,1,buf);
+                ListView_SetItemTextUpdate(hListg,row,1,buf);
                 wsprintf(buf,L"%d%%",file_progress[i]*100/ti->file_at(i).size);
-                ListView_SetItemTextUpdate(hListg,j,2,buf);
+                ListView_SetItemTextUpdate(hListg,row,2,buf);
                 wsprintf(buf,L"%d",newver);
-                ListView_SetItemTextUpdate(hListg,j,3,buf);
+                ListView_SetItemTextUpdate(hListg,row,3,buf);
                 wsprintf(buf,L"%d",oldver);
                 if(!oldver)wsprintf(buf,L"%ws",STR(STR_UPD_MISSING));
-                ListView_SetItemTextUpdate(hListg,j,4,buf);
+                ListView_SetItemTextUpdate(hListg,row,4,buf);
                 wsprintf(buf,L"%S",filename);
                 wsprintf(buf,L"%ws",STR(STR_UPD_YES+manager_drplive(buf)));
-                ListView_SetItemTextUpdate(hListg,j,5,buf);
-                j++;
+                ListView_SetItemTextUpdate(hListg,row,5,buf);
+                row++;
             }
         }
     }
+
+    // Enable redrawing of the list
     if(hListg)
     {
+        ListView_SortItems(hListg,CompareFunc,0);
         SendMessage(hListg,WM_SETREDRAW,1,0);
-        //InvalidateRect(hListg,0,0);
     }
+
     if(update)return ret;
-    ListView_SortItems(hListg,CompareFunc,0);
 
     manager_g->items_list[SLOT_DOWNLOAD].isactive=ret?1:0;
     if(ret)manager_g->items_list[SLOT_NODRIVERS].isactive=0;
@@ -620,7 +622,7 @@ void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=finddrp(bffw);
+            s=manager_g->matcher->col->finddrp(bffw);
             if(!s)return;
             wchar_t buf[BUFLEN];
             wsprintf(buf,L"%ws\\%s",drp_dir,s);
