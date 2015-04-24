@@ -453,6 +453,9 @@ void Matcher::populate()
         }
     }
     sort();
+    devicematch_list.shrink_to_fit();
+    hwidmatch_list.shrink_to_fit();
+
     time_matcher=GetTickCount()-time_matcher;
 }
 

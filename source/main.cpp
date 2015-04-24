@@ -18,7 +18,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global variables
-#define _wcsicmp StrCmpIW
 
 // Manager
 Manager manager_v[2];
@@ -27,11 +26,11 @@ int manager_active=0;
 int bundle_display=1;
 int bundle_shadow=0;
 int volatile installmode=MODE_NONE;
+int invaidate_set;
 CRITICAL_SECTION sync;
 
 // Window
 HINSTANCE ghInst;
-MSG msg;
 HFONT hFont=nullptr;
 Canvas *canvasMain;
 Canvas *canvasField;
@@ -52,7 +51,7 @@ int main1x_c,main1y_c;
 int mainx_c,mainy_c;
 int mainx_w,mainy_w;
 int mousex=-1,mousey=-1,mousedown=0,mouseclick=0;
-int cntd=0;
+//int cntd=0;
 int hideconsole=SW_HIDE;
 unsigned offset_target=0;
 
@@ -69,7 +68,7 @@ int scrollvisible=0;
 
 int ret_global=0;
 volatile int deviceupdate_exitflag=0;
-FILE *snplist=nullptr;
+//FILE *snplist=nullptr;
 HANDLE deviceupdate_event;
 
 // Settings
@@ -122,26 +121,26 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 //{ Main
 int main2(int argc, char* argv[]);
 
+void invaidate(int v)
+{
+    invaidate_set|=v;
+    SetEvent(deviceupdate_event);
+}
+
 void settings_parse(const wchar_t *str,int ind)
 {
-    wchar_t buf[BUFLEN];
-    wchar_t **argv,*pr;
-    int argc;
-    int i;
-
     log_con("Args:[%S]\n",str);
-    argv=CommandLineToArgvW(str,&argc);
-    for(i=ind;i<argc;i++)
+    int argc;
+    wchar_t **argv=CommandLineToArgvW(str,&argc);
+    for(int i=ind;i<argc;i++)
     {
-        pr=argv[i];
+        wchar_t *pr=argv[i];
         if (pr[0] == '/') pr[0]='-';
         if( wcsstr(pr,L"-drp_dir:"))     wcscpy(drp_dir,pr+9);else
         if( wcsstr(pr,L"-index_dir:"))   wcscpy(index_dir,pr+11);else
         if( wcsstr(pr,L"-output_dir:"))  wcscpy(output_dir,pr+12);else
         if( wcsstr(pr,L"-data_dir:"))    wcscpy(data_dir,pr+10);else
-        if( wcsstr(pr,L"-log_dir:"))     {wcscpy(logO_dir,pr+9);
-        ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
-        }else
+        if( wcsstr(pr,L"-log_dir:"))     {wcscpy(logO_dir,pr+9);ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);}else
         if( wcsstr(pr,L"-finish_cmd:"))  wcscpy(finish,pr+12);else
         if( wcsstr(pr,L"-finishrb_cmd:"))wcscpy(finish_rb,pr+14);else
         if( wcsstr(pr,L"-finish_upd_cmd:"))wcscpy(finish_upd,pr+16);else
@@ -185,6 +184,7 @@ void settings_parse(const wchar_t *str,int ind)
         else
         if(!wcscmp(pr,L"-install")&&argc-i==3)
         {
+            wchar_t buf[BUFLEN];
             log_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
             GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
             wsprintf(extractdir,L"%s\\SDI",buf);
@@ -216,17 +216,15 @@ void settings_parse(const wchar_t *str,int ind)
         if(!wcscmp(pr,L"-failsafe"))     flags|=FLAG_FAILSAFE;else
         if(!wcscmp(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
         if( wcsstr(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
-        if( wcsstr(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
+        //if( wcsstr(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
         if( wcsstr(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_EMUL;}else
         if(!wcscmp(pr,L"-a:32"))         virtual_arch_type=32;else
         if(!wcscmp(pr,L"-a:64"))         virtual_arch_type=64;else
         if( wcsstr(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
-        if(StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)
-            Parse_save_installed_id_swith(pr);else
-        if(wcsstr(pr,L"-?"))CLIParam.ShowHelp=TRUE;else
-        if(StrCmpIW(pr,HWIDINSTALLED_DEF)==0)
-            Parse_HWID_installed_swith(pr); else
-        if(StrCmpIW(pr,GFG_DEF)==0)  continue;
+        if(StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)Parse_save_installed_id_swith(pr);else
+        if( wcsstr(pr,L"-?"))            CLIParam.ShowHelp=TRUE;else
+        if(StrCmpIW(pr,HWIDINSTALLED_DEF)==0)Parse_HWID_installed_swith(pr); else
+        if(StrCmpIW(pr,GFG_DEF)==0)      continue;
         else
             log_err("Unknown argument '%S'\n",pr);
         if(statemode==STATEMODE_EXIT)break;
@@ -243,15 +241,13 @@ void settings_parse(const wchar_t *str,int ind)
 
 void settings_save()
 {
-    FILE *f;
-
     if(flags&FLAG_PRESERVECFG)return;
     if(!canWrite(L"sdi.cfg"))
     {
         log_err("ERROR in settings_save(): Write-protected,'sdi.cfg'\n");
         return;
     }
-    f=_wfopen(L"sdi.cfg",L"wt");
+    FILE *f=_wfopen(L"sdi.cfg",L"wt");
     if(!f)return;
     fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
               "\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
@@ -288,13 +284,6 @@ int  settings_load(const wchar_t *filename)
     return 1;
 }
 
-void SignalHandler(int signum)
-{
-    log_err("!!! Crashed %d!!!\n",signum);
-    log_save();
-    log_stop();
-}
-
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
@@ -308,22 +297,19 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 {
     UNREFERENCED_PARAMETER(hinst);
     UNREFERENCED_PARAMETER(pStr);
-
-    bundle_t bundle[2];
-    Filemon *mon_drp;
-    HANDLE thr;
-    HMODULE backtrace=nullptr;
-    DWORD dwProcessId;
-    time_startup=time_total=GetTickCount();
     ghInst=hInst;
 
+    time_startup=time_total=GetTickCount();
+
 // Hide the console window as soon as possible
+    DWORD dwProcessId;
     GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
     if(GetCurrentProcessId()!=dwProcessId)hideconsole=SW_SHOWNOACTIVATE;
     ShowWindow(GetConsoleWindow(),hideconsole);
 
 // Runtime error handlers
     start_exception_hadnlers();
+    HMODULE backtrace=nullptr;
     #ifdef _DEBUG
     backtrace=LoadLibraryA("backtrace.dll");
     #else
@@ -403,6 +389,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     vLang.load(0);
 
 // Allocate resources
+    bundle_t bundle[2];
     bundle_init(&bundle[0]);
     bundle_init(&bundle[1]);
     manager_v[0].init(&bundle[bundle_display].matcher);
@@ -411,7 +398,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 // Start device/driver scan
     bundle_prep(&bundle[bundle_display]);
-    thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
+    invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+    HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
 
 // Check updates
 #ifdef USE_TORRENT
@@ -419,12 +407,12 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 #endif
 
 // Start folder monitors
-    mon_drp=monitor_start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
+    Filemon *mon_drp=monitor_start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
     virusmonitor_start();
     viruscheck(L"",0,0);
 
 // MAIN GUI LOOP
-    if(!(flags&FLAG_NOGUI)||flags&FLAG_AUTOINSTALL)gui(nCmd);
+    gui(nCmd);
 
 // Wait till the device scan thread is finished
     deviceupdate_exitflag=1;
@@ -444,8 +432,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     int i;
     for(i=0;i<BOX_NUM;i++)box[i].release();
     for(i=0;i<ICON_NUM;i++)icon[i].release();
-    manager_v[0].release();
-    manager_v[1].release();
 
 // Save settings
     #ifndef CONSOLE_MODE
@@ -495,12 +481,9 @@ unsigned int __stdcall thread_loadindexes(void *arg)
     bundle_t *bundle=(bundle_t *)arg;
     Collection *collection=&bundle->collection;
 
-    //log_con("{thread_loadindexes\n");
     if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
     collection->driverpack_dir=*drpext_dir?drpext_dir:drp_dir;
-    //printf("'%S'\n",collection->driverpack_dir);
-    collection->load();
-    //log_con("}thread_loadindexes\n");
+    collection->populate();
     return 0;
 }
 
@@ -565,12 +548,12 @@ unsigned int __stdcall thread_loadall(void *arg)
         log_con("}2Sync\n");
         LeaveCriticalSection(&sync);
         WaitForSingleObject(deviceupdate_event,INFINITE);
-        if(snplist)
+/*        if(snplist)
         {
             fgetws(state_file,BUFLEN,snplist);
             log_con("SNP: '%S'\n",state_file);
             deviceupdate_exitflag=feof(snplist);
-        }
+        }*/
         //printf("%ld\n",GetTickCount()-t);
     }while(!deviceupdate_exitflag);
     DeleteCriticalSection(&sync);
@@ -871,7 +854,10 @@ void tabadvance(int v)
 
 void gui(int nCmd)
 {
+    if((flags&FLAG_NOGUI)||flags&FLAG_AUTOINSTALL)return;
+
     int done=0;
+
     WNDCLASSEX wcx;
     memset(&wcx,0,sizeof(WNDCLASSEX));
     wcx.cbSize=         sizeof(WNDCLASSEX);
@@ -947,6 +933,7 @@ void gui(int nCmd)
         {
             while(WAIT_IO_COMPLETION==MsgWaitForMultipleObjectsEx(0,nullptr,INFINITE,QS_ALLINPUT,MWMO_ALERTABLE));
 
+            MSG msg;
             while(PeekMessage(&msg,nullptr,0,0,PM_REMOVE))
             {
                 if(msg.message==WM_QUIT)
@@ -1127,7 +1114,7 @@ void snapshot()
     if(GetOpenFileName(&ofn))
     {
         statemode=STATEMODE_EMUL;
-        PostMessage(hMain,WM_DEVICECHANGE,7,2);
+        invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
     }
 }
 
@@ -1191,7 +1178,7 @@ void drvdir()
         int len=wcslen(drpext_dir);
         drpext_dir[len]=0;
 //        printf("'%S',%d\n",drpext_dir,len);
-        PostMessage(hMain,WM_DEVICECHANGE,7,2);
+        invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
     }
 }
 
@@ -1371,6 +1358,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 viruscheck(L"",0,0);
                 manager_g->setpos();
                 log_con("}Sync\n");
+                invaidate_set=0;
                 LeaveCriticalSection(&sync);
 
 #ifdef USE_TORRENT
@@ -1443,13 +1431,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if(uFile!=INVALID_FILE_ATTRIBUTES&&uFile&FILE_ATTRIBUTE_DIRECTORY)
                 {
                     wcscpy(drpext_dir,lpszFile);
-                    PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                    invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
                 }
                 else if(StrStrI(lpszFile,L".snp"))
                 {
                     wcscpy(state_file,lpszFile);
                     statemode=STATEMODE_EMUL;
-                    PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                    invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                 }
                 //else
                 //    MessageBox(NULL,lpszFile,NULL,MB_ICONINFORMATION);
@@ -1538,7 +1526,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 redrawmainwnd();
             }
             if(wParam==VK_F5)
-                PostMessage(hwnd,WM_DEVICECHANGE,7,2);
+                invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             if(wParam==VK_F6&&ctrl_down)
             {
                 manager_g->testitembars();
@@ -1767,12 +1755,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_EMU_32:
                     virtual_arch_type=32;
-                    PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                    invaidate(INVALIDATE_SYSINFO);
                     break;
 
                 case ID_EMU_64:
                     virtual_arch_type=64;
-                    PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                    invaidate(INVALIDATE_SYSINFO);
                     break;
 
                 case ID_DIS_INSTALL:
@@ -1795,7 +1783,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
             {
                 virtual_os_version=windows_ver[wp-ID_WIN_2000];
-                PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                invaidate(INVALIDATE_SYSINFO);
             }
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
             {
@@ -2124,12 +2112,12 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             if(floating_itembar==SLOT_SNAPSHOT)
             {
                 statemode=STATEMODE_REAL;
-                PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(floating_itembar==SLOT_DPRDIR)
             {
                 *drpext_dir=0;
-                PostMessage(hMain,WM_DEVICECHANGE,7,2);
+                invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             }
             if(floating_itembar==SLOT_EXTRACTING)
             {

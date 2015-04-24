@@ -482,8 +482,8 @@ wchar_t *State::getModel()
 
 void State::init()
 {
+    memset(this,0,sizeof(state_m_t));
     revision=SVN_REV;
-
     //log_file("sizeof(Device)=%d\nsizeof(Driver)=%d\n\n",sizeof(Device),sizeof(Driver));
 }
 

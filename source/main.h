@@ -134,6 +134,15 @@ enum STATEMODE
     STATEMODE_EXIT      =2,
 };
 
+// Mode
+enum INVALIDATE
+{
+    INVALIDATE_INDEXES      =1,
+    INVALIDATE_SYSINFO      =2,
+    INVALIDATE_DEVICES      =4,
+    INVALIDATE_MANAGER      =8,
+};
+
 // Popup window
 enum FLOATING_TYPE
 {
@@ -200,6 +209,7 @@ extern int driverpackpath;
 extern CRITICAL_SECTION sync;
 extern int ctrl_down;
 extern int space_down;
+extern int invaidate_set;
 
 // Window
 extern HINSTANCE ghInst;
@@ -252,9 +262,8 @@ struct bundle_t
 void settings_parse(const wchar_t *str,int ind);
 void settings_save();
 int  settings_load(const wchar_t *filename);
-void SignalHandler(int signum);
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
-void checkupdates();
+//void checkupdates();
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
 
 // Threads
@@ -301,8 +310,6 @@ void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
 
 //new
-void str_unicode2ansi(char *a);
-void str_unicode2ansi(const wchar_t *s,char *d);
 void set_rstpnt(int checked);
 void drvdir();
 const wchar_t *getHWIDby(int id,int num);
@@ -310,3 +317,4 @@ void escapeAmpUrl(wchar_t *buf,wchar_t *source);
 void escapeAmp(wchar_t *buf,wchar_t *source);
 void contextmenu2(int x,int y);
 void contextmenu(int x,int y);
+void invaidate(int v);

@@ -160,7 +160,6 @@ public:
 
 public:
     void init(Matcher *matcher);
-    void release();
     void populate();
     void filter(int options);
     void print_tbl();
