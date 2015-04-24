@@ -582,7 +582,7 @@ goaround:
     if(needreboot)ret_global|=0x40<<24;
     LeaveCriticalSection(&sync);
     ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
-    PostMessage(hMain,WM_DEVICECHANGE,7,1);
+    invaidate(INVALIDATE_DEVICES);
     redrawmainwnd();
 
     return 0;

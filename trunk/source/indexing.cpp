@@ -39,8 +39,8 @@ struct frm
 {
     Driverpack *drp;
 };
-boost::lockfree::queue<frm> queuedriverpack;
-boost::lockfree::queue<obj> queue;
+boost::lockfree::queue<frm> queuedriverpack(100);
+boost::lockfree::queue<obj> queue(100);
 
 
 typedef struct _tbl_t
@@ -520,11 +520,16 @@ void Collection::loadOnlineIndexes()
     FindClose(hFind);
 }
 
-void Collection::load()
+void Collection::populate()
 {
     Driverpack *unpacked_drp;
 
     time_indexes=GetTickCount();
+
+    drp_count=scanfolder_count(driverpack_dir);
+    driverpack_list.clear();
+    driverpack_list.reserve(drp_count+1+100); // TODO
+
     registerall();
     driverpack_list.push_back(Driverpack(driverpack_dir,L"unpacked.7z",this));
     unpacked_drp=&driverpack_list.back();
@@ -540,8 +545,6 @@ void Collection::load()
 //}thread
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
-    drp_count=scanfolder_count(driverpack_dir);
-    driverpack_list.reserve(drp_count+1+100); // TODO
     drp_cur=1;
 
     scanfolder(driverpack_dir);
@@ -573,7 +576,7 @@ void Collection::load()
     CloseHandle_log(thr,L"driverpack_genindex",L"thr");
 //}thread
     flags&=~COLLECTION_FORCE_REINDEXING;
-    driverpack_list.shrink_to_fit();// TODO
+    driverpack_list.shrink_to_fit();
 }
 
 void Collection::print()
@@ -898,7 +901,7 @@ void Driverpack::print()
     f=_wfopen(filename,L"wt");
 
     log_con("Saving %S\n",filename);
-    fprintf(f,"%S\\%S (%d inf files)\n",getPath(),getFilename(),n);
+    fwprintf(f,L"%s\\%s (%d inf files)\n",getPath(),getFilename(),n);
     for(inffile_index=0;inffile_index<n;inffile_index++)
     {
         d_i=&inffile[inffile_index];
@@ -1558,7 +1561,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
     // Find [strings]
     auto range=section_list.equal_range("strings");
-    if(range.first==range.second)log_index("ERROR: missing [strings] in %S%S\n",drpdir,inffilename);
+    if(range.first==range.second)log_index("ERROR: missing [strings] in %S\n",inffull);
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
@@ -1583,8 +1586,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     cur_ver->y=-1;
 
     range=section_list.equal_range("version");
-    if(range.first==range.second)log_index("ERROR: missing [version] in %S%S\n",drpdir,inffilename);
-    //if(range.first==range.second)log_index("NOTE:  multiple [version] in %S%S\n",drpdir,inffilename);
+    if(range.first==range.second)log_index("ERROR: missing [version] in %S\n",inffull);
+    //if(range.first==range.second)log_index("NOTE:  multiple [version] in %S\n",inffull);
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
@@ -1606,8 +1609,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                         // date
                         parse_info.parseField();
                         i=parse_info.readDate(cur_ver);
-                        if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S%S\n",
-                                 cur_ver->d,cur_ver->m,cur_ver->y,i,drpdir,inffilename);
+                        if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S\n",
+                                 cur_ver->d,cur_ver->m,cur_ver->y,i,inffull);
 
                         wsprintfA(date_s,"%02d/%02d/%04d",cur_ver->m,cur_ver->d,cur_ver->y);
 
@@ -1634,12 +1637,12 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             while(parse_info.parseField());
         }
     }
-    if(cur_ver->y==-1) log_index("ERROR: missing date in %S%S\n",drpdir,inffilename);
-    if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S%S\n",drpdir,inffilename);
+    if(cur_ver->y==-1) log_index("ERROR: missing date in %S\n",inffull);
+    if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S\n",inffull);
 
     // Find [manufacturer] section
     range=section_list.equal_range("manufacturer");
-    if(range.first==range.second)log_index("ERROR: missing [manufacturer] in %S%S\n",drpdir,inffilename);
+    if(range.first==range.second)log_index("ERROR: missing [manufacturer] in %S\n",inffull);
     //if(lnk)log_index("NOTE:  multiple [manufacturer] in %S%S\n",drpdir,inffilename);
     for(auto got=range.first;got!=range.second;++got)
     {
@@ -1674,7 +1677,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     strtolower(secttry,strlen(secttry));
 
                     auto range2=section_list.equal_range(secttry);
-                    if(range2.first==range2.second)log_index("ERROR: missing [%s] in %S%S\n",secttry,drpdir,inffilename);
+                    if(range2.first==range2.second)log_index("ERROR: missing [%s] in %S\n",secttry,inffull);
                     for(auto got2=range2.first;got2!=range2.second;++got2)
                     {
                         sect_data_t *lnk2=&got2->second;
@@ -1777,7 +1780,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                                 Parser parse_info3{lnk3,this,inffull};
                                 if(!strcmp(secttry,installsection))
                                 {
-                                    log_index("ERROR: [%s] refers to itself in %S%S\n",installsection,drpdir,inffilename);
+                                    log_index("ERROR: [%s] refers to itself in %S\n",installsection,inffull);
                                     break;
                                 }
 

@@ -297,6 +297,13 @@ void start_exception_hadnlers()
     std::set_unexpected(myunexpected);
     std::set_terminate(myterminate);
 }
+
+void SignalHandler(int signum)
+{
+    log_err("!!! Crashed %d!!!\n",signum);
+    log_save();
+    log_stop();
+}
 //}
 
 //{ Virus detection

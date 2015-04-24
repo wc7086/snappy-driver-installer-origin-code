@@ -70,6 +70,7 @@ void print_error(int r,const wchar_t *s);
 void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
 void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
 void start_exception_hadnlers();
+void SignalHandler(int signum);
 
 // Virus detection
 void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam);

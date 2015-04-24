@@ -39,10 +39,6 @@ void Manager::init(Matcher *matchera)
         items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
 }
 
-void Manager::release()
-{
-}
-
 void Manager::sorta(Matcher *m,int *v)
 {
     Devicematch *devicematch_i,*devicematch_j;
@@ -127,6 +123,7 @@ void Manager::populate()
             items_list.push_back(itembar_t(devicematch,nullptr,i+RES_SLOTS,remap[i],1));
         }
     }
+    items_list.shrink_to_fit();
 }
 
 void Manager::filter(int options)
@@ -421,7 +418,7 @@ void Manager::clear()
     items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
     filter(filters);
     setpos();
-    PostMessage(hMain,WM_DEVICECHANGE,7,2);
+    invaidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
 }
 
 void Manager::testitembars()
@@ -1359,6 +1356,7 @@ void Manager::restorepos(Manager *manager_old)
     {
         return;
     }
+    if(invaidate_set&INVALIDATE_MANAGER)return;
     if((instflag&RESTOREPOS)==0)
     {
         instflag^=RESTOREPOS;

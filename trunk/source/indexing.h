@@ -182,7 +182,7 @@ public:
     void release();
     void save();
     void loadOnlineIndexes();
-    void load();
+    void populate();
     void print();
     wchar_t *finddrp(wchar_t *s);
     void printstates();

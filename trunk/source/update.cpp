@@ -936,7 +936,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         hSession->pause();
         Updater.updateTorrentStatus();
         monitor_pause=0;
-        PostMessage(hMain,WM_DEVICECHANGE,7,2);
+        invaidate(INVALIDATE_INDEXES);
         log_con("}torrent_stop\n");
         ResetEvent(downloadmangar_event);
     }
