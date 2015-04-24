@@ -49,8 +49,6 @@ struct obj
     wchar_t inffile[BUFLEN];
     char *adr;
     int len;
-
-    int type;
 };
 
 class sect_data_t
@@ -59,12 +57,6 @@ public:
     char *blockbeg,*blockend;
     sect_data_t(char *bb,char *be):blockbeg(bb),blockend(be){}
 };
-
-typedef struct _tbl_t
-{
-    const char *s;
-    int sz;
-}tbl_t;
 
 struct version_t
 {
@@ -175,12 +167,8 @@ public:
     wchar_t *driverpack_dir;
     const wchar_t *index_bin_dir;
     const wchar_t *index_linear_dir;
-    //int flags;
 
     std::vector<Driverpack> driverpack_list;
-
-    //inflist_t *inflist;
-    //int pos_in,pos_out;
 
 public:
     friend unsigned int __stdcall thread_indexinf(void *arg);

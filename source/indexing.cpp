@@ -26,7 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //#include <boost/thread/thread.hpp>
 #include <boost/lockfree/queue.hpp>
-//#include <boost/atomic.hpp>
+#include <boost/atomic.hpp>
 
 #pragma GCC diagnostic pop
 
@@ -35,6 +35,19 @@ int drp_count;
 int drp_cur;
 int loaded_unpacked=0;
 
+struct frm
+{
+    Driverpack *drp;
+};
+boost::lockfree::queue<frm> queuedriverpack;
+boost::lockfree::queue<obj> queue;
+
+
+typedef struct _tbl_t
+{
+    const char *s;
+    int sz;
+}tbl_t;
 const tbl_t table_version[NUM_VER_NAMES]=
 {
     {"classguid",                  9},
@@ -449,6 +462,38 @@ int Collection::scanfolder_count(const wchar_t *path)
     return cnt;
 }
 
+unsigned int __stdcall  consumer1(void *arg)
+{
+    frm data;
+    int exit=0;
+    while (!exit)
+    {
+        while (queuedriverpack.pop(data))
+        {
+            Driverpack *drp=data.drp;
+            if(data.drp==nullptr){exit=1;break;}
+                if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
+                {
+                    wchar_t bufw1[BUFLEN];
+                    wchar_t bufw2[BUFLEN];
+                    if(!drp_count)drp_count=1;
+                    wsprintf(bufw1,L"Indexing %d/%d",drp_cur,drp_count);
+                    wsprintf(bufw2,L"%s\\%s",drp->getPath(),drp->getFilename());
+                    manager_g->items_list[SLOT_INDEXING].isactive=1;
+                    manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
+                    manager_g->items_list[SLOT_INDEXING].val2=drp_count;
+                    itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
+                    manager_g->setpos();
+                    drp_cur++;
+                    drp->genindex();
+                }
+
+//            data.drp->genindex();
+        }
+    }
+    return 0;
+}
+
 void Collection::loadOnlineIndexes()
 {
     wchar_t buf[BUFLEN];
@@ -485,28 +530,49 @@ void Collection::load()
     unpacked_drp=&driverpack_list.back();
 
 //{thread
-    HANDLE thr;
+    HANDLE thr,cons,cons1,cons2,cons3;
     thr=(HANDLE)_beginthreadex(nullptr,0,&thread_indexinf,this,0,nullptr);
+
+    cons=(HANDLE)_beginthreadex(nullptr,0,&consumer1,this,0,nullptr);
+    cons1=(HANDLE)_beginthreadex(nullptr,0,&consumer1,this,0,nullptr);
+    //cons2=(HANDLE)_beginthreadex(nullptr,0,&consumer1,this,0,nullptr);
+    //cons3=(HANDLE)_beginthreadex(nullptr,0,&consumer1,this,0,nullptr);
 //}thread
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
     drp_count=scanfolder_count(driverpack_dir);
     driverpack_list.reserve(drp_count+1+100); // TODO
-    drp_cur=0;
+    drp_cur=1;
+
     scanfolder(driverpack_dir);
+    frm t;t.drp=nullptr;
+    queuedriverpack.push(t);
+    queuedriverpack.push(t);
+    /*queuedriverpack.push(t);
+    queuedriverpack.push(t);*/
+    WaitForSingleObject(cons,INFINITE);
+    CloseHandle_log(cons,L"driverpack_genindex",L"thr");
+    WaitForSingleObject(cons1,INFINITE);
+    CloseHandle_log(cons1,L"driverpack_genindex",L"thr");
+    /*WaitForSingleObject(cons2,INFINITE);
+    CloseHandle_log(cons2,L"driverpack_genindex",L"thr");
+    WaitForSingleObject(cons3,INFINITE);
+    CloseHandle_log(cons3,L"driverpack_genindex",L"thr");*/
+
     loadOnlineIndexes();
     manager_g->items_list[SLOT_INDEXING].isactive=0;
     if(driverpack_list.size()<=1&&(flags&FLAG_DPINSTMODE)==0)
         itembar_settext(manager_g,SLOT_NODRIVERS,L"",0);
     driverpack_list[0].genhashes();
     time_indexes=GetTickCount()-time_indexes;
-    flags&=~COLLECTION_FORCE_REINDEXING;
+    log_times();
 
 //{thread
     driverpack_indexinf_async(nullptr,L"",L"",nullptr,0);
     WaitForSingleObject(thr,INFINITE);
     CloseHandle_log(thr,L"driverpack_genindex",L"thr");
 //}thread
+    flags&=~COLLECTION_FORCE_REINDEXING;
     driverpack_list.shrink_to_fit();// TODO
 }
 
@@ -572,6 +638,8 @@ void Collection::scanfolder(const wchar_t *path)
     wchar_t buf[1024];
     Driverpack *drp;
 
+    //a_drp_cur=drp_cur;
+    //a_drp_count=drp_count;
     wsprintf(buf,L"%s\\*.*",path);
     hFind=FindFirstFile(buf,&FindFileData);
 
@@ -590,7 +658,7 @@ void Collection::scanfolder(const wchar_t *path)
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
                 drp=&driverpack_list.back();
                 //drp->init(path,FindFileData.cFileName,this);
-                if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
+                /*if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
                 {
                     wchar_t bufw1[BUFLEN];
                     wchar_t bufw2[BUFLEN];
@@ -601,10 +669,13 @@ void Collection::scanfolder(const wchar_t *path)
                     manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
                     manager_g->items_list[SLOT_INDEXING].val2=drp_count;
                     itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
-                    manager_g->setpos();
-                    drp->genindex();
-                    drp_cur++;
-                }
+                    manager_g->setpos();*/
+                    frm tt;tt.drp=drp;
+                    queuedriverpack.push(tt);
+                    //consumer();
+                    //drp->genindex();
+                    //drp_cur++;
+                //}
             }else
             if(StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0&&loaded_unpacked==0)
             {
@@ -946,29 +1017,32 @@ void Driverpack::genhashes()
     }
 }
 
-boost::lockfree::queue<obj> queue;
-
 unsigned int __stdcall thread_indexinf(void *arg)
 {
     obj t;
     int exit=0;
+    long long tm=0,last=0;
 
     while(!exit)
     {
-        while (queue.pop(t))
+        while(queue.pop(t))
         {
+            if(last)tm+=GetTickCount()-last;
             if(!t.drp){exit=1;break;}
             if(!*t.inffile)
             {
                 t.drp->genhashes();
                 t.drp->texta.shrink();
                 free(t.adr);
+                last=GetTickCount();
                 continue;
             }
             t.drp->indexinf_ansi(t.pathinf,t.inffile,t.adr,t.len);
             free(t.adr);
+            last=GetTickCount();
         }
     }
+    log_con("Starved for %ld\n",tm);
     return 0;
 }
 
