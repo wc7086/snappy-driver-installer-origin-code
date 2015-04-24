@@ -14,10 +14,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-#define STR_LN 4096
-typedef int ofst;
-//#define MERGE_FINDER
-
 class Collection;
 class Driverpack;
 class data_manufacturer_t;
@@ -25,6 +21,10 @@ class data_inffile_t;
 class data_desc_t;
 class data_HWID_t;
 
+#define STR_LN 4096
+typedef int ofst;
+
+//{ Misc
 enum
 {
     ClassGuid_,
@@ -41,7 +41,14 @@ enum
     NUM_VER_NAMES
 };
 
-//{ Misc
+enum DRIVERPACK_TYPE
+{
+    DRIVERPACK_TYPE_PENDING_SAVE   = 0,
+    DRIVERPACK_TYPE_INDEXED        = 1,
+    DRIVERPACK_TYPE_UPDATE         = 2,
+    DRIVERPACK_TYPE_EMPTY          = 3,
+};
+
 struct obj
 {
     Driverpack *drp;
@@ -66,57 +73,6 @@ struct version_t
     version_t():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
 };
 //}
-
-enum DRIVERPACK_TYPE
-{
-    DRIVERPACK_TYPE_PENDING_SAVE   = 0,
-    DRIVERPACK_TYPE_INDEXED        = 1,
-    DRIVERPACK_TYPE_UPDATE         = 2,
-    DRIVERPACK_TYPE_EMPTY          = 3,
-};
-
-//{ Indexing strucures
-class Driverpack
-{
-private:
-    ofst drppath;
-    ofst drpfilename;
-public:
-    int type;
-
-    Collection *col;
-
-    hashtable_t indexesold;
-
-    std::unordered_map<std::string,std::string> string_list;
-    std::unordered_map<std::string,ofst> cat_list;
-
-    std::vector<data_inffile_t> inffile;
-    std::vector<data_manufacturer_t> manufacturer_list;
-    std::vector<data_desc_t> desc_list;
-    std::vector<data_HWID_t> HWID_list;
-    Txt texta;
-
-public:
-    wchar_t *getPath(){return texta.getw(drppath);}
-    wchar_t *getFilename(){return texta.getw(drpfilename);}
-
-    //Driverpack(const Driverpack&)=delete;
-    Driverpack &operator=(const Driverpack&)=delete;
-    Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
-    ~Driverpack();
-
-    void saveindex();
-    int  checkindex();
-    int  loadindex();
-    void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
-    void print();
-    void genhashes();
-    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    int  genindex();
-    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
-    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
-};
 
 class data_inffile_t // 132
 {
@@ -150,6 +106,10 @@ public:
     ofst install;
     ofst install_picked;
     unsigned int feature;
+
+    data_desc_t(){}
+    data_desc_t(unsigned manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
+        manufacturer_index(manufacturer_indexv),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
 };
 
 class data_HWID_t // 12
@@ -159,8 +119,46 @@ public:
     int inf_pos;
 
     ofst HWID;
+
+    data_HWID_t(unsigned desc_indexv,int inf_posv,ofst HWIDv):desc_index(desc_indexv),inf_pos(inf_posv),HWID(HWIDv){}
+    data_HWID_t(){}
 };
 
+// Parser
+class Parser
+{
+private:
+    Driverpack *pack;
+    std::unordered_map<std::string,std::string> *string_list;
+    const wchar_t *inffile;
+    Txt textholder;
+
+    char *blockBeg;
+    char *blockEnd;
+    char *strBeg;
+    char *strEnd;
+
+    void parseWhitespace(bool eatnewline);
+    void trimtoken();
+    void subStr();
+
+public:
+    int  parseItem();
+    int  parseField();
+
+    int  readNumber();
+    int  readHex();
+    int  readDate(version_t *t);
+    void readVersion(version_t *t);
+    void readStr(char **vb,char **ve);
+
+    Parser(const Parser&)=delete;
+    Parser &operator=(const Parser&)=delete;
+    Parser(sect_data_t *lnk,Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
+    Parser(char *vb,char *ve);
+};
+
+// Collection
 class Collection
 {
 public:
@@ -190,40 +188,52 @@ public:
     int  scanfolder_count(const wchar_t *path);
 };
 
-// Parser
-class Parser
+// Driverpack
+class Driverpack
 {
 private:
-    Driverpack *pack;
-    const wchar_t *inffile;
-    Txt textholder;
+    ofst drppath;
+    ofst drpfilename;
+public:
+    int type;
 
-    char *blockBeg;
-    char *blockEnd;
-    char *strBeg;
-    char *strEnd;
+    Collection *col;
 
-    void parseWhitespace(bool eatnewline);
-    void trimtoken();
-    void subStr();
+    hashtable_t indexesold;
+    std::unordered_map<std::string,ofst> cat_list;
+
+    std::vector<data_inffile_t> inffile;
+    std::vector<data_manufacturer_t> manufacturer_list;
+    std::vector<data_desc_t> desc_list;
+    std::vector<data_HWID_t> HWID_list;
+    Txt texta;
+
+private:
+    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
+    int  genindex();
 
 public:
-    int  parseItem();
-    int  parseField();
+    wchar_t *getPath(){return texta.getw(drppath);}
+    wchar_t *getFilename(){return texta.getw(drpfilename);}
 
-    int  readNumber();
-    int  readHex();
-    int  readDate(version_t *t);
-    void readVersion(version_t *t);
-    void readStr(char **vb,char **ve);
+    //Driverpack(const Driverpack&)=delete;
+    Driverpack &operator=(const Driverpack&)=delete;
+    Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
+    ~Driverpack();
 
-    Parser(const Parser&)=delete;
-    Parser &operator=(const Parser&)=delete;
-    Parser(sect_data_t *lnk,Driverpack *drp,const wchar_t *inf);
-    Parser(char *vb,char *ve);
+    void saveindex();
+    int  checkindex();
+    int  loadindex();
+    void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
+    void print();
+    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
+    void genhashes();
+    static unsigned int __stdcall thread_indexinf(void *arg);
+
+    friend unsigned int __stdcall  consumer1(void *arg);
 };
+    void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
 // Misc
-void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-unsigned int __stdcall thread_indexinf(void *arg);
 void findosattr(char *bufa,char *adr,int len);
