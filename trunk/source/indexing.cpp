@@ -368,11 +368,6 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
     index_linear_dir=index_linear_dirv;
 }
 
-void Collection::release()
-{
-    driverpack_list.clear();
-}
-
 void Collection::save()
 {
 #ifdef CONSOLE_MODE
@@ -601,14 +596,25 @@ void Collection::printstates()
 {
     if((log_verbose&LOG_VERBOSE_DRP)==0)return;
 
-    int sum=0;
+    int sum=0,sizetx=0,sizeind=0;
+    int num=0;
     log_file("Driverpacks\n");
     for(auto &drp:driverpack_list)
     {
         log_file("  %6d  %S\\%S\n",drp.HWID_list.size(),drp.getPath(),drp.getFilename());
         sum+=drp.HWID_list.size();
+        sizetx+=drp.texta.getSize();
+
+        num+=drp.cat_list.size()*sizeof(drp.cat_list);
+        num+=drp.inffile.size()*sizeof(drp.inffile);
+        num+=drp.manufacturer_list.size()*sizeof(drp.manufacturer_list);
+        num+=drp.desc_list.size()*sizeof(drp.desc_list);
+        num+=drp.HWID_list.size()*sizeof(drp.HWID_list);
+
+        sizeind+=drp.indexesold.items_new.size()*sizeof(hashitem_t);
     }
     log_file("  Sum: %d\n\n",sum);
+    log_con("  Size: %d+%d*%d+%d[text]+%d[obj]+%d[ind]\n",sizeof(Collection),driverpack_list.size(),sizeof(Driverpack),sizetx,num,sizeind);
 }
 
 wchar_t *Collection::finddrp(wchar_t *fnd)

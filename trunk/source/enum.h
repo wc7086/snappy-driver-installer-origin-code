@@ -82,9 +82,9 @@ public:
     void print(State *state);
     void printHWIDS(State *state);
 
-    Device(const Device &)=delete;
-    Device &operator=(const Device &)=delete;
-    Device(Device &&)=default;
+    //Device(const Device &)=delete;
+    //Device &operator=(const Device &)=delete;
+    //Device(Device &&)=default;
     Device(HDEVINFO hDevInfo,State *state,int i);
     Device():driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
@@ -121,9 +121,9 @@ public:
     unsigned calc_score_h(State *state);
     void print(State *state);
 
-    Driver(const Driver &)=delete;
-    Driver &operator=(const Driver &)=delete;
-    Driver(Driver &&)=default;
+    //Driver(const Driver &)=delete;
+    //Driver &operator=(const Driver &)=delete;
+    //Driver(Driver &&)=default;
     Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp);
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
@@ -196,7 +196,6 @@ public:
     wchar_t *getModel();
 
     void init();
-    void release();
     //State(const State &)=delete;
     //State &operator=(const State &)=delete;
     //State(State &&)=default;
@@ -207,6 +206,7 @@ public:
     int  load(const wchar_t *filename);
     void getsysinfo_fast();
     void getsysinfo_slow();
+    void getsysinfo_slow(State *prev);
     void scanDevices();
 
     int  opencatfile(Driver *cur_driver);

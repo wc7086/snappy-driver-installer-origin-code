@@ -275,8 +275,7 @@ unsigned int __stdcall thread_loadall(void *arg);
 // Bundle
 void bundle_init(bundle_t *bundle);
 void bundle_prep(bundle_t *bundle);
-void bundle_free(bundle_t *bundle);
-void bundle_load(bundle_t *bundle);
+void bundle_load(bundle_t *bundle,bundle_t *pbundle);
 void bundle_lowprioirity(bundle_t *bundle);
 
 // Windows

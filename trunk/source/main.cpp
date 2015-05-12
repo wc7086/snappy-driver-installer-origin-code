@@ -86,8 +86,8 @@ wchar_t finish_upd[BUFLEN]=L"";
 wchar_t finish_rb [BUFLEN]=L"";
 wchar_t HWIDs     [BUFLEN]=L"";
 
-//int flags=COLLECTION_USE_LZMA;
-int flags=0;
+int flags=COLLECTION_USE_LZMA;
+//int flags=0;
 int statemode=STATEMODE_REAL;
 int expertmode=0;
 int license=0;
@@ -427,8 +427,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
 // Free allocated resources
-    bundle_free(&bundle[0]);
-    bundle_free(&bundle[1]);
     int i;
     for(i=0;i<BOX_NUM;i++)box[i].release();
     for(i=0;i<ICON_NUM;i++)icon[i].release();
@@ -508,10 +506,13 @@ unsigned int __stdcall thread_loadall(void *arg)
     {
         int cancel_update=0;
         //long long t=GetTickCount();
+        WaitForSingleObject(deviceupdate_event,INFINITE);
 
         log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
         bundle_prep(&bundle[bundle_shadow]);
-        bundle_load(&bundle[bundle_shadow]);
+        bundle_load(&bundle[bundle_shadow],&bundle[bundle_display]);
+
+        log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
 
         if(!(flags&FLAG_NOGUI))
         if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
@@ -542,12 +543,10 @@ unsigned int __stdcall thread_loadall(void *arg)
             bundle_shadow^=1;
         }
         //printf("%d\n",)
-        bundle_free(&bundle[bundle_shadow]);
         bundle_init(&bundle[bundle_shadow]);
         if(cancel_update)SetEvent(deviceupdate_event);
         log_con("}2Sync\n");
         LeaveCriticalSection(&sync);
-        WaitForSingleObject(deviceupdate_event,INFINITE);
 /*        if(snplist)
         {
             fgetws(state_file,BUFLEN,snplist);
@@ -577,13 +576,8 @@ void bundle_prep(bundle_t *bundle)
     bundle->state.getsysinfo_fast();
 }
 
-void bundle_free(bundle_t *bundle)
-{
-    bundle->collection.release();
-    bundle->state.release();
-}
 
-void bundle_load(bundle_t *bundle)
+void bundle_load(bundle_t *bundle,bundle_t *pbundle)
 {
     HANDLE thandle[3];
 
@@ -594,6 +588,10 @@ void bundle_load(bundle_t *bundle)
     CloseHandle_log(thandle[0],L"bundle_load",L"0");
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
+
+    if((invaidate_set&INVALIDATE_DEVICES)==0){bundle->state=pbundle->state;time_devicescan=0;}
+    if((invaidate_set&INVALIDATE_SYSINFO)==0)bundle->state.getsysinfo_slow(&pbundle->state);
+    invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
     bundle->matcher.state->textas.shrink();
     bundle->matcher.populate();
@@ -1526,7 +1524,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 redrawmainwnd();
             }
             if(wParam==VK_F5)
-                invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             if(wParam==VK_F6&&ctrl_down)
             {
                 manager_g->testitembars();
