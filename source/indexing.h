@@ -177,7 +177,6 @@ public:
     const wchar_t *getIndex_linear_dir()const{return index_linear_dir;}
 
     void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
-    void release();
     void save();
     void loadOnlineIndexes();
     void populate();

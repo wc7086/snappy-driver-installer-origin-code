@@ -487,12 +487,6 @@ void State::init()
     //log_file("sizeof(Device)=%d\nsizeof(Driver)=%d\n\n",sizeof(Device),sizeof(Driver));
 }
 
-void State::release()
-{
-    Devices_list.clear();
-    Drivers_list.clear();
-}
-
 State::~State()
 {
 //    log_con("Text_size: %d\n",textas.text.size());
@@ -593,6 +587,8 @@ void State::print()
         cur_device.printHWIDS(this);
         log_file("\n\n");
     }
+
+    log_con("State: %d+%d+%d*%d+%d*%d\n",sizeof(State),textas.getSize(),Devices_list.size(),sizeof(Device),Drivers_list.size(),sizeof(Driver));
     //log_file("Errors: %d\n",error_count);
 }
 
@@ -772,6 +768,7 @@ void State::getsysinfo_slow()
     wchar_t scs_manuf[BUFLEN];
     wchar_t scs_model[BUFLEN];
 
+    if((invaidate_set&INVALIDATE_SYSINFO)==0)return;
     time_sysinfo=GetTickCount();
 
     getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
@@ -785,6 +782,16 @@ void State::getsysinfo_slow()
     time_sysinfo=GetTickCount()-time_sysinfo;
 }
 
+void State::getsysinfo_slow(State *prev)
+{
+    time_sysinfo=0;
+    manuf=textas.strcpyw(prev->textas.getw(prev->manuf));
+    product=textas.strcpyw(prev->textas.getw(prev->product));
+    model=textas.strcpyw(prev->textas.getw(prev->model));
+    cs_manuf=textas.strcpyw(prev->textas.getw(prev->cs_manuf));
+    cs_model=textas.strcpyw(prev->textas.getw(prev->cs_model));
+}
+
 void State::scanDevices()
 {
     HDEVINFO hDevInfo;
@@ -793,9 +800,12 @@ void State::scanDevices()
     Collection collection;
     Driverpack unpacked_drp{L"",L"windir.7z",&collection};
 
+    if((invaidate_set&INVALIDATE_DEVICES)==0)return;
+
     time_devicescan=GetTickCount();
     collection.init(textas.getw(windir),L"",L"");
     Devices_list.clear();
+    Drivers_list.clear();
     inf_list_new.clear();
 
     hDevInfo=SetupDiGetClassDevs(nullptr,nullptr,nullptr,DIGCF_PRESENT|DIGCF_ALLCLASSES);
@@ -841,7 +851,6 @@ void State::scanDevices()
         RegCloseKey(hkey);
     }
 
-    collection.release();
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;
 }
