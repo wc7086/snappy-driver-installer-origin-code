@@ -175,6 +175,7 @@
 			<Add option="-DWINVER=0x0500" />
 			<Add directory="../resources" />
 			<Add directory="../external/SevenZ/build/C" />
+			<Add directory="../external/libtorrent-rasterbar-1.0.5/include" />
 			<Add directory="C:/Boost/include" />
 		</Compiler>
 		<Linker>
