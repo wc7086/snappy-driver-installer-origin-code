@@ -19,7 +19,7 @@ set GCC_VERSION=4.8.1
 set BOOST_INSTALL_PATH=C:\BOOST
 set MSYS=%GCC_PATH%\msys\1.0\bin
 set BOOST_BUILD_PATH=%BOOST_ROOT%
-set LIBTORRENT_PATH=%CD%\libtorrent-rasterbar-1.0.4
+set LIBTORRENT_PATH=%CD%\libtorrent-rasterbar-1.0.5
 set WEBP_PATH=%CD%\webp
 
 set path=%GCC_PATH%\bin;%BOOST_ROOT%;%MSYS%;%path%
@@ -71,7 +71,7 @@ del "%GCC64_PATH%\lib\libtorrent.a" 2>nul
 echo|set /p=.
 rd /S /Q "%LIBTORRENT_PATH%" 2>nul
 echo|set /p=.
-del "libtorrent-rasterbar-1.0.4.tar.gz" 2>nul
+del "libtorrent-rasterbar-1.0.5.tar.gz" 2>nul
 echo|set /p=.
 
 rem del webp
@@ -127,7 +127,7 @@ if /I exist "%LIBTORRENT_PATH%\..\boost_1_58_0.tar.gz" (call :ColorText 0A "OK")
 echo.
 
 echo|set /p=Checking libtorrent.tar.gz......
-if /I exist "%LIBTORRENT_PATH%\..\libtorrent-rasterbar-1.0.4.tar.gz" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%LIBTORRENT_PATH%\..\libtorrent-rasterbar-1.0.5.tar.gz" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking wspiapi.h..............
@@ -198,11 +198,11 @@ call :ColorText 9F "Downloading BOOST"&echo.
 if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS%\tar -xf "boost_1_58_0.tar.gz" -v)
 
 rem download libtorrent
-if /I exist "libtorrent-rasterbar-1.0.4.tar.gz" (echo Skipping downloading libtorrent & goto skipdownloadlibtorrent)
+if /I exist "libtorrent-rasterbar-1.0.5.tar.gz" (echo Skipping downloading libtorrent & goto skipdownloadlibtorrent)
 call :ColorText 9F "Downloading libtorrent"&echo.
 %MSYS%\wget http://sourceforge.net/projects/libtorrent/files/latest/download?source=files
 :skipdownloadlibtorrent
-if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS%\tar -xf "libtorrent-rasterbar-1.0.4.tar.gz" -v)
+if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS%\tar -xf "libtorrent-rasterbar-1.0.5.tar.gz" -v)
 
 rem Install webp
 if /I exist "%GCC_PATH%\lib\libwebp.a" (echo Skipping installing WebP & goto skipprepwebp)
@@ -233,8 +233,10 @@ popd
 rem Install BOOST
 copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (echo Skipping installing BOOST & goto skipinstallboost)
+pushd %BOOST_ROOT%
 call :ColorText 9F "Installing BOOST"&echo.
 bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS%
+popd
 :skipinstallboost
 
 rem Copy libtorrent headers

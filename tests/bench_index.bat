@@ -26,6 +26,3 @@ rename logs\log.txt log_R_2.txt
 rd /q /s indexes
 ..\SDI_R.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320 -nogui
 rename logs\log.txt log_R_3.txt
-
-rd /q /s indexes
-rd /q /s logs
