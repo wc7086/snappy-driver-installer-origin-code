@@ -17,6 +17,19 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "main.h"
 
+// BOOST
+#ifndef BST
+#define BST
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wundef"
+#include <boost/lockfree/queue.hpp>
+#pragma GCC diagnostic pop
+#endif
+
 //{ Global variables
 int drp_count;
 int drp_cur;
@@ -1086,7 +1099,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
             exit1=0;
             tt=0;
             while(!exit1)
-            while(data.drp->objs->pop(t))
+            while(reinterpret_cast<boost::lockfree::queue<obj> *>(data.drp->objs)->pop(t))
             {
                 //log_con("c1\n");
                 if(last)tm+=GetTickCount()-last;
@@ -1148,7 +1161,7 @@ void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t co
     wcscpy(data.pathinf,pathinf);
     wcscpy(data.inffile,inffile);
     data.drp=drp;
-    if(drp&&drp->objs)drp->objs->push(data);
+    if(drp&&drp->objs)reinterpret_cast<boost::lockfree::queue<obj> *>(drp->objs)->push(data);
 }
 
 void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len)
@@ -1161,7 +1174,7 @@ void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t co
     wcscpy(data.pathinf,pathinf);
     wcscpy(data.inffile,inffile);
     data.drp=drp;
-    if(drp&&drp->objs)drp->objs->push(data);
+    if(drp&&drp->objs)reinterpret_cast<boost::lockfree::queue<obj> *>(drp->objs)->push(data);
 }
 
 void findosattr(char *bufa,char *adr,int len)

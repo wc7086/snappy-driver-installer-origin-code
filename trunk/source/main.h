@@ -55,16 +55,6 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <exception>
 #include <memory>
 
-// BOOST
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma GCC diagnostic ignored "-Winline"
-#pragma GCC diagnostic ignored "-Wundef"
-#include <boost/lockfree/queue.hpp>
-#pragma GCC diagnostic pop
-
 // SDI
 #include "svnrev.h"
 #include "resources.h"
