@@ -200,7 +200,7 @@ if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS%\tar -xf "boost_1_58_0.tar.gz" -
 rem download libtorrent
 if /I exist "libtorrent-rasterbar-1.0.5.tar.gz" (echo Skipping downloading libtorrent & goto skipdownloadlibtorrent)
 call :ColorText 9F "Downloading libtorrent"&echo.
-%MSYS%\wget http://sourceforge.net/projects/libtorrent/files/latest/download?source=files
+%MSYS%\wget http://sourceforge.net/projects/libtorrent/files/libtorrent/libtorrent-rasterbar-1.0.5.tar.gz/download
 :skipdownloadlibtorrent
 if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS%\tar -xf "libtorrent-rasterbar-1.0.5.tar.gz" -v)
 

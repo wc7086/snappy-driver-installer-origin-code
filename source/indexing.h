@@ -207,7 +207,8 @@ public:
     std::vector<data_HWID_t> HWID_list;
     Txt texta;
 
-    boost::lockfree::queue<obj> *objs;
+    //boost::lockfree::queue<obj> *objs;
+    void *objs;
 
 private:
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
