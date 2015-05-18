@@ -28,6 +28,7 @@ int bundle_shadow=0;
 int volatile installmode=MODE_NONE;
 int invaidate_set;
 CRITICAL_SECTION sync;
+int num_cores;
 
 // Window
 HINSTANCE ghInst;
@@ -306,6 +307,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
     if(GetCurrentProcessId()!=dwProcessId)hideconsole=SW_SHOWNOACTIVATE;
     ShowWindow(GetConsoleWindow(),hideconsole);
+
+// Number of processors
+    SYSTEM_INFO siSysInfo;
+    GetSystemInfo(&siSysInfo);
+    num_cores=siSysInfo.dwNumberOfProcessors;
 
 // Runtime error handlers
     start_exception_hadnlers();

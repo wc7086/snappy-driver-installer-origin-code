@@ -347,6 +347,8 @@ void registerall()
 //  registerPPMD();
     registerDelta();
     registerByteSwap();
+
+    CrcGenerateTable();
 #endif
 }
 //}
