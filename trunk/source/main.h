@@ -220,6 +220,7 @@ extern CRITICAL_SECTION sync;
 extern int ctrl_down;
 extern int space_down;
 extern int invaidate_set;
+extern int num_cores;
 
 // Window
 extern HINSTANCE ghInst;
