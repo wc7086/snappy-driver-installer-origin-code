@@ -353,14 +353,14 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
     int ofsy=getscrollpos();
     int cutoff=calc_cutoff()+D(DRVITEM_DIST_Y0);
     int ofs=0;
-    int wx=XG(D(DRVITEM_WX),Xg(D(DRVITEM_OFSX)));
+    int wx=XG(D(DRVITEM_WX),Xg(D(DRVITEM_OFSX),D(DRVITEM_WX)));
 
     *r=-2;
     *zone=0;
     int cnt=0;
 
     y-=-D(DRVITEM_DIST_Y0);
-    x-=Xg(D(DRVITEM_OFSX));
+    x-=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
     if(kbpanel==KB_NONE)if(x<0||x>wx)return;
     itembar=&items_list[0];
     for(i=0;i<items_list.size();i++,itembar++)
@@ -931,7 +931,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
     HICON hIcon;
     wchar_t bufw[BUFLEN];
     HRGN hrgn=nullptr,hrgn2;
-    int x=Xg(D(DRVITEM_OFSX));
+    int x=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
     int wx=XG(D(DRVITEM_WX),x);
     int r=D(boxindex[box_status(index)]+3);
     int intend=0;

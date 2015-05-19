@@ -338,12 +338,39 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 //}
 
 //{ Draw
-int Xm(int x){return x>=0?x:(main1x_c+x);}
+int rtl=0;
+int mir(int x){return rtl?(main1x_c-x):x;}
+int mirc(int x){return 0?(mainx_c-x):x;}
+int mirw(int x,int ofs,int w)
+{
+    if(rtl)return x+w-ofs;
+    return x+ofs;
+}
+
+int Xm(int x,int o)
+{
+    int w=(main1x_c+o-x);
+    if(rtl&&o>=0&&x>=0)return mir(x)-o;
+    if(rtl&&o>=0&&x< 0)return mir(main1x_c+x)-o;
+    if(rtl&&o< 0&&x>=0)return mir(x)-w;
+    if(rtl&&o< 0&&x< 0)return mir(main1x_c+x)-w;
+
+    return x>=0?x:(main1x_c+x);
+}
 int Ym(int y){return y>=0?y:(main1y_c+y);}
-int XM(int x,int o){return x>=0?x:(main1x_c+x-o);}
+int XM(int w,int x){return w>=0?w:(w+main1x_c-x);}
 int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
 
-int Xg(int x){return x>=0?x:(mainx_c+x);}
+int Xg(int x,int o)
+{
+    //int w=(mainx_c+o-x);
+    //if(rtl&&o>=0&&x>=0)return mirc(x)-o;
+    //if(rtl&&o>=0&&x< 0)return mirc(mainx_c+x)-o;
+    //if(rtl&&o< 0&&x>=0)return mirc(x)-w;
+    //if(rtl&&o< 0&&x< 0)return mirc(mainx_c+x)-w;
+
+    return x>=0?x:(mainx_c+x);
+}
 int Yg(int y){return y>=0?y:(mainy_c+y);}
 int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
 int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
@@ -434,7 +461,6 @@ void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
 
 void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int id)
 {
-
     if(id<0||id>=BOX_NUM)
     {
         log_err("ERROR in box_draw(): invalid id=%d\n",id);
@@ -592,7 +618,7 @@ void Canvas::end()
 //}
 
 //{ Panel
-int Panel::Xp(){return Xm(D(PANEL_OFSX+indofs));}
+int Panel::Xp(){return Xm(D(PANEL_OFSX+indofs),D(PANEL_WX+indofs));}
 int Panel::Yp(){return Ym(D(PANEL_OFSY+indofs));}
 int Panel::XP(){return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));}
 int Panel::YP(){return YM(D(PANEL_WY+indofs),D(PANEL_OFSY+indofs));}
@@ -654,7 +680,6 @@ void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 }
 
 static void TextOutH(HDC hdc,int x,int y,LPCTSTR buf){TextOut(hdc,x,y,buf,wcslen(buf));}
-
 void Panel::draw(HDC hdc)
 {
     wchar_t buf[BUFLEN];
@@ -708,14 +733,17 @@ void Panel::draw(HDC hdc)
         switch(items[i].type)
         {
             case TYPE_CHECKBOX:
-                drawcheckbox(hdc,x+ofsx,y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,i==cur_i);
+                SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
+                drawcheckbox(hdc,mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,i==cur_i);
                 SetTextColor(hdc,D(i==cur_i?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOut(hdc,x+D(CHKBOX_TEXT_OFSX)+ofsx,y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                TextOut(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
                 if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
                 y+=D(PNLITEM_WY);
+                SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_BUTTON:
+                SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
                     box_draw(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
                 else
@@ -733,15 +761,17 @@ void Panel::draw(HDC hdc)
                     if(itembar->checked)cnt++;
 
                     wsprintf(buf,L"%s (%d)",STR(items[i].str_id),cnt);
-                    TextOut(hdc,x+ofsx+wy/2,y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf,wcslen(buf));
+                    TextOut(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf,wcslen(buf));
                 }
                 else
-                    TextOut(hdc,x+ofsx+wy/2,y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                    TextOut(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
 
                 y+=D(PNLITEM_WY);
+                SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_TEXT:
+                SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 if(i==1&&index==7) // Revision number
                 {
                     version_t v;
@@ -754,11 +784,12 @@ void Panel::draw(HDC hdc)
                     str_date(&v,buf+wcslen(buf));
                     wcscat(buf,L")");
                     SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
-                    TextOut(hdc,x+ofsx,y+ofsy,buf,wcslen(buf));
+                    TextOut(hdc,mirw(x,ofsx,XP()),y+ofsy,buf,wcslen(buf));
                 }
                 SetTextColor(hdc,D(i==cur_i&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOut(hdc,x+ofsx,y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                TextOut(hdc,mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
                 y+=D(PNLITEM_WY);
+                SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_GROUP_BREAK:

@@ -129,12 +129,12 @@ public:
 //}
 
 // Draw
-int Xm(int x);
+int Xm(int x,int o);
 int Ym(int y);
 int XM(int x,int o);
 int YM(int y,int o);
 
-int Xg(int x);
+int Xg(int x,int o);
 int Yg(int y);
 int XG(int x,int o);
 int YG(int y,int o);
