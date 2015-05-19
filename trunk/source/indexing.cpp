@@ -35,13 +35,16 @@ int drp_count;
 int drp_cur;
 int loaded_unpacked=0;
 
-struct frm
+class frm
 {
+public:
     Driverpack *drp;
+    frm(Driverpack *a):drp(a){}
+    frm():drp(nullptr){}
 };
 
-boost::lockfree::queue<frm> queuedriverpack(100);
-boost::lockfree::queue<frm> queuedriverpack1(100);
+typedef boost::lockfree::queue<frm> drplist_t;
+drplist_t queuedriverpack1(100);
 
 typedef struct _tbl_t
 {
@@ -371,21 +374,24 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
 int volatile cur_,count_;
 static unsigned int __stdcall async_savedrp(void *arg)
 {
+    drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     frm data;
-    int exit=0,exit1=0;
+    int exit=0;
+
     while(!exit)
     {
-        while(queuedriverpack1.pop(data))
+        while(drplist->pop(data))
         {
             if(!data.drp){exit=1;break;}
-        wchar_t bufw2[BUFLEN];
-        wsprintf(bufw2,L"%ws\\%ws",data.drp->getPath(),data.drp->getFilename());
-        log_con("Saving indexes for '%S'\n",bufw2);
-        if(flags&COLLECTION_USE_LZMA)itembar_settext(SLOT_INDEXING,2,bufw2,cur_,count_);
-        cur_++;
+            wchar_t bufw2[BUFLEN];
+            wsprintf(bufw2,L"%ws\\%ws",data.drp->getPath(),data.drp->getFilename());
+            log_con("Saving indexes for '%S'\n",bufw2);
+            if(flags&COLLECTION_USE_LZMA)itembar_settext(SLOT_INDEXING,2,bufw2,cur_,count_);
+            cur_++;
             data.drp->saveindex();
         }
     }
+    return 0;
 }
 void Collection::save()
 {
@@ -401,26 +407,23 @@ void Collection::save()
     time_indexsave=GetTickCount();
 
     // Save indexes
-    int count=0,cur=1;
+    count_=0;
     cur_=1;
     if((flags&FLAG_KEEPUNPACKINDEX)==0)
         driverpack_list[0].type=DRIVERPACK_TYPE_INDEXED;
     for(auto &driverpack:driverpack_list)
-        if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)count++;
-    count_=count;
+        if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
 
     log_con("Saving indexes...\n");
     HANDLE thr[16];
+    drplist_t queuedriverpack_loc(100);
     for(int i=0;i<num_cores;i++)
-        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&async_savedrp,this,0,nullptr);
+        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&async_savedrp,&queuedriverpack_loc,0,nullptr);
     for(auto &driverpack:driverpack_list)
     if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)
-    {
-        frm tt;tt.drp=&driverpack;
-        queuedriverpack1.push(tt);
-    }
-    frm tt;tt.drp=nullptr;
-    for(int i=0;i<num_cores;i++)queuedriverpack1.push(tt);
+        queuedriverpack_loc.push(frm{&driverpack});
+
+    for(int i=0;i<num_cores;i++)queuedriverpack_loc.push(frm{nullptr});
     for(int i=0;i<num_cores;i++)
     {
         WaitForSingleObject(thr[i],INFINITE);
@@ -495,11 +498,12 @@ int Collection::scanfolder_count(const wchar_t *path)
 
 unsigned int __stdcall  consumer1(void *arg)
 {
+    drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     frm data;
     int exit=0;
     while(!exit)
     {
-        while(queuedriverpack.pop(data))
+        while(drplist->pop(data))
         {
             Driverpack *drp=data.drp;
             if(data.drp==nullptr){exit=1;break;}
@@ -516,7 +520,14 @@ unsigned int __stdcall  consumer1(void *arg)
                     itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
                     manager_g->setpos();
                     drp_cur++;*/
+#ifndef NDEBUG
+                    dr->objs=new boost::lockfree::queue<obj>(100);
+#else
+                    drp->objs=new boost::lockfree::queue<obj>;
+#endif
+                    queuedriverpack1.push(frm{drp});
                     drp->genindex();
+                    driverpack_indexinf_async(drp,L"",L"",nullptr,0);
                 }
 
 //            data.drp->genindex();
@@ -568,23 +579,23 @@ void Collection::populate()
 //{thread
     int num_thr=num_cores;
     int num_thr_1=num_cores;
-    if(drp_count)num_thr=3;
+    if(drp_count&&num_thr>3)num_thr=3;
     log_con("Cores: %d\n",num_cores);
 
     HANDLE thr[16],cons[16];
     for(int i=0;i<num_thr_1;i++)
-        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::thread_indexinf,this,0,nullptr);
+        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::thread_indexinf,&queuedriverpack1,0,nullptr);
 
+    drplist_t queuedriverpack(100);
     for(int i=0;i<num_thr;i++)
-        cons[i]=(HANDLE)_beginthreadex(nullptr,0,&consumer1,this,0,nullptr);
+        cons[i]=(HANDLE)_beginthreadex(nullptr,0,&consumer1,&queuedriverpack,0,nullptr);
 //}thread
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
     drp_cur=1;
 
-    scanfolder(driverpack_dir);
-    frm t;t.drp=nullptr;
-    for(int i=0;i<num_thr;i++)queuedriverpack.push(t);
+    scanfolder(driverpack_dir,&queuedriverpack);
+    for(int i=0;i<num_thr;i++)queuedriverpack.push(frm{nullptr});
 
     for(int i=0;i<num_thr;i++)
     {
@@ -599,8 +610,7 @@ void Collection::populate()
     driverpack_list[0].genhashes();
 
 //{thread
-    frm tt;tt.drp=nullptr;
-    for(int i=0;i<num_thr_1;i++)queuedriverpack1.push(tt);
+    for(int i=0;i<num_thr_1;i++)queuedriverpack1.push(frm{nullptr});
 
     for(int i=0;i<num_thr_1;i++)
     {
@@ -679,17 +689,13 @@ wchar_t *Collection::finddrp(wchar_t *fnd)
     return n_s;
 }
 
-void Collection::scanfolder(const wchar_t *path)
+void Collection::scanfolder(const wchar_t *path,void *arg)
 {
-    HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
-    wchar_t buf[1024];
-    Driverpack *drp;
+    wchar_t buf[BUFLEN];
 
-    //a_drp_cur=drp_cur;
-    //a_drp_count=drp_count;
     wsprintf(buf,L"%s\\*.*",path);
-    hFind=FindFirstFile(buf,&FindFileData);
+    HANDLE hFind=FindFirstFile(buf,&FindFileData);
 
     while(FindNextFile(hFind,&FindFileData)!=0)
     {
@@ -697,35 +703,17 @@ void Collection::scanfolder(const wchar_t *path)
         {
             if(lstrcmp(FindFileData.cFileName,L"..")==0)continue;
             wsprintf(buf,L"%s\\%s",path,FindFileData.cFileName);
-            scanfolder(buf);
+            scanfolder(buf,arg);
         } else
         {
             int len=lstrlen(FindFileData.cFileName);
             if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
-                drp=&driverpack_list.back();
-                //drp->init(path,FindFileData.cFileName,this);
-                /*if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
-                {
-                    wchar_t bufw1[BUFLEN];
-                    wchar_t bufw2[BUFLEN];
-                    if(!drp_count)drp_count=1;
-                    wsprintf(bufw1,L"Indexing %d/%d",drp_cur,drp_count);
-                    wsprintf(bufw2,L"%s\\%s",path,FindFileData.cFileName);
-                    manager_g->items_list[SLOT_INDEXING].isactive=1;
-                    manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
-                    manager_g->items_list[SLOT_INDEXING].val2=drp_count;
-                    itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
-                    manager_g->setpos();*/
-                    frm tt;tt.drp=drp;
-                    queuedriverpack.push(tt);
-                    //consumer();
-                    //drp->genindex();
-                    //drp_cur++;
-                //}
+                reinterpret_cast<drplist_t *>(arg)->push(frm{&driverpack_list.back()});
             }else
-            if(StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0&&loaded_unpacked==0)
+            if((StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0||
+               StrCmpIW(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
             {
                 FILE *f;
                 char *buft;
@@ -738,24 +726,12 @@ void Collection::scanfolder(const wchar_t *path)
                 fread(buft,len,1,f);
                 fclose(f);
                 wsprintf(buf,L"%s\\",path+wcslen(driverpack_dir)+1);
-                driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
-                free(buft);
-            }else
-            if(StrCmpIW(FindFileData.cFileName+len-4,L".cat")==0&&loaded_unpacked==0)
-            {
-                FILE *f;
-                char *buft;
-                wsprintf(buf,L"%s\\%s",path,FindFileData.cFileName);
-                f=_wfopen(buf,L"rb");
-                fseek(f,0,SEEK_END);
-                len=ftell(f);
-                fseek(f,0,SEEK_SET);
-                buft=(char *)malloc(len);
-                fread(buft,len,1,f);
-                fclose(f);
-                wsprintf(buf,L"%s\\",path+wcslen(driverpack_dir)+1);
-//                driverpack_indexinf(&driverpack_list[0],buf,FindFileData.cFileName,buft,len);
-                driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
+
+                if(StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0)
+                    driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
+                else
+                    driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
+
                 free(buft);
             }
         }
@@ -1067,6 +1043,7 @@ void Driverpack::genhashes()
 
 unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
 {
+    drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     obj t;
     frm data;
     int exit=0,exit1=0;
@@ -1075,7 +1052,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
 
     while(!exit)
     {
-        while(queuedriverpack1.pop(data))
+        while(drplist->pop(data))
         {
             if(!data.drp){exit=1;break;}
 
@@ -1113,7 +1090,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
                     free(t.adr);
                     last=GetTickCount();
                     //log_con("Trm %ws(%d,%d)\n",data.drp->getFilename(),t.drp->indexesold.size,tt);
-                    delete data.drp->objs;
+                    delete reinterpret_cast<boost::lockfree::queue<obj> *>(data.drp->objs);
                     exit1=1;
                     break;
                 }
@@ -1232,14 +1209,6 @@ int Driverpack::genindex()
     log_con("Indexing %S\n",name);
     if(InFile_OpenW(&archiveStream.file,name))return 1;
 
-#ifndef NDEBUG
-    objs=new boost::lockfree::queue<obj>(100);
-#else
-    objs=new boost::lockfree::queue<obj>;
-#endif
-    frm tt;tt.drp=this;
-    queuedriverpack1.push(tt);
-
     FileInStream_CreateVTable(&archiveStream);
     LookToRead_CreateVTable(&lookStream,False);
     lookStream.realStream=&archiveStream.s;
@@ -1327,7 +1296,7 @@ int Driverpack::genindex()
 
     //log_con("%ws, %d\n",getFilename(),cc);
 
-    driverpack_indexinf_async(this,L"",L"",nullptr,0);
+    //driverpack_indexinf_async(this,L"",L"",nullptr,0);
     return 1;
 }
 

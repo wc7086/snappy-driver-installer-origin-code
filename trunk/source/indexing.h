@@ -183,7 +183,7 @@ public:
     void print();
     wchar_t *finddrp(wchar_t *s);
     void printstates();
-    void scanfolder(const wchar_t *path);
+    void scanfolder(const wchar_t *path,void *arg);
     int  scanfolder_count(const wchar_t *path);
 };
 
