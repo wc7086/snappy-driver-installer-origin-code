@@ -55,6 +55,17 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <exception>
 #include <memory>
 
+#ifdef INDEXING_H
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Winline"
+#pragma GCC diagnostic ignored "-Wundef"
+#include <boost/lockfree/queue.hpp>
+#pragma GCC diagnostic pop
+#endif
+
 // SDI
 #include "svnrev.h"
 #include "resources.h"
@@ -249,35 +260,36 @@ extern int virtual_arch_type;
 //}
 
 //{ Structs
-struct bundle_t
+class bundle_t
 {
     State state;
     Collection collection;
     Matcher matcher;
 
-    ~bundle_t();
+    static unsigned int __stdcall thread_scandevices(void *arg);
+    static unsigned int __stdcall thread_loadindexes(void *arg);
+    static unsigned int __stdcall thread_getsysinfo(void *arg);
+
+public:
+    friend unsigned int __stdcall thread_loadall(void *arg);
+
+    Matcher *getMatcher(){return &matcher;}
+
+    void bundle_init();
+    void bundle_prep();
+    void bundle_load(bundle_t *pbundle);
+    void bundle_lowprioirity();
 };
 //}
+
+unsigned int __stdcall thread_loadall(void *arg);
 
 // Main
 void settings_parse(const wchar_t *str,int ind);
 void settings_save();
 int  settings_load(const wchar_t *filename);
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
-//void checkupdates();
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
-
-// Threads
-unsigned int __stdcall thread_scandevices(void *arg);
-unsigned int __stdcall thread_loadindexes(void *arg);
-unsigned int __stdcall thread_getsysinfo(void *arg);
-unsigned int __stdcall thread_loadall(void *arg);
-
-// Bundle
-void bundle_init(bundle_t *bundle);
-void bundle_prep(bundle_t *bundle);
-void bundle_load(bundle_t *bundle,bundle_t *pbundle);
-void bundle_lowprioirity(bundle_t *bundle);
 
 // Windows
 HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);

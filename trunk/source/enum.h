@@ -195,7 +195,7 @@ public:
     wchar_t *getManuf();
     wchar_t *getModel();
 
-    void init();
+    State();
     //State(const State &)=delete;
     //State &operator=(const State &)=delete;
     //State(State &&)=default;

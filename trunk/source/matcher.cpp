@@ -352,7 +352,7 @@ void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int 
     strtoupper(hwid,sz);
     int code=hash_getcode(hwid,sz);
 
-    for(auto &drp:col->driverpack_list)
+    for(auto &drp:*col->getList())
     {
         int isfound;
         int val=hash_find(&drp.indexesold,code,&isfound);

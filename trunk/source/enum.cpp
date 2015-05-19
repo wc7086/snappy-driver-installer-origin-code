@@ -480,11 +480,12 @@ wchar_t *State::getModel()
     return s;
 }
 
-void State::init()
+State::State()
 {
     memset(this,0,sizeof(state_m_t));
     revision=SVN_REV;
-    //log_file("sizeof(Device)=%d\nsizeof(Driver)=%d\n\n",sizeof(Device),sizeof(Driver));
+
+    //log_con("sizeof(Device)=%d\nsizeof(Driver)=%d\n\n",sizeof(Device),sizeof(Driver));
 }
 
 State::~State()
@@ -797,13 +798,13 @@ void State::scanDevices()
     HDEVINFO hDevInfo;
     HKEY   hkey;
     wchar_t buf[BUFLEN];
-    Collection collection;
+    Collection collection{textas.getw(windir),L"",L""};
     Driverpack unpacked_drp{L"",L"windir.7z",&collection};
 
     if((invaidate_set&INVALIDATE_DEVICES)==0)return;
 
     time_devicescan=GetTickCount();
-    collection.init(textas.getw(windir),L"",L"");
+    //collection.init(textas.getw(windir),L"",L"");
     Devices_list.clear();
     Drivers_list.clear();
     inf_list_new.clear();

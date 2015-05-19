@@ -396,14 +396,14 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 // Allocate resources
     bundle_t bundle[2];
-    bundle_init(&bundle[0]);
-    bundle_init(&bundle[1]);
-    manager_v[0].init(&bundle[bundle_display].matcher);
-    manager_v[1].init(&bundle[bundle_display].matcher);
+    bundle[0].bundle_init();
+    bundle[1].bundle_init();
+    manager_v[0].init(bundle[bundle_display].getMatcher());
+    manager_v[1].init(bundle[bundle_display].getMatcher());
     deviceupdate_event=CreateEvent(nullptr,0,0,nullptr);
 
 // Start device/driver scan
-    bundle_prep(&bundle[bundle_display]);
+    bundle[bundle_display].bundle_prep();
     invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
     HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
 
@@ -469,7 +469,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 //}
 
 //{ Threads
-unsigned int __stdcall thread_scandevices(void *arg)
+unsigned int __stdcall bundle_t::thread_scandevices(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
     State *state=&bundle->state;
@@ -480,18 +480,17 @@ unsigned int __stdcall thread_scandevices(void *arg)
     return 0;
 }
 
-unsigned int __stdcall thread_loadindexes(void *arg)
+unsigned int __stdcall bundle_t::thread_loadindexes(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
     Collection *collection=&bundle->collection;
 
     if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
-    collection->driverpack_dir=*drpext_dir?drpext_dir:drp_dir;
-    collection->populate();
+    collection->updatedir();
     return 0;
 }
 
-unsigned int __stdcall thread_getsysinfo(void *arg)
+unsigned int __stdcall bundle_t::thread_getsysinfo(void *arg)
 {
     bundle_t *bundle=(bundle_t *)arg;
     State *state=&bundle->state;
@@ -515,8 +514,8 @@ unsigned int __stdcall thread_loadall(void *arg)
         WaitForSingleObject(deviceupdate_event,INFINITE);
 
         log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
-        bundle_prep(&bundle[bundle_shadow]);
-        bundle_load(&bundle[bundle_shadow],&bundle[bundle_display]);
+        bundle[bundle_shadow].bundle_prep();
+        bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
         log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
 
@@ -538,7 +537,7 @@ unsigned int __stdcall thread_loadall(void *arg)
         log_con("{2Sync\n");
         EnterCriticalSection(&sync);
         log_con("*");
-        bundle_lowprioirity(&bundle[bundle_shadow]);
+        bundle[bundle_shadow].bundle_lowprioirity();
 
         if(cancel_update)
             log_con("*** CANCEL ***\n\n");
@@ -549,7 +548,7 @@ unsigned int __stdcall thread_loadall(void *arg)
             bundle_shadow^=1;
         }
         //printf("%d\n",)
-        bundle_init(&bundle[bundle_shadow]);
+        bundle[bundle_shadow].bundle_init();
         if(cancel_update)SetEvent(deviceupdate_event);
         log_con("}2Sync\n");
         LeaveCriticalSection(&sync);
@@ -567,43 +566,38 @@ unsigned int __stdcall thread_loadall(void *arg)
 //}
 
 //{ Bundle
-
-bundle_t::~bundle_t(){}
-
-void bundle_init(bundle_t *bundle)
+void bundle_t::bundle_init()
 {
-    bundle->state.init();
-    bundle->collection.init(drp_dir,index_dir,output_dir);
-    bundle->matcher.init(&bundle->state,&bundle->collection);
+    collection.init(drp_dir,index_dir,output_dir);
+    matcher.init(&state,&collection);
 }
 
-void bundle_prep(bundle_t *bundle)
+void bundle_t::bundle_prep()
 {
-    bundle->state.getsysinfo_fast();
+    state.getsysinfo_fast();
 }
 
-
-void bundle_load(bundle_t *bundle,bundle_t *pbundle)
+void bundle_t::bundle_load(bundle_t *pbundle)
 {
     HANDLE thandle[3];
 
-    thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,bundle,0,nullptr);
-    thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,bundle,0,nullptr);
-    thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,bundle,0,nullptr);
+    thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,this,0,nullptr);
+    thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,this,0,nullptr);
+    thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,this,0,nullptr);
     WaitForMultipleObjects(3,thandle,1,INFINITE);
     CloseHandle_log(thandle[0],L"bundle_load",L"0");
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
-    if((invaidate_set&INVALIDATE_DEVICES)==0){bundle->state=pbundle->state;time_devicescan=0;}
-    if((invaidate_set&INVALIDATE_SYSINFO)==0)bundle->state.getsysinfo_slow(&pbundle->state);
+    if((invaidate_set&INVALIDATE_DEVICES)==0){state=pbundle->state;time_devicescan=0;}
+    if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
     invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
-    bundle->matcher.state->textas.shrink();
-    bundle->matcher.populate();
+    matcher.state->textas.shrink();
+    matcher.populate();
 }
 
-void bundle_lowprioirity(bundle_t *bundle)
+void bundle_t::bundle_lowprioirity()
 {
     wchar_t filename[BUFLEN];
     time_startup=GetTickCount()-time_startup;
@@ -611,10 +605,9 @@ void bundle_lowprioirity(bundle_t *bundle)
 
     redrawmainwnd();
 
-    bundle->collection.printstates();
-    //collection_finddrp(&bundle->collection,L"");
-    bundle->state.print();
-    bundle->matcher.print();
+    collection.printstates();
+    state.print();
+    matcher.print();
     manager_g->print_hr();
 
 #ifdef USE_TORRENT
@@ -624,15 +617,15 @@ void bundle_lowprioirity(bundle_t *bundle)
         Updater.checkUpdates();
     }
 #endif
-    bundle->collection.save();
+    collection.save();
     gen_timestamp();
     wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
-    bundle->state.save(filename);
+    state.save(filename);
 
     if(flags&COLLECTION_PRINT_INDEX)
     {
         log_con("Saving humanreadable indexes...");
-        bundle->collection.print();
+        collection.print_index_hr();
         flags&=~COLLECTION_PRINT_INDEX;
         log_con("DONE\n");
     }
@@ -1352,7 +1345,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 manager_active&=1;
                 manager_g=&manager_v[manager_active];
 
-                manager_g->matcher=&bb->matcher;
+                manager_g->matcher=bb->getMatcher();
                 memcpy(&manager_g->items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
                 manager_g->populate();
                 manager_g->filter(filters);
