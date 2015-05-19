@@ -1590,7 +1590,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             i=D(PNLITEM_OFSX)+D(PANEL_LIST_OFSX);
             j=D(PANEL_LIST_OFSX)?0:1;
             f=D(PANEL_LIST_OFSX)?4:0;
-            MoveWindow(hField,Xm(D(DRVLIST_OFSX)),Ym(D(DRVLIST_OFSY)),XM(D(DRVLIST_WX),D(DRVLIST_OFSX)),YM(D(DRVLIST_WY),D(DRVLIST_OFSY)),TRUE);
+            MoveWindow(hField,Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)),XM(D(DRVLIST_WX),D(DRVLIST_OFSX)),YM(D(DRVLIST_WY),D(DRVLIST_OFSY)),TRUE);
 
             panels[2].moveWindow(hLang,i,j,f);
             j=D(PANEL_LIST_OFSX)?1:3;
@@ -1683,7 +1683,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(i==2&&j==11)
             {
                 floating_itembar=SLOT_RESTORE_POINT;
-                contextmenu(x-Xm(D(DRVLIST_OFSX)),y-Ym(D(DRVLIST_OFSY)));
+                contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
             }
             break;
 
@@ -2065,7 +2065,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             GetClientRect(hwnd,&rect);
             canvasField->begin(hwnd,rect.right,rect.bottom);
 
-            BitBlt(canvasField->getDC(),0,0,rect.right,rect.bottom,canvasMain->getDC(),Xm(D(DRVLIST_OFSX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
+            BitBlt(canvasField->getDC(),0,0,rect.right,rect.bottom,canvasMain->getDC(),Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
             manager_g->draw(canvasField->getDC(),y);
 
             canvasField->end();
