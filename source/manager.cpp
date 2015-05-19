@@ -259,7 +259,7 @@ void Manager::filter(int options)
 
     items_list[SLOT_NOUPDATES].isactive=
         items_list.size()==RES_SLOTS||
-        (i==0&&statemode==0&&matcher->col->driverpack_list.size()>1)?1:0;
+        (i==0&&statemode==0&&matcher->col->size()>1)?1:0;
 
     items_list[SLOT_RESTORE_POINT].isactive=statemode==
         STATEMODE_EMUL||i==0||(flags&FLAG_NORESTOREPOINT)?0:1;

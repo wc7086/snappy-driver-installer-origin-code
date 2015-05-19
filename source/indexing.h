@@ -161,30 +161,34 @@ public:
 // Collection
 class Collection
 {
-public:
-    wchar_t *driverpack_dir;
+private:
     const wchar_t *index_bin_dir;
     const wchar_t *index_linear_dir;
-
     std::vector<Driverpack> driverpack_list;
+    wchar_t *driverpack_dir;
+
+    int  scanfolder_count(const wchar_t *path);
+    void scanfolder(const wchar_t *path,void *arg);
+    void loadOnlineIndexes();
+    static unsigned int __stdcall loaddrp_thread(void *arg);
+    static unsigned int __stdcall savedrp_thread(void *arg);
 
 public:
-    friend unsigned int __stdcall thread_indexinf(void *arg);
-    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-
     wchar_t *getDriverpack_dir()const{return driverpack_dir;}
     const wchar_t *getIndex_bin_dir()const{return index_bin_dir;}
     const wchar_t *getIndex_linear_dir()const{return index_linear_dir;}
+    int size(){return driverpack_list.size();}
+    void updatedir();
+    std::vector<Driverpack> *getList(){return &driverpack_list;}
 
     void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
+    Collection(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
+    Collection(){}
     void save();
-    void loadOnlineIndexes();
     void populate();
-    void print();
-    wchar_t *finddrp(wchar_t *s);
+    void print_index_hr();
     void printstates();
-    void scanfolder(const wchar_t *path,void *arg);
-    int  scanfolder_count(const wchar_t *path);
+    wchar_t *finddrp(wchar_t *s);
 };
 
 // Driverpack
@@ -193,7 +197,7 @@ class Driverpack
 private:
     ofst drppath;
     ofst drpfilename;
-public:
+
     int type;
 
     Collection *col;
@@ -207,14 +211,25 @@ public:
     std::vector<data_HWID_t> HWID_list;
     Txt texta;
 
-    //boost::lockfree::queue<obj> *objs;
+#ifdef INDEXING_H
+    boost::lockfree::queue<obj> *objs;
+#else
     void *objs;
+#endif
 
 private:
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
     int  genindex();
 
 public:
+    friend class Driver;
+    friend class Collection;
+    friend class Hwidmatch;
+    friend class Matcher;
+    friend void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
+    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+
     wchar_t *getPath(){return texta.getw(drppath);}
     wchar_t *getFilename(){return texta.getw(drpfilename);}
 
@@ -227,15 +242,14 @@ public:
     int  checkindex();
     int  loadindex();
     void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
-    void print();
+    void print_index_hr();
     void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
     void genhashes();
     static unsigned int __stdcall thread_indexinf(void *arg);
 
-    friend unsigned int __stdcall  consumer1(void *arg);
 };
-    void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
 // Misc
 void findosattr(char *bufa,char *adr,int len);
