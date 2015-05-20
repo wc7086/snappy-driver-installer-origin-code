@@ -526,7 +526,7 @@ void Panel::draw(HDC hdc)
         // System Info (2nd line)
         if(i==2&&index==0)
         {
-            wsprintf(buf,L"%s (%d-bit)",get_winverstr(manager_g),state->architecture?64:32);
+            wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->architecture?64:32);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));

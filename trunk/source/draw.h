@@ -124,7 +124,7 @@ public:
     void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);
 
-    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); //TODO: friend
 };
 
 // Misc functions

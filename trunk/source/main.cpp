@@ -104,7 +104,6 @@ int filters=
 int virtual_os_version=0;
 int virtual_arch_type=0;
 
-#define NUM_OS 8
 const wchar_t *windows_name[NUM_OS]=
 {
     L"Windows 2000",
@@ -280,7 +279,7 @@ int  settings_load(const wchar_t *filename)
 {
     wchar_t buf[BUFLEN];
 
-    if(!LoadCFGFile(filename,buf))return 0;
+    if(!loadCFGFile(filename,buf))return 0;
     settings_parse(buf,0);
     return 1;
 }
@@ -324,7 +323,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 // Load settings
     init_CLIParam();
-    if (isCfgSwithExist(GetCommandLineW(),CLIParam.SaveInstalledFileName))
+    if(isCfgSwithExist(GetCommandLineW(),CLIParam.SaveInstalledFileName))
         settings_load(CLIParam.SaveInstalledFileName);
     else
     if(!settings_load(L"sdi.cfg"))
@@ -517,7 +516,7 @@ unsigned int __stdcall thread_loadall(void *arg)
         bundle[bundle_shadow].bundle_prep();
         bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
-        log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
+        //log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
 
         if(!(flags&FLAG_NOGUI))
         if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
@@ -782,24 +781,6 @@ void get_resource(int id,void **data,int *size)
     }
     *size=SizeofResource(nullptr,myResource);
     *data=LoadResource(nullptr,myResource);
-}
-
-const wchar_t *get_winverstr(Manager *manager1)
-{
-    int i;
-    int ver=manager1->matcher->getState()->platform.dwMinorVersion;
-    ver+=10*manager1->matcher->getState()->platform.dwMajorVersion;
-
-    if(ver==64)ver=100;
-    if(ver==52)
-    {
-        if(manager1->matcher->getState()->architecture)
-            ver=51;
-        else
-            return L"Windows Server 2003";
-    }
-    for(i=0;i<NUM_OS;i++)if(windows_ver[i]==ver)return windows_name[i];
-    return windows_name[NUM_OS-1];
 }
 
 void mkdir_r(const wchar_t *path)
@@ -2139,7 +2120,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((flags&FLAG_EXTRACTONLY)==0)
-                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->temp));
+                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
                     manager_install(INSTALLDRIVERS);
                 }
                 redrawfield();

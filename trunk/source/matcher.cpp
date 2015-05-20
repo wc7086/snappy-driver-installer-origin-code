@@ -203,7 +203,7 @@ int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
 
 int calc_signature(int catalogfile,State *state,int isnt)
 {
-    if(state->architecture)
+    if(state->getArchitecture())
     {
         if(catalogfile&(1<<CatalogFile|1<<CatalogFile_nt|1<<CatalogFile_ntamd64|1<<CatalogFile_ntia64))
             return 0;
@@ -219,7 +219,9 @@ int calc_signature(int catalogfile,State *state,int isnt)
 
 unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
 {
-    if(state->platform.dwMajorVersion>=6)
+    int major,minor;
+    state->getWinVer(&major,&minor);
+    if(major>=6)
         return (calc_signature(catalogfile,state,isnt)<<16)+(feature<<16)+rank;
     else
         return calc_signature(catalogfile,state,isnt)+rank;
@@ -245,9 +247,10 @@ int calc_secttype(const char *s)
 
 int calc_decorscore(int id,State *state)
 {
-    int major=state->platform.dwMajorVersion,
-        minor=state->platform.dwMinorVersion,
-        arch=state->architecture+1;
+    int major,
+        minor,
+        arch=state->getArchitecture()+1;
+    state->getWinVer(&major,&minor);
 
     if(id<0)return 1;
     if(nts_version[id]&&major*10+minor<nts_version[id])return 0;
@@ -258,12 +261,13 @@ int calc_decorscore(int id,State *state)
 int calc_markerscore(State *state,const char *path)
 {
     char buf[BUFLEN];
-    int majver=state->platform.dwMajorVersion,
-        minver=state->platform.dwMinorVersion,
-        arch=state->architecture,
+    int majver,
+        minver,
+        arch=state->getArchitecture(),
         curmaj=-1,curmin=-1,curarch=-1;
     int i;
     int score=0;
+    state->getWinVer(&majver,&minver);
 
     strcpy(buf,path);
     strtolower(buf,strlen(buf));
@@ -489,8 +493,8 @@ int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *sectio
 int Hwidmatch::isvalid_ver(State *state)
 {
     version_t *v;
-    int major=state->platform.dwMajorVersion;
-    int minor=state->platform.dwMinorVersion;
+    int major,minor;
+    state->getWinVer(&major,&minor);
 
     v=getdrp_drvversion();
     switch(v->v1)

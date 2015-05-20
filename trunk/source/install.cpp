@@ -210,7 +210,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     }
 
     if(!*ret)*ret=GetLastError();
-    if((unsigned)*ret==0xE0000235||manager_g->matcher->getState()->architecture)//ERROR_IN_WOW64
+    if((unsigned)*ret==0xE0000235||manager_g->matcher->getState()->getArchitecture())//ERROR_IN_WOW64
     {
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
         wsprintf(cmd,L"%s\\install64.exe",extractdir);

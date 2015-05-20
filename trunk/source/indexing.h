@@ -14,6 +14,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+// Declarations
 class Collection;
 class Driverpack;
 class data_manufacturer_t;
@@ -24,7 +26,7 @@ class data_HWID_t;
 #define STR_LN 4096
 typedef int ofst;
 
-//{ Misc
+// Misc
 enum
 {
     ClassGuid_,
@@ -49,22 +51,31 @@ enum DRIVERPACK_TYPE
     DRIVERPACK_TYPE_EMPTY          = 3,
 };
 
-struct obj
+class obj
 {
     Driverpack *drp;
     wchar_t pathinf[BUFLEN];
     wchar_t inffile[BUFLEN];
     char *adr;
     int len;
+
+    friend class Driverpack;
+    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 };
 
 class sect_data_t
 {
-public:
     char *blockbeg,*blockend;
+
+public:
     sect_data_t(char *bb,char *be):blockbeg(bb),blockend(be){}
+
+    friend class Parser;
+    friend class Driverpack;
 };
 
+// Version
 class version_t
 {
     int d,m,y;
@@ -87,8 +98,8 @@ public:
 };
 int cmpdate(version_t *t1,version_t *t2);
 int cmpversion(version_t *t1,version_t *t2);
-//}
 
+// Indexes
 class data_inffile_t // 132
 {
     ofst infpath;
@@ -149,7 +160,7 @@ public:
 
     friend class Driverpack;
     friend class Hwidmatch;
-    friend class Driver;
+    friend class Driver; // TODO: friend
 };
 
 // Parser
@@ -249,13 +260,6 @@ private:
     int  genindex();
 
 public:
-    friend class Driver;
-    friend class Collection;
-    friend class Hwidmatch;
-    friend class Matcher;
-    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-
     wchar_t *getPath(){return texta.getw(drppath);}
     wchar_t *getFilename(){return texta.getw(drpfilename);}
 
@@ -274,6 +278,13 @@ public:
     void genhashes();
     static unsigned int __stdcall thread_indexinf(void *arg);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
+
+    friend class Driver; // TODO: friend
+    friend class Collection; // TODO: friend
+    friend class Hwidmatch; // TODO: friend
+    friend class Matcher; // TODO: friend
+    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 };
 void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 

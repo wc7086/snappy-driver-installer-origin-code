@@ -115,7 +115,7 @@ void version_t::str_date(wchar_t *buf)
     if(y<1000)
         wsprintf(buf,STR(STR_HINT_UNKNOWN));
     else
-        GetDateFormat(manager_g->matcher->getState()->locale,0,&tm,nullptr,buf,100);
+        GetDateFormat(manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf,100);
 }
 
 void version_t::str_version(wchar_t *buf)

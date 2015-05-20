@@ -98,11 +98,11 @@ public:
     int isMissing(State *state);
     int getStatus(){return status;}
 
-    friend class Manager;
-    friend class Matcher;
-    friend void contextmenu(int x,int y);
-    friend const wchar_t *getHWIDby(int id,int num);
-    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    friend class Manager; // TODO: friend
+    friend class Matcher; // TODO: friend
+    friend void contextmenu(int x,int y); // TODO: friend
+    friend const wchar_t *getHWIDby(int id,int num); // TODO: friend
+    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
 };
 
 // Hwidmatch is used to extract info about an available driver from indexes
@@ -112,7 +112,7 @@ class Hwidmatch
     int HWID_index;
 
     Devicematch *devicematch;
-public:
+//public:
     int identifierscore,decorscore,markerscore,altsectscore,status;
     unsigned score;
 
@@ -168,4 +168,11 @@ public:
     short getdrp_drvinfpos();
     char *getdrp_drvHWID();
 // <<< GETTERS
+
+    friend class Manager; // TODO: friend
+    friend class Matcher; // TODO: friend
+    friend class itembar_t; // TODO: friend
+    friend int box_status(int index); // TODO: friend
+    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
+    friend void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode,int index); // TODO: friend
 };
