@@ -68,10 +68,9 @@ public:
 class version_t
 {
     int d,m,y;
-public:
     int v1,v2,v3,v4;
 
-
+public:
     void str_date(wchar_t *buf);
     void str_version(wchar_t *buf);
     int setDate(int d_,int m_,int y_);
@@ -86,7 +85,6 @@ public:
     friend int cmpdate(version_t *t1,version_t *t2);
     friend int cmpversion(version_t *t1,version_t *t2);
 };
-const wchar_t *str_version(version_t *ver);
 int cmpdate(version_t *t1,version_t *t2);
 int cmpversion(version_t *t1,version_t *t2);
 //}
@@ -128,7 +126,8 @@ class data_desc_t // 24
     unsigned int feature;
 
 public:
-    data_desc_t(){}
+    //data_desc_t(){}
+    data_desc_t():manufacturer_index(0),sect_pos(0),desc(0),install(0),install_picked(0),feature(0){}
     data_desc_t(unsigned manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
         manufacturer_index(manufacturer_indexv),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
 
@@ -138,17 +137,19 @@ public:
 
 class data_HWID_t // 12
 {
-public:
     unsigned desc_index;
     int inf_pos;
 
     ofst HWID;
 
+public:
+    //data_HWID_t(){}
+    data_HWID_t():desc_index(0),inf_pos(0),HWID(0){}
     data_HWID_t(unsigned desc_indexv,int inf_posv,ofst HWIDv):desc_index(desc_indexv),inf_pos(inf_posv),HWID(HWIDv){}
-    data_HWID_t(){}
 
     friend class Driverpack;
     friend class Hwidmatch;
+    friend class Driver;
 };
 
 // Parser
@@ -210,7 +211,7 @@ public:
 
     void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
     Collection(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
-    Collection(){}
+    Collection():index_bin_dir(nullptr),index_linear_dir(nullptr),driverpack_dir(nullptr){}
     void save();
     void populate();
     void print_index_hr();
@@ -221,7 +222,6 @@ public:
 // Driverpack
 class Driverpack
 {
-private:
     ofst drppath;
     ofst drpfilename;
 

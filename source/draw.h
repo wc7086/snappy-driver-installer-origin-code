@@ -18,11 +18,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define NUM_PANELS  13
 #define PAN_ENT     18
 
+// Declarations
 class Image;
 class Panel;
 class Panelitem;
 
-//{ Global vars
+// Global vars
 extern int rtl;
 extern Image box[BOX_NUM];
 extern Image icon[ICON_NUM];
@@ -30,17 +31,8 @@ extern Image icon[ICON_NUM];
 extern Panelitem panel3[];
 extern Panelitem panel3_w[];
 extern Panel panels[NUM_PANELS];
-//}
 
-//{ Structs
-struct Panelitem
-{
-    int type;
-    int str_id;
-    int action_id;
-    int checked;
-};
-
+// Image
 class Image
 {
     HBITMAP bitmap;
@@ -79,6 +71,7 @@ public:
     void draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
 
+// Canvas
 class Canvas
 {
     int x,y;
@@ -100,6 +93,14 @@ public:
     void end();
 };
 
+// Panel
+struct Panelitem
+{
+    int type;
+    int str_id;
+    int action_id;
+    int checked;
+};
 class Panel
 {
     Panelitem *items;
@@ -116,7 +117,8 @@ public:
     void setChecked(int i,int val){items[i].checked=val;}
     void flipChecked(int i){items[i].checked^=1;}
 
-    void setfilters();
+    int calcFilters();
+    void setFilters();
     int  hitscan(int x,int y);
     void draw_inv();
     void draw(HDC hdc);
@@ -124,9 +126,8 @@ public:
 
     friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 };
-//}
 
-// Draw
+// Misc functions
 int mir(int x);
 int mirc(int x);
 int mirw(int x,int ofs,int w);

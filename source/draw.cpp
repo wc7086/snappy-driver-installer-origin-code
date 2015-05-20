@@ -468,7 +468,19 @@ void Panel::draw_inv()
     InvalidateRect(hMain,&rect,0);
 }
 
-void Panel::setfilters()
+int Panel::calcFilters()
+{
+    int sum=0;
+
+    for(int j=0;j<items[0].action_id+1;j++)
+        if(items[j].type==TYPE_CHECKBOX&&
+            items[j].checked&&
+            items[j].action_id!=ID_EXPERT_MODE)
+            sum+=1<<items[j].action_id;
+    return sum;
+}
+
+void Panel::setFilters()
 {
     for(int i=0;i<items[0].action_id+1;i++)
         if(items[i].action_id>=ID_SHOW_MISSING&&items[i].action_id<=ID_SHOW_INVALID)
@@ -554,14 +566,7 @@ void Panel::draw(HDC hdc)
 
                 if(i==1&&index==8) // Install button
                 {
-                    unsigned j,cnt=0;
-                    itembar_t *itembar;
-
-                    itembar=&manager_g->items_list[RES_SLOTS];
-                    for(j=RES_SLOTS;j<manager_g->items_list.size();j++,itembar++)
-                    if(itembar->checked)cnt++;
-
-                    wsprintf(buf,L"%s (%d)",STR(items[i].str_id),cnt);
+                    wsprintf(buf,L"%s (%d)",STR(items[i].str_id),manager_g->countItems());
                     TextOut(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf,wcslen(buf));
                 }
                 else
@@ -675,7 +680,7 @@ int panels_hitscan(int hx,int hy,int *ii)
 
 void panel_setfilters(Panel *panel)
 {
-    for(int j=0;j<7;j++)panel[j].setfilters();
+    for(int j=0;j<7;j++)panel[j].setFilters();
 }
 
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)

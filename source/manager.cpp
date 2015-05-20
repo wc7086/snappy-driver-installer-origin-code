@@ -658,7 +658,7 @@ void itembar_t::str_status(wchar_t *buf)
         else
         {
             if(status&STATUS_MISSING)
-                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),devicematch->device->problem);
+                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),devicematch->device->getProblem());
             else
             {
                 if(status&STATUS_BETTER&&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_BETTER_NEW));
@@ -890,6 +890,16 @@ int Manager::groupsize(int index)
     return num;
 }
 
+int Manager::countItems()
+{
+    unsigned j,cnt=0;
+    itembar_t *itembar;
+
+    itembar=&items_list[RES_SLOTS];
+    for(j=RES_SLOTS;j<items_list.size();j++,itembar++)
+    if(itembar->checked)cnt++;
+    return cnt;
+}
 
 void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2)
 {
@@ -1043,16 +1053,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 #ifdef USE_TORRENT
             if(!Updater.isPaused())
             {
-                wchar_t num1[64],num2[64];
-
-                format_size(num1,TorrentStatus.downloaded,0);
-                format_size(num2,TorrentStatus.downloadsize,0);
-
-                wsprintf(bufw,STR(STR_UPD_PROGRES),
-                         num1,
-                         num2,
-                         (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
-
+                Updater.showProgress(bufw);
                 drawbutton(hdc,x,pos,index,bufw,STR(STR_UPD_MODIFY));
             }
             else
@@ -1261,7 +1262,7 @@ void Manager::draw(HDC hdc,int ofsy)
 
     cutoff=calc_cutoff();
     updatecur();
-    updateoverall(this);
+    updateoverall();
     for(i=items_list.size()-1;i>=0;i--)
     {
         itembar=&items_list[i];
@@ -1522,8 +1523,8 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
     TextOutP(&td,L"| %s\\%s",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname());
     TextOutP(&td,L"| %08X%",hwidmatch->getdrp_infcrc());
     TextOutP(&td,L"| %S%S",hwidmatch->getdrp_infpath(),hwidmatch->getdrp_infname());
-    TextOutP(&td,L"| %S",hwidmatch->getdrp_drvmanufacturer());
-    TextOutP(&td,L"| %d.%d.%d.%d",v->v1,v->v2,v->v3,v->v4);
+    TextOutP(&td,L"| %S",hwidmatch->getdrp_drvmanufacturer());v->str_version(bufw);
+    TextOutP(&td,L"| %s",bufw);
     TextOutP(&td,L"| %S",hwidmatch->getdrp_drvHWID());wsprintf(bufw,L"%S",hwidmatch->getdrp_drvdesc());
     TextOutP(&td,L"| %s",bufw);
 }
@@ -1578,8 +1579,8 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
         TextOutP(&td,L"| %s",bufw);
         for(k=0;k<6;k++)td.x+=limits[td.i++];
         TextOutP(&td,L"| %s%s",t+manager->matcher->getState()->windir,t+cur_driver->InfPath);
-        TextOutP(&td,L"| %s",t+cur_driver->ProviderName);
-        TextOutP(&td,cur_driver->version.v1<0?STR(STR_HINT_UNKNOWN):L"| %d.%d.%d.%d",cur_driver->version.v1,cur_driver->version.v2,cur_driver->version.v3,cur_driver->version.v4);
+        TextOutP(&td,L"| %s",t+cur_driver->ProviderName);cur_driver->version.str_version(bufw);
+        TextOutP(&td,L"| %s",bufw);
         TextOutP(&td,L"| %s",i_hwid);
         TextOutP(&td,L"| %s",t+cur_driver->DriverDesc);
         td.y+=lne;
@@ -1783,8 +1784,8 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
         TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
         TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
-        TextOutF(&td,cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);
-        TextOutF(&td,cm_ver  ==1?cb:c0,str_version(&cur_driver->version),STR(STR_HINT_VERSION),cur_driver->version.v1,cur_driver->version.v2,cur_driver->version.v3,cur_driver->version.v4);
+        TextOutF(&td,cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
+        TextOutF(&td,cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
         TextOutF(&td,cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
         TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
         TextOutF(&td,               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
@@ -1801,8 +1802,8 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
         TextOutF(&td,               c0,L"%s",bufw+1000);
         TextOutF(&td,               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
-        TextOutF(&td,cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);
-        TextOutF(&td,cm_ver  ==2?cb:c0,str_version(a_v),STR(STR_HINT_VERSION),a_v->v1,a_v->v2,a_v->v3,a_v->v4);
+        TextOutF(&td,cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
+        TextOutF(&td,cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
         TextOutF(&td,cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
         TextOutF(&td,               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
         TextOutF(&td,hwidmatch_f->decorscore?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
@@ -1977,64 +1978,5 @@ void format_time(wchar_t *buf,long long val)
     if(mins) wsprintf(buf,L"%d %s %d %s",(int)mins,STR(STR_UPD_TMIN),(int)secs,STR(STR_UPD_TSEC));
     if(hours)wsprintf(buf,L"%d %s %d %s",(int)hours,STR(STR_UPD_THOUR),(int)mins,STR(STR_UPD_TMIN));
     if(days) wsprintf(buf,L"%d %s %d %s",(int)days,STR(STR_UPD_TDAY),(int)hours,STR(STR_UPD_THOUR));
-}
-
-void popup_download(HDC hdcMem)
-{
-#ifdef USE_TORRENT
-    textdata_t td;
-    TorrentStatus_t t;
-    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
-    int per=0;
-    wchar_t num1[BUFLEN],num2[BUFLEN];
-
-
-    td.col=D(POPUP_TEXT_COLOR);
-    td.y=D(POPUP_OFSY);
-    td.wy=D(POPUP_WY);
-    td.hdcMem=hdcMem;
-    td.maxsz=0;
-    td.x=p0;
-
-    //update_getstatus(&t);
-    t=TorrentStatus;
-
-    format_size(num1,t.downloaded,0);
-    format_size(num2,t.downloadsize,0);
-    if(t.downloadsize)per=t.downloaded*100/t.downloadsize;
-    TextOutSF(&td,STR(STR_DWN_DOWNLOADED),STR(STR_DWN_DOWNLOADED_F),num1,num2,per);
-    format_size(num1,t.uploaded,0);
-    TextOutSF(&td,STR(STR_DWN_UPLOADED),num1);
-    format_time(num1,t.elapsed);
-    TextOutSF(&td,STR(STR_DWN_ELAPSED),num1);
-    format_time(num1,t.remaining);
-    TextOutSF(&td,STR(STR_DWN_REMAINING),num1);
-
-    td.y+=td.wy;
-    if(t.status)
-        TextOutSF(&td,STR(STR_DWN_STATUS),L"%s",t.status);
-    if(*t.error)
-    {
-        td.col=D(POPUP_CMP_INVALID_COLOR);
-        TextOutSF(&td,STR(STR_DWN_ERROR),L"%s",t.error);
-        td.col=D(POPUP_TEXT_COLOR);
-    }
-    format_size(num1,t.downloadspeed,1);
-    TextOutSF(&td,STR(STR_DWN_DOWNLOADSPEED),num1);
-    format_size(num1,t.uploadspeed,1);
-    TextOutSF(&td,STR(STR_DWN_UPLOADSPEED),num1);
-
-    td.y+=td.wy;
-    TextOutSF(&td,STR(STR_DWN_SEEDS),STR(STR_DWN_SEEDS_F),t.seedsconnected,t.seedstotal);
-    TextOutSF(&td,STR(STR_DWN_PEERS),STR(STR_DWN_SEEDS_F),t.peersconnected,t.peerstotal);
-    format_size(num1,t.wasted,0);
-    format_size(num2,t.wastedhashfailes,0);
-    TextOutSF(&td,STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
-
-//    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
-    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
-#else
-    UNREFERENCED_PARAMETER(hdcMem)
-#endif
 }
 //}

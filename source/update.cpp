@@ -704,6 +704,77 @@ void Updater_t::moveNewFiles()
     run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
 
+void Updater_t::checkUpdates()
+{
+    if(canWrite(L"update"))SetEvent(downloadmangar_event);
+}
+
+void Updater_t::showProgress(wchar_t *buf)
+{
+    wchar_t num1[64],num2[64];
+
+    format_size(num1,TorrentStatus.downloaded,0);
+    format_size(num2,TorrentStatus.downloadsize,0);
+
+    wsprintf(buf,STR(STR_UPD_PROGRES),num1,num2,
+                (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
+}
+
+void Updater_t::showPopup(HDC hdcMem)
+{
+    textdata_t td;
+    TorrentStatus_t t;
+    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
+    int per=0;
+    wchar_t num1[BUFLEN],num2[BUFLEN];
+
+
+    td.col=D(POPUP_TEXT_COLOR);
+    td.y=D(POPUP_OFSY);
+    td.wy=D(POPUP_WY);
+    td.hdcMem=hdcMem;
+    td.maxsz=0;
+    td.x=p0;
+
+    //update_getstatus(&t);
+    t=TorrentStatus;
+
+    format_size(num1,t.downloaded,0);
+    format_size(num2,t.downloadsize,0);
+    if(t.downloadsize)per=t.downloaded*100/t.downloadsize;
+    TextOutSF(&td,STR(STR_DWN_DOWNLOADED),STR(STR_DWN_DOWNLOADED_F),num1,num2,per);
+    format_size(num1,t.uploaded,0);
+    TextOutSF(&td,STR(STR_DWN_UPLOADED),num1);
+    format_time(num1,t.elapsed);
+    TextOutSF(&td,STR(STR_DWN_ELAPSED),num1);
+    format_time(num1,t.remaining);
+    TextOutSF(&td,STR(STR_DWN_REMAINING),num1);
+
+    td.y+=td.wy;
+    if(t.status)
+        TextOutSF(&td,STR(STR_DWN_STATUS),L"%s",t.status);
+    if(*t.error)
+    {
+        td.col=D(POPUP_CMP_INVALID_COLOR);
+        TextOutSF(&td,STR(STR_DWN_ERROR),L"%s",t.error);
+        td.col=D(POPUP_TEXT_COLOR);
+    }
+    format_size(num1,t.downloadspeed,1);
+    TextOutSF(&td,STR(STR_DWN_DOWNLOADSPEED),num1);
+    format_size(num1,t.uploadspeed,1);
+    TextOutSF(&td,STR(STR_DWN_UPLOADSPEED),num1);
+
+    td.y+=td.wy;
+    TextOutSF(&td,STR(STR_DWN_SEEDS),STR(STR_DWN_SEEDS_F),t.seedsconnected,t.seedstotal);
+    TextOutSF(&td,STR(STR_DWN_PEERS),STR(STR_DWN_SEEDS_F),t.peersconnected,t.peerstotal);
+    format_size(num1,t.wasted,0);
+    format_size(num2,t.wastedhashfailes,0);
+    TextOutSF(&td,STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
+
+//    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
+    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+}
+
 void Updater_t::createThreads()
 {
     if(thandle_download)return;
@@ -737,8 +808,6 @@ void Updater_t::destroyThreads()
         log_con("DONE\n");
     }
 }
-
-bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 
 void Updater_t::downloadTorrent()
 {
@@ -948,6 +1017,8 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     log_con("}thread_download\n");
     return 0;
 }
+
+bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 //}
 #else
 

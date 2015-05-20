@@ -1,4 +1,5 @@
 #include "main.h"
+#define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 
 //{Global variables
 HFONT CLIHelp_Font;

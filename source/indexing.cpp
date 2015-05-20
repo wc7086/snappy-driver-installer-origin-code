@@ -126,14 +126,6 @@ void version_t::str_version(wchar_t *buf)
         wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
 }
 
-wchar_t unkver[128];
-const wchar_t *str_version(version_t *ver)
-{
-
-    wsprintf(unkver,L"%s%s",STR(STR_HINT_VERSION),STR(STR_HINT_UNKNOWN));
-    return ver->v1<0?unkver:L"%s%d.%d.%d.%d";
-}
-
 int cmpdate(version_t *t1,version_t *t2)
 {
     int res;

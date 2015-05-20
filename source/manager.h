@@ -116,11 +116,12 @@ enum SLOTS
 
 #define NUM_STATUS 6
 class Manager;
-typedef struct _status_t
+struct status_t
 {
     int filter,status;
-}status_t;
+};
 
+// itembar_t
 class itembar_t
 {
 public:
@@ -146,11 +147,17 @@ public:
     itembar_t();
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
+
+    friend class Manager;
+    friend class Collection;
+    friend unsigned int __stdcall thread_install(void *arg);
+    friend void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam);
 };
 void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
 void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1);
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
+// Manager
 class Manager
 {
 public:
@@ -183,7 +190,9 @@ public:
     int  calc_cutoff();
     void draw(HDC hdc,int ofsy);
     void restorepos(Manager *manager_prev);
+    void updateoverall();
     int groupsize(int index);
+    int countItems();
 };
 
 struct textdata_t
@@ -199,9 +208,8 @@ struct textdata_t
     int mode;
 };
 
-//{ Global vars
+// Global vars
 extern wchar_t extractdir[BUFLEN];
-//}
 
 // Manager
 int  manager_drplive(wchar_t *s);
@@ -228,4 +236,3 @@ int  isvalidcat(Hwidmatch *hwidmatch,State *state);
 void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int i);
 void popup_about(HDC hdcMem);
 void popup_sysinfo(Manager *manager,HDC hdcMem);
-void popup_download(HDC hdcMem);
