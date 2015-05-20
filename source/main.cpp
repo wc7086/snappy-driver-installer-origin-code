@@ -1273,6 +1273,14 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             // Theme
             hTheme=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)ID_THEME,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
             SendMessage(hwnd,WM_UPDATETHEME,0,0);
+            if(rtl)
+            {
+                SetWindowLong(hLang,GWL_EXSTYLE,GetWindowLong(hLang,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
+                SetWindowLong(hTheme,GWL_EXSTYLE,GetWindowLong(hTheme,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
+                SetWindowLong(hField,GWL_EXSTYLE,GetWindowLong(hField,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
+                SetWindowLong(hPopup,GWL_EXSTYLE,GetWindowLong(hPopup,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
+                SetWindowLong(hMain,GWL_EXSTYLE,GetWindowLong(hMain,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
+            }
 
             // Misc
             vault_startmonitors();
@@ -1614,7 +1622,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             GetClientRect(hwnd,&rect);
             canvasMain->begin(hwnd,rect.right,rect.bottom);
 
-            box_draw(canvasMain->getDC(),0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
+            drawbox(canvasMain->getDC(),0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
             SelectObject(canvasMain->getDC(),hFont);
             panels[7].draw(canvasMain->getDC());// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
@@ -2257,7 +2265,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             canvasPopup->begin(hwnd,rect.right,rect.bottom);
 
             //log_con("Redraw Popup %d\n",cntd++);
-            box_draw(canvasPopup->getDC(),0,0,rect.right,rect.bottom,BOX_POPUP);
+            drawbox(canvasPopup->getDC(),0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
@@ -2313,11 +2321,12 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
 {
-   GetWindowRect(hWnd,rc);
-   ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[0]);
-   ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[1]);
-   rc->right-=rc->left;
-   rc->bottom-=rc->top;
+    GetWindowRect(hWnd,rc);
+    MapWindowPoints(0,hWnd,(LPPOINT)&rc,2);
+   //ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[0]);
+   //ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[1]);
+    rc->right-=rc->left;
+    rc->bottom-=rc->top;
 }
 
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)

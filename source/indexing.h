@@ -65,12 +65,22 @@ public:
     sect_data_t(char *bb,char *be):blockbeg(bb),blockend(be){}
 };
 
-struct version_t
+class version_t
 {
+public:
     int d,m,y;
     int v1,v2,v3,v4;
 
+    friend class Driverpack;
+
+    void str_date(wchar_t *buf);
+    void str_version(wchar_t *buf);
+    int setDate(int d_,int m_,int y_);
+    void setVersion(int v1_,int v2_,int v3_,int v4_);
+    void setInvalid(){y=v1=-1;}
+
     version_t():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
+    version_t(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
 };
 //}
 
@@ -127,7 +137,6 @@ public:
 // Parser
 class Parser
 {
-private:
     Driverpack *pack;
     std::unordered_map<std::string,std::string> *string_list;
     const wchar_t *inffile;
@@ -138,6 +147,7 @@ private:
     char *strBeg;
     char *strEnd;
 
+private:
     void parseWhitespace(bool eatnewline);
     void trimtoken();
     void subStr();
@@ -161,12 +171,12 @@ public:
 // Collection
 class Collection
 {
-private:
     const wchar_t *index_bin_dir;
     const wchar_t *index_linear_dir;
     std::vector<Driverpack> driverpack_list;
     wchar_t *driverpack_dir;
 
+private:
     int  scanfolder_count(const wchar_t *path);
     void scanfolder(const wchar_t *path,void *arg);
     void loadOnlineIndexes();
@@ -202,7 +212,7 @@ private:
 
     Collection *col;
 
-    hashtable_t indexesold;
+    Hashtable indexesold;
     std::unordered_map<std::string,ofst> cat_list;
 
     std::vector<data_inffile_t> inffile;

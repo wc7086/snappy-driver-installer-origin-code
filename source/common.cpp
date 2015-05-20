@@ -83,26 +83,165 @@ int Txt::alloc(int sz)
     return r;
 }
 
-void Txt::reset(int sz)
-{
-    text.resize(sz);
-    text.reserve(1024*1024*2); //TODO
-}
-
 Txt::Txt()
 {
     reset(2);
     text[0]=text[1]=0;
 }
 
-Txt::~Txt()
+void Txt::reset(int sz)
 {
+    text.resize(sz);
+    text.reserve(1024*1024*2); //TODO
 }
 
 void Txt::shrink()
 {
     //log_con("Text_usage %d/%d\n",text.size(),text.capacity());
     text.shrink_to_fit();
+}
+//}
+
+//{ Hashtable
+unsigned Hashtable::gethashcode(const char *s,int sz)
+{
+    int h=5381;
+
+    while(sz--)
+    {
+        int ch=*s++;
+        h=((h<<5)+h)^ch;
+    }
+    return h;
+}
+
+void Hashtable::reset(int size1)
+{
+    size=size1;
+    items.resize(size);
+    items.reserve(size*4);
+    memset(items.data(),0,size*sizeof(Hashitem));
+}
+
+char *Hashtable::save(char *p)
+{
+    memcpy(p,&size,sizeof(int));p+=sizeof(int);
+    p=vector_save(&items,p);
+    return p;
+}
+
+char *Hashtable::load(char *p)
+{
+    memcpy(&size,p,sizeof(int));p+=sizeof(int);
+    items.resize(size);
+    p=vector_load(&items,p);
+    return p;
+}
+
+/*
+next
+      0: free
+     -1: used,next is free
+  1..x : used,next is used
+*/
+void Hashtable::additem(int key,int value)
+{
+    Hashitem *cur;
+    int curi;
+    int previ=-1;
+
+    curi=gethashcode((char *)&key,sizeof(int))%size;
+    cur=&items[curi];
+
+    if(cur->next!=0)
+    do
+    {
+        cur=&items[curi];
+        previ=curi;
+    }
+    while((curi=cur->next)>0);
+
+    if(cur->next==-1)
+    {
+        items.emplace_back(Hashitem());
+        cur=&items.back();
+        curi=items.size()-1;
+    }
+
+    cur->key=key;
+    cur->value=value;
+    cur->next=-1;
+    if(previ>=0)(&items[previ])->next=curi;
+}
+
+int Hashtable::find(int key,int *isfound)
+{
+    Hashitem *cur;
+    int curi;
+
+    if(!size)
+    {
+        *isfound=0;
+        return 0;
+    }
+    curi=gethashcode((char *)&key,sizeof(int))%size;
+    cur=&items[curi];
+
+    if(cur->next<0)
+    {
+        if(key==cur->key)
+        {
+            findnext_v=cur->next;
+            findstr=key;
+            *isfound=1;
+            return cur->value;
+        }
+    }
+
+    if(cur->next==0)
+    {
+        *isfound=0;
+        return 0;
+    }
+
+    do
+    {
+        cur=&items[curi];
+        if(key==cur->key)
+        {
+            findnext_v=cur->next;
+            findstr=key;
+            *isfound=1;
+            return cur->value;
+        }
+    }
+    while((curi=cur->next)>0);
+
+    *isfound=0;
+    return 0;
+}
+
+int Hashtable::findnext(int *isfound)
+{
+    Hashitem *cur;
+    int curi=findnext_v;
+
+    *isfound=0;
+    if(curi<=0)return 0;
+
+    cur=&items[curi];
+    do
+    {
+        cur=&items[curi];
+        if(cur->key==findstr)
+        {
+            findnext_v=cur->next;
+            *isfound=1;
+            return cur->value;
+        }
+    }
+    while((curi=cur->next)>0);
+    return 0;
 }
 //}
 
@@ -153,170 +292,11 @@ int unicode2ansi(char *s,char *out,int size)
     return ret;
 }
 
-/*void str_unicode2ansi(char *a)
-{
-    wchar_t *u=(wchar_t *)a;
-    while((*a++=*u++));
-}
-void str_unicode2ansi(const wchar_t *s,char *d)
-{
-    while((*d++=*s++));
-}
-void str_ansi2unicode(const wchar_t *a)
-{
-    wchar_t *u=(wchar_t *)a;
-    while((*a++=*u++));
-}*/
-
 int _wtoi_my(const wchar_t *str)
 {
     int val;
     swscanf(str,L"%d",&val);
     return val;
-}
-
-//}
-
-//{ Hash
-unsigned hash_getcode(const char *s,int sz)
-{
-    int h=5381;
-
-    while(sz--)
-    {
-        int ch=*s++;
-        h=((h<<5)+h)^ch;
-    }
-    return h;
-}
-
-void hash_init(hashtable_t *t,int size)
-{
-    t->size=size;
-    t->items_new.resize(t->size);
-    t->items_new.reserve(t->size*4);
-    memset(t->items_new.data(),0,t->size*sizeof(hashitem_t));
-}
-
-char *hash_save(hashtable_t *t,char *p)
-{
-    memcpy(p,&t->size,sizeof(int));p+=sizeof(int);
-    p=vector_save(&t->items_new,p);
-    return p;
-}
-
-char *hash_load(hashtable_t *t,char *p)
-{
-    memcpy(&t->size,p,sizeof(int));p+=sizeof(int);
-    t->items_new.resize(t->size);
-    p=vector_load(&t->items_new,p);
-    return p;
-}
-
-/*
-next
-      0: free
-     -1: used,next is free
-  1..x : used,next is used
-*/
-void hash_add(hashtable_t *t,int key,int value)
-{
-    hashitem_t *cur;
-    int curi;
-    int previ=-1;
-
-    curi=hash_getcode((char *)&key,sizeof(int))%t->size;
-    cur=&t->items_new[curi];
-
-    if(cur->next!=0)
-    do
-    {
-        cur=&t->items_new[curi];
-        previ=curi;
-    }
-    while((curi=cur->next)>0);
-
-    if(cur->next==-1)
-    {
-        t->items_new.emplace_back(hashitem_t());
-        cur=&t->items_new.back();
-        curi=t->items_new.size()-1;
-    }
-
-    cur->key=key;
-    cur->value=value;
-    cur->next=-1;
-    if(previ>=0)(&t->items_new[previ])->next=curi;
-}
-
-int hash_find(hashtable_t *t,int key,int *isfound)
-{
-    hashitem_t *cur;
-    int curi;
-
-    if(!t->size)
-    {
-        *isfound=0;
-        return 0;
-    }
-    curi=hash_getcode((char *)&key,sizeof(int))%t->size;
-    cur=&t->items_new[curi];
-
-    if(cur->next<0)
-    {
-        if(key==cur->key)
-        {
-            t->findnext=cur->next;
-            t->findstr=key;
-            *isfound=1;
-            return cur->value;
-        }
-    }
-
-    if(cur->next==0)
-    {
-        *isfound=0;
-        return 0;
-    }
-
-    do
-    {
-        cur=&t->items_new[curi];
-        if(key==cur->key)
-        {
-            t->findnext=cur->next;
-            t->findstr=key;
-            *isfound=1;
-            return cur->value;
-        }
-    }
-    while((curi=cur->next)>0);
-
-    *isfound=0;
-    return 0;
-}
-
-int hash_findnext(hashtable_t *t,int *isfound)
-{
-    hashitem_t *cur;
-    int curi=t->findnext;
-
-    *isfound=0;
-    if(curi<=0)return 0;
-
-    cur=&t->items_new[curi];
-    do
-    {
-        cur=&t->items_new[curi];
-        if(cur->key==t->findstr)
-        {
-            t->findnext=cur->next;
-            *isfound=1;
-            return cur->value;
-        }
-    }
-    while((curi=cur->next)>0);
-    return 0;
 }
 //}
 

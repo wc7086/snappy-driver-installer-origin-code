@@ -389,11 +389,12 @@ void Driver::print(State *state)
     char *s=state->textas.get(0);
     wchar_t buf[BUFLEN];
 
-    str_date(&version,buf);
     log_file("  Name:     %S\n",s+DriverDesc);
     log_file("  Provider: %S\n",s+ProviderName);
+    version.str_date(buf);
     log_file("  Date:     %S\n",buf);
-    log_file("  Version:  %d.%d.%d.%d\n",version.v1,version.v2,version.v3,version.v4);
+    version.str_version(buf);
+    log_file("  Version:  %S\n");
     log_file("  HWID:     %S\n",s+MatchingDeviceId);
     log_file("  inf:      %S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
     log_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);
@@ -486,11 +487,6 @@ State::State()
     revision=SVN_REV;
 
     //log_con("sizeof(Device)=%d\nsizeof(Driver)=%d\n\n",sizeof(Device),sizeof(Driver));
-}
-
-State::~State()
-{
-//    log_con("Text_size: %d\n",textas.text.size());
 }
 
 void State::print()

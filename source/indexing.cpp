@@ -64,6 +64,42 @@ const wchar_t *olddrps[]=
 };
 //}
 
+//{ Version
+int version_t::setDate(int d_,int m_,int y_)
+{
+    d=d_;
+    m=m_;
+    y=y_;
+
+    int flag=0;
+    if(y<100)y+=1900;
+    if(y<1990)flag=1;
+    if(y>2013)flag=2;
+    switch(m)
+    {
+        case 1:case 3:case 5:case 7:case 8:case 10:case 12:
+            if(d<1||d>31)flag=3;
+            break;
+        case 4:case 6:case 9:case 11:
+            if(d<1||d>30)flag=4;
+            break;
+        case 2:
+            if(d<1||d>((((y%4==0)&&(y%100))||(y%400==0))?29:28))flag=5;
+            break;
+        default:
+            flag=6;
+    }
+    return flag;
+}
+
+void version_t::setVersion(int v1_,int v2_,int v3_,int v4_)
+{
+    v1=v1_;
+    v2=v2_;
+    v3=v3_;
+    v4=v4_;
+}
+
 //{ Parser
 void Parser::parseWhitespace(bool eatnewline=false)
 {
@@ -286,39 +322,22 @@ int Parser::readHex()
 
 int Parser::readDate(version_t *t)
 {
-    int flag=0;
 
     while(strBeg<strEnd&&!(*strBeg>='0'&&*strBeg<='9'))strBeg++;
-    t->m=readNumber();
-    t->d=readNumber();
-    t->y=readNumber();
-    if(t->y<100)t->y+=1900;
+    int m=readNumber();
+    int d=readNumber();
+    int y=readNumber();
+    return t->setDate(d,m,y);
 
-    if(t->y<1990)flag=1;
-    if(t->y>2013)flag=2;
-    switch(t->m)
-    {
-        case 1:case 3:case 5:case 7:case 8:case 10:case 12:
-            if(t->d<1||t->d>31)flag=3;
-            break;
-        case 4:case 6:case 9:case 11:
-            if(t->d<1||t->d>30)flag=4;
-            break;
-        case 2:
-            if(t->d<1||t->d>((((t->y%4==0)&&(t->y%100))||(t->y%400==0))?29:28))flag=5;
-            break;
-        default:
-            flag=6;
-    }
-    return flag;
 }
 
 void Parser::readVersion(version_t *t)
 {
-    t->v1=readNumber();
-    t->v2=readNumber();
-    t->v3=readNumber();
-    t->v4=readNumber();
+    int v1=readNumber();
+    int v2=readNumber();
+    int v3=readNumber();
+    int v4=readNumber();
+    t->setVersion(v1,v2,v3,v4);
 }
 
 void Parser::readStr(char **vb,char **ve)
@@ -634,7 +653,7 @@ void Collection::printstates()
         num+=drp.desc_list.size()*sizeof(drp.desc_list);
         num+=drp.HWID_list.size()*sizeof(drp.HWID_list);
 
-        sizeind+=drp.indexesold.items_new.size()*sizeof(hashitem_t);
+        sizeind+=drp.indexesold.getSize()*sizeof(Hashitem);
     }
     log_file("  Sum: %d\n\n",sum);
     log_con("  Size: %d+%d*%d+%d[text]+%d[obj]+%d[ind]\n",sizeof(Collection),driverpack_list.size(),sizeof(Driverpack),sizetx,num,sizeind);
@@ -728,7 +747,7 @@ Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_
     col=col_v;
     drppath=texta.strcpyw(driverpack_path);
     drpfilename=texta.strcpyw(driverpack_filename);
-    indexesold.size=0;
+    indexesold.reset(0);
     type=DRIVERPACK_TYPE_PENDING_SAVE;
 }
 
@@ -759,7 +778,7 @@ void Driverpack::saveindex()
         desc_list.size()*sizeof(data_desc_t)+
         HWID_list.size()*sizeof(data_HWID_t)+
         texta.getSize()+
-        indexesold.items_new.size()*sizeof(hashitem_t)+sizeof(int)+
+        indexesold.getSize()*sizeof(Hashitem)+sizeof(int)+
         6*sizeof(int)*2;
 
     p=mem=(char *)malloc(sz);
@@ -771,7 +790,7 @@ void Driverpack::saveindex()
     p=vector_save(&desc_list,p);
     p=vector_save(&HWID_list,p);
     p=vector_save(texta.getVector(),p);
-    p=hash_save(&indexesold,p);
+    p=indexesold.save(p);
 
     if(flags&COLLECTION_USE_LZMA)
     {
@@ -855,7 +874,7 @@ int Driverpack::loadindex()
     p=vector_load(&desc_list,p);
     p=vector_load(&HWID_list,p);
     p=vector_load(texta.getVector(),p);
-    p=hash_load(&indexesold,p);
+    p=indexesold.load(p);
 
     free(mem);
     if(mem_unpack)free(mem_unpack);
@@ -1014,12 +1033,12 @@ void Driverpack::genhashes()
     }
 
     // Hashtable for fast search
-    hash_init(&indexesold,HWID_list.size()/2);
+    indexesold.reset(HWID_list.size()/2);
     for(unsigned i=0;i<HWID_list.size();i++)
     {
         char *vv=texta.get(HWID_list[i].HWID);
-        int val=hash_getcode(vv,strlen(vv));
-        hash_add(&indexesold,val,i);
+        int val=indexesold.gethashcode(vv,strlen(vv));
+        indexesold.additem(val,i);
     }
 }
 
@@ -1421,13 +1440,12 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     }
 
     // Find [version]
-    char date_s[256];
-    char build_s[256];
-    date_s[0]=0;
-    build_s[0]=0;
+    //char date_s[256];
+    //char build_s[256];
+    //date_s[0]=0;
+    //build_s[0]=0;
     cur_ver=&cur_inffile->version;
-    cur_ver->v1=-1;
-    cur_ver->y=-1;
+    cur_ver->setInvalid();
 
     range=section_list.equal_range("version");
     if(range.first==range.second)log_index("ERROR: missing [version] in %S\n",inffull);
@@ -1453,17 +1471,17 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                         // date
                         parse_info.parseField();
                         i=parse_info.readDate(cur_ver);
-                        if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S\n",
-                                 cur_ver->d,cur_ver->m,cur_ver->y,i,inffull);
+                        /*if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S\n",
+                                 cur_ver->d,cur_ver->m,cur_ver->y,i,inffull);*/
 
-                        wsprintfA(date_s,"%02d/%02d/%04d",cur_ver->m,cur_ver->d,cur_ver->y);
+                        //wsprintfA(date_s,"%02d/%02d/%04d",cur_ver->m,cur_ver->d,cur_ver->y);
 
                         // version
                         if(parse_info.parseField())
                         {
                             parse_info.readVersion(cur_ver);
                         }
-                        wsprintfA(build_s,"%d.%d.%d.%d",cur_ver->v1,cur_ver->v2,cur_ver->v3,cur_ver->v4);
+                        //wsprintfA(build_s,"%d.%d.%d.%d",cur_ver->v1,cur_ver->v2,cur_ver->v3,cur_ver->v4);
 
                 }else
                 {
@@ -1481,8 +1499,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             while(parse_info.parseField());
         }
     }
-    if(cur_ver->y==-1) log_index("ERROR: missing date in %S\n",inffull);
-    if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S\n",inffull);
+    //if(cur_ver->y==-1) log_index("ERROR: missing date in %S\n",inffull);
+    //if(cur_ver->v1==-1)log_index("ERROR: missing build number in %S\n",inffull);
 
     // Find [manufacturer] section
     range=section_list.equal_range("manufacturer");

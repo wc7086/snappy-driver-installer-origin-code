@@ -23,6 +23,7 @@ class Panel;
 class Panelitem;
 
 //{ Global vars
+extern int rtl;
 extern Image box[BOX_NUM];
 extern Image icon[ICON_NUM];
 
@@ -42,6 +43,17 @@ struct Panelitem
 
 class Image
 {
+    HBITMAP bitmap;
+    HGDIOBJ oldbitmap;
+    HDC ldc;
+    int sx,sy,hasalpha;
+    int iscopy;
+
+private:
+    void loadFromFile(wchar_t *filename);
+    void loadFromRes(int id);
+    void createBitmap(BYTE *data,int sz);
+
 public:
     enum align
     {
@@ -59,18 +71,6 @@ public:
         ASPECT  = 16,
     };
 
-private:
-    HBITMAP bitmap;
-    HGDIOBJ oldbitmap;
-    HDC ldc;
-    int sx,sy,hasalpha;
-    int iscopy;
-
-    void loadFromFile(wchar_t *filename);
-    void loadFromRes(int id);
-    void createBitmap(BYTE *data,int sz);
-
-public:
     Image():bitmap(nullptr),oldbitmap(nullptr),ldc(nullptr),sx(0),sy(0),hasalpha(0),iscopy(0){}
     void release();
     void makecopy(Image &t);
@@ -81,7 +81,6 @@ public:
 
 class Canvas
 {
-private:
     int x,y;
     HDC localDC;
     HDC hdcMem;
@@ -103,7 +102,6 @@ public:
 
 class Panel
 {
-private:
     Panelitem *items;
     int index,indofs;
 
@@ -129,6 +127,10 @@ public:
 //}
 
 // Draw
+int mir(int x);
+int mirc(int x);
+int mirw(int x,int ofs,int w);
+
 int Xm(int x,int o);
 int Ym(int y);
 int XM(int x,int o);
@@ -142,9 +144,9 @@ int YG(int y,int o);
 int  panels_hitscan(int hx,int hy,int *ii);
 void panel_setfilters(Panel *panel);
 
-void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);
-void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int i);
-void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
+void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);
+void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int i);
+void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);

@@ -18,6 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global vars
+int rtl=0;
 Image box[BOX_NUM];
 Image icon[ICON_NUM];
 
@@ -337,206 +338,6 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 }
 //}
 
-//{ Draw
-int rtl=0;
-int mir(int x){return rtl?(main1x_c-x):x;}
-int mirc(int x){return 0?(mainx_c-x):x;}
-int mirw(int x,int ofs,int w)
-{
-    if(rtl)return x+w-ofs;
-    return x+ofs;
-}
-
-int Xm(int x,int o)
-{
-    int w=(main1x_c+o-x);
-    if(rtl&&o>=0&&x>=0)return mir(x)-o;
-    if(rtl&&o>=0&&x< 0)return mir(main1x_c+x)-o;
-    if(rtl&&o< 0&&x>=0)return mir(x)-w;
-    if(rtl&&o< 0&&x< 0)return mir(main1x_c+x)-w;
-
-    return x>=0?x:(main1x_c+x);
-}
-int Ym(int y){return y>=0?y:(main1y_c+y);}
-int XM(int w,int x){return w>=0?w:(w+main1x_c-x);}
-int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
-
-int Xg(int x,int o)
-{
-    //int w=(mainx_c+o-x);
-    //if(rtl&&o>=0&&x>=0)return mirc(x)-o;
-    //if(rtl&&o>=0&&x< 0)return mirc(mainx_c+x)-o;
-    //if(rtl&&o< 0&&x>=0)return mirc(x)-w;
-    //if(rtl&&o< 0&&x< 0)return mirc(mainx_c+x)-w;
-
-    return x>=0?x:(mainx_c+x);
-}
-int Yg(int y){return y>=0?y:(mainy_c+y);}
-int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
-int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
-
-int panels_hitscan(int hx,int hy,int *ii)
-{
-    int i;
-
-    *ii=-1;
-    for(i=0;i<NUM_PANELS;i++)
-    {
-        int r=panels[i].hitscan(hx,hy);
-        if(r>=0)
-        {
-            *ii=i;
-            return r;
-        }
-    }
-    return -1;
-}
-
-void panel_setfilters(Panel *panel)
-{
-    for(int j=0;j<7;j++)panel[j].setfilters();
-}
-
-void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
-{
-    HPEN newpen,oldpen;
-    HBRUSH newbrush,oldbrush;
-    HGDIOBJ r;
-    unsigned r32;
-
-    //oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
-    newbrush=CreateSolidBrush(color1);
-    oldbrush=(HBRUSH)SelectObject(hdc,newbrush);
-    if(color1&0xFF000000)(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
-
-    if(!oldbrush)log_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
-    r32=SetDCBrushColor(hdc,color1);
-    if(r32==CLR_INVALID)log_err("ERROR in drawrect(): failed SetDCBrushColor\n");
-
-    newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
-    if(!newpen)log_err("ERROR in drawrect(): failed CreatePen\n");
-    oldpen=(HPEN)SelectObject(hdc,newpen);
-    if(!oldpen)log_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
-
-    if(rn)
-        RoundRect(hdc,x1,y1,x2,y2,rn,rn);
-    else
-        Rectangle(hdc,x1,y1,x2,y2);
-
-    r=SelectObject(hdc,oldpen);
-    if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
-    r=SelectObject(hdc,oldbrush);
-    if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
-    r32=DeleteObject(newpen);
-    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
-    r32=DeleteObject(newbrush);
-    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
-}
-
-void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
-{
-    HPEN newpen,oldpen;
-    HBRUSH oldbrush;
-    HGDIOBJ r;
-    x1-=2;
-    y1-=2;
-    x2+=2;
-    y2-=2;
-
-    oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
-    if(!oldbrush)log_err("ERROR in drawrectsel(): failed SelectObject(GetStockObject)\n");
-
-    newpen=CreatePen(PS_DOT,w,color2);
-    if(!newpen)log_err("ERROR in drawrectsel(): failed CreatePen\n");
-    oldpen=(HPEN)SelectObject(hdc,newpen);
-    if(!oldpen)log_err("ERROR in drawrectsel(): failed SelectObject(newpen)\n");
-
-    Rectangle(hdc,x1,y1,x2,y2);
-
-    r=SelectObject(hdc,oldpen);
-    if(!r)log_err("ERROR in drawrectsel(): failed SelectObject(oldpen)\n");
-    r=SelectObject(hdc,oldbrush);
-    if(!r)log_err("ERROR in drawrectsel(): failed SelectObject(oldbrush)\n");
-}
-
-void box_draw(HDC hdc,int x1,int y1,int x2,int y2,int id)
-{
-    if(id<0||id>=BOX_NUM)
-    {
-        log_err("ERROR in box_draw(): invalid id=%d\n",id);
-        return;
-    }
-    int i=boxindex[id];
-    if(i<0||i>=THEME_NM)
-    {
-        log_err("ERROR in box_draw(): invalid index=%d\n",i);
-        return;
-    }
-    drawrect(hdc,x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
-    box[id].draw(hdc,x1,y1,x2,y2,D(i+5),D(i+6));
-}
-
-void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
-{
-    RECT rect;
-    int i=4+(active?1:0)+(checked?2:0);
-
-    rect.left=x;
-    rect.top=y;
-    rect.right=x+wx;
-    rect.bottom=y+wy;
-
-    if(icon[i].isLoaded())
-        icon[i].draw(hdc,x,y,x+wx,y+wy,0,Image::HSTR|Image::VSTR);
-    else
-        DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
-}
-
-void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
-{
-    POINT p={x,y};
-    HMONITOR hMonitor;
-    MONITORINFO mi;
-    int needupdate;
-
-    if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar<0)type=FLOATING_NONE;
-    if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
-
-    ClientToScreen(hwnd,&p);
-    needupdate=floating_itembar!=itembar||floating_type!=type;
-    floating_itembar=itembar;
-    floating_type=type;
-
-    if(type!=FLOATING_NONE)
-    {
-        //if(type==FLOATING_ABOUT)p.y=p.y-floating_y-30;
-        //if(type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)
-        {
-            hMonitor=MonitorFromPoint(p,MONITOR_DEFAULTTONEAREST);
-            mi.cbSize=sizeof(MONITORINFO);
-            GetMonitorInfo(hMonitor,&mi);
-
-            mi.rcWork.right-=15;
-            if(p.x+floating_x>mi.rcWork.right)p.x=mi.rcWork.right-floating_x;
-            if(p.x<5)p.x=5;
-            if(p.y+floating_y>mi.rcWork.bottom-20)p.y=p.y-floating_y-30;
-            if(p.y<5)p.y=5;
-        }
-
-        MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
-        if(needupdate)InvalidateRect(hPopup,nullptr,0);
-
-        TRACKMOUSEEVENT tme;
-        tme.cbSize=sizeof(tme);
-        tme.hwndTrack=hwnd;
-        tme.dwFlags=TME_LEAVE|TME_HOVER;
-        tme.dwHoverTime=(ctrl_down||space_down)?1:hintdelay;
-        TrackMouseEvent(&tme);
-    }
-    if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
-}
-//}
-
 //{ Canvas
 Canvas::Canvas()
 {
@@ -733,7 +534,7 @@ void Panel::draw(HDC hdc)
         switch(items[i].type)
         {
             case TYPE_CHECKBOX:
-                SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
+                //SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 drawcheckbox(hdc,mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,i==cur_i);
                 SetTextColor(hdc,D(i==cur_i?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
                 TextOut(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
@@ -743,11 +544,11 @@ void Panel::draw(HDC hdc)
                 break;
 
             case TYPE_BUTTON:
-                SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
+                //SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
-                    box_draw(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
+                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
                 else
-                    box_draw(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,i==cur_i?BOX_BUTTON_H:BOX_BUTTON);
+                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,i==cur_i?BOX_BUTTON_H:BOX_BUTTON);
 
                 SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
 
@@ -771,17 +572,17 @@ void Panel::draw(HDC hdc)
                 break;
 
             case TYPE_TEXT:
-                SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
+                //SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 if(i==1&&index==7) // Revision number
                 {
-                    version_t v;
+                    version_t v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
 
-                    v.d=atoi(SVN_REV_D);
+                    /*v.d=atoi(SVN_REV_D);
                     v.m=atoi(SVN_REV_M);
-                    v.y=SVN_REV_Y;
+                    v.y=SVN_REV_Y;*/
 
                     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
-                    str_date(&v,buf+wcslen(buf));
+                    v.str_date(buf+wcslen(buf));
                     wcscat(buf,L")");
                     SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
                     TextOut(hdc,mirw(x,ofsx,XP()),y+ofsy,buf,wcslen(buf));
@@ -796,7 +597,7 @@ void Panel::draw(HDC hdc)
             case TYPE_GROUP:
                 if(index>=8&&index<=10)break;
                 if(i)y+=D(PNLITEM_WY);
-                box_draw(hdc,x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
+                drawbox(hdc,x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
                          BOX_PANEL+index*2+2);
                 rgn=CreateRectRgn(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2);
                 SelectClipRgn(hdc,rgn);
@@ -812,5 +613,204 @@ void Panel::draw(HDC hdc)
         SelectClipRgn(hdc,nullptr);
         DeleteObject(rgn);
     }
+}
+//}
+
+//{ Draw
+//int mir(int x){return rtl?(main1x_c-x):x;}
+//int mirc(int x){return 0?(mainx_c-x):x;}
+int mirw(int x,int ofs,int w)
+{
+    //if(rtl)return x+w-ofs;
+    return x+ofs;
+}
+
+int Xm(int x,int o)
+{
+    /*int w=(main1x_c+o-x);
+    if(rtl&&o>=0&&x>=0)return mir(x)-o;
+    if(rtl&&o>=0&&x< 0)return mir(main1x_c+x)-o;
+    if(rtl&&o< 0&&x>=0)return mir(x)-w;
+    if(rtl&&o< 0&&x< 0)return mir(main1x_c+x)-w;*/
+
+    return x>=0?x:(main1x_c+x);
+}
+int Ym(int y){return y>=0?y:(main1y_c+y);}
+int XM(int w,int x){return w>=0?w:(w+main1x_c-x);}
+int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
+
+int Xg(int x,int o)
+{
+    //int w=(mainx_c+o-x);
+    //if(rtl&&o>=0&&x>=0)return mirc(x)-o;
+    //if(rtl&&o>=0&&x< 0)return mirc(mainx_c+x)-o;
+    //if(rtl&&o< 0&&x>=0)return mirc(x)-w;
+    //if(rtl&&o< 0&&x< 0)return mirc(mainx_c+x)-w;
+
+    return x>=0?x:(mainx_c+x);
+}
+int Yg(int y){return y>=0?y:(mainy_c+y);}
+int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
+int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
+
+int panels_hitscan(int hx,int hy,int *ii)
+{
+    int i;
+
+    *ii=-1;
+    for(i=0;i<NUM_PANELS;i++)
+    {
+        int r=panels[i].hitscan(hx,hy);
+        if(r>=0)
+        {
+            *ii=i;
+            return r;
+        }
+    }
+    return -1;
+}
+
+void panel_setfilters(Panel *panel)
+{
+    for(int j=0;j<7;j++)panel[j].setfilters();
+}
+
+void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
+{
+    HPEN newpen,oldpen;
+    HBRUSH newbrush,oldbrush;
+    HGDIOBJ r;
+    unsigned r32;
+
+    //oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
+    newbrush=CreateSolidBrush(color1);
+    oldbrush=(HBRUSH)SelectObject(hdc,newbrush);
+    if(color1&0xFF000000)(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
+
+    if(!oldbrush)log_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
+    r32=SetDCBrushColor(hdc,color1);
+    if(r32==CLR_INVALID)log_err("ERROR in drawrect(): failed SetDCBrushColor\n");
+
+    newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
+    if(!newpen)log_err("ERROR in drawrect(): failed CreatePen\n");
+    oldpen=(HPEN)SelectObject(hdc,newpen);
+    if(!oldpen)log_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
+
+    if(rn)
+        RoundRect(hdc,x1,y1,x2,y2,rn,rn);
+    else
+        Rectangle(hdc,x1,y1,x2,y2);
+
+    r=SelectObject(hdc,oldpen);
+    if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
+    r=SelectObject(hdc,oldbrush);
+    if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
+    r32=DeleteObject(newpen);
+    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
+    r32=DeleteObject(newbrush);
+    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
+}
+
+void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
+{
+    HPEN newpen,oldpen;
+    HBRUSH oldbrush;
+    HGDIOBJ r;
+    x1-=2;
+    y1-=2;
+    x2+=2;
+    y2-=2;
+
+    oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
+    if(!oldbrush)log_err("ERROR in drawrectsel(): failed SelectObject(GetStockObject)\n");
+
+    newpen=CreatePen(PS_DOT,w,color2);
+    if(!newpen)log_err("ERROR in drawrectsel(): failed CreatePen\n");
+    oldpen=(HPEN)SelectObject(hdc,newpen);
+    if(!oldpen)log_err("ERROR in drawrectsel(): failed SelectObject(newpen)\n");
+
+    Rectangle(hdc,x1,y1,x2,y2);
+
+    r=SelectObject(hdc,oldpen);
+    if(!r)log_err("ERROR in drawrectsel(): failed SelectObject(oldpen)\n");
+    r=SelectObject(hdc,oldbrush);
+    if(!r)log_err("ERROR in drawrectsel(): failed SelectObject(oldbrush)\n");
+}
+
+void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int id)
+{
+    if(id<0||id>=BOX_NUM)
+    {
+        log_err("ERROR in box_draw(): invalid id=%d\n",id);
+        return;
+    }
+    int i=boxindex[id];
+    if(i<0||i>=THEME_NM)
+    {
+        log_err("ERROR in box_draw(): invalid index=%d\n",i);
+        return;
+    }
+    drawrect(hdc,x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
+    box[id].draw(hdc,x1,y1,x2,y2,D(i+5),D(i+6));
+}
+
+void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
+{
+    RECT rect;
+    int i=4+(active?1:0)+(checked?2:0);
+
+    rect.left=x;
+    rect.top=y;
+    rect.right=x+wx;
+    rect.bottom=y+wy;
+
+    if(icon[i].isLoaded())
+        icon[i].draw(hdc,x,y,x+wx,y+wy,0,Image::HSTR|Image::VSTR);
+    else
+        DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
+}
+
+void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
+{
+    POINT p={x,y};
+    HMONITOR hMonitor;
+    MONITORINFO mi;
+    int needupdate;
+
+    if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar<0)type=FLOATING_NONE;
+    if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
+
+    ClientToScreen(hwnd,&p);
+    needupdate=floating_itembar!=itembar||floating_type!=type;
+    floating_itembar=itembar;
+    floating_type=type;
+
+    if(type!=FLOATING_NONE)
+    {
+        //if(type==FLOATING_ABOUT)p.y=p.y-floating_y-30;
+        //if(type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)
+        {
+            hMonitor=MonitorFromPoint(p,MONITOR_DEFAULTTONEAREST);
+            mi.cbSize=sizeof(MONITORINFO);
+            GetMonitorInfo(hMonitor,&mi);
+
+            mi.rcWork.right-=15;
+            if(p.x+floating_x>mi.rcWork.right)p.x=mi.rcWork.right-floating_x;
+            if(p.x<5)p.x=5;
+            if(p.y+floating_y>mi.rcWork.bottom-20)p.y=p.y-floating_y-30;
+            if(p.y<5)p.y=5;
+        }
+
+        MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
+        if(needupdate)InvalidateRect(hPopup,nullptr,0);
+
+        TRACKMOUSEEVENT tme;
+        tme.cbSize=sizeof(tme);
+        tme.hwndTrack=hwnd;
+        tme.dwFlags=TME_LEAVE|TME_HOVER;
+        tme.dwHoverTime=(ctrl_down||space_down)?1:hintdelay;
+        TrackMouseEvent(&tme);
+    }
+    if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
 }
 //}
