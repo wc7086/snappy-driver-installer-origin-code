@@ -24,7 +24,6 @@ typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 // Misc struct
 class infdata_t
 {
-public:
     int catalogfile;
     int feature;
     int inf_pos;
@@ -32,6 +31,7 @@ public:
     int start_index;
 
 public:
+    friend class Driver;
     infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat,int vindex):
         catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat),start_index(vindex){};
 };
@@ -196,10 +196,6 @@ public:
     wchar_t *getModel();
 
     State();
-    //State(const State &)=delete;
-    //State &operator=(const State &)=delete;
-    //State(State &&)=default;
-    ~State();
     void print();
 
     void save(const wchar_t *filename);

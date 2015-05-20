@@ -28,7 +28,6 @@ public:
 // Txt
 class Txt
 {
-private:
     std::unordered_map<std::string,int> dub;
     std::vector<char> text;
 
@@ -43,10 +42,9 @@ public:
     int t_memcpy(const char *mem,int sz);
     int t_memcpyz(const char *mem,int sz);
     int memcpyz_dup(const char *mem,int sz);
+    int alloc(int sz);
 
     Txt();
-    ~Txt();
-    int alloc(int sz);
     void reset(int sz);
     void shrink();
 };
@@ -81,49 +79,53 @@ char *vector_load(std::vector<T> *v,char *p)
 }
 
 // Hashtable
-struct hashitem_t
+class Hashitem
 {
     int key;
     int value;
     int next;
     int valuelen;
-    hashitem_t():key(0),value(0),next(0),valuelen(0){}
+
+public:
+    Hashitem():key(0),value(0),next(0),valuelen(0){}
+    friend class Hashtable;
 };
 
-struct hashtable_t
+class Hashtable
 {
-    int findnext;
+    int findnext_v;
     int findstr;
     int size;
-    std::vector<hashitem_t> items_new;
+    std::vector<Hashitem> items;
+
+public:
+    int getSize(){return items.size();}
+
+    static unsigned gethashcode(const char *s,int sz);
+    void reset(int size);
+    char *save(char *p);
+    char *load(char *p);
+    void additem(int key,int value);
+    int  find(int vl,int *isfound);
+    int  findnext(int *isfound);
 };
-unsigned hash_getcode(const char *s,int sz);
-void hash_init(hashtable_t *t,int size);
-char *hash_save(hashtable_t *t,char *p);
-char *hash_load(hashtable_t *t,char *p);
-void hash_add(hashtable_t *t,int key,int value);
-int  hash_find(hashtable_t *t,int vl,int *isfound);
-int  hash_findnext(hashtable_t *t,int *isfound);
 
 // Strings
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,int len);
 void strtolower(char *s,int len);
-int _wtoi_my(const wchar_t *str);
 int  unicode2ansi(char *s,char *out,int size);
+int _wtoi_my(const wchar_t *str);
 
 // 7-zip
 int  encode(char *dest,int dest_sz,char *src,int src_sz);
 int  decode(char *dest,int dest_sz,char *src,int src_sz);
-
-namespace NArchive
-{
-    namespace N7z
-    {
-        extern void register7z();
-    }
-}
 void registerall();
+
+namespace NArchive{
+namespace N7z{
+        extern void register7z();
+}}
 extern int  Extract7z(wchar_t *str);
 extern void registercrc();
 extern void registerBCJ();

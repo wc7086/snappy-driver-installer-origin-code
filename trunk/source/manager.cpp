@@ -811,22 +811,30 @@ int box_status(int index)
     return BOX_DRVITEM;
 }
 
-void str_date(version_t *v,wchar_t *buf)
+void version_t::str_date(wchar_t *buf)
 {
     SYSTEMTIME tm;
     FILETIME ft;
 
     memset(&tm,0,sizeof(SYSTEMTIME));
-    tm.wDay=v->d;
-    tm.wMonth=v->m;
-    tm.wYear=v->y;
+    tm.wDay=d;
+    tm.wMonth=m;
+    tm.wYear=y;
     SystemTimeToFileTime(&tm,&ft);
     FileTimeToSystemTime(&ft,&tm);
 
-    if(v->y<1000)
+    if(y<1000)
         wsprintf(buf,STR(STR_HINT_UNKNOWN));
     else
         GetDateFormat(manager_g->matcher->state->locale,0,&tm,nullptr,buf,100);
+}
+
+void version_t::str_version(wchar_t *buf)
+{
+    if(v1<0)
+        wsprintf(buf,STR(STR_HINT_UNKNOWN));
+    else
+        wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
 }
 
 wchar_t unkver[128];
@@ -979,7 +987,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         SelectObject(hdc,oldpen);
         DeleteObject(newpen);
     }
-    box_draw(hdc,x,pos,x+wx,pos+D(DRVITEM_WY),box_status(index)+cl);
+    drawbox(hdc,x,pos,x+wx,pos+D(DRVITEM_WY),box_status(index)+cl);
     SelectClipRgn(hdc,hrgn);
 
     if(itembar->percent)
@@ -988,7 +996,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         int a=BOX_PROGR;
         //if(index==SLOT_EXTRACTING&&installmode==MODE_STOPPING)a=BOX_PROGR_S;
         //if(index>=RES_SLOTS&&(!itembar->checked||installmode==MODE_STOPPING))a=BOX_PROGR_S;
-        box_draw(hdc,x,pos,x+wx*itembar->percent/1000.,pos+D(DRVITEM_WY),a);
+        drawbox(hdc,x,pos,x+wx*itembar->percent/1000.,pos+D(DRVITEM_WY),a);
     }
 
     SetTextColor(hdc,0); // todo: color
@@ -1283,7 +1291,7 @@ void Manager::draw(HDC hdc,int ofsy)
     hitscan(p.x,p.y,&cur_i,&zone);
 
     GetClientRect(hField,&rect);
-    box_draw(hdc,0,0,rect.right,rect.bottom,BOX_DRVLIST);
+    drawbox(hdc,0,0,rect.right,rect.bottom,BOX_DRVLIST);
 
     cutoff=calc_cutoff();
     updatecur();
@@ -1527,7 +1535,7 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
 
     v=hwidmatch->getdrp_drvversion();
     hwidmatch->getdrp_drvsection(buf);
-    str_date(v,bufw);
+    v->str_date(bufw);
 
     if(!hwidmatch->altsectscore)td.col=D(POPUP_LST_INVALID_COLOR);
     else
@@ -1595,7 +1603,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
     {
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
         for(k=0;bufw[k];k++)i_hwid[k]=toupper(bufw[k]);i_hwid[k]=0;
-        str_date(&cur_driver->version,bufw);
+        cur_driver->version.str_date(bufw);
 
         TextOutP(&td,L"$%04d",i);
         td.x+=limits[td.i++];
@@ -1803,7 +1811,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     }
     if(cur_driver)
     {
-        str_date(&cur_driver->version,bufw);
+        cur_driver->version.str_date(bufw);
 
         td.x=p0;
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
@@ -1820,7 +1828,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     if(hwidmatch_f)
     {
         td.y=maxln;
-        str_date(a_v,bufw);
+        a_v->str_date(bufw);
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
         td.x=p0+bolder;

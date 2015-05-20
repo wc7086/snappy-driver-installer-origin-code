@@ -350,17 +350,17 @@ void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int 
 
     int sz=strlen(hwid);
     strtoupper(hwid,sz);
-    int code=hash_getcode(hwid,sz);
+    int code=Hashtable::gethashcode(hwid,sz);
 
     for(auto &drp:*col->getList())
     {
         int isfound;
-        int val=hash_find(&drp.indexesold,code,&isfound);
+        int val=drp.indexesold.find(code,&isfound);
         while(isfound)
         {
             hwidmatch_list.push_back(Hwidmatch(&drp,val,dev_pos,ishw,state,devicematch));
             devicematch->num_matches++;
-            val=hash_findnext(&drp.indexesold,&isfound);
+            val=drp.indexesold.findnext(&isfound);
         }
     }
 }
