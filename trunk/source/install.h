@@ -15,16 +15,31 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Extract info
+// Global vars
+extern long long ar_total,ar_proceed;
+extern int instflag;
+extern int itembar_act;
+extern int needreboot;
+extern long long totalinstalltime,totalextracttime;
+
+// Installer
 #define INSTALLDRIVERS      1
 #define OPENFOLDER          2
 #define RESTOREPOS          4
+
+int showpercent(int a);
+void updatecur();
+void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb);
+void removeextrainfs(wchar_t *inf);
+void _7z_total(long long i);
+int _7z_setcomplited(long long i);
+unsigned int __stdcall thread_install(void *arg);
 
 // Autoclicker
 #define NUM_CLICKDATA 5
 #define AUTOCLICKER_CONFIRM
 
-typedef struct _wnddata_t
+struct wnddata_t
 {
     // Main wnd
     int wnd_wx,wnd_wy;
@@ -33,22 +48,7 @@ typedef struct _wnddata_t
     // Install button
     int btn_x, btn_y;
     int btn_wx,btn_wy;
-}wnddata_t;
-
-extern long long ar_total,ar_proceed;
-extern int instflag;
-extern int itembar_act;
-extern int needreboot;
-extern long long totalinstalltime,totalextracttime;
-
-int showpercent(int a);
-void updateoverall(Manager *manager);
-void updatecur();
-void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb);
-void removeextrainfs(wchar_t *inf);
-void _7z_total(long long i);
-int _7z_setcomplited(long long i);
-unsigned int __stdcall thread_install(void *arg);
+};
 
 void calcwnddata(wnddata_t *w,HWND hwnd);
 int cmpclickdata(int *a,int *b);

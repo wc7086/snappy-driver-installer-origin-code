@@ -54,13 +54,10 @@ template <class T>
 char *vector_save(std::vector<T> *v,char *p)
 {
     int used=v->size()*sizeof(T);
-    int val;
+    int val=v->size();
 
     memcpy(p,&used,sizeof(int));p+=sizeof(int);
-
-    val=v->size();
     memcpy(p,&val,sizeof(int));p+=sizeof(int);
-
     memcpy(p,&v->front(),used);p+=used;
     return p;
 }

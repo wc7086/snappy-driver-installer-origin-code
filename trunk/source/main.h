@@ -55,6 +55,7 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <exception>
 #include <memory>
 
+// BOOST
 #ifdef INDEXING_H
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
@@ -96,6 +97,7 @@ extern "C"
 #include "LzmaEnc.h"
 #include "Lzma86.h"
 }
+//}
 
 //{ Defines
 
@@ -208,7 +210,6 @@ enum install_mode
     MODE_STOPPING      = 2,
     MODE_SCANNING      = 3,
 };
-
 //}
 
 //{ Global variables
@@ -267,6 +268,7 @@ class bundle_t
     Collection collection;
     Matcher matcher;
 
+private:
     static unsigned int __stdcall thread_scandevices(void *arg);
     static unsigned int __stdcall thread_loadindexes(void *arg);
     static unsigned int __stdcall thread_getsysinfo(void *arg);

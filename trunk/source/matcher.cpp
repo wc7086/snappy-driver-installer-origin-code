@@ -461,8 +461,8 @@ Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items)
 
 int Devicematch::isMissing(State *state)
 {
-    if(device->problem==CM_PROB_DISABLED)return 0;
-    if(device->problem&&device->HardwareID)return 1;
+    if(device->getProblem()==CM_PROB_DISABLED)return 0;
+    if(device->getProblem()&&device->getHardwareID())return 1;
     if(driver&&!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
     return 0;
 }
@@ -471,13 +471,13 @@ int Devicematch::isMissing(State *state)
 //{ Hwidmatch
 int Hwidmatch::isvalid_usb30hub(State *state,const wchar_t *str)
 {
-    if(StrStrI(state->textas.getw(devicematch->device->HardwareID),str))return 1;
+    if(StrStrI(state->textas.getw(devicematch->device->getHardwareID()),str))return 1;
     return 0;
 }
 
 int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *section)
 {
-    if(StrStrI(state->textas.getw(devicematch->device->HardwareID),hwid))
+    if(StrStrI(state->textas.getw(devicematch->device->getHardwareID()),hwid))
     {
         char buf[BUFLEN];
         getdrp_drvsection(buf);

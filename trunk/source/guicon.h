@@ -30,7 +30,7 @@ enum LOG_VERBOSE
     LOG_VERBOSE_BATCH     = 0x0800,
 };
 
-//{ Global variables
+// Global variables
 extern int log_verbose;
 extern int log_console;
 extern int error_count;
@@ -46,7 +46,6 @@ extern long
     time_sysinfo,
     time_matcher,
     time_test;
-//}
 
 //#define log_index log
 #ifndef log_index
@@ -83,7 +82,6 @@ typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
 Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
 class Filemon
 {
-private:
 	OVERLAPPED ol;
 	HANDLE     hDir;
 	BYTE       buffer[32*1024];
@@ -94,6 +92,7 @@ private:
 	int        subdirs;
 	FileChangeCallback callback;
 
+private:
     static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
     int  refresh();
 

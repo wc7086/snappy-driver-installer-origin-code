@@ -273,7 +273,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         return;
     }
 
-    wsprintf(filename,L"%s%s",state->textas.get(state->windir),state->textas.get(InfPath));
+    wsprintf(filename,L"%s%s",state->textas.get(state->getWindir()),state->textas.get(InfPath));
     wsprintf(fnm_hwid,L"%s%s",filename,state->textas.get(MatchingDeviceId));
     auto got=inf_list->find(std::wstring(fnm_hwid));
     if(got!=inf_list->end())
@@ -319,7 +319,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         if(len>0)
         {
             start_index=unpacked_drp->HWID_list.size();
-            unpacked_drp->indexinf(state->textas.getw(state->windir),state->textas.getw(InfPath),buft.get(),len);
+            unpacked_drp->indexinf(state->textas.getw(state->getWindir()),state->textas.getw(InfPath),buft.get(),len);
         }
 
         cat=state->opencatfile(this);
@@ -370,11 +370,11 @@ int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
 void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos)
 {
     *ishw=1;
-    *dev_pos=findHWID_in_list(state->textas.getw(cur_device->HardwareID),state->textas.getw(MatchingDeviceId));
-    if(*dev_pos<0&&cur_device->CompatibleIDs)
+    *dev_pos=findHWID_in_list(state->textas.getw(cur_device->getHardwareID()),state->textas.getw(MatchingDeviceId));
+    if(*dev_pos<0&&cur_device->getCompatibleIDs())
     {
         *ishw=0;
-        *dev_pos=findHWID_in_list(state->textas.getw(cur_device->CompatibleIDs),state->textas.getw(MatchingDeviceId));
+        *dev_pos=findHWID_in_list(state->textas.getw(cur_device->getCompatibleIDs()),state->textas.getw(MatchingDeviceId));
     }
 }
 
@@ -396,7 +396,7 @@ void Driver::print(State *state)
     version.str_version(buf);
     log_file("  Version:  %S\n");
     log_file("  HWID:     %S\n",s+MatchingDeviceId);
-    log_file("  inf:      %S%S,%S%S\n",(s+state->windir),s+InfPath,s+InfSection,s+InfSectionExt);
+    log_file("  inf:      %S%S,%S%S\n",(s+state->getWindir()),s+InfPath,s+InfSection,s+InfSectionExt);
     log_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);
     //log_file("  Sign:     '%s'(%d)\n",s+cat,catalogfile);
 
@@ -818,7 +818,7 @@ void State::scanDevices()
         Devices_list.emplace_back((Device(hDevInfo,this,i)));
         Device *cur_device=&Devices_list.back();
 
-        int ret=cur_device->ret;
+        int ret=cur_device->getRet();
         if(ret)
         {
             Devices_list.pop_back();

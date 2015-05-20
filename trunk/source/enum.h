@@ -31,9 +31,10 @@ class infdata_t
     int start_index;
 
 public:
-    friend class Driver;
     infdata_t(int vcatalogfile,int vfeature,int vinf_pos,ofst vcat,int vindex):
         catalogfile(vcatalogfile),feature(vfeature),inf_pos(vinf_pos),cat(vcat),start_index(vindex){};
+
+    friend class Driver;
 };
 
 struct SP_DEVINFO_DATA_32
@@ -47,9 +48,9 @@ struct SP_DEVINFO_DATA_32
 };
 
 // Device
+class Manager;
 class Device
 {
-public:
     int driver_index;
 
     ofst Devicedesc;
@@ -75,8 +76,11 @@ public:
     void setDriverIndex(int v){driver_index=v;}
     int  getDriverIndex()const{return driver_index;}
     ofst getHardwareID()const{return HardwareID;}
+    ofst getCompatibleIDs()const{return CompatibleIDs;}
     ofst getDriver()const{return Driver;}
     ofst getDescr()const{return Devicedesc;}
+    ofst getRet()const{return ret;}
+    ofst getProblem()const{return problem;}
 
     int  print_status();
     void print(State *state);
@@ -89,12 +93,17 @@ public:
     Device():driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
         InstanceId(0),status(0),problem(0),ret(0),DeviceInfoData(){}
+
+    friend class Manager;
+    friend class Matcher;
+    friend const wchar_t *getHWIDby(int id,int num);
+    friend void contextmenu(int x,int y);
+    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
 };
 
 // Driver
 class Driver
 {
-public:
     ofst DriverDesc;
     ofst ProviderName;
     ofst DriverDate;
@@ -127,10 +136,16 @@ public:
     Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp);
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
+
+    friend class Matcher;
+    friend class Hwidmatch;
+    friend class Devicematch;
+    friend void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i);
+    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
 };
 
 // State (POD)
-struct state_m_t
+class state_m_t
 {
     OSVERSIONINFOEX platform;
     int locale;
@@ -183,6 +198,8 @@ public:
 
     std::vector<Device> Devices_list;
     std::vector<Driver> Drivers_list;
+
+public:
     Txt textas;
     inflist_tp inf_list_new;
     int isLaptop;
@@ -191,6 +208,7 @@ private:
     void fakeOSversion();
 
 public:
+    ofst getWindir(){return windir;}
     wchar_t *getProduct();
     wchar_t *getManuf();
     wchar_t *getModel();
@@ -208,6 +226,8 @@ public:
     int  opencatfile(Driver *cur_driver);
     void genmarker(); // in matcher.cpp
     void isnotebook_a();
+
+    friend class Panel;
 };
 
 // Monitor info

@@ -16,14 +16,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Declarations
-struct TorrentStatus_t;
+class TorrentStatus_t;
 class UpdateDialog_t;
 class Updater_t;
 
 // Global variables
-extern Updater_t Updater;
-extern UpdateDialog_t UpdateDialog;
 extern TorrentStatus_t TorrentStatus;
+extern UpdateDialog_t UpdateDialog;
+extern Updater_t Updater;
 
 // TorrentStatus
 class TorrentStatus_t
@@ -42,8 +42,6 @@ class TorrentStatus_t
     int sessionpaused,torrentpaused;
 
     friend class Updater_t;
-    friend class Manager;
-    friend void popup_download(HDC hdcMem);
 };
 
 // UpdateDialog
@@ -97,7 +95,9 @@ private:
 public:
     static int torrentport,downlimit,uplimit;
 
-    void checkUpdates(){if(canWrite(L"update"))SetEvent(downloadmangar_event);}
+    void checkUpdates();
+    void showProgress(wchar_t *buf);
+    void showPopup(HDC hdcMem);
     void createThreads();
     void destroyThreads();
 

@@ -1741,10 +1741,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         wchar_t buf[BUFLEN];
 
                         Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
-                        Driver *cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->driver_index];
+                        Driver *cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->getDriverIndex()];
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
-                               manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->windir),
+                               manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()),
                                manager_g->matcher->getState()->textas.get(cur_driver->getInfPath()));
 
                         if(wp==ID_OPENINF)
@@ -1890,13 +1890,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_SHOW_DUP:
                 case ID_SHOW_INVALID:
                     filters=0;
-                    for(i=0;i<NUM_PANELS;i++)
-                    for(j=0;j<panels[i].items[0].action_id+1;j++)
-                        if(panels[i].items[j].type==TYPE_CHECKBOX&&
-                           panels[i].items[j].checked&&
-                           panels[i].items[j].action_id!=ID_EXPERT_MODE)
-                            filters+=1<<panels[i].items[j].action_id;
-
+                    for(i=0;i<NUM_PANELS;i++)filters+=panels[i].calcFilters();
                     manager_g->filter(filters);
                     manager_g->setpos();
                     //manager_print(manager_g);
@@ -2300,7 +2294,9 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
                 case FLOATING_DOWNLOAD:
                     SelectObject(canvasPopup->getDC(),hFont);
-                    popup_download(canvasPopup->getDC());
+#ifdef USE_TORRENT
+                    Updater.showPopup(canvasPopup->getDC());
+#endif
                     break;
 
                 default:

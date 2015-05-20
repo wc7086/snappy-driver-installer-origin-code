@@ -120,7 +120,7 @@ int showpercent(int a)
     }
 }
 
-void updateoverall(Manager *manager)
+void Manager::updateoverall()
 {
     int _totalitems=0;
     int _processeditems=0;
@@ -128,25 +128,25 @@ void updateoverall(Manager *manager)
 
     if(installmode==MODE_NONE)
     {
-        manager->items_list[SLOT_EXTRACTING].percent=0;
+        items_list[SLOT_EXTRACTING].percent=0;
         return;
     }
-    itembar_t *itembar1=&manager->items_list[RES_SLOTS];
-    for(j=RES_SLOTS;j<manager->items_list.size();j++,itembar1++)
+    itembar_t *itembar1=&items_list[RES_SLOTS];
+    for(j=RES_SLOTS;j<items_list.size();j++,itembar1++)
     {
         if(itembar1->checked||itembar1->install_status){_totalitems++;}
         if(itembar1->install_status&&!itembar1->checked){_processeditems++;}
     }
     if(_totalitems)
     {
-        double d=(manager->items_list[itembar_act].percent)/_totalitems;
-        if(manager->items_list[itembar_act].checked==0)d=0;
+        double d=(items_list[itembar_act].percent)/_totalitems;
+        if(items_list[itembar_act].checked==0)d=0;
         if(itembar_act==SLOT_RESTORE_POINT)d=0;
-        manager->items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
-        manager->items_list[SLOT_EXTRACTING].val1=_processeditems;
-        manager->items_list[SLOT_EXTRACTING].val2=_totalitems;
+        items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
+        items_list[SLOT_EXTRACTING].val1=_processeditems;
+        items_list[SLOT_EXTRACTING].val2=_totalitems;
         if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING)
-            ShowProgressInTaskbar(hMain,TBPF_NORMAL,manager->items_list[SLOT_EXTRACTING].percent,1000);
+            ShowProgressInTaskbar(hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }
 
@@ -169,7 +169,7 @@ int _7z_setcomplited(long long i)
 
     ar_proceed=i;
     updatecur();
-    updateoverall(manager_g);
+    manager_g->updateoverall();
     redrawfield();
     return S_OK;
 }
@@ -365,7 +365,7 @@ unsigned int __stdcall thread_install(void *arg)
         manager_g->items_list[SLOT_RESTORE_POINT].percent=0;
     }
     totalextracttime=totalinstalltime=0;
-    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->windir));
+    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()));
     _wremove(buf);
 goaround:
     itembar=&manager_g->items_list[0];
@@ -533,7 +533,7 @@ goaround:
                 goto goaround;
     }
     // Instalation competed by this point
-    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->windir));
+    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()));
     wsprintf(cmd,L"%s\\%ssetupAPI.log",log_dir,timestamp);
     if(!(flags&FLAG_NOLOGFILE))CopyFile(buf,cmd,0);
 
