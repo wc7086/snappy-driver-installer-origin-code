@@ -301,45 +301,6 @@ int cmpunsigned(unsigned a,unsigned b)
     if(a<b)return -1;
     return 0;
 }
-
-int cmpdate(version_t *t1,version_t *t2)
-{
-    int res;
-
-    if(flags&FLAG_FILTERSP&&t2->y<1000)return 0;
-
-    res=t1->y-t2->y;
-    if(res)return res;
-
-    res=t1->m-t2->m;
-    if(res)return res;
-
-    res=t1->d-t2->d;
-    if(res)return res;
-
-    return 0;
-}
-
-int cmpversion(version_t *t1,version_t *t2)
-{
-    int res;
-
-    if(flags&FLAG_FILTERSP&&t2->v1<0)return 0;
-
-    res=t1->v1-t2->v1;
-    if(res)return res;
-
-    res=t1->v2-t2->v2;
-    if(res)return res;
-
-    res=t1->v3-t2->v3;
-    if(res)return res;
-
-    res=t1->v4-t2->v4;
-    if(res)return res;
-
-    return 0;
-}
 //}
 
 //{ Matcher
@@ -575,7 +536,7 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
     for(int pos=0;pos<numsects;pos++)
     {
         char buf[BUFLEN];
-        getdrp_drvsectionAtPos(drp,buf,pos,manufacturer_index);
+        drp->getdrp_drvsectionAtPos(buf,pos,manufacturer_index);
         if(calc_decorscore(calc_secttype(buf),state)>curscore)return 0;
     }
 
@@ -862,23 +823,23 @@ char *Hwidmatch::getdrp_drvmanufacturer()
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     return drp->texta.get(drp->manufacturer_list[manufacturer_index].manufacturer);
 }
-void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index)
+void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
 {
-    int *rr=reinterpret_cast<int *>(drp->texta.get(drp->manufacturer_list[manuf_index].sections));
+    int *rr=reinterpret_cast<int *>(texta.get(manufacturer_list[manuf_index].sections));
     if(pos)
     {
-        strcpy(buf,drp->texta.get(rr[0]));
+        strcpy(buf,texta.get(rr[0]));
         strcat(buf,".");
-        strcat(buf,drp->texta.get(rr[pos]));
+        strcat(buf,texta.get(rr[pos]));
     }
     else
-        strcpy(buf,drp->texta.get(rr[pos]));
+        strcpy(buf,texta.get(rr[pos]));
 }
 void Hwidmatch::getdrp_drvsection(char *buf)
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    getdrp_drvsectionAtPos(drp,buf,drp->desc_list[desc_index].sect_pos,manufacturer_index);
+    drp->getdrp_drvsectionAtPos(buf,drp->desc_list[desc_index].sect_pos,manufacturer_index);
 }
 
 //desc

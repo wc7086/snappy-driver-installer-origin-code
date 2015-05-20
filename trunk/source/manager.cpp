@@ -162,13 +162,13 @@ void Manager::filter(int options)
 
             if(itembar->checked||itembar->install_status)itembar->isactive=1;
 
-            if((options&FILTER_SHOW_INVALID)==0&&!isdrivervalid(itembar->hwidmatch))
+            if((options&FILTER_SHOW_INVALID)==0&&!itembar->hwidmatch->isdrivervalid())
                 continue;
 
-            if((options&FILTER_SHOW_DUP)==0&&itembar->hwidmatch->status&STATUS_DUP)
+            if((options&FILTER_SHOW_DUP)==0&&itembar->hwidmatch->getStatus()&STATUS_DUP)
                 continue;
 
-            if((options&FILTER_SHOW_DUP)&&itembar->hwidmatch->status&STATUS_DUP)
+            if((options&FILTER_SHOW_DUP)&&itembar->hwidmatch->getStatus()&STATUS_DUP)
             {
                 itembar1=&items_list[i];
                 for(k=0;k<devicematch->num_matches-j;k++,itembar1++)
@@ -183,7 +183,7 @@ void Manager::filter(int options)
                     itembar->isactive=1;
             }
 
-            if((!o1||!cnt[NUM_STATUS])&&(options&FILTER_SHOW_MISSING)&&itembar->hwidmatch->status&STATUS_MISSING)
+            if((!o1||!cnt[NUM_STATUS])&&(options&FILTER_SHOW_MISSING)&&itembar->hwidmatch->getStatus()&STATUS_MISSING)
             {
                 itembar->isactive=1;
                 if(itembar->hwidmatch->getdrp_packontorrent()&&!ontorrent)
@@ -196,12 +196,12 @@ void Manager::filter(int options)
                 itembar->hwidmatch->altsectscore=1;
 
             for(k=0;k<NUM_STATUS;k++)
-                if((!o1||!cnt[NUM_STATUS])&&(options&statustnl[k].filter)&&itembar->hwidmatch->status&statustnl[k].status)
+                if((!o1||!cnt[NUM_STATUS])&&(options&statustnl[k].filter)&&itembar->hwidmatch->getStatus()&statustnl[k].status)
             {
                 if((options&FILTER_SHOW_WORSE_RANK)==0/*&&(options&FILTER_SHOW_OLD)==0*/&&(options&FILTER_SHOW_INVALID)==0&&
                    devicematch->device->problem==0&&devicematch->driver&&itembar->hwidmatch->altsectscore<2)continue;
 
-                if((options&FILTER_SHOW_OLD)!=0&&(itembar->hwidmatch->status&STATUS_BETTER))continue;
+                if((options&FILTER_SHOW_OLD)!=0&&(itembar->hwidmatch->getStatus()&STATUS_BETTER))continue;
 
                 // hide if
                 //[X] Newer
@@ -209,7 +209,7 @@ void Manager::filter(int options)
                 //worse, no problem
                 if((options&FILTER_SHOW_NEWER)!=0
                    &&(options&FILTER_SHOW_WORSE_RANK)==0&&(options&FILTER_SHOW_INVALID)==0
-                   &&itembar->hwidmatch->status&STATUS_WORSE&&devicematch->device->problem==0&&devicematch->driver)continue;
+                   &&itembar->hwidmatch->getStatus()&STATUS_WORSE&&devicematch->device->problem==0&&devicematch->driver)continue;
 
                 if(itembar->hwidmatch->getdrp_packontorrent()&&!ontorrent)
                     ontorrent=1;
@@ -235,7 +235,7 @@ void Manager::filter(int options)
             }
 
             if(!itembar->hwidmatch->getdrp_packontorrent())
-                if(o1&&itembar->hwidmatch->status&STATUS_CURRENT)
+                if(o1&&itembar->hwidmatch->getStatus()&STATUS_CURRENT)
                     cnt[NUM_STATUS]++;
         }
         if(!devicematch->num_matches)
@@ -454,19 +454,19 @@ void Manager::testitembars()
             case  4:itembar->install_status=STR_INST_REBOOT;break;
             case  5:itembar->install_status=STR_INST_FAILED;break;
 
-            case  6:itembar->hwidmatch->status=STATUS_INVALID;break;
-            case  7:itembar->hwidmatch->status=STATUS_MISSING;break;
-            case  8:itembar->hwidmatch->status=STATUS_CURRENT|STATUS_SAME|STATUS_DUP;break;
+            case  6:itembar->hwidmatch->setStatus(STATUS_INVALID);break;
+            case  7:itembar->hwidmatch->setStatus(STATUS_MISSING);break;
+            case  8:itembar->hwidmatch->setStatus(STATUS_CURRENT|STATUS_SAME|STATUS_DUP);break;
 
-            case  9:itembar->hwidmatch->status=STATUS_NEW|STATUS_BETTER;break;
-            case 10:itembar->hwidmatch->status=STATUS_NEW|STATUS_SAME;break;
-            case 11:itembar->hwidmatch->status=STATUS_NEW|STATUS_WORSE;break;
-            case 12:itembar->hwidmatch->status=STATUS_CURRENT|STATUS_BETTER;break;
-            case 13:itembar->hwidmatch->status=STATUS_CURRENT|STATUS_SAME;break;
-            case 14:itembar->hwidmatch->status=STATUS_CURRENT|STATUS_WORSE;break;
-            case 15:itembar->hwidmatch->status=STATUS_OLD|STATUS_BETTER;break;
-            case 16:itembar->hwidmatch->status=STATUS_OLD|STATUS_SAME;break;
-            case 17:itembar->hwidmatch->status=STATUS_OLD|STATUS_WORSE;break;
+            case  9:itembar->hwidmatch->setStatus(STATUS_NEW|STATUS_BETTER);break;
+            case 10:itembar->hwidmatch->setStatus(STATUS_NEW|STATUS_SAME);break;
+            case 11:itembar->hwidmatch->setStatus(STATUS_NEW|STATUS_WORSE);break;
+            case 12:itembar->hwidmatch->setStatus(STATUS_CURRENT|STATUS_BETTER);break;
+            case 13:itembar->hwidmatch->setStatus(STATUS_CURRENT|STATUS_SAME);break;
+            case 14:itembar->hwidmatch->setStatus(STATUS_CURRENT|STATUS_WORSE);break;
+            case 15:itembar->hwidmatch->setStatus(STATUS_OLD|STATUS_BETTER);break;
+            case 16:itembar->hwidmatch->setStatus(STATUS_OLD|STATUS_SAME);break;
+            case 17:itembar->hwidmatch->setStatus(STATUS_OLD|STATUS_WORSE);break;
 
             case 18:itembar->devicematch->status=STATUS_NF_MISSING;itembar->hwidmatch=nullptr;break;
             case 19:itembar->devicematch->status=STATUS_NF_STANDARD;itembar->hwidmatch=nullptr;break;
@@ -525,7 +525,7 @@ void Manager::expand(int index)
     if((itembar1->isactive&2)==0)// collapsed
     {
         for(i=0;i<items_list.size();i++,itembar++)
-            if(itembar->index==group&&itembar->hwidmatch&&(itembar->hwidmatch->status&STATUS_INVALID)==0&&(itembar->first&2)==0)
+            if(itembar->index==group&&itembar->hwidmatch&&(itembar->hwidmatch->getStatus()&STATUS_INVALID)==0&&(itembar->first&2)==0)
                 {
                     itembar->isactive|=2; // expand
                 }
@@ -640,9 +640,9 @@ void itembar_t::itembar_setpos(int *pos,int *cnt)
     if(accel==0)accel=(tagpos<curpos)?500:-500;
 }
 
-int isdrivervalid(Hwidmatch *hwidmatch)
+int Hwidmatch::isdrivervalid()
 {
-    if(hwidmatch->altsectscore>0&&hwidmatch->decorscore>0)return 1;
+    if(altsectscore>0&&decorscore>0)return 1;
     return 0;
 }
 
@@ -652,7 +652,7 @@ void itembar_t::str_status(wchar_t *buf)
 
     if(hwidmatch)
     {
-        int status=hwidmatch->status;
+        int status=hwidmatch->getStatus();
         if(status&STATUS_INVALID)
             wcscat(buf,STR(STR_STATUS_INVALID));
         else
@@ -684,9 +684,9 @@ void itembar_t::str_status(wchar_t *buf)
     else
     //if(devicematch)
     {
-        if(devicematch->status&STATUS_NF_STANDARD)wcscat(buf,STR(STR_STATUS_NF_STANDARD));
-        if(devicematch->status&STATUS_NF_UNKNOWN) wcscat(buf,STR(STR_STATUS_NF_UNKNOWN));
-        if(devicematch->status&STATUS_NF_MISSING) wcscat(buf,STR(STR_STATUS_NF_MISSING));
+        if(devicematch->getStatus()&STATUS_NF_STANDARD)wcscat(buf,STR(STR_STATUS_NF_STANDARD));
+        if(devicematch->getStatus()&STATUS_NF_UNKNOWN) wcscat(buf,STR(STR_STATUS_NF_UNKNOWN));
+        if(devicematch->getStatus()&STATUS_NF_MISSING) wcscat(buf,STR(STR_STATUS_NF_MISSING));
     }
 }
 
@@ -753,7 +753,7 @@ int box_status(int index)
     }
     if(itembar->hwidmatch)
     {
-        int status=itembar->hwidmatch->status;
+        int status=itembar->hwidmatch->getStatus();
 
         if(itembar->first&2)return BOX_DRVITEM_PN;
 
@@ -803,46 +803,12 @@ int box_status(int index)
     else
     if(devicematch)
     {
-        if(devicematch->status&STATUS_NF_STANDARD)  return BOX_DRVITEM_NS;
-        if(devicematch->status&STATUS_NF_UNKNOWN)   return BOX_DRVITEM_NU;
-        if(devicematch->status&STATUS_NF_MISSING)   return BOX_DRVITEM_NM;
+        if(devicematch->getStatus()&STATUS_NF_STANDARD)  return BOX_DRVITEM_NS;
+        if(devicematch->getStatus()&STATUS_NF_UNKNOWN)   return BOX_DRVITEM_NU;
+        if(devicematch->getStatus()&STATUS_NF_MISSING)   return BOX_DRVITEM_NM;
     }
         //if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
     return BOX_DRVITEM;
-}
-
-void version_t::str_date(wchar_t *buf)
-{
-    SYSTEMTIME tm;
-    FILETIME ft;
-
-    memset(&tm,0,sizeof(SYSTEMTIME));
-    tm.wDay=d;
-    tm.wMonth=m;
-    tm.wYear=y;
-    SystemTimeToFileTime(&tm,&ft);
-    FileTimeToSystemTime(&ft,&tm);
-
-    if(y<1000)
-        wsprintf(buf,STR(STR_HINT_UNKNOWN));
-    else
-        GetDateFormat(manager_g->matcher->state->locale,0,&tm,nullptr,buf,100);
-}
-
-void version_t::str_version(wchar_t *buf)
-{
-    if(v1<0)
-        wsprintf(buf,STR(STR_HINT_UNKNOWN));
-    else
-        wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
-}
-
-wchar_t unkver[128];
-const wchar_t *str_version(version_t *ver)
-{
-
-    wsprintf(unkver,L"%s%s",STR(STR_HINT_VERSION),STR(STR_HINT_UNKNOWN));
-    return ver->v1<0?unkver:L"%s%d.%d.%d.%d";
 }
 //}
 
@@ -918,7 +884,7 @@ int Manager::groupsize(int index)
     int num=0;
 
     for(auto &itembar:items_list)
-        if(itembar.index==index&&itembar.hwidmatch&&(itembar.hwidmatch->status&STATUS_INVALID)==0&&(itembar.first&2)==0)
+        if(itembar.index==index&&itembar.hwidmatch&&(itembar.hwidmatch->getStatus()&STATUS_INVALID)==0&&(itembar.first&2)==0)
             num++;
 
     return num;
@@ -1321,7 +1287,7 @@ int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
 {
     if(a->hwidmatch&&b->hwidmatch)
     {
-        if(a->hwidmatch->HWID_index==b->hwidmatch->HWID_index)return 3;
+        if(a->hwidmatch->getHWID_index()==b->hwidmatch->getHWID_index())return 3;
         return 0;
     }
     if(wcslen(ta+a->devicematch->device->getDriver())>0)
@@ -1419,7 +1385,7 @@ void Manager::restorepos(Manager *manager_old)
             {
                 int limits[7];
                 memset(limits,0,sizeof(limits));
-                log_con("%d|\n",itembar_new->hwidmatch->HWID_index);
+                log_con("%d|\n",itembar_new->hwidmatch->getHWID_index());
                 itembar_new->hwidmatch->print_tbl(limits);
             }
             else
@@ -1439,7 +1405,7 @@ void Manager::restorepos(Manager *manager_old)
             {
                 int limits[7];
                 memset(limits,0,sizeof(limits));
-                log_con("%d|\n",itembar_old->hwidmatch->HWID_index);
+                log_con("%d|\n",itembar_old->hwidmatch->getHWID_index());
                 itembar_old->hwidmatch->print_tbl(limits);
             }
             else
@@ -1540,8 +1506,8 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
     if(!hwidmatch->altsectscore)td.col=D(POPUP_LST_INVALID_COLOR);
     else
     {
-        if(hwidmatch->status&STATUS_BETTER||hwidmatch->status&STATUS_NEW)td.col=D(POPUP_LST_BETTER_COLOR);else
-        if(hwidmatch->status&STATUS_WORSE||hwidmatch->status&STATUS_OLD)td.col=D(POPUP_LST_WORSE_COLOR);else
+        if(hwidmatch->getStatus()&STATUS_BETTER||hwidmatch->getStatus()&STATUS_NEW)td.col=D(POPUP_LST_BETTER_COLOR);else
+        if(hwidmatch->getStatus()&STATUS_WORSE||hwidmatch->getStatus()&STATUS_OLD)td.col=D(POPUP_LST_WORSE_COLOR);else
         td.col=D(POPUP_TEXT_COLOR);
     }
 
@@ -1551,7 +1517,7 @@ void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode
     TextOutP(&td,L"| %s",bufw);
     TextOutP(&td,L"| %3d",hwidmatch->decorscore);
     TextOutP(&td,L"| %d",hwidmatch->markerscore);
-    TextOutP(&td,L"| %3X",hwidmatch->status);
+    TextOutP(&td,L"| %3X",hwidmatch->getStatus());
     TextOutP(&td,L"| %S",buf);
     TextOutP(&td,L"| %s\\%s",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname());
     TextOutP(&td,L"| %08X%",hwidmatch->getdrp_infcrc());
@@ -1587,7 +1553,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
 
     int group=manager->items_list[i].index;
     Driver *cur_driver=manager->items_list[i].devicematch->driver;
-    char *t=manager->matcher->state->textas.get(0);
+    char *t=manager->matcher->getState()->textas.get(0);
 
     memset(limits,0,sizeof(limits));
 
@@ -1608,10 +1574,10 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
         TextOutP(&td,L"$%04d",i);
         td.x+=limits[td.i++];
         td.col=c0;
-        TextOutP(&td,L"| %08X",cur_driver->calc_score_h(manager->matcher->state));
+        TextOutP(&td,L"| %08X",cur_driver->calc_score_h(manager->matcher->getState()));
         TextOutP(&td,L"| %s",bufw);
         for(k=0;k<6;k++)td.x+=limits[td.i++];
-        TextOutP(&td,L"| %s%s",t+manager->matcher->state->windir,t+cur_driver->InfPath);
+        TextOutP(&td,L"| %s%s",t+manager->matcher->getState()->windir,t+cur_driver->InfPath);
         TextOutP(&td,L"| %s",t+cur_driver->ProviderName);
         TextOutP(&td,cur_driver->version.v1<0?STR(STR_HINT_UNKNOWN):L"| %d.%d.%d.%d",cur_driver->version.v1,cur_driver->version.v2,cur_driver->version.v3,cur_driver->version.v4);
         TextOutP(&td,L"| %s",i_hwid);
@@ -1690,7 +1656,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     wchar_t bufw[BUFLEN];
     wchar_t i_hwid[BUFLEN];
     wchar_t a_hwid[BUFLEN];
-    char *t=manager->matcher->state->textas.get(0);
+    char *t=manager->matcher->getState()->textas.get(0);
     int maxln=0;
     int bolder=rect.right/2;
     wchar_t *p;
@@ -1717,7 +1683,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     if(devicematch_f->device->getDriverIndex()>=0)
     {
         int i;
-        cur_driver=&manager->matcher->state->Drivers_list[devicematch_f->device->getDriverIndex()];
+        cur_driver=&manager->matcher->getState()->Drivers_list[devicematch_f->device->getDriverIndex()];
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
         for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
     }
@@ -1732,7 +1698,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         if(r>0)cm_date=1;
         if(r<0)cm_date=2;
 
-        score=cur_driver->calc_score_h(manager->matcher->state);
+        score=cur_driver->calc_score_h(manager->matcher->getState());
         if(score<hwidmatch_f->score)cm_score=1;
         if(score>hwidmatch_f->score)cm_score=2;
 
@@ -1745,8 +1711,8 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     TextOutF(&td,c0,L"$%04d",index);
     if(hwidmatch_f)
     {
-        TextOutF(&td,isvalidcat(hwidmatch_f,manager->matcher->state)?cb:D(POPUP_CMP_INVALID_COLOR),
-                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),pickcat(hwidmatch_f,manager->matcher->state),hwidmatch_f->getdrp_drvcat(pickcat(hwidmatch_f,manager->matcher->state)));
+        TextOutF(&td,isvalidcat(hwidmatch_f,manager->matcher->getState())?cb:D(POPUP_CMP_INVALID_COLOR),
+                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),pickcat(hwidmatch_f,manager->matcher->getState()),hwidmatch_f->getdrp_drvcat(pickcat(hwidmatch_f,manager->matcher->getState())));
 
         td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
         TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
@@ -1880,7 +1846,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
 {
     wchar_t bufw[BUFLEN];
     textdata_t td;
-    State *state=manager->matcher->state;
+    State *state=manager->matcher->getState();
     SYSTEM_POWER_STATUS *battery;
     wchar_t *buf;
     int i,x,y;

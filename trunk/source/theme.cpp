@@ -273,6 +273,17 @@ void Vault::load(int i)
     loadFromRes(res);
     loadFromFile(namelist[i]);
 }
+
+int Vault::pickTheme()
+{
+    int f=0;
+    int j=SendMessage(hTheme,CB_GETCOUNT,0,0);
+    for(int i=0;i<j;i++)
+        if(StrStrI(namelist[i],D_STR(THEME_NAME))&&
+            StrStrI(namelist[i],L"big")==nullptr){f=i;break;}
+    return f;
+}
+
 //}
 
 //{ Lang/theme

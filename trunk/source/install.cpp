@@ -210,7 +210,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     }
 
     if(!*ret)*ret=GetLastError();
-    if((unsigned)*ret==0xE0000235||manager_g->matcher->state->architecture)//ERROR_IN_WOW64
+    if((unsigned)*ret==0xE0000235||manager_g->matcher->getState()->architecture)//ERROR_IN_WOW64
     {
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
         wsprintf(cmd,L"%s\\install64.exe",extractdir);
@@ -287,20 +287,20 @@ unsigned int __stdcall thread_install(void *arg)
     for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
         if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
     {
-        if(!Updater.istorrentready())
+        if(!Updater.isTorrentReady())
         {
             log_con("Waiting for torrent");
             for(j=0;j<100;j++)
             {
                 log_con("*");
-                if(Updater.istorrentready())
+                if(Updater.isTorrentReady())
                 {
                     log_con("DONE\n");
                     break;
                 }
                 Sleep(100);
             }
-            if(!Updater.istorrentready())break;
+            if(!Updater.isTorrentReady())break;
         }
         UpdateDialog.setPriorities(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
@@ -365,7 +365,7 @@ unsigned int __stdcall thread_install(void *arg)
         manager_g->items_list[SLOT_RESTORE_POINT].percent=0;
     }
     totalextracttime=totalinstalltime=0;
-    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->state->textas.get(manager_g->matcher->state->windir));
+    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->windir));
     _wremove(buf);
 goaround:
     itembar=&manager_g->items_list[0];
@@ -533,7 +533,7 @@ goaround:
                 goto goaround;
     }
     // Instalation competed by this point
-    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->state->textas.get(manager_g->matcher->state->windir));
+    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->windir));
     wsprintf(cmd,L"%s\\%ssetupAPI.log",log_dir,timestamp);
     if(!(flags&FLAG_NOLOGFILE))CopyFile(buf,cmd,0);
 

@@ -25,6 +25,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define SYSINFO_COL2 (D(FONT_SIZE)*30)
 #define SYSINFO_COL3 (D(FONT_SIZE)*40)
 
+#define ICON_NUM             8
+
 enum
 {
     BOX_MAINWND=0,
@@ -121,7 +123,6 @@ enum
     BOX_DRVITEM_PN_H,
     BOX_NUM
 };
-#define ICON_NUM             8
 
 enum
 {

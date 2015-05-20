@@ -229,6 +229,7 @@ extern int main1x_c,main1y_c;
 extern int mainx_c,mainy_c;
 extern HFONT hFont;
 extern HWND hPopup,hMain,hField;
+extern HWND hTheme;
 
 // Window helpers
 extern int floating_type;

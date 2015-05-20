@@ -26,7 +26,7 @@ extern UpdateDialog_t UpdateDialog;
 extern TorrentStatus_t TorrentStatus;
 
 // TorrentStatus
-struct TorrentStatus_t
+class TorrentStatus_t
 {
     long long downloaded,downloadsize;
     long long uploaded;
@@ -40,6 +40,10 @@ struct TorrentStatus_t
     int wasted,wastedhashfailes;
 
     int sessionpaused,torrentpaused;
+
+    friend class Updater_t;
+    friend class Manager;
+    friend void popup_download(HDC hdcMem);
 };
 
 // UpdateDialog
@@ -50,6 +54,7 @@ class UpdateDialog_t
     static int bMouseInWindow;
     static HWND hUpdate;
     int totalsize;
+    static HWND hListg;
 
 private:
     int  getnewver(const char *ptr);
@@ -65,11 +70,10 @@ private:
     static BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
 
 public:
-    static HWND hListg;
-
     int  populate(int flags);
     void setPriorities(const wchar_t *name,int pri);
     void openDialog();
+    void clearList();
 };
 
 // Updater
@@ -101,7 +105,7 @@ public:
     void resumeDownloading();
     static unsigned int __stdcall thread_download(void *arg);
 
-    bool istorrentready();
+    bool isTorrentReady();
     bool isPaused(){return TorrentStatus.sessionpaused;}
     bool isUpdateCompleted(){return finishedupdating;}
 };
