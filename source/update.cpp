@@ -103,7 +103,7 @@ int UpdateDialog_t::getcurver(const char *ptr)
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=manager_g->matcher->col->finddrp(bffw);
+            s=manager_g->matcher->finddrp(bffw);
             if(!s)return 0;
             while(*s)
             {
@@ -551,6 +551,11 @@ void UpdateDialog_t::openDialog()
 {
     DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
 }
+
+void UpdateDialog_t::clearList()
+{
+    ListView_DeleteAllItems(hListg);
+}
 //}
 
 //{ Updater
@@ -622,7 +627,7 @@ void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=manager_g->matcher->col->finddrp(bffw);
+            s=manager_g->matcher->finddrp(bffw);
             if(!s)return;
             wchar_t buf[BUFLEN];
             wsprintf(buf,L"%ws\\%s",drp_dir,s);
@@ -733,7 +738,7 @@ void Updater_t::destroyThreads()
     }
 }
 
-bool Updater_t::istorrentready(){return hTorrent.torrent_file()!=nullptr;}
+bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 
 void Updater_t::downloadTorrent()
 {
@@ -907,7 +912,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                 hTorrent.force_recheck();
 
                 // Update list
-                ListView_DeleteAllItems(UpdateDialog.hListg);
+                UpdateDialog.clearList();
                 UpdateDialog.populate(0);
 
                 // Execute user cmd

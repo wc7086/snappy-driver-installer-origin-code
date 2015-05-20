@@ -499,7 +499,7 @@ void Panel::draw(HDC hdc)
     ScreenToClient(hMain,&p);
     cur_i=hitscan(p.x,p.y);
 
-    State *state=manager_g->matcher->state;
+    State *state=manager_g->matcher->getState();
     for(i=0;i<items[0].action_id+1;i++)
     {
         SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
@@ -621,12 +621,14 @@ void Panel::draw(HDC hdc)
 //int mirc(int x){return 0?(mainx_c-x):x;}
 int mirw(int x,int ofs,int w)
 {
+    UNREFERENCED_PARAMETER(w)
     //if(rtl)return x+w-ofs;
     return x+ofs;
 }
 
 int Xm(int x,int o)
 {
+    UNREFERENCED_PARAMETER(o)
     /*int w=(main1x_c+o-x);
     if(rtl&&o>=0&&x>=0)return mir(x)-o;
     if(rtl&&o>=0&&x< 0)return mir(main1x_c+x)-o;
@@ -641,6 +643,7 @@ int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
 
 int Xg(int x,int o)
 {
+    UNREFERENCED_PARAMETER(o)
     //int w=(mainx_c+o-x);
     //if(rtl&&o>=0&&x>=0)return mirc(x)-o;
     //if(rtl&&o>=0&&x< 0)return mirc(mainx_c+x)-o;

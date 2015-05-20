@@ -593,7 +593,7 @@ void bundle_t::bundle_load(bundle_t *pbundle)
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
     invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
-    matcher.state->textas.shrink();
+    matcher.getState()->textas.shrink();
     matcher.populate();
 }
 
@@ -787,13 +787,13 @@ void get_resource(int id,void **data,int *size)
 const wchar_t *get_winverstr(Manager *manager1)
 {
     int i;
-    int ver=manager1->matcher->state->platform.dwMinorVersion;
-    ver+=10*manager1->matcher->state->platform.dwMajorVersion;
+    int ver=manager1->matcher->getState()->platform.dwMinorVersion;
+    ver+=10*manager1->matcher->getState()->platform.dwMajorVersion;
 
     if(ver==64)ver=100;
     if(ver==52)
     {
-        if(manager1->matcher->state->architecture)
+        if(manager1->matcher->getState()->architecture)
             ver=51;
         else
             return L"Windows Server 2003";
@@ -1186,7 +1186,7 @@ const wchar_t *getHWIDby(int id,int num)
 
     if(device->HardwareID)
     {
-        wchar_t *p=manager_g->matcher->state->textas.getw(device->HardwareID);
+        wchar_t *p=manager_g->matcher->getState()->textas.getw(device->HardwareID);
         while(*p)
         {
             if(i==num)return p;
@@ -1196,7 +1196,7 @@ const wchar_t *getHWIDby(int id,int num)
     }
     if(device->CompatibleIDs)
     {
-        wchar_t *p=manager_g->matcher->state->textas.getw(device->CompatibleIDs);
+        wchar_t *p=manager_g->matcher->getState()->textas.getw(device->CompatibleIDs);
         while(*p)
         {
             if(i==num)return p;
@@ -1314,7 +1314,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_UPDATELANG:
             SendMessage(hLang,CB_RESETCONTENT,0,0);
-            lang_enum(hLang,L"langs",manager_g->matcher->state->locale);
+            lang_enum(hLang,L"langs",manager_g->matcher->getState()->locale);
             f=SendMessage(hLang,CB_FINDSTRINGEXACT,-1,(LPARAM)curlang);
             if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
             lang_set(f);
@@ -1328,12 +1328,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)curtheme);
             if(f==CB_ERR)
             {
-                theme_set(f);
+                theme_set(vTheme.pickTheme());
                 //panels[2].items=D(PANEL_LIST_OFSX)?panel3_w:panel3;
-                j=SendMessage(hTheme,CB_GETCOUNT,0,0);
+/*                j=SendMessage(hTheme,CB_GETCOUNT,0,0);
                 for(i=0;i<j;i++)
                     if(StrStrI(vTheme.namelist[i],D_STR(THEME_NAME))&&
-                       StrStrI(vTheme.namelist[i],L"big")==nullptr){f=i;break;}
+                       StrStrI(vTheme.namelist[i],L"big")==nullptr){f=i;break;}*/
             }else
                 theme_set(f);
             //panels[2].items=D(PANEL_LIST_OFSX)?panel3_w:panel3;
@@ -1391,7 +1391,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         if(!panels[11].isChecked(3))manager_g->selectall();
                         if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
+                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->temp));
                         manager_install(INSTALLDRIVERS);
                     }
                     else
@@ -1741,11 +1741,11 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         wchar_t buf[BUFLEN];
 
                         Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
-                        Driver *cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
+                        Driver *cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->driver_index];
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
-                               manager_g->matcher->state->textas.get(manager_g->matcher->state->windir),
-                               manager_g->matcher->state->textas.get(cur_driver->getInfPath()));
+                               manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->windir),
+                               manager_g->matcher->getState()->textas.get(cur_driver->getInfPath()));
 
                         if(wp==ID_OPENINF)
                             run_command(buf,L"",SW_SHOW,0);
@@ -1844,7 +1844,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     if(installmode==MODE_NONE)
                     {
                         if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
+                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->temp));
                         manager_install(INSTALLDRIVERS);
                     }
                     break;
@@ -1944,12 +1944,12 @@ void contextmenu2(int x,int y)
 {
     int i;
     RECT rect;
-    OSVERSIONINFOEX *platform=&manager_g->matcher->state->platform;
+    OSVERSIONINFOEX *platform=&manager_g->matcher->getState()->platform;
     HMENU
         hPopupMenu=CreatePopupMenu(),
         hSub1=CreatePopupMenu();
     int ver=platform->dwMinorVersion+10*platform->dwMajorVersion;
-    int arch=manager_g->matcher->state->architecture;
+    int arch=manager_g->matcher->getState()->architecture;
 
     for(i=0;i<NUM_OS-1;i++)
     {
@@ -2004,8 +2004,8 @@ void contextmenu(int x,int y)
     Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
     Driver *cur_driver=nullptr;
     wchar_t *p;
-    char *t=manager_g->matcher->state->textas.get(0);
-    if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->state->Drivers_list[devicematch_f->device->driver_index];
+    char *t=manager_g->matcher->getState()->textas.get(0);
+    if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->driver_index];
     int flags3=cur_driver?0:MF_GRAYED;
     wchar_t buf[512];
 
@@ -2145,7 +2145,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((flags&FLAG_EXTRACTONLY)==0)
-                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->state->textas.get(manager_g->matcher->state->temp));
+                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->temp));
                     manager_install(INSTALLDRIVERS);
                 }
                 redrawfield();
@@ -2322,9 +2322,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
 {
     GetWindowRect(hWnd,rc);
-    MapWindowPoints(0,hWnd,(LPPOINT)&rc,2);
-   //ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[0]);
-   //ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[1]);
+    MapWindowPoints(nullptr,hWnd,(LPPOINT)&rc,2);
     rc->right-=rc->left;
     rc->bottom-=rc->top;
 }

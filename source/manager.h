@@ -209,10 +209,7 @@ void manager_install(int flags);
 void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2);
 
 // Helpers
-int  isdrivervalid(Hwidmatch *hwidmatch);
 int  box_status(int index);
-//void str_date(version_t *v,wchar_t *buf);
-//const wchar_t *str_version(version_t *ver);
 
 // Draw
 void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);

@@ -67,11 +67,10 @@ public:
 
 class version_t
 {
-public:
     int d,m,y;
+public:
     int v1,v2,v3,v4;
 
-    friend class Driverpack;
 
     void str_date(wchar_t *buf);
     void str_version(wchar_t *buf);
@@ -81,12 +80,19 @@ public:
 
     version_t():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
     version_t(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
+
+    friend class Driverpack;
+    friend class Hwidmatch;
+    friend int cmpdate(version_t *t1,version_t *t2);
+    friend int cmpversion(version_t *t1,version_t *t2);
 };
+const wchar_t *str_version(version_t *ver);
+int cmpdate(version_t *t1,version_t *t2);
+int cmpversion(version_t *t1,version_t *t2);
 //}
 
 class data_inffile_t // 132
 {
-public:
     ofst infpath;
     ofst inffilename;
     ofst fields[NUM_VER_NAMES];
@@ -94,21 +100,25 @@ public:
     version_t version;
     int infsize;
     int infcrc;
+
+    friend class Driverpack;
+    friend class Hwidmatch;
 };
 
 class data_manufacturer_t // 16
 {
-public:
     unsigned inffile_index;
 
     ofst manufacturer;
     ofst sections;
     int sections_n;
+
+    friend class Driverpack;
+    friend class Hwidmatch;
 };
 
 class data_desc_t // 24
 {
-public:
     unsigned manufacturer_index;
     int sect_pos;
 
@@ -117,9 +127,13 @@ public:
     ofst install_picked;
     unsigned int feature;
 
+public:
     data_desc_t(){}
     data_desc_t(unsigned manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
         manufacturer_index(manufacturer_indexv),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
+
+    friend class Driverpack;
+    friend class Hwidmatch;
 };
 
 class data_HWID_t // 12
@@ -132,6 +146,9 @@ public:
 
     data_HWID_t(unsigned desc_indexv,int inf_posv,ofst HWIDv):desc_index(desc_indexv),inf_pos(inf_posv),HWID(HWIDv){}
     data_HWID_t(){}
+
+    friend class Driverpack;
+    friend class Hwidmatch;
 };
 
 // Parser
@@ -236,7 +253,6 @@ public:
     friend class Collection;
     friend class Hwidmatch;
     friend class Matcher;
-    friend void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
     friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
@@ -257,7 +273,7 @@ public:
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
     void genhashes();
     static unsigned int __stdcall thread_indexinf(void *arg);
-
+    void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
 };
 void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 

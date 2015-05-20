@@ -50,7 +50,6 @@ typedef std::unordered_map <std::wstring,int> lookuptbl_t;
 
 class Vault
 {
-public:
     entry_t *entry;
     int num;
     wchar_t namelist[64][250];
@@ -74,6 +73,7 @@ public:
     Vault();
     void init1(entry_t *entry,int num,int res);
     void load(int i);
+    int pickTheme();
 
     friend void lang_enum(HWND hwnd,const wchar_t *path,int locale);
     friend void theme_enum(HWND hwnd,const wchar_t *path);

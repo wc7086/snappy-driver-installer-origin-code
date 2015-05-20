@@ -57,14 +57,10 @@ int calc_markerscore(State *state,const char *path);
 
 // Misc
 int cmpunsigned(unsigned a,unsigned b);
-int cmpdate(version_t *t1,version_t *t2);
-int cmpversion(version_t *t1,version_t *t2);
-void getdrp_drvsectionAtPos(Driverpack *drp,char *buf,int pos,int manuf_index);
 
 // Matcher is used as a storange for devicematch_list and hwidmatch_list
 class Matcher
 {
-public:
     State *state;
     Collection *col;
 
@@ -79,31 +75,44 @@ public:
     void init(State *state1,Collection *col1){state=state1;col=col1;}
     void populate();
     void print();
+
+    wchar_t *finddrp(wchar_t *s){return col->finddrp(s);}
+    State *getState(){return state;}
+
+    friend class Manager;
 };
 
 // Devicematch holds info about device and a list of alternative drivers
 class Devicematch
 {
-public:
-    Device *device;
-    Driver *driver;
     int start_matches;
     unsigned num_matches;
     int status;
 
 public:
+    Device *device;
+    Driver *driver;
+
+public:
     Devicematch(Device *cur_device,Driver *cur_driver,int items);
     int isMissing(State *state);
+    int getStatus(){return status;}
+
+    friend class Manager;
+    friend class Matcher;
+    friend void contextmenu(int x,int y);
+    friend const wchar_t *getHWIDby(int id,int num);
+    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 };
 
 // Hwidmatch is used to extract info about an available driver from indexes
 class Hwidmatch
 {
-public:
     Driverpack *drp;
     int HWID_index;
 
     Devicematch *devicematch;
+public:
     int identifierscore,decorscore,markerscore,altsectscore,status;
     unsigned score;
 
@@ -115,9 +124,13 @@ private:
     int calc_status(State *state);
 
 public:
+    void setHWID_index(int index){HWID_index=index;}
+    int getHWID_index(){return HWID_index;}
+    void setStatus(int status1){status=status1;}
+    int getStatus(){return status;}
+
     Hwidmatch(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,Devicematch *devicematch);
     Hwidmatch(Driverpack *drp1,int HWID_index1);
-    void setHWID_index(int index){HWID_index=index;}
 
     int calc_catalogfile();
     int calc_notebook();
@@ -128,6 +141,7 @@ public:
     void print_hr();
     int  cmp(Hwidmatch *match2);
     int isdup(Hwidmatch *match2,char *sect1);
+    int isdrivervalid();
 
 // <<< GETTERS
     //driverpack

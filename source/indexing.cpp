@@ -100,6 +100,79 @@ void version_t::setVersion(int v1_,int v2_,int v3_,int v4_)
     v4=v4_;
 }
 
+void version_t::str_date(wchar_t *buf)
+{
+    SYSTEMTIME tm;
+    FILETIME ft;
+
+    memset(&tm,0,sizeof(SYSTEMTIME));
+    tm.wDay=d;
+    tm.wMonth=m;
+    tm.wYear=y;
+    SystemTimeToFileTime(&tm,&ft);
+    FileTimeToSystemTime(&ft,&tm);
+
+    if(y<1000)
+        wsprintf(buf,STR(STR_HINT_UNKNOWN));
+    else
+        GetDateFormat(manager_g->matcher->getState()->locale,0,&tm,nullptr,buf,100);
+}
+
+void version_t::str_version(wchar_t *buf)
+{
+    if(v1<0)
+        wsprintf(buf,STR(STR_HINT_UNKNOWN));
+    else
+        wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
+}
+
+wchar_t unkver[128];
+const wchar_t *str_version(version_t *ver)
+{
+
+    wsprintf(unkver,L"%s%s",STR(STR_HINT_VERSION),STR(STR_HINT_UNKNOWN));
+    return ver->v1<0?unkver:L"%s%d.%d.%d.%d";
+}
+
+int cmpdate(version_t *t1,version_t *t2)
+{
+    int res;
+
+    if(flags&FLAG_FILTERSP&&t2->y<1000)return 0;
+
+    res=t1->y-t2->y;
+    if(res)return res;
+
+    res=t1->m-t2->m;
+    if(res)return res;
+
+    res=t1->d-t2->d;
+    if(res)return res;
+
+    return 0;
+}
+
+int cmpversion(version_t *t1,version_t *t2)
+{
+    int res;
+
+    if(flags&FLAG_FILTERSP&&t2->v1<0)return 0;
+
+    res=t1->v1-t2->v1;
+    if(res)return res;
+
+    res=t1->v2-t2->v2;
+    if(res)return res;
+
+    res=t1->v3-t2->v3;
+    if(res)return res;
+
+    res=t1->v4-t2->v4;
+    if(res)return res;
+
+    return 0;
+}
+
 //{ Parser
 void Parser::parseWhitespace(bool eatnewline=false)
 {
@@ -951,7 +1024,7 @@ void Driverpack::print_index_hr()
                 fprintf(f,"      {%s}\n",texta.get(manufacturer_list[manuf_index].manufacturer));
             for(pos=0;pos<manufacturer_list[manuf_index].sections_n;pos++)
             {
-                getdrp_drvsectionAtPos(this,buf,pos,manuf_index);
+                getdrp_drvsectionAtPos(buf,pos,manuf_index);
                 i=calc_secttype(buf);
                 if(i>=0&&cnts[i]<0)cnts[i]=0;
                 if(i<0&&pos>0)fprintf(f,"!!![%s]\n",buf);
