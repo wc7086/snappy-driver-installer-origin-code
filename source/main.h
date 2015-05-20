@@ -224,6 +224,11 @@ extern int space_down;
 extern int invaidate_set;
 extern int num_cores;
 
+// Windows ver
+#define NUM_OS 8
+extern const wchar_t *windows_name[NUM_OS];
+extern int windows_ver[NUM_OS];
+
 // Window
 extern HINSTANCE ghInst;
 extern int main1x_c,main1y_c;
@@ -308,7 +313,6 @@ void setscrollpos(int pos);
 
 // Helpers
 void get_resource(int id,void **data,int *size);
-const wchar_t *get_winverstr(Manager *manager);
 void mkdir_r(const wchar_t *path);
 void snapshot();
 void extractto();

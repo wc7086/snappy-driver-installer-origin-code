@@ -148,10 +148,10 @@ public:
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
 
-    friend class Manager;
-    friend class Collection;
-    friend unsigned int __stdcall thread_install(void *arg);
-    friend void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam);
+    friend class Manager; // TODO: friend
+    friend class Collection; // TODO: friend
+    friend unsigned int __stdcall thread_install(void *arg); // TODO: friend
+    friend void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam); // TODO: friend
 };
 void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
 void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1);

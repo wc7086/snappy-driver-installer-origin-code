@@ -1578,7 +1578,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
         TextOutP(&td,L"| %08X",cur_driver->calc_score_h(manager->matcher->getState()));
         TextOutP(&td,L"| %s",bufw);
         for(k=0;k<6;k++)td.x+=limits[td.i++];
-        TextOutP(&td,L"| %s%s",t+manager->matcher->getState()->windir,t+cur_driver->InfPath);
+        TextOutP(&td,L"| %s%s",t+manager->matcher->getState()->getWindir(),t+cur_driver->InfPath);
         TextOutP(&td,L"| %s",t+cur_driver->ProviderName);cur_driver->version.str_version(bufw);
         TextOutP(&td,L"| %s",bufw);
         TextOutP(&td,L"| %s",i_hwid);
@@ -1621,7 +1621,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
 
 int pickcat(Hwidmatch *hwidmatch,State *state)
 {
-    if(state->architecture==1&&*hwidmatch->getdrp_drvcat(CatalogFile_ntamd64))
+    if(state->getArchitecture()==1&&*hwidmatch->getdrp_drvcat(CatalogFile_ntamd64))
     {
         return CatalogFile_ntamd64;
     }
@@ -1645,9 +1645,9 @@ int isvalidcat(Hwidmatch *hwidmatch,State *state)
     int n=pickcat(hwidmatch,state);
     const char *s=hwidmatch->getdrp_drvcat(n);
 
-    wsprintfA(bufa,"2:%d.%d",
-            state->platform.dwMajorVersion,
-            state->platform.dwMinorVersion);
+    int major,minor;
+    state->getWinVer(&major,&minor);
+    wsprintfA(bufa,"2:%d.%d",major,minor);
     if(!*s)return 0;
     return strstr(s,bufa)?1:0;
 }
@@ -1862,7 +1862,7 @@ void popup_sysinfo(Manager *manager,HDC hdcMem)
     td.x=p0;
     TextOutF(&td,td.col,STR(STR_SYSINF_WINDOWS));td.x=p1;
 
-    TextOutSF(&td,STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(manager_g),state->platform.dwMajorVersion,state->platform.dwMinorVersion,state->platform.dwBuildNumber);
+    TextOutSF(&td,STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",state->get_winverstr(),state->platform.dwMajorVersion,state->platform.dwMinorVersion,state->platform.dwBuildNumber);
     TextOutSF(&td,STR(STR_SYSINF_UPDATE),L"%s",state->platform.szCSDVersion);
     TextOutSF(&td,STR(STR_SYSINF_CPU_ARCH),L"%s",state->architecture?STR(STR_SYSINF_64BIT):STR(STR_SYSINF_32BIT));
     TextOutSF(&td,STR(STR_SYSINF_LOCALE),L"%X",state->locale);

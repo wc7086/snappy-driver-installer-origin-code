@@ -457,6 +457,12 @@ void State::fakeOSversion()
     }
 }
 
+void State::getWinVer(int *major,int *minor)
+{
+    *major=platform.dwMajorVersion;
+    *minor=platform.dwMinorVersion;
+}
+
 wchar_t *State::getProduct()
 {
     wchar_t *s=textas.getw(product);
@@ -497,7 +503,7 @@ void State::print()
 
     if(log_verbose&LOG_VERBOSE_SYSINFO&&log_verbose&LOG_VERBOSE_BATCH)
     {
-        log_file("%S (%d.%d.%d), ",get_winverstr(manager_g),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+        log_file("%S (%d.%d.%d), ",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
         log_file("%s\n",architecture?"64-bit":"32-bit");
         log_file("%s, ",isLaptop?"Laptop":"Desktop");
         log_file("Product='%S', ",textas.getw(product));
@@ -507,7 +513,7 @@ void State::print()
     if(log_verbose&LOG_VERBOSE_SYSINFO)
     {
         log_file("Windows\n");
-        log_file("  Version:     %S (%d.%d.%d)\n",get_winverstr(manager_g),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+        log_file("  Version:     %S (%d.%d.%d)\n",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
         log_file("  PlatformId:  %d\n",platform.dwPlatformId);
         log_file("  Update:      %S\n",platform.szCSDVersion);
         if(platform.dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
@@ -850,6 +856,24 @@ void State::scanDevices()
 
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;
+}
+
+const wchar_t *State::get_winverstr()
+{
+    int i;
+    int ver=platform.dwMinorVersion;
+    ver+=10*platform.dwMajorVersion;
+
+    if(ver==64)ver=100;
+    if(ver==52)
+    {
+        if(architecture)
+            ver=51;
+        else
+            return L"Windows Server 2003";
+    }
+    for(i=0;i<NUM_OS;i++)if(windows_ver[i]==ver)return windows_name[i];
+    return windows_name[NUM_OS-1];
 }
 
 int State::opencatfile(Driver *cur_driver)

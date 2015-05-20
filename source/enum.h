@@ -16,6 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 // Declarations
+class Manager;
 class State;
 class Device;
 class infdata_t;
@@ -48,7 +49,6 @@ struct SP_DEVINFO_DATA_32
 };
 
 // Device
-class Manager;
 class Device
 {
     int driver_index;
@@ -94,11 +94,11 @@ public:
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
         InstanceId(0),status(0),problem(0),ret(0),DeviceInfoData(){}
 
-    friend class Manager;
-    friend class Matcher;
-    friend const wchar_t *getHWIDby(int id,int num);
-    friend void contextmenu(int x,int y);
-    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    friend class Manager; // TODO: friend
+    friend class Matcher; // TODO: friend
+    friend const wchar_t *getHWIDby(int id,int num); // TODO: friend
+    friend void contextmenu(int x,int y); // TODO: friend
+    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
 // Driver
@@ -137,11 +137,11 @@ public:
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
 
-    friend class Matcher;
-    friend class Hwidmatch;
-    friend class Devicematch;
-    friend void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i);
-    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    friend class Matcher; // TODO: friend
+    friend class Hwidmatch; // TODO: friend
+    friend class Devicematch; // TODO: friend
+    friend void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i); // TODO: friend
+    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
 // State (POD)
@@ -172,7 +172,6 @@ class state_m_t
 // State
 class State
 {
-public:
     OSVERSIONINFOEX platform;
     int locale;
     int architecture;
@@ -209,6 +208,10 @@ private:
 
 public:
     ofst getWindir(){return windir;}
+    ofst getTemp(){return temp;}
+    int getLocale(){return locale;}
+    int getArchitecture(){return architecture;}
+    void getWinVer(int *major,int *minor);
     wchar_t *getProduct();
     wchar_t *getManuf();
     wchar_t *getModel();
@@ -223,11 +226,18 @@ public:
     void getsysinfo_slow(State *prev);
     void scanDevices();
 
+    const wchar_t *get_winverstr();
     int  opencatfile(Driver *cur_driver);
     void genmarker(); // in matcher.cpp
     void isnotebook_a();
 
-    friend class Panel;
+    friend class Panel; // TODO: friend
+    friend class Matcher; // TODO: friend
+    friend void contextmenu(int x,int y); // TODO: friend
+    friend void contextmenu2(int x,int y); // TODO: friend
+    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
+    friend void popup_sysinfo(Manager *manager,HDC hdcMem); // TODO: friend
+    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
 // Monitor info
