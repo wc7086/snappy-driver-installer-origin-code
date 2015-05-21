@@ -98,7 +98,6 @@ public:
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend class itembar_t; // TODO: friend
-    friend void contextmenu(int x,int y); // TODO: friend
 };
 
 // Driver
@@ -235,7 +234,6 @@ public:
 
     friend class Panel; // TODO: friend
     friend class Matcher; // TODO: friend
-    friend void contextmenu(int x,int y); // TODO: friend
 };
 
 // Monitor info

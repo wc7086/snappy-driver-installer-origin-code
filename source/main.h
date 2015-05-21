@@ -332,5 +332,4 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
 void drvdir();
 void escapeAmpUrl(wchar_t *buf,wchar_t *source);
 void escapeAmp(wchar_t *buf,wchar_t *source);
-void contextmenu(int x,int y);
 void invaidate(int v);

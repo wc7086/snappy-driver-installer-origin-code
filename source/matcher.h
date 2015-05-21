@@ -100,7 +100,6 @@ public:
 
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
-    friend void contextmenu(int x,int y); // TODO: friend
 };
 
 // Hwidmatch is used to extract info about an available driver from indexes

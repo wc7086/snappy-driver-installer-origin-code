@@ -527,10 +527,8 @@ int UpdateDialog_t::populate(int update)
 
     if(update)return ret;
 
-    manager_g->items_list[SLOT_DOWNLOAD].isactive=ret?1:0;
-    if(ret)manager_g->items_list[SLOT_NODRIVERS].isactive=0;
-    manager_g->setpos();
-    manager_g->items_list[SLOT_DOWNLOAD].val1=ret;
+    if(ret)manager_g->itembar_settext(SLOT_NODRIVERS,0);
+    manager_g->itembar_settext(SLOT_DOWNLOAD,ret?1:0,nullptr,ret,0,0);
     return ret;
 }
 
@@ -612,7 +610,7 @@ void Updater_t::updateTorrentStatus()
     t->torrentpaused=st.paused;
 
     if(TorrentStatus.downloadsize)
-        manager_g->items_list[SLOT_DOWNLOAD].percent=TorrentStatus.downloaded*1000/TorrentStatus.downloadsize;
+        manager_g->itembar_settext(SLOT_DOWNLOAD,1,nullptr,-1,-1,TorrentStatus.downloaded*1000/TorrentStatus.downloadsize);
     redrawfield();
 }
 

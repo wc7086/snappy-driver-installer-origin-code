@@ -151,12 +151,11 @@ public:
     void updatecur();
     void drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2);
     void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    void contextmenu(int x,int y);
 
     friend class Manager; // TODO: friend
     friend class Collection; // TODO: friend
-    friend unsigned int __stdcall thread_install(void *arg); // TODO: friend
 };
-void itembar_setactive(int i,int val);
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
 // Manager
@@ -192,6 +191,7 @@ public:
     int  isbehind(int pos,int ofs,int j);
     int  calc_cutoff();
     void draw(HDC hdc,int ofsy);
+    void restorepos1(Manager *manager_prev);
     void restorepos(Manager *manager_prev);
     void updateoverall();
     int groupsize(int index);
@@ -200,20 +200,17 @@ public:
     int  manager_drplive(wchar_t *s);
     void set_rstpnt(int checked);
     void itembar_settext(int i,const wchar_t *txt1,int percent);
-    void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1);
+    void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1,int percent=-1);
+    void itembar_setactive(int i,int val);
+    void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    void contextmenu(int x,int y);
+    static unsigned int __stdcall thread_install(void *arg);
 
     friend class Driverpack; // TODO: friend
     friend class bundle_t; // TODO: friend
     friend class itembar_t; // TODO: friend
-    friend class UpdateDialog_t; // TODO: friend
-    friend class Updater_t; // TODO: friend
-    friend unsigned int __stdcall thread_install(void *arg); // TODO: friend
     friend int _7z_setcomplited(long long i); // TODO: friend
     friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
-    friend void contextmenu(int x,int y); // TODO: friend
-    friend LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam); // TODO: friend
-
-    friend void itembar_setactive(int i,int val); // TODO: friend
 };
 
 // Global vars

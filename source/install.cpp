@@ -251,7 +251,7 @@ void removeextrainfs(wchar_t *inf)
     while(FindNextFile(hFind,&FindFileData)!=0);
 }
 
-unsigned int __stdcall thread_install(void *arg)
+unsigned int __stdcall Manager::thread_install(void *arg)
 {
     UNREFERENCED_PARAMETER(arg)
 
@@ -589,7 +589,7 @@ goaround:
 void manager_install(int flagsv)
 {
     instflag=flagsv;
-    _beginthreadex(nullptr,0,&thread_install,nullptr,0,nullptr);
+    _beginthreadex(nullptr,0,&Manager::thread_install,nullptr,0,nullptr);
 }
 
 void calcwnddata(wnddata_t *w,HWND hwnd)
