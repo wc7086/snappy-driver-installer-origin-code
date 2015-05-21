@@ -147,6 +147,7 @@ public:
     itembar_t();
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
+    int box_status();
 
     friend class Manager; // TODO: friend
     friend class Collection; // TODO: friend
@@ -193,8 +194,18 @@ public:
     void updateoverall();
     int groupsize(int index);
     int countItems();
+    void popup_driverlist(HDC hdcMem,RECT rect,unsigned i);
 };
 
+// Global vars
+extern wchar_t extractdir[BUFLEN];
+
+// Manager
+int  manager_drplive(wchar_t *s);
+void manager_install(int flags);
+void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2);
+
+// Draw
 struct textdata_t
 {
     HDC hdcMem;
@@ -207,19 +218,6 @@ struct textdata_t
     int *limits;
     int mode;
 };
-
-// Global vars
-extern wchar_t extractdir[BUFLEN];
-
-// Manager
-int  manager_drplive(wchar_t *s);
-void manager_install(int flags);
-void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2);
-
-// Helpers
-int  box_status(int index);
-
-// Draw
 void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
 void TextOutP(textdata_t *td,const wchar_t *format,...);
 void TextOutF(textdata_t *td,int col,const wchar_t *format,...);
@@ -229,10 +227,7 @@ void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...);
 void format_size(wchar_t *buf,long long val,int isspeed);
 void format_time(wchar_t *buf,long long val);
 void popup_resize(int x,int y);
-void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int ln,int mode,int index);
-void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i);
 int  pickcat(Hwidmatch *hwidmatch,State *state);
 int  isvalidcat(Hwidmatch *hwidmatch,State *state);
 void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int i);
 void popup_about(HDC hdcMem);
-void popup_sysinfo(Manager *manager,HDC hdcMem);

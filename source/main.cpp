@@ -1162,30 +1162,7 @@ void drvdir()
 
 const wchar_t *getHWIDby(int id,int num)
 {
-    Device *device=manager_g->items_list[id].devicematch->device;
-    int i=0;
-
-    if(device->HardwareID)
-    {
-        wchar_t *p=manager_g->matcher->getState()->textas.getw(device->HardwareID);
-        while(*p)
-        {
-            if(i==num)return p;
-            p+=lstrlen(p)+1;
-            i++;
-        }
-    }
-    if(device->CompatibleIDs)
-    {
-        wchar_t *p=manager_g->matcher->getState()->textas.getw(device->CompatibleIDs);
-        while(*p)
-        {
-            if(i==num)return p;
-            p+=lstrlen(p)+1;
-            i++;
-        }
-    }
-    return L"";
+    return manager_g->items_list[id].devicematch->device->getHWIDby(num);
 }
 
 void escapeAmpUrl(wchar_t *buf,wchar_t *source)
@@ -1678,7 +1655,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_RBUTTONDOWN:
             i=panels_hitscan(x,y,&j);
-            if(i>=0&&i<4&&j==0)contextmenu2(x,y);
+            if(i>=0&&i<4&&j==0)manager_g->matcher->getState()->contextmenu2(x,y);
             break;
 
         case WM_MOUSEWHEEL:
@@ -1913,37 +1890,6 @@ void escapeAmp(wchar_t *buf,wchar_t *source)
         p1++;p2++;
     }
     *p1=0;
-}
-
-void contextmenu2(int x,int y)
-{
-    int i;
-    RECT rect;
-    OSVERSIONINFOEX *platform=&manager_g->matcher->getState()->platform;
-    HMENU
-        hPopupMenu=CreatePopupMenu(),
-        hSub1=CreatePopupMenu();
-    int ver=platform->dwMinorVersion+10*platform->dwMajorVersion;
-    int arch=manager_g->matcher->getState()->architecture;
-
-    for(i=0;i<NUM_OS-1;i++)
-    {
-        InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING|(ver==windows_ver[i]?MF_CHECKED:0),
-                   ID_WIN_2000+i,windows_name[i]);
-    }
-
-    i=0;
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP,(UINT_PTR)hSub1,STR(STR_SYS_WINVER));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(arch==0?MF_CHECKED:0),ID_EMU_32,STR(STR_SYS_32));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(arch==1?MF_CHECKED:0),ID_EMU_64,STR(STR_SYS_64));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,ID_DEVICEMNG,STR(STR_SYS_DEVICEMNG));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_DISABLEINSTALL?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
-    SetForegroundWindow(hMain);
-    GetWindowRect(hMain,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
 }
 
 void contextmenu(int x,int y)
@@ -2245,7 +2191,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             {
                 case FLOATING_SYSINFO:
                     SelectObject(canvasPopup->getDC(),hFont);
-                    popup_sysinfo(manager_g,canvasPopup->getDC());
+                    manager_g->matcher->getState()->popup_sysinfo(canvasPopup->getDC());
                     break;
 
                 case FLOATING_TOOLTIP:
@@ -2265,7 +2211,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
                 case FLOATING_DRIVERLST:
                     SelectObject(canvasPopup->getDC(),hFont);
-                    popup_driverlist(manager_g,canvasPopup->getDC(),rect,floating_itembar);
+                    manager_g->popup_driverlist(canvasPopup->getDC(),rect,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:

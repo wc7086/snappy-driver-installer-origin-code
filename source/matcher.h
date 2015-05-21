@@ -101,7 +101,6 @@ public:
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend void contextmenu(int x,int y); // TODO: friend
-    friend const wchar_t *getHWIDby(int id,int num); // TODO: friend
     friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
 };
 
@@ -139,6 +138,7 @@ public:
     void calclen(int *limits);
     void print_tbl(int *limits);
     void print_hr();
+    void popup_driverline(int *limits,HDC hdcMem,int ln,int mode,int index);
     int  cmp(Hwidmatch *match2);
     int isdup(Hwidmatch *match2,char *sect1);
     int isdrivervalid();
@@ -172,7 +172,5 @@ public:
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend class itembar_t; // TODO: friend
-    friend int box_status(int index); // TODO: friend
     friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
-    friend void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode,int index); // TODO: friend
 };

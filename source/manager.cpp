@@ -690,11 +690,8 @@ void itembar_t::str_status(wchar_t *buf)
     }
 }
 
-int box_status(int index)
+int itembar_t::box_status()
 {
-    itembar_t *itembar=&manager_g->items_list[index];
-    Devicematch *devicematch=itembar->devicematch;
-
     switch(index)
     {
         case SLOT_VIRUS_AUTORUN:
@@ -712,7 +709,7 @@ int box_status(int index)
             return manager_g->items_list.size()>RES_SLOTS?BOX_NOUPDATES:BOX_DRVITEM_IF;
 
         case SLOT_RESTORE_POINT:
-            switch(itembar->install_status)
+            switch(install_status)
             {
                 case STR_REST_CREATING:
                     return BOX_DRVITEM_D0;
@@ -729,7 +726,7 @@ int box_status(int index)
             break;
 
         case SLOT_EXTRACTING:
-            switch(itembar->install_status)
+            switch(install_status)
             {
                 case STR_EXTR_EXTRACTING:
                 case STR_INST_INSTALLING:
@@ -751,17 +748,17 @@ int box_status(int index)
         default:
             break;
     }
-    if(itembar->hwidmatch)
+    if(hwidmatch)
     {
-        int status=itembar->hwidmatch->getStatus();
+        int status=hwidmatch->getStatus();
 
-        if(itembar->first&2)return BOX_DRVITEM_PN;
+        if(first&2)return BOX_DRVITEM_PN;
 
         if(status&STATUS_INVALID)
             return BOX_DRVITEM_IN;
         else
         {
-            switch(itembar->install_status)
+            switch(install_status)
             {
                 case STR_INST_EXTRACT:
                 case STR_INST_INSTALL:
@@ -784,7 +781,7 @@ int box_status(int index)
                 return BOX_DRVITEM_MS;
             else
             {
-                if(itembar->hwidmatch->altsectscore<2)return BOX_DRVITEM_WO;
+                if(hwidmatch->altsectscore<2)return BOX_DRVITEM_WO;
 
                 if(status&STATUS_BETTER&&status&STATUS_NEW)        return BOX_DRVITEM_BN;
                 if(status&STATUS_SAME  &&status&STATUS_NEW)        return BOX_DRVITEM_SN;
@@ -903,25 +900,28 @@ int Manager::countItems()
 
 void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2)
 {
+    itembar_t *itembar=&manager_g->items_list[index];
+
     pos+=D(ITEM_TEXT_OFS_Y);
-    SetTextColor(hdc,D(boxindex[box_status(index)]+14));
+    SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
     TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1,wcslen(str1));
-    SetTextColor(hdc,D(boxindex[box_status(index)]+15));
+    SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
     TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2,wcslen(str2));
 }
 
 int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 {
+    itembar_t *itembar=&items_list[index];
+
     HICON hIcon;
     wchar_t bufw[BUFLEN];
     HRGN hrgn=nullptr,hrgn2;
     int x=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
     int wx=XG(D(DRVITEM_WX),x);
-    int r=D(boxindex[box_status(index)]+3);
+    int r=D(boxindex[itembar->box_status()]+3);
     int intend=0;
     int oldstyle=flags&FLAG_SHOWDRPNAMES1||flags&FLAG_OLDSTYLE;
 
-    itembar_t *itembar=&items_list[index];
     int pos=(itembar->curpos>>16)-D(DRVITEM_DIST_Y0);
     if(index>=SLOT_RESTORE_POINT)pos-=ofsy;
 
@@ -963,7 +963,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         SelectObject(hdc,oldpen);
         DeleteObject(newpen);
     }
-    drawbox(hdc,x,pos,x+wx,pos+D(DRVITEM_WY),box_status(index)+cl);
+    drawbox(hdc,x,pos,x+wx,pos+D(DRVITEM_WY),itembar->box_status()+cl);
     SelectClipRgn(hdc,hrgn);
 
     if(itembar->percent)
@@ -1014,21 +1014,21 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 else
                     if(itembar->install_status)wsprintf(bufw,STR(itembar->install_status),itembar->percent);
 
-                SetTextColor(hdc,D(boxindex[box_status(index)]+14));
+                SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
                 TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
                 if(itembar_act>=RES_SLOTS)
                 {
                     wsprintf(bufw,L"%S",items_list[itembar_act].hwidmatch->getdrp_drvdesc());
-                    SetTextColor(hdc,D(boxindex[box_status(index)]+15));
+                    SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
                     TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
                 }
             }else
             {
                 wsprintf(bufw,L"%s",STR(itembar->install_status));
-                SetTextColor(hdc,D(boxindex[box_status(index)]+14));
+                SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
                 TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
                 wsprintf(bufw,L"%s",STR(STR_INST_CLOSE));
-                SetTextColor(hdc,D(boxindex[box_status(index)]+15));
+                SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
                 TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
             }
             break;
@@ -1040,7 +1040,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         case SLOT_NOUPDATES:
             pos+=D(ITEM_TEXT_OFS_Y);
             wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
-            SetTextColor(hdc,D(boxindex[box_status(index)]+14));
+            SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
             TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw,wcslen(bufw));
             break;
 
@@ -1091,7 +1091,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
                     //str_status(bufw,itembar);
                     wsprintf(bufw,L"%ws",itembar->hwidmatch->getdrp_packname());
-                    SetTextColor(hdc,D(boxindex[box_status(index)]+15));
+                    SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
                     TextOut(hdc,x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_TEXT_DIST_Y)+5,bufw,wcslen(bufw));
                     break;
             }
@@ -1105,7 +1105,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 // Available driver desc
                 pos+=D(ITEM_TEXT_OFS_Y);
                 wsprintf(bufw,L"%S",itembar->hwidmatch->getdrp_drvdesc());
-                SetTextColor(hdc,D(boxindex[box_status(index)]+14));
+                SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
                 RECT rect;
                 int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
                 rect.left=x+D(ITEM_TEXT_OFS_X);
@@ -1120,7 +1120,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
 
                 // Available driver status
-                SetTextColor(hdc,D(boxindex[box_status(index)]+15));
+                SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
                 itembar->str_status(bufw);
                 switch(itembar->install_status)
                 {
@@ -1171,7 +1171,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 if(itembar->devicematch)
                 {
                     wsprintf(bufw,L"%ws",matcher->state->textas.get(itembar->devicematch->device->Devicedesc));
-                    SetTextColor(hdc,D(boxindex[box_status(index)]+14));
+                    SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
                     RECT rect;
                     int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
                     rect.left=x+D(ITEM_TEXT_OFS_X);
@@ -1184,7 +1184,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                         DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
 
                     itembar->str_status(bufw);
-                    SetTextColor(hdc,D(boxindex[box_status(index)]+15));
+                    SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
                     rect.left=x+D(ITEM_TEXT_OFS_X)+wx1/2;
                     rect.top=pos;
                     rect.right=rect.left+wx1/2;
@@ -1485,51 +1485,7 @@ void popup_resize(int x,int y)
     }
 }
 
-void popup_driverline(Hwidmatch *hwidmatch,int *limits,HDC hdcMem,int y,int mode,int index)
-{
-    version_t *v;
-    char buf[BUFLEN];
-    wchar_t bufw[BUFLEN];
-    textdata_t td;
-
-    td.hdcMem=hdcMem;
-    td.i=0;
-    td.limits=limits;
-    td.x=D(POPUP_OFSX)+horiz_sh;
-    td.y=y;
-    td.col=0;
-    td.mode=mode;
-
-    v=hwidmatch->getdrp_drvversion();
-    hwidmatch->getdrp_drvsection(buf);
-    v->str_date(bufw);
-
-    if(!hwidmatch->altsectscore)td.col=D(POPUP_LST_INVALID_COLOR);
-    else
-    {
-        if(hwidmatch->getStatus()&STATUS_BETTER||hwidmatch->getStatus()&STATUS_NEW)td.col=D(POPUP_LST_BETTER_COLOR);else
-        if(hwidmatch->getStatus()&STATUS_WORSE||hwidmatch->getStatus()&STATUS_OLD)td.col=D(POPUP_LST_WORSE_COLOR);else
-        td.col=D(POPUP_TEXT_COLOR);
-    }
-
-    TextOutP(&td,L"$%04d",index);
-    TextOutP(&td,L"| %d",hwidmatch->altsectscore);
-    TextOutP(&td,L"| %08X",hwidmatch->score);
-    TextOutP(&td,L"| %s",bufw);
-    TextOutP(&td,L"| %3d",hwidmatch->decorscore);
-    TextOutP(&td,L"| %d",hwidmatch->markerscore);
-    TextOutP(&td,L"| %3X",hwidmatch->getStatus());
-    TextOutP(&td,L"| %S",buf);
-    TextOutP(&td,L"| %s\\%s",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname());
-    TextOutP(&td,L"| %08X%",hwidmatch->getdrp_infcrc());
-    TextOutP(&td,L"| %S%S",hwidmatch->getdrp_infpath(),hwidmatch->getdrp_infname());
-    TextOutP(&td,L"| %S",hwidmatch->getdrp_drvmanufacturer());v->str_version(bufw);
-    TextOutP(&td,L"| %s",bufw);
-    TextOutP(&td,L"| %S",hwidmatch->getdrp_drvHWID());wsprintf(bufw,L"%S",hwidmatch->getdrp_drvdesc());
-    TextOutP(&td,L"| %s",bufw);
-}
-
-void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
+void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
 {
     itembar_t *itembar;
     POINT p;
@@ -1552,16 +1508,16 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
     td.col=0;
     td.mode=1;
 
-    int group=manager->items_list[i].index;
-    Driver *cur_driver=manager->items_list[i].devicematch->driver;
-    char *t=manager->matcher->getState()->textas.get(0);
+    int group=items_list[i].index;
+    Driver *cur_driver=items_list[i].devicematch->driver;
+    char *t=matcher->getState()->textas.get(0);
 
     memset(limits,0,sizeof(limits));
 
-    itembar=&manager->items_list[0];
-    for(k=0;k<manager->items_list.size();k++,itembar++)
+    itembar=&items_list[0];
+    for(k=0;k<items_list.size();k++,itembar++)
         if(itembar->index==group&&itembar->hwidmatch)
-            popup_driverline(itembar->hwidmatch,limits,hdcMem,td.y,0,k);
+            itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,0,k);
 
 
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_INSTDRV),c0,&maxsz,1);td.y+=lne;
@@ -1575,10 +1531,10 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
         TextOutP(&td,L"$%04d",i);
         td.x+=limits[td.i++];
         td.col=c0;
-        TextOutP(&td,L"| %08X",cur_driver->calc_score_h(manager->matcher->getState()));
+        TextOutP(&td,L"| %08X",cur_driver->calc_score_h(matcher->getState()));
         TextOutP(&td,L"| %s",bufw);
         for(k=0;k<6;k++)td.x+=limits[td.i++];
-        TextOutP(&td,L"| %s%s",t+manager->matcher->getState()->getWindir(),t+cur_driver->InfPath);
+        TextOutP(&td,L"| %s%s",t+matcher->getState()->getWindir(),t+cur_driver->InfPath);
         TextOutP(&td,L"| %s",t+cur_driver->ProviderName);cur_driver->version.str_version(bufw);
         TextOutP(&td,L"| %s",bufw);
         TextOutP(&td,L"| %s",i_hwid);
@@ -1588,8 +1544,8 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
     td.y+=lne;
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_AVAILDRVS),c0,&maxsz,1);td.y+=lne;
 
-    itembar=&manager->items_list[0];
-    for(k=0;k<manager->items_list.size();k++,itembar++)
+    itembar=&items_list[0];
+    for(k=0;k<items_list.size();k++,itembar++)
         if(itembar->index==group&&itembar->hwidmatch&&(itembar->first&2)==0)
     {
         if(k==i)
@@ -1600,7 +1556,7 @@ void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i)
             SetDCBrushColor(hdcMem,RGB(255,255,255));//todo: color
             Rectangle(hdcMem,D(POPUP_OFSX)+horiz_sh,td.y,rect.right+horiz_sh-D(POPUP_OFSX),td.y+lne);
         }
-        popup_driverline(itembar->hwidmatch,limits,hdcMem,td.y,1,k);
+        itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,1,k);
         td.y+=lne;
     }
 
@@ -1843,102 +1799,6 @@ void popup_about(HDC hdcMem)
     popup_resize(D(POPUP_WX),td.y+D(POPUP_OFSY));
 }
 
-void popup_sysinfo(Manager *manager,HDC hdcMem)
-{
-    wchar_t bufw[BUFLEN];
-    textdata_t td;
-    State *state=manager->matcher->getState();
-    SYSTEM_POWER_STATUS *battery;
-    wchar_t *buf;
-    int i,x,y;
-    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
-
-    td.col=D(POPUP_TEXT_COLOR);
-    td.y=D(POPUP_OFSY);
-    td.wy=D(POPUP_WY);
-    td.hdcMem=hdcMem;
-    td.maxsz=0;
-
-    td.x=p0;
-    TextOutF(&td,td.col,STR(STR_SYSINF_WINDOWS));td.x=p1;
-
-    TextOutSF(&td,STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",state->get_winverstr(),state->platform.dwMajorVersion,state->platform.dwMinorVersion,state->platform.dwBuildNumber);
-    TextOutSF(&td,STR(STR_SYSINF_UPDATE),L"%s",state->platform.szCSDVersion);
-    TextOutSF(&td,STR(STR_SYSINF_CPU_ARCH),L"%s",state->architecture?STR(STR_SYSINF_64BIT):STR(STR_SYSINF_32BIT));
-    TextOutSF(&td,STR(STR_SYSINF_LOCALE),L"%X",state->locale);
-    //TextOutSF(&td,STR(STR_SYSINF_PLATFORM),L"%d",state->platform.dwPlatformId);
-    /*if(state->platform.dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
-    {
-        TextOutSF(&td,STR(STR_SYSINF_SERVICEPACK),L"%d.%d",state->platform.wServicePackMajor,state->platform.wServicePackMinor);
-        TextOutSF(&td,STR(STR_SYSINF_SUITEMASK),L"%d",state->platform.wSuiteMask);
-        TextOutSF(&td,STR(STR_SYSINF_PRODUCTTYPE),L"%d",state->platform.wProductType);
-    }*/
-    td.x=p0;
-    TextOutF(&td,td.col,STR(STR_SYSINF_ENVIRONMENT));td.x=p1;
-    TextOutSF(&td,STR(STR_SYSINF_WINDIR),L"%s",state->textas.get(state->windir));
-    TextOutSF(&td,STR(STR_SYSINF_TEMP),L"%s",state->textas.get(state->temp));
-
-    td.x=p0;
-    TextOutF(&td,td.col,STR(STR_SYSINF_MOTHERBOARD));td.x=p1;
-    TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",state->getProduct());
-    TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",state->getModel());
-    TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",state->getManuf());
-    TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",state->isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),state->ChassisType);
-
-    td.x=p0;
-    TextOutF(&td,td.col,STR(STR_SYSINF_BATTERY));td.x=p1;
-    battery=(SYSTEM_POWER_STATUS *)(state->textas.get(state->battery));
-    switch(battery->ACLineStatus)
-    {
-        case 0:wcscpy(bufw,STR(STR_SYSINF_OFFLINE));break;
-        case 1:wcscpy(bufw,STR(STR_SYSINF_ONLINE));break;
-        default:
-        case 255:wcscpy(bufw,STR(STR_SYSINF_UNKNOWN));break;
-    }
-    TextOutSF(&td,STR(STR_SYSINF_AC_STATUS),L"%s",bufw);
-
-    i=battery->BatteryFlag;
-    *bufw=0;
-    if(i&1)wcscat(bufw,STR(STR_SYSINF_HIGH));
-    if(i&2)wcscat(bufw,STR(STR_SYSINF_LOW));
-    if(i&4)wcscat(bufw,STR(STR_SYSINF_CRITICAL));
-    if(i&8)wcscat(bufw,STR(STR_SYSINF_CHARGING));
-    if(i&128)wcscat(bufw,STR(STR_SYSINF_NOBATTERY));
-    if(i==255)wcscat(bufw,STR(STR_SYSINF_UNKNOWN));
-    TextOutSF(&td,STR(STR_SYSINF_FLAGS),L"%s",bufw);
-
-    if(battery->BatteryLifePercent!=255)
-        TextOutSF(&td,STR(STR_SYSINF_CHARGED),L"%d%%",battery->BatteryLifePercent);
-    if(battery->BatteryLifeTime!=0xFFFFFFFF)
-        TextOutSF(&td,STR(STR_SYSINF_LIFETIME),L"%d %s",battery->BatteryLifeTime/60,STR(STR_SYSINF_MINS));
-    if(battery->BatteryFullLifeTime!=0xFFFFFFFF)
-        TextOutSF(&td,STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
-
-    buf=(wchar_t *)(state->textas.get(state->monitors));
-    td.x=p0;
-    TextOutF(&td,td.col,STR(STR_SYSINF_MONITORS));td.x=p1;
-    for(i=0;i<buf[0];i++)
-    {
-        x=buf[1+i*2];
-        y=buf[2+i*2];
-        td.maxsz+=POPUP_SYSINFO_OFS;
-        TextOutF(&td,td.col,L"%d%s x %d%s (%.1f %s) %.3f %s",
-                  x,STR(STR_SYSINF_CM),
-                  y,STR(STR_SYSINF_CM),
-                  sqrt(x*x+y*y)/2.54,STR(STR_SYSINF_INCH),
-                  (double)y/x,
-                  iswide(x,y)?STR(STR_SYSINF_WIDE):L"");
-
-        td.maxsz-=POPUP_SYSINFO_OFS;
-    }
-
-    td.x=p0;
-    td.maxsz+=POPUP_SYSINFO_OFS;
-    td.y+=td.wy;
-    TextOutF(&td,D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));td.x=p1;
-    td.maxsz-=POPUP_SYSINFO_OFS;
-    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
-}
 #include <sstream>
 void format_size(wchar_t *buf,long long val,int isspeed)
 {

@@ -23,18 +23,20 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define D(A) theme[A].val
 #define D_STR(A) theme[A].valstr
 
+// Declarations
 class Filemon;
 class Vault;
 struct entry_t;
+typedef std::unordered_map <std::wstring,int> lookuptbl_t;
 
-//{ Global vars
+// Global vars
 extern entry_t language[STR_NM];
 extern entry_t theme[THEME_NM];
 extern Filemon *mon_lang,*mon_theme;
 extern Vault vLang,vTheme;
 extern int monitor_pause;
-//}
 
+// Entry
 struct entry_t
 {
     const wchar_t *name;
@@ -46,8 +48,7 @@ struct entry_t
     int init;
 };
 
-typedef std::unordered_map <std::wstring,int> lookuptbl_t;
-
+// Vault
 class Vault
 {
     entry_t *entry;
