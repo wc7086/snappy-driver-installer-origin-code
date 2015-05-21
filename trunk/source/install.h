@@ -32,7 +32,6 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb);
 void removeextrainfs(wchar_t *inf);
 void _7z_total(long long i);
 int _7z_setcomplited(long long i);
-unsigned int __stdcall thread_install(void *arg);
 
 // Autoclicker
 #define NUM_CLICKDATA 5

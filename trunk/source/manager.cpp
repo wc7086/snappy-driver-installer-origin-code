@@ -614,14 +614,14 @@ void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
     redrawfield();
 }
 
-void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v)
+void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v,int percent)
 {
     itembar_t *itembar=&items_list[i];
     if(txt1)wcscpy(itembar->txt1,txt1);
-    itembar->val1=val1v;
-    itembar->val2=val2v;
+    if(val1v>=0)itembar->val1=val1v;
+    if(val2v>=0)itembar->val2=val2v;
     if(!val2v)val2v++;
-    itembar->percent=val1v*1000/val2v;
+    itembar->percent=(percent>=0)?percent:val1v*1000/val2v;
     itembar->isactive=act;
     setpos();
     redrawfield();
@@ -808,7 +808,9 @@ int itembar_t::box_status()
     return BOX_DRVITEM;
 }
 
-void itembar_setactive(int i,int val){manager_g->items_list[i].isactive=val;}
+void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
+void Manager::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index){items_list[floating_itembar].popup_drivercmp(manager,hdcMem,rect,index);}
+void Manager::contextmenu(int x,int y){items_list[floating_itembar].contextmenu(x,y);}
 //}
 
 //{ Driver list
@@ -1304,6 +1306,70 @@ int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
     }
 
     return 0;
+}
+
+void Manager::restorepos1(Manager *manager_prev)
+{
+    int i;
+
+    memcpy(&items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
+    populate();
+    filter(filters);
+    items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_EMUL?1:0;
+    items_list[SLOT_DPRDIR].isactive=*drpext_dir?1:0;
+    restorepos(manager_prev);
+    //viruscheck(L"",0,0);
+    setpos();
+    log_con("}Sync\n");
+    invaidate_set=0;
+    LeaveCriticalSection(&sync);
+
+#ifdef USE_TORRENT
+    UpdateDialog.populate(0);
+#endif
+    //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
+    if(flags&FLAG_AUTOINSTALL)
+    {
+        int cnt=0;
+        if(installmode==MODE_SCANNING)
+        {
+            if(!panels[11].isChecked(3))selectall();
+            itembar_t *itembar=&items_list[RES_SLOTS];
+            for(i=RES_SLOTS;(unsigned)i<items_list.size();i++,itembar++)
+                if(itembar->checked)
+            {
+                cnt++;
+            }
+
+            if(!cnt)flags&=~FLAG_AUTOINSTALL;
+            log_con("Autoinstall rescan: %d found\n",cnt);
+        }
+
+        if(installmode==MODE_NONE||(installmode==MODE_SCANNING&&cnt))
+        {
+            if(!panels[11].isChecked(3))selectall();
+            if((flags&FLAG_EXTRACTONLY)==0)
+            wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.get(matcher->getState()->getTemp()));
+            manager_install(INSTALLDRIVERS);
+        }
+        else
+        {
+            wchar_t buf[BUFLEN];
+
+            installmode=MODE_NONE;
+            if(panels[11].isChecked(3))
+                wcscpy(buf,L" /c Shutdown.exe -r -t 3");
+            else
+                wsprintf(buf,L" /c %s",needreboot?finish_rb:finish);
+
+            if(*(needreboot?finish_rb:finish)||panels[11].isChecked(3))
+                run_command(L"cmd",buf,SW_HIDE,0);
+
+            if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
+        }
+    }
+    else
+        if(installmode==MODE_SCANNING)installmode=MODE_NONE;
 }
 
 //Keep when:

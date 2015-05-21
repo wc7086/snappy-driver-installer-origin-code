@@ -1298,73 +1298,14 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             {
                 bundle_t *bb=(bundle_t *)wParam;
                 Manager *manager_prev=manager_g;
-
                 log_con("{Sync");
                 EnterCriticalSection(&sync);
                 log_con("...\n");
                 manager_active++;
                 manager_active&=1;
                 manager_g=&manager_v[manager_active];
-
                 manager_g->matcher=bb->getMatcher();
-                memcpy(&manager_g->items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
-                manager_g->populate();
-                manager_g->filter(filters);
-                manager_g->items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_EMUL?1:0;
-                manager_g->items_list[SLOT_DPRDIR].isactive=*drpext_dir?1:0;
-                manager_g->restorepos(manager_prev);
-                viruscheck(L"",0,0);
-                manager_g->setpos();
-                log_con("}Sync\n");
-                invaidate_set=0;
-                LeaveCriticalSection(&sync);
-
-#ifdef USE_TORRENT
-                UpdateDialog.populate(0);
-#endif
-                //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
-                if(flags&FLAG_AUTOINSTALL)
-                {
-                    int cnt=0;
-                    if(installmode==MODE_SCANNING)
-                    {
-                        if(!panels[11].isChecked(3))manager_g->selectall();
-                        itembar_t *itembar=&manager_g->items_list[RES_SLOTS];
-                        for(i=RES_SLOTS;(unsigned)i<manager_g->items_list.size();i++,itembar++)
-                            if(itembar->checked)
-                        {
-                            cnt++;
-                        }
-
-                        if(!cnt)flags&=~FLAG_AUTOINSTALL;
-                        log_con("Autoinstall rescan: %d found\n",cnt);
-                    }
-
-                    if(installmode==MODE_NONE||(installmode==MODE_SCANNING&&cnt))
-                    {
-                        if(!panels[11].isChecked(3))manager_g->selectall();
-                        if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
-                        manager_install(INSTALLDRIVERS);
-                    }
-                    else
-                    {
-                        wchar_t buf[BUFLEN];
-
-                        installmode=MODE_NONE;
-                        if(panels[11].isChecked(3))
-                            wcscpy(buf,L" /c Shutdown.exe -r -t 3");
-                        else
-                            wsprintf(buf,L" /c %s",needreboot?finish_rb:finish);
-
-                        if(*(needreboot?finish_rb:finish)||panels[11].isChecked(3))
-                            run_command(L"cmd",buf,SW_HIDE,0);
-
-                        if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
-                    }
-                }
-                else
-                    if(installmode==MODE_SCANNING)installmode=MODE_NONE;
+                manager_g->restorepos1(manager_prev);
             }
             break;
 
@@ -1644,7 +1585,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(i==2&&j==11)
             {
                 floating_itembar=SLOT_RESTORE_POINT;
-                contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
+                manager_g->contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
             }
             break;
 
@@ -1727,8 +1668,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_DIS_RESTPNT:
                     flags^=FLAG_NORESTOREPOINT;
-                    manager_g->items_list[SLOT_RESTORE_POINT].isactive=(flags&FLAG_NORESTOREPOINT)==0;
-                    manager_g->setpos();
+                    //manager_g->items_list[SLOT_RESTORE_POINT].isactive=(flags&FLAG_NORESTOREPOINT)==0;
+                    manager_g->set_rstpnt(flags&FLAG_NORESTOREPOINT?1:0);
+                    //manager_g->setpos();
                     break;
 
                 default:
@@ -1889,13 +1831,13 @@ void escapeAmp(wchar_t *buf,wchar_t *source)
     *p1=0;
 }
 
-void contextmenu(int x,int y)
+void itembar_t::contextmenu(int x,int y)
 {
     HMENU hPopupMenu=CreatePopupMenu();
 
-    itembar_t *itembar=&manager_g->items_list[floating_itembar];
-    int flags1=itembar->checked?MF_CHECKED:0;
-    if(!itembar->hwidmatch)flags1|=MF_GRAYED;
+    //itembar_t *itembar=&manager_g->items_list[floating_itembar];
+    int flags1=checked?MF_CHECKED:0;
+    if(!hwidmatch)flags1|=MF_GRAYED;
 
     if(floating_itembar==SLOT_RESTORE_POINT)
     {
@@ -1914,18 +1856,18 @@ void contextmenu(int x,int y)
     Driver *cur_driver=nullptr;
 
     char *t=manager_g->matcher->getState()->textas.get(0);
-    if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->driver_index];
-    int flags2=itembar->isactive&2?MF_CHECKED:0;
+    if(devicematch_f->driver)cur_driver=devicematch_f->driver;
+    int flags2=isactive&2?MF_CHECKED:0;
     int flags3=cur_driver?0:MF_GRAYED;
-    if(manager_g->groupsize(itembar->index)<2)flags2|=MF_GRAYED;
+    if(manager_g->groupsize(index)<2)flags2|=MF_GRAYED;
     wchar_t buf[512];
 
     int i=0;
     HMENU hSub1=CreatePopupMenu();
     HMENU hSub2=CreatePopupMenu();
-    if(devicematch_f->device->HardwareID)
+    if(devicematch_f->device->getHardwareID())
     {
-        wchar_t *p=(wchar_t *)(t+devicematch_f->device->HardwareID);
+        wchar_t *p=(wchar_t *)(t+devicematch_f->device->getHardwareID());
         while(*p)
         {
             escapeAmp(buf,p);
@@ -1935,9 +1877,9 @@ void contextmenu(int x,int y)
             i++;
         }
     }
-    if(devicematch_f->device->CompatibleIDs)
+    if(devicematch_f->device->getCompatibleIDs())
     {
-        wchar_t *p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
+        wchar_t *p=(wchar_t *)(t+devicematch_f->device->getCompatibleIDs());
         while(*p)
         {
             escapeAmp(buf,p);
@@ -2074,7 +2016,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
         case WM_RBUTTONDOWN:
             manager_g->hitscan(x,y,&floating_itembar,&i);
             if(floating_itembar>=0&&(i==0||i==3))
-                contextmenu(x,y);
+                manager_g->contextmenu(x,y);
             break;
 
         case WM_MBUTTONDOWN:
@@ -2200,7 +2142,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
                 case FLOATING_CMPDRIVER:
                     SelectObject(canvasPopup->getDC(),hFont);
-                    manager_g->items_list[floating_itembar].popup_drivercmp(manager_g,canvasPopup->getDC(),rect,floating_itembar);
+                    manager_g->popup_drivercmp(manager_g,canvasPopup->getDC(),rect,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:

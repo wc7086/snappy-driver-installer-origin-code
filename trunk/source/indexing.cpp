@@ -671,7 +671,7 @@ void Collection::populate()
 
     loadOnlineIndexes();
 
-    itembar_setactive(SLOT_INDEXING,0);
+    manager_g->itembar_setactive(SLOT_INDEXING,0);
     if(driverpack_list.size()<=1&&(flags&FLAG_DPINSTMODE)==0)
         manager_g->itembar_settext(SLOT_NODRIVERS,L"",0);
     driverpack_list[0].genhashes();
