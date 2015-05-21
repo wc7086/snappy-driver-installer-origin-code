@@ -334,6 +334,5 @@ void drvdir();
 const wchar_t *getHWIDby(int id,int num);
 void escapeAmpUrl(wchar_t *buf,wchar_t *source);
 void escapeAmp(wchar_t *buf,wchar_t *source);
-void contextmenu2(int x,int y);
 void contextmenu(int x,int y);
 void invaidate(int v);

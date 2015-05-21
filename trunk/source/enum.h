@@ -85,6 +85,7 @@ public:
     int  print_status();
     void print(State *state);
     void printHWIDS(State *state);
+    const wchar_t *getHWIDby(int num);
 
     //Device(const Device &)=delete;
     //Device &operator=(const Device &)=delete;
@@ -96,7 +97,7 @@ public:
 
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
-    friend const wchar_t *getHWIDby(int id,int num); // TODO: friend
+    //friend const wchar_t *getHWIDby(int id,int num); // TODO: friend
     friend void contextmenu(int x,int y); // TODO: friend
     friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
@@ -137,10 +138,10 @@ public:
     Driver():DriverDesc(0),ProviderName(0),DriverDate(0),DriverVersion(0),MatchingDeviceId(0),
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
 
+    friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend class Hwidmatch; // TODO: friend
     friend class Devicematch; // TODO: friend
-    friend void popup_driverlist(Manager *manager,HDC hdcMem,RECT rect,unsigned i); // TODO: friend
     friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
@@ -218,6 +219,8 @@ public:
 
     State();
     void print();
+    void popup_sysinfo(HDC hdcMem);
+    void contextmenu2(int x,int y);
 
     void save(const wchar_t *filename);
     int  load(const wchar_t *filename);
@@ -234,9 +237,7 @@ public:
     friend class Panel; // TODO: friend
     friend class Matcher; // TODO: friend
     friend void contextmenu(int x,int y); // TODO: friend
-    friend void contextmenu2(int x,int y); // TODO: friend
     friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
-    friend void popup_sysinfo(Manager *manager,HDC hdcMem); // TODO: friend
     friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 

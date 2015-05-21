@@ -197,6 +197,33 @@ void Device::printHWIDS(State *state)
     }
 }
 
+const wchar_t *Device::getHWIDby(int num)
+{
+    int i=0;
+
+    if(HardwareID)
+    {
+        wchar_t *p=manager_g->matcher->getState()->textas.getw(HardwareID);
+        while(*p)
+        {
+            if(i==num)return p;
+            p+=lstrlen(p)+1;
+            i++;
+        }
+    }
+    if(CompatibleIDs)
+    {
+        wchar_t *p=manager_g->matcher->getState()->textas.getw(CompatibleIDs);
+        while(*p)
+        {
+            if(i==num)return p;
+            p+=lstrlen(p)+1;
+            i++;
+        }
+    }
+    return L"";
+}
+
 Device::Device(HDEVINFO hDevInfo,State *state,int i)
 {
     DWORD buffersize;
@@ -593,6 +620,128 @@ void State::print()
 
     log_con("State: %d+%d+%d*%d+%d*%d\n",sizeof(State),textas.getSize(),Devices_list.size(),sizeof(Device),Drivers_list.size(),sizeof(Driver));
     //log_file("Errors: %d\n",error_count);
+}
+
+void State::popup_sysinfo(HDC hdcMem)
+{
+    wchar_t bufw[BUFLEN];
+    int i,x,y;
+    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
+
+    textdata_t td;
+    td.col=D(POPUP_TEXT_COLOR);
+    td.y=D(POPUP_OFSY);
+    td.wy=D(POPUP_WY);
+    td.hdcMem=hdcMem;
+    td.maxsz=0;
+
+    td.x=p0;
+    TextOutF(&td,td.col,STR(STR_SYSINF_WINDOWS));td.x=p1;
+
+    TextOutSF(&td,STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+    TextOutSF(&td,STR(STR_SYSINF_UPDATE),L"%s",platform.szCSDVersion);
+    TextOutSF(&td,STR(STR_SYSINF_CPU_ARCH),L"%s",architecture?STR(STR_SYSINF_64BIT):STR(STR_SYSINF_32BIT));
+    TextOutSF(&td,STR(STR_SYSINF_LOCALE),L"%X",locale);
+    //TextOutSF(&td,STR(STR_SYSINF_PLATFORM),L"%d",platform.dwPlatformId);
+    /*if(platform.dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
+    {
+        TextOutSF(&td,STR(STR_SYSINF_SERVICEPACK),L"%d.%d",platform.wServicePackMajor,platform.wServicePackMinor);
+        TextOutSF(&td,STR(STR_SYSINF_SUITEMASK),L"%d",platform.wSuiteMask);
+        TextOutSF(&td,STR(STR_SYSINF_PRODUCTTYPE),L"%d",platform.wProductType);
+    }*/
+    td.x=p0;
+    TextOutF(&td,td.col,STR(STR_SYSINF_ENVIRONMENT));td.x=p1;
+    TextOutSF(&td,STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
+    TextOutSF(&td,STR(STR_SYSINF_TEMP),L"%s",textas.get(temp));
+
+    td.x=p0;
+    TextOutF(&td,td.col,STR(STR_SYSINF_MOTHERBOARD));td.x=p1;
+    TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
+    TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",getModel());
+    TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",getManuf());
+    TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
+
+    td.x=p0;
+    TextOutF(&td,td.col,STR(STR_SYSINF_BATTERY));td.x=p1;
+    SYSTEM_POWER_STATUS *battery_loc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
+    switch(battery_loc->ACLineStatus)
+    {
+        case 0:wcscpy(bufw,STR(STR_SYSINF_OFFLINE));break;
+        case 1:wcscpy(bufw,STR(STR_SYSINF_ONLINE));break;
+        default:
+        case 255:wcscpy(bufw,STR(STR_SYSINF_UNKNOWN));break;
+    }
+    TextOutSF(&td,STR(STR_SYSINF_AC_STATUS),L"%s",bufw);
+
+    i=battery_loc->BatteryFlag;
+    *bufw=0;
+    if(i&1)wcscat(bufw,STR(STR_SYSINF_HIGH));
+    if(i&2)wcscat(bufw,STR(STR_SYSINF_LOW));
+    if(i&4)wcscat(bufw,STR(STR_SYSINF_CRITICAL));
+    if(i&8)wcscat(bufw,STR(STR_SYSINF_CHARGING));
+    if(i&128)wcscat(bufw,STR(STR_SYSINF_NOBATTERY));
+    if(i==255)wcscat(bufw,STR(STR_SYSINF_UNKNOWN));
+    TextOutSF(&td,STR(STR_SYSINF_FLAGS),L"%s",bufw);
+
+    if(battery_loc->BatteryLifePercent!=255)
+        TextOutSF(&td,STR(STR_SYSINF_CHARGED),L"%d%%",battery_loc->BatteryLifePercent);
+    if(battery_loc->BatteryLifeTime!=0xFFFFFFFF)
+        TextOutSF(&td,STR(STR_SYSINF_LIFETIME),L"%d %s",battery_loc->BatteryLifeTime/60,STR(STR_SYSINF_MINS));
+    if(battery_loc->BatteryFullLifeTime!=0xFFFFFFFF)
+        TextOutSF(&td,STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery_loc->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
+
+    wchar_t *buf=(wchar_t *)(textas.get(monitors));
+    td.x=p0;
+    TextOutF(&td,td.col,STR(STR_SYSINF_MONITORS));td.x=p1;
+    for(i=0;i<buf[0];i++)
+    {
+        x=buf[1+i*2];
+        y=buf[2+i*2];
+        td.maxsz+=POPUP_SYSINFO_OFS;
+        TextOutF(&td,td.col,L"%d%s x %d%s (%.1f %s) %.3f %s",
+                  x,STR(STR_SYSINF_CM),
+                  y,STR(STR_SYSINF_CM),
+                  sqrt(x*x+y*y)/2.54,STR(STR_SYSINF_INCH),
+                  (double)y/x,
+                  iswide(x,y)?STR(STR_SYSINF_WIDE):L"");
+
+        td.maxsz-=POPUP_SYSINFO_OFS;
+    }
+
+    td.x=p0;
+    td.maxsz+=POPUP_SYSINFO_OFS;
+    td.y+=td.wy;
+    TextOutF(&td,D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));td.x=p1;
+    td.maxsz-=POPUP_SYSINFO_OFS;
+    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+}
+
+void State::contextmenu2(int x,int y)
+{
+    HMENU hPopupMenu=CreatePopupMenu();
+    HMENU hSub1=CreatePopupMenu();
+    int ver=platform.dwMinorVersion+10*platform.dwMajorVersion;
+
+    for(int i=0;i<NUM_OS-1;i++)
+    {
+        InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING|(ver==windows_ver[i]?MF_CHECKED:0),
+                   ID_WIN_2000+i,windows_name[i]);
+    }
+
+    int i=0;
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP,(UINT_PTR)hSub1,STR(STR_SYS_WINVER));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(architecture==0?MF_CHECKED:0),ID_EMU_32,STR(STR_SYS_32));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(architecture==1?MF_CHECKED:0),ID_EMU_64,STR(STR_SYS_64));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,ID_DEVICEMNG,STR(STR_SYS_DEVICEMNG));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_DISABLEINSTALL?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
+
+    RECT rect;
+    SetForegroundWindow(hMain);
+    GetWindowRect(hMain,&rect);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
 }
 
 void State::save(const wchar_t *filename)

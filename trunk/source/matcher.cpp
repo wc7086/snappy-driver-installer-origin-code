@@ -715,6 +715,46 @@ void Hwidmatch::print_hr()
     log_file("\n");
 }
 
+void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index)
+{
+    char buf[BUFLEN];
+    wchar_t bufw[BUFLEN];
+    version_t *v=getdrp_drvversion();
+
+    textdata_t td;
+    td.hdcMem=hdcMem;
+    td.i=0;
+    td.limits=limits;
+    td.x=D(POPUP_OFSX)+horiz_sh;
+    td.y=y;
+    td.col=0;
+    td.mode=mode;
+
+    if(!altsectscore)td.col=D(POPUP_LST_INVALID_COLOR);
+    else
+    {
+        if(status&STATUS_BETTER||status&STATUS_NEW)td.col=D(POPUP_LST_BETTER_COLOR);else
+        if(status&STATUS_WORSE||status&STATUS_OLD)td.col=D(POPUP_LST_WORSE_COLOR);else
+        td.col=D(POPUP_TEXT_COLOR);
+    }
+
+    TextOutP(&td,L"$%04d",index);
+    TextOutP(&td,L"| %d",altsectscore);
+    TextOutP(&td,L"| %08X",score);v->str_date(bufw);
+    TextOutP(&td,L"| %s",bufw);
+    TextOutP(&td,L"| %3d",decorscore);
+    TextOutP(&td,L"| %d",markerscore);
+    TextOutP(&td,L"| %3X",status);getdrp_drvsection(buf);
+    TextOutP(&td,L"| %S",buf);
+    TextOutP(&td,L"| %s\\%s",getdrp_packpath(),getdrp_packname());
+    TextOutP(&td,L"| %08X%",getdrp_infcrc());
+    TextOutP(&td,L"| %S%S",getdrp_infpath(),getdrp_infname());
+    TextOutP(&td,L"| %S",getdrp_drvmanufacturer());v->str_version(bufw);
+    TextOutP(&td,L"| %s",bufw);
+    TextOutP(&td,L"| %S",getdrp_drvHWID());wsprintf(bufw,L"%S",getdrp_drvdesc());
+    TextOutP(&td,L"| %s",bufw);
+}
+
 int Hwidmatch::cmp(Hwidmatch *match2)
 {
     int res;

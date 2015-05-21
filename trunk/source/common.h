@@ -87,6 +87,7 @@ class Hashitem
 
 public:
     Hashitem():key(0),value(0),next(0),valuelen(0){}
+
     friend class Hashtable;
 };
 
