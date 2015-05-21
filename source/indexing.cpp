@@ -464,7 +464,7 @@ unsigned int __stdcall Collection::savedrp_thread(void *arg)
             wchar_t bufw2[BUFLEN];
             wsprintf(bufw2,L"%ws\\%ws",data.drp->getPath(),data.drp->getFilename());
             log_con("Saving indexes for '%S'\n",bufw2);
-            if(flags&COLLECTION_USE_LZMA)itembar_settext(SLOT_INDEXING,2,bufw2,cur_,count_);
+            if(flags&COLLECTION_USE_LZMA)manager_g->itembar_settext(SLOT_INDEXING,2,bufw2,cur_,count_);
             cur_++;
             data.drp->saveindex();
         }
@@ -508,7 +508,7 @@ void Collection::save()
         WaitForSingleObject(thr[i],INFINITE);
         CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
     }
-    itembar_settext(SLOT_INDEXING,0);
+    manager_g->itembar_settext(SLOT_INDEXING,0);
     log_con("DONE\n");
 
     // Delete unused indexes
@@ -670,9 +670,10 @@ void Collection::populate()
     }
 
     loadOnlineIndexes();
-    manager_g->items_list[SLOT_INDEXING].isactive=0;
+
+    itembar_setactive(SLOT_INDEXING,0);
     if(driverpack_list.size()<=1&&(flags&FLAG_DPINSTMODE)==0)
-        itembar_settext(manager_g,SLOT_NODRIVERS,L"",0);
+        manager_g->itembar_settext(SLOT_NODRIVERS,L"",0);
     driverpack_list[0].genhashes();
 
 //{thread
@@ -1131,7 +1132,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
                 manager_g->items_list[SLOT_INDEXING].isactive=1;
                 manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
                 manager_g->items_list[SLOT_INDEXING].val2=drp_count;
-                itembar_settext(manager_g,SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
+                manager_g->itembar_settext(SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
                 manager_g->setpos();
                 drp_cur++;
             }

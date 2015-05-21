@@ -570,7 +570,7 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
 
     if(StrStrIA(getdrp_infpath(),"tweak"))return 1;
     if(StrStrIA(getdrp_infname(),"tweak"))return 1;
-    return isvalidcat(this,state)?2:1;
+    return isvalidcat(state)?2:1;
 }
 
 int Hwidmatch::calc_status(State *state)

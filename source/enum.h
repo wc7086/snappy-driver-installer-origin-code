@@ -97,9 +97,8 @@ public:
 
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
-    //friend const wchar_t *getHWIDby(int id,int num); // TODO: friend
+    friend class itembar_t; // TODO: friend
     friend void contextmenu(int x,int y); // TODO: friend
-    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
 // Driver
@@ -139,10 +138,10 @@ public:
         InfPath(0),InfSection(0),InfSectionExt(0),cat(0),version(),catalogfile(0),feature(0),identifierscore(0){}
 
     friend class Manager; // TODO: friend
+    friend class itembar_t; // TODO: friend
     friend class Matcher; // TODO: friend
     friend class Hwidmatch; // TODO: friend
     friend class Devicematch; // TODO: friend
-    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
 // State (POD)
@@ -237,8 +236,6 @@ public:
     friend class Panel; // TODO: friend
     friend class Matcher; // TODO: friend
     friend void contextmenu(int x,int y); // TODO: friend
-    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
-    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };
 
 // Monitor info

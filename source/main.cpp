@@ -1130,11 +1130,11 @@ void extractto()
     }
 }
 
-void set_rstpnt(int checked)
+void Manager::set_rstpnt(int checked)
 {
-    panels[11].setChecked(2,manager_g->items_list[SLOT_RESTORE_POINT].checked=checked);
+    panels[11].setChecked(2,items_list[SLOT_RESTORE_POINT].checked=checked);
     //if(D(PANEL12_WY))manager_g->items_list[SLOT_RESTORE_POINT].isactive=checked;
-    manager_g->setpos();
+    setpos();
     redrawfield();
 }
 
@@ -1158,11 +1158,6 @@ void drvdir()
 //        printf("'%S',%d\n",drpext_dir,len);
         invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
     }
-}
-
-const wchar_t *getHWIDby(int id,int num)
-{
-    return manager_g->items_list[id].devicematch->device->getHWIDby(num);
 }
 
 void escapeAmpUrl(wchar_t *buf,wchar_t *source)
@@ -1272,7 +1267,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_UPDATELANG:
             SendMessage(hLang,CB_RESETCONTENT,0,0);
-            lang_enum(hLang,L"langs",manager_g->matcher->getState()->locale);
+            lang_enum(hLang,L"langs",manager_g->matcher->getState()->getLocale());
             f=SendMessage(hLang,CB_FINDSTRINGEXACT,-1,(LPARAM)curlang);
             if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
             lang_set(f);
@@ -1349,7 +1344,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         if(!panels[11].isChecked(3))manager_g->selectall();
                         if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->temp));
+                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
                         manager_install(INSTALLDRIVERS);
                     }
                     else
@@ -1699,7 +1694,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         wchar_t buf[BUFLEN];
 
                         Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
-                        Driver *cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->getDriverIndex()];
+                        Driver *cur_driver=devicematch_f->driver;
                         wsprintf(buf,L"%s%s%s",
                                 (wp==ID_LOCATEINF)?L"/select,":L"",
                                manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()),
@@ -1757,17 +1752,19 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 {
                     wchar_t buf[BUFLEN];
                     wchar_t buf2[BUFLEN];
-                    wsprintf(buf,L"https://www.google.com/#q=%s",getHWIDby(floating_itembar,id));
-                    wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",getHWIDby(floating_itembar,id));
+                    const wchar_t *str=manager_g->items_list[floating_itembar].devicematch->device->getHWIDby(id);
+                    //wsprintf(buf,L"https://www.google.com/#q=%s",str);
+                    wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",str);
                     escapeAmpUrl(buf2,buf);
                     run_command(L"iexplore.exe",buf2,SW_SHOW,0);
 
                 }
                 else
                 {
-                    int len=wcslen(getHWIDby(floating_itembar,id))*2+2;
+                    const wchar_t *str=manager_g->items_list[floating_itembar].devicematch->device->getHWIDby(id);
+                    int len=wcslen(str)*2+2;
                     HGLOBAL hMem=GlobalAlloc(GMEM_MOVEABLE,len);
-                    memcpy(GlobalLock(hMem),getHWIDby(floating_itembar,id),len);
+                    memcpy(GlobalLock(hMem),str,len);
                     GlobalUnlock(hMem);
                     OpenClipboard(nullptr);
                     EmptyClipboard();
@@ -1802,7 +1799,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     if(installmode==MODE_NONE)
                     {
                         if((flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->temp));
+                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
                         manager_install(INSTALLDRIVERS);
                     }
                     break;
@@ -1855,7 +1852,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_RESTPNT:
-                    set_rstpnt(panels[11].isChecked(2));
+                    manager_g->set_rstpnt(panels[11].isChecked(2));
                     break;
 
                 case ID_REBOOT:
@@ -1894,46 +1891,41 @@ void escapeAmp(wchar_t *buf,wchar_t *source)
 
 void contextmenu(int x,int y)
 {
-    int i;
-    RECT rect;
-    HMENU
-        hPopupMenu=CreatePopupMenu(),
-        hSub1=CreatePopupMenu(),
-        hSub2=CreatePopupMenu();
+    HMENU hPopupMenu=CreatePopupMenu();
 
     itembar_t *itembar=&manager_g->items_list[floating_itembar];
     int flags1=itembar->checked?MF_CHECKED:0;
-    int flags2=itembar->isactive&2?MF_CHECKED:0;
-    int flagssubmenu=0;
-
     if(!itembar->hwidmatch)flags1|=MF_GRAYED;
-    if(manager_g->groupsize(itembar->index)<2)flags2|=MF_GRAYED;
 
     if(floating_itembar==SLOT_RESTORE_POINT)
     {
-        i=0;
-        InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
-        InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
+        InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
+        InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
+
+        RECT rect;
         SetForegroundWindow(hMain);
         GetWindowRect(hField,&rect);
         TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
         return;
     }
     if(floating_itembar<RES_SLOTS)return;
-    //printf("itembar %d\n",floating_itembar);
 
     Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
     Driver *cur_driver=nullptr;
-    wchar_t *p;
+
     char *t=manager_g->matcher->getState()->textas.get(0);
     if(devicematch_f->device->driver_index>=0)cur_driver=&manager_g->matcher->getState()->Drivers_list[devicematch_f->device->driver_index];
+    int flags2=itembar->isactive&2?MF_CHECKED:0;
     int flags3=cur_driver?0:MF_GRAYED;
+    if(manager_g->groupsize(itembar->index)<2)flags2|=MF_GRAYED;
     wchar_t buf[512];
 
-    i=0;
+    int i=0;
+    HMENU hSub1=CreatePopupMenu();
+    HMENU hSub2=CreatePopupMenu();
     if(devicematch_f->device->HardwareID)
     {
-        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
+        wchar_t *p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
         {
             escapeAmp(buf,p);
@@ -1945,7 +1937,7 @@ void contextmenu(int x,int y)
     }
     if(devicematch_f->device->CompatibleIDs)
     {
-        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
+        wchar_t *p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
         {
             escapeAmp(buf,p);
@@ -1955,7 +1947,7 @@ void contextmenu(int x,int y)
             i++;
         }
     }
-    if(!i)flagssubmenu=MF_GRAYED;
+    int flagssubmenu=i?0:MF_GRAYED;
 
     i=0;
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_CONT_INSTALL));
@@ -1966,6 +1958,8 @@ void contextmenu(int x,int y)
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_OPENINF,  STR(STR_CONT_OPENINF));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_LOCATEINF,STR(STR_CONT_LOCATEINF));
+
+    RECT rect;
     SetForegroundWindow(hMain);
     GetWindowRect(hField,&rect);
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
@@ -2206,7 +2200,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
                 case FLOATING_CMPDRIVER:
                     SelectObject(canvasPopup->getDC(),hFont);
-                    popup_drivercmp(manager_g,canvasPopup->getDC(),rect,floating_itembar);
+                    manager_g->items_list[floating_itembar].popup_drivercmp(manager_g,canvasPopup->getDC(),rect,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:

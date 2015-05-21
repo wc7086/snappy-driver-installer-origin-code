@@ -335,7 +335,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
                 fclose(f);
                 buf[BUFLEN-1]=0;
                 if(!strstr(buf,"[NOT_A_VIRUS]")&&StrStrIA(buf,"open"))
-                    manager_g->items_list[SLOT_VIRUS_AUTORUN].isactive=update=1;
+                    itembar_setactive(SLOT_VIRUS_AUTORUN,update=1);
             }
             else
                 log_con("NOTE: cannot open autorun.inf [error: %d]\n",errno);
@@ -345,7 +345,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
     // RECYCLER
     if(type==DRIVE_REMOVABLE)
         if(PathFileExists(L"\\RECYCLER")&&!PathFileExists(L"\\RECYCLER\\not_a_virus.txt"))
-            manager_g->items_list[SLOT_VIRUS_RECYCLER].isactive=update=1;
+            itembar_setactive(SLOT_VIRUS_RECYCLER,update=1);
 
     // Hidden folders
     hFind=FindFirstFile(L"\\*.*",&FindFileData);
@@ -363,7 +363,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
                 wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
                 if(PathFileExists(bufw))continue;
                 log_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
-                manager_g->items_list[SLOT_VIRUS_HIDDEN].isactive=update=1;
+                itembar_setactive(SLOT_VIRUS_HIDDEN,update=1);
             }
         }
     }

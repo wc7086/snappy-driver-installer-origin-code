@@ -150,15 +150,13 @@ void Manager::updateoverall()
     }
 }
 
-void updatecur()
+void itembar_t::updatecur()
 {
     if(itembar_act==SLOT_RESTORE_POINT)return;
-    if(showpercent(manager_g->items_list[itembar_act].install_status))
-        manager_g->items_list[itembar_act].percent=
-            (int)(ar_proceed*(instflag&INSTALLDRIVERS&&
-            manager_g->items_list[itembar_act].checked?900.:1000.)/ar_total);
+    if(showpercent(install_status))
+        percent=(int)(ar_proceed*(instflag&INSTALLDRIVERS&&checked?900.:1000.)/ar_total);
     else
-        manager_g->items_list[itembar_act].percent=0;
+        percent=0;
 }
 
 int _7z_setcomplited(long long i)
@@ -168,7 +166,7 @@ int _7z_setcomplited(long long i)
     if(!manager_g->items_list[itembar_act].checked)return E_ABORT;
 
     ar_proceed=i;
-    updatecur();
+    manager_g->items_list[itembar_act].updatecur();
     manager_g->updateoverall();
     redrawfield();
     return S_OK;
@@ -361,7 +359,7 @@ unsigned int __stdcall thread_install(void *arg)
         }
         redrawfield();
         if(hinstLib)FreeLibrary(hinstLib);
-        set_rstpnt(0);
+        manager_g->set_rstpnt(0);
         manager_g->items_list[SLOT_RESTORE_POINT].percent=0;
     }
     totalextracttime=totalinstalltime=0;

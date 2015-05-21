@@ -608,7 +608,7 @@ void State::print()
     {
         cur_device.print(this);
 
-        log_file("DriverInfo\n",cur_device.getDriverIndex());
+        log_file("DriverInfo\n");
         if(cur_device.getDriverIndex()>=0)
             Drivers_list[cur_device.getDriverIndex()].print(this);
         else
