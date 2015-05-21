@@ -511,7 +511,7 @@ int UpdateDialog_t::populate(int update)
                 if(!oldver)wsprintf(buf,L"%ws",STR(STR_UPD_MISSING));
                 ListView_SetItemTextUpdate(hListg,row,4,buf);
                 wsprintf(buf,L"%S",filename);
-                wsprintf(buf,L"%ws",STR(STR_UPD_YES+manager_drplive(buf)));
+                wsprintf(buf,L"%ws",STR(STR_UPD_YES+manager_g->manager_drplive(buf)));
                 ListView_SetItemTextUpdate(hListg,row,5,buf);
                 row++;
             }

@@ -101,7 +101,6 @@ public:
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend void contextmenu(int x,int y); // TODO: friend
-    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
 };
 
 // Hwidmatch is used to extract info about an available driver from indexes
@@ -142,6 +141,8 @@ public:
     int  cmp(Hwidmatch *match2);
     int isdup(Hwidmatch *match2,char *sect1);
     int isdrivervalid();
+    int isvalidcat(State *state);
+    int pickcat(State *state);
 
 // <<< GETTERS
     //driverpack
@@ -172,5 +173,4 @@ public:
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend class itembar_t; // TODO: friend
-    friend void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index); // TODO: friend
 };

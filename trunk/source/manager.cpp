@@ -84,13 +84,13 @@ void Manager::sorta(Matcher *m,int *v)
     }
 }
 
-int  manager_drplive(wchar_t *s)
+int  Manager::manager_drplive(wchar_t *s)
 {
     itembar_t *itembar;
     unsigned k,needle=0;
 
-    itembar=&manager_g->items_list[RES_SLOTS];
-    for(k=RES_SLOTS;k<manager_g->items_list.size();k++,itembar++)
+    itembar=&items_list[RES_SLOTS];
+    for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
     if(itembar->hwidmatch&&StrStrIW(itembar->hwidmatch->getdrp_packname(),s))
     {
         if(itembar->isactive)
@@ -192,7 +192,7 @@ void Manager::filter(int options)
                     cnt[NUM_STATUS]++;
             }
 
-            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->altsectscore==2&&!isvalidcat(itembar->hwidmatch,matcher->state))
+            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->altsectscore==2&&!itembar->hwidmatch->isvalidcat(matcher->state))
                 itembar->hwidmatch->altsectscore=1;
 
             for(k=0;k<NUM_STATUS;k++)
@@ -309,7 +309,7 @@ void Manager::print_hr()
     for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
-            if(flags&FLAG_FILTERSP&&!isvalidcat(itembar->hwidmatch,matcher->state))continue;
+            if(flags&FLAG_FILTERSP&&!itembar->hwidmatch->isvalidcat(matcher->state))continue;
             wchar_t buf[BUFLEN];
             itembar->str_status(buf);
             log_file("\n$%04d, %S\n",k,buf);
@@ -605,25 +605,25 @@ itembar_t::itembar_t()
 {
 }
 
-void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent)
+void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
 {
-    itembar_t *itembar=&manager->items_list[i];
+    itembar_t *itembar=&items_list[i];
     wcscpy(itembar->txt1,txt1);
     itembar->percent=percent;
     itembar->isactive=1;
     redrawfield();
 }
 
-void itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v)
+void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v)
 {
-    itembar_t *itembar=&manager_g->items_list[i];
+    itembar_t *itembar=&items_list[i];
     if(txt1)wcscpy(itembar->txt1,txt1);
     itembar->val1=val1v;
     itembar->val2=val2v;
     if(!val2v)val2v++;
     itembar->percent=val1v*1000/val2v;
     itembar->isactive=act;
-    manager_g->setpos();
+    setpos();
     redrawfield();
 }
 
@@ -807,6 +807,8 @@ int itembar_t::box_status()
         //if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
     return BOX_DRVITEM;
 }
+
+void itembar_setactive(int i,int val){manager_g->items_list[i].isactive=val;}
 //}
 
 //{ Driver list
@@ -898,14 +900,12 @@ int Manager::countItems()
     return cnt;
 }
 
-void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2)
+void itembar_t::drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2)
 {
-    itembar_t *itembar=&manager_g->items_list[index];
-
     pos+=D(ITEM_TEXT_OFS_Y);
-    SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
+    SetTextColor(hdc,D(boxindex[box_status()]+14));
     TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1,wcslen(str1));
-    SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
+    SetTextColor(hdc,D(boxindex[box_status()]+15));
     TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2,wcslen(str2));
 }
 
@@ -1034,7 +1034,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_NODRIVERS:
-            drawbutton(hdc,x,pos,index,STR(STR_EMPTYDRP),matcher->col->getDriverpack_dir());
+            itembar->drawbutton(hdc,x,pos,STR(STR_EMPTYDRP),matcher->col->getDriverpack_dir());
             break;
 
         case SLOT_NOUPDATES:
@@ -1054,32 +1054,32 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             if(!Updater.isPaused())
             {
                 Updater.showProgress(bufw);
-                drawbutton(hdc,x,pos,index,bufw,STR(STR_UPD_MODIFY));
+                itembar->drawbutton(hdc,x,pos,bufw,STR(STR_UPD_MODIFY));
             }
             else
 #endif
-                drawbutton(hdc,x,pos,index,bufw,STR(STR_UPD_START));
+                itembar->drawbutton(hdc,x,pos,bufw,STR(STR_UPD_START));
 
             break;
 
         case SLOT_SNAPSHOT:
-            drawbutton(hdc,x,pos,index,state_file,STR(STR_CLOSE_SNAPSHOT));
+            itembar->drawbutton(hdc,x,pos,state_file,STR(STR_CLOSE_SNAPSHOT));
             break;
 
         case SLOT_DPRDIR:
-            drawbutton(hdc,x,pos,index,drpext_dir,STR(STR_CLOSE_DRPEXT));
+            itembar->drawbutton(hdc,x,pos,drpext_dir,STR(STR_CLOSE_DRPEXT));
             break;
 
         case SLOT_VIRUS_AUTORUN:
-            drawbutton(hdc,x,pos,index,STR(STR_VIRUS),STR(STR_VIRUS_AUTORUN));
+            itembar->drawbutton(hdc,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_AUTORUN));
             break;
 
         case SLOT_VIRUS_RECYCLER:
-            drawbutton(hdc,x,pos,index,STR(STR_VIRUS),STR(STR_VIRUS_RECYCLER));
+            itembar->drawbutton(hdc,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_RECYCLER));
             break;
 
         case SLOT_VIRUS_HIDDEN:
-            drawbutton(hdc,x,pos,index,STR(STR_VIRUS),STR(STR_VIRUS_HIDDEN));
+            itembar->drawbutton(hdc,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_HIDDEN));
             break;
 
         default:
@@ -1261,7 +1261,7 @@ void Manager::draw(HDC hdc,int ofsy)
     drawbox(hdc,0,0,rect.right,rect.bottom,BOX_DRVLIST);
 
     cutoff=calc_cutoff();
-    updatecur();
+    items_list[itembar_act].updatecur();
     updateoverall();
     for(i=items_list.size()-1;i>=0;i--)
     {
@@ -1575,31 +1575,31 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
 }
 
-int pickcat(Hwidmatch *hwidmatch,State *state)
+int Hwidmatch::pickcat(State *state)
 {
-    if(state->getArchitecture()==1&&*hwidmatch->getdrp_drvcat(CatalogFile_ntamd64))
+    if(state->getArchitecture()==1&&*getdrp_drvcat(CatalogFile_ntamd64))
     {
         return CatalogFile_ntamd64;
     }
-    else if(*hwidmatch->getdrp_drvcat(CatalogFile_ntx86))
+    else if(*getdrp_drvcat(CatalogFile_ntx86))
     {
         return CatalogFile_ntx86;
     }
 
-    if(*hwidmatch->getdrp_drvcat(CatalogFile_nt))
+    if(*getdrp_drvcat(CatalogFile_nt))
        return CatalogFile_nt;
 
-    if(*hwidmatch->getdrp_drvcat(CatalogFile))
+    if(*getdrp_drvcat(CatalogFile))
        return CatalogFile;
 
     return 0;
 }
 
-int isvalidcat(Hwidmatch *hwidmatch,State *state)
+int Hwidmatch::isvalidcat(State *state)
 {
     CHAR bufa[BUFLEN];
-    int n=pickcat(hwidmatch,state);
-    const char *s=hwidmatch->getdrp_drvcat(n);
+    int n=pickcat(state);
+    const char *s=getdrp_drvcat(n);
 
     int major,minor;
     state->getWinVer(&major,&minor);
@@ -1608,17 +1608,23 @@ int isvalidcat(Hwidmatch *hwidmatch,State *state)
     return strstr(s,bufa)?1:0;
 }
 
-void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
+void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
 {
+    if(index1<RES_SLOTS)return;
+
+    //itembar_t *itembar=&manager->items_list[index];
+    Devicematch *devicematch_f=devicematch;
+    Hwidmatch *hwidmatch_f=hwidmatch;
+    State *state=manager->matcher->getState();
+
     wchar_t bufw[BUFLEN];
     wchar_t i_hwid[BUFLEN];
     wchar_t a_hwid[BUFLEN];
-    char *t=manager->matcher->getState()->textas.get(0);
+
+    char *t=state->textas.get(0);
     int maxln=0;
     int bolder=rect.right/2;
     wchar_t *p;
-    Devicematch *devicematch_f=nullptr;
-    Hwidmatch *hwidmatch_f=nullptr;
     Driver *cur_driver=nullptr;
     textdata_t td;
     version_t *a_v=nullptr;
@@ -1627,20 +1633,16 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
 
-    if(index<RES_SLOTS)return;
-
-    devicematch_f=manager->items_list[index].devicematch;
-    hwidmatch_f=manager->items_list[index].hwidmatch;
 
     td.y=D(POPUP_OFSY);
     td.wy=D(POPUP_WY);
     td.hdcMem=hdcMem;
     td.maxsz=0;
 
-    if(devicematch_f->device->getDriverIndex()>=0)
+    if(devicematch_f->driver)
     {
         int i;
-        cur_driver=&manager->matcher->getState()->Drivers_list[devicematch_f->device->getDriverIndex()];
+        cur_driver=devicematch_f->driver;
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
         for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
     }
@@ -1655,7 +1657,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         if(r>0)cm_date=1;
         if(r<0)cm_date=2;
 
-        score=cur_driver->calc_score_h(manager->matcher->getState());
+        score=cur_driver->calc_score_h(state);
         if(score<hwidmatch_f->score)cm_score=1;
         if(score>hwidmatch_f->score)cm_score=2;
 
@@ -1664,12 +1666,13 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         if(r<0)cm_ver=2;
     }
 
+    // Device info (hwidmatch_f,devicematch_f)
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_ANALYSIS));td.x=p1;
-    TextOutF(&td,c0,L"$%04d",index);
+    TextOutF(&td,c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
-        TextOutF(&td,isvalidcat(hwidmatch_f,manager->matcher->getState())?cb:D(POPUP_CMP_INVALID_COLOR),
-                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),pickcat(hwidmatch_f,manager->matcher->getState()),hwidmatch_f->getdrp_drvcat(pickcat(hwidmatch_f,manager->matcher->getState())));
+        TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
+                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->pickcat(state),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
 
         td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
         TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
@@ -1687,6 +1690,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
     TextOutF(&td,c0,L"%s",bufw);
 
+    // HWID list (devicematch_f)
     maxln=td.y;
     td.y=D(POPUP_OFSY);
     if(devicematch_f->device->HardwareID)
@@ -1722,6 +1726,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
     maxln+=td.wy;
     td.y=maxln;
 
+    // Cur driver (cur_driver)
     if(cur_driver||hwidmatch_f)
     {
         MoveToEx(hdcMem,0,td.y-td.wy/2,nullptr);
@@ -1748,6 +1753,7 @@ void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index)
         TextOutF(&td,cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
     }
 
+    // Available driver (hwidmatch_f)
     if(hwidmatch_f)
     {
         td.y=maxln;

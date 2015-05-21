@@ -28,7 +28,6 @@ extern long long totalinstalltime,totalextracttime;
 #define RESTOREPOS          4
 
 int showpercent(int a);
-void updatecur();
 void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb);
 void removeextrainfs(wchar_t *inf);
 void _7z_total(long long i);

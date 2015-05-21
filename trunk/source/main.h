@@ -329,9 +329,7 @@ void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
 
 //new
-void set_rstpnt(int checked);
 void drvdir();
-const wchar_t *getHWIDby(int id,int num);
 void escapeAmpUrl(wchar_t *buf,wchar_t *source);
 void escapeAmp(wchar_t *buf,wchar_t *source);
 void contextmenu(int x,int y);

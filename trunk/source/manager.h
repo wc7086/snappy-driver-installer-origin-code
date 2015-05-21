@@ -148,23 +148,25 @@ public:
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
     int box_status();
+    void updatecur();
+    void drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2);
+    void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
 
     friend class Manager; // TODO: friend
     friend class Collection; // TODO: friend
     friend unsigned int __stdcall thread_install(void *arg); // TODO: friend
-    friend void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam); // TODO: friend
 };
-void itembar_settext(Manager *manager,int i,const wchar_t *txt1,int percent);
-void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1);
+void itembar_setactive(int i,int val);
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
 // Manager
 class Manager
 {
-public:
-    Matcher *matcher;
     std::vector<itembar_t> items_list;
     long animstart;
+
+public:
+    Matcher *matcher;
 
 public:
     void init(Matcher *matcher);
@@ -195,15 +197,30 @@ public:
     int groupsize(int index);
     int countItems();
     void popup_driverlist(HDC hdcMem,RECT rect,unsigned i);
+    int  manager_drplive(wchar_t *s);
+    void set_rstpnt(int checked);
+    void itembar_settext(int i,const wchar_t *txt1,int percent);
+    void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1);
+
+    friend class Driverpack; // TODO: friend
+    friend class bundle_t; // TODO: friend
+    friend class itembar_t; // TODO: friend
+    friend class UpdateDialog_t; // TODO: friend
+    friend class Updater_t; // TODO: friend
+    friend unsigned int __stdcall thread_install(void *arg); // TODO: friend
+    friend int _7z_setcomplited(long long i); // TODO: friend
+    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
+    friend void contextmenu(int x,int y); // TODO: friend
+    friend LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam); // TODO: friend
+
+    friend void itembar_setactive(int i,int val); // TODO: friend
 };
 
 // Global vars
 extern wchar_t extractdir[BUFLEN];
 
 // Manager
-int  manager_drplive(wchar_t *s);
 void manager_install(int flags);
-void drawbutton(HDC hdc,int x,int pos,int index,const wchar_t *str1,const wchar_t *str2);
 
 // Draw
 struct textdata_t
@@ -227,7 +244,4 @@ void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...);
 void format_size(wchar_t *buf,long long val,int isspeed);
 void format_time(wchar_t *buf,long long val);
 void popup_resize(int x,int y);
-int  pickcat(Hwidmatch *hwidmatch,State *state);
-int  isvalidcat(Hwidmatch *hwidmatch,State *state);
-void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int i);
 void popup_about(HDC hdcMem);
