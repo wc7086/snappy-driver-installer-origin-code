@@ -116,6 +116,7 @@ public:
     bool isChecked(int i)const{return items[i].checked;}
     void setChecked(int i,int val){items[i].checked=val;}
     void flipChecked(int i){items[i].checked^=1;}
+    int getStr(int i){return items[i].str_id;}
 
     int calcFilters();
     void setFilters();
@@ -123,8 +124,7 @@ public:
     void draw_inv();
     void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);
-
-    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
+    void click(int i);
 };
 
 // Misc functions

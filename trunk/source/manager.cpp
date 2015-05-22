@@ -811,6 +811,21 @@ int itembar_t::box_status()
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
 void Manager::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index){items_list[floating_itembar].popup_drivercmp(manager,hdcMem,rect,index);}
 void Manager::contextmenu(int x,int y){items_list[floating_itembar].contextmenu(x,y);}
+const wchar_t *Manager::getHWIDby(int id){return items_list[floating_itembar].devicematch->device->getHWIDby(id);}
+
+void Manager::getINFpath(int wp)
+{
+    wchar_t buf[BUFLEN];
+    wsprintf(buf,L"%s%s%s",
+            (wp==ID_LOCATEINF)?L"/select,":L"",
+            matcher->getState()->textas.get(matcher->getState()->getWindir()),
+            matcher->getState()->textas.get(items_list[floating_itembar].devicematch->driver->getInfPath()));
+
+    if(wp==ID_OPENINF)
+        run_command(buf,L"",SW_SHOW,0);
+    else
+        run_command(L"explorer.exe",buf,SW_SHOW,0);
+}
 //}
 
 //{ Driver list

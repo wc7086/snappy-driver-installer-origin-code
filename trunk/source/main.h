@@ -245,6 +245,7 @@ extern int horiz_sh;
 extern int ret_global;
 extern unsigned offset_target;
 extern int kbpanel,kbitem[KB_PANEL_CHK+1];
+extern int hideconsole;
 
 // Settings
 extern wchar_t drp_dir   [BUFLEN];

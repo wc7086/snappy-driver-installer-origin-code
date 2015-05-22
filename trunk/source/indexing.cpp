@@ -450,7 +450,7 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
     index_linear_dir=index_linear_dirv;
 }
 
-unsigned int __stdcall Collection::savedrp_thread(void *arg)
+unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
 {
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     frm data;
@@ -489,17 +489,17 @@ void Collection::save()
     count_=0;
     cur_=1;
     if((flags&FLAG_KEEPUNPACKINDEX)==0)
-        driverpack_list[0].type=DRIVERPACK_TYPE_INDEXED;
+        driverpack_list[0].setType(DRIVERPACK_TYPE_INDEXED);
     for(auto &driverpack:driverpack_list)
-        if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
+        if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
 
     log_con("Saving indexes...\n");
     HANDLE thr[16];
     drplist_t queuedriverpack_loc(100);
     for(int i=0;i<num_cores;i++)
-        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&savedrp_thread,&queuedriverpack_loc,0,nullptr);
+        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::savedrp_thread,&queuedriverpack_loc,0,nullptr);
     for(auto &driverpack:driverpack_list)
-    if(driverpack.type==DRIVERPACK_TYPE_PENDING_SAVE)
+    if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)
         queuedriverpack_loc.push(frm{&driverpack});
 
     for(int i=0;i<num_cores;i++)queuedriverpack_loc.push(frm{nullptr});
@@ -575,7 +575,7 @@ int Collection::scanfolder_count(const wchar_t *path)
     return cnt;
 }
 
-unsigned int __stdcall Collection::loaddrp_thread(void *arg)
+unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
 {
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     frm data;
@@ -595,7 +595,7 @@ unsigned int __stdcall Collection::loaddrp_thread(void *arg)
 #endif
                     queuedriverpack1.push(frm{drp});
                     drp->genindex();
-                    driverpack_indexinf_async(drp,L"",L"",nullptr,0);
+                    drp->driverpack_indexinf_async(L"",L"",nullptr,0);
                 }
         }
     }
@@ -654,7 +654,7 @@ void Collection::populate()
 
     drplist_t queuedriverpack(100);
     for(int i=0;i<num_thr;i++)
-        cons[i]=(HANDLE)_beginthreadex(nullptr,0,&loaddrp_thread,&queuedriverpack,0,nullptr);
+        cons[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::loaddrp_thread,&queuedriverpack,0,nullptr);
 //}thread
 
     if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
@@ -700,29 +700,18 @@ void Collection::print_index_hr()
     time_indexprint=GetTickCount()-time_indexprint;
 }
 
-void Collection::printstates()
+void Collection::printstats()
 {
     if((log_verbose&LOG_VERBOSE_DRP)==0)return;
 
-    int sum=0,sizetx=0,sizeind=0;
-    int num=0;
+    //int sum=0,sizetx=0,sizeind=0;
+    int sum=0;
     log_file("Driverpacks\n");
     for(auto &drp:driverpack_list)
-    {
-        log_file("  %6d  %S\\%S\n",drp.HWID_list.size(),drp.getPath(),drp.getFilename());
-        sum+=drp.HWID_list.size();
-        sizetx+=drp.texta.getSize();
+        sum+=drp.printstats();
 
-        num+=drp.cat_list.size()*sizeof(drp.cat_list);
-        num+=drp.inffile.size()*sizeof(drp.inffile);
-        num+=drp.manufacturer_list.size()*sizeof(drp.manufacturer_list);
-        num+=drp.desc_list.size()*sizeof(drp.desc_list);
-        num+=drp.HWID_list.size()*sizeof(drp.HWID_list);
-
-        sizeind+=drp.indexesold.getSize()*sizeof(Hashitem);
-    }
     log_file("  Sum: %d\n\n",sum);
-    log_con("  Size: %d+%d*%d+%d[text]+%d[obj]+%d[ind]\n",sizeof(Collection),driverpack_list.size(),sizeof(Driverpack),sizetx,num,sizeind);
+    //log_con("  Size: %d+%d*%d+%d[text]+%d[obj]+%d[ind]\n",sizeof(Collection),driverpack_list.size(),sizeof(Driverpack),sizetx,num,sizeind);
 }
 
 wchar_t *Collection::finddrp(wchar_t *fnd)
@@ -735,7 +724,7 @@ wchar_t *Collection::finddrp(wchar_t *fnd)
     for(auto &drp:driverpack_list)
     {
         s=drp.getFilename();
-        if(StrStrIW(s,fnd)&&drp.type!=DRIVERPACK_TYPE_UPDATE)
+        if(StrStrIW(s,fnd)&&drp.getType()!=DRIVERPACK_TYPE_UPDATE)
         {
             d=s;
             while(*d)
@@ -1108,6 +1097,25 @@ void Driverpack::genhashes()
     }
 }
 
+int Driverpack::printstats()
+{
+    int sum=0;
+
+    log_file("  %6d  %S\\%S\n",HWID_list.size(),getPath(),getFilename());
+    sum+=HWID_list.size();
+    //sizetx+=drp.texta.getSize();
+
+    /*num+=drp.cat_list.size()*sizeof(drp.cat_list);
+    num+=drp.inffile.size()*sizeof(drp.inffile);
+    num+=drp.manufacturer_list.size()*sizeof(drp.manufacturer_list);
+    num+=drp.desc_list.size()*sizeof(drp.desc_list);
+    num+=drp.HWID_list.size()*sizeof(drp.HWID_list);
+
+    sizeind+=drp.indexesold.getSize()*sizeof(Hashitem);
+    */
+    return sum;
+}
+
 unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
 {
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
@@ -1137,7 +1145,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
                 drp_cur++;
             }
 
-            //log_con("Str %ws\n",data.drp->getFilename());
+            log_con("Str %ws\n",data.drp->getFilename());
             //t.inffile[0]=1;
             //do
             exit1=0;
@@ -1156,7 +1164,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
                     t.drp->texta.shrink();
                     free(t.adr);
                     last=GetTickCount();
-                    //log_con("Trm %ws(%d,%d)\n",data.drp->getFilename(),t.drp->indexesold.size,tt);
+                    log_con("Trm %ws\n",data.drp->getFilename());
                     delete data.drp->objs;
                     exit1=1;
                     break;
@@ -1174,14 +1182,14 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
             }
             //while(*t.inffile&&!exit);
             //delete data.drp->objs;
-            //log_con("Fin %ws\n",data.drp->getFilename());
+            log_con("Fin %ws\n",data.drp->getFilename());
         }
     }
     log_con("Starved for %ld\n",tm);
     return 0;
 }
 
-void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len)
+void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,int len)
 {
     obj data;
 
@@ -1203,12 +1211,12 @@ void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t co
 
     data.len=len;
     wcscpy(data.pathinf,pathinf);
-    wcscpy(data.inffile,inffile);
-    data.drp=drp;
-    if(drp&&drp->objs)drp->objs->push(data);
+    wcscpy(data.inffile,inffile1);
+    data.drp=this;
+    if(objs)objs->push(data);
 }
 
-void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len)
+void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,int len)
 {
     obj data;
 
@@ -1216,9 +1224,9 @@ void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t co
     memmove(data.adr,adr,len);
     data.len=len;
     wcscpy(data.pathinf,pathinf);
-    wcscpy(data.inffile,inffile);
-    data.drp=drp;
-    if(drp&&drp->objs)drp->objs->push(data);
+    wcscpy(data.inffile,inffile1);
+    data.drp=this;
+    if(objs)objs->push(data);
 }
 
 void findosattr(char *bufa,char *adr,int len)
@@ -1344,7 +1352,7 @@ int Driverpack::genindex()
 
                 cc++;
                 if(StrStrIW(infname,L".inf"))
-                    driverpack_indexinf_async(this,infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
+                    driverpack_indexinf_async(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
                 else
                     parsecat(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
                     //driverpack_parsecat_async(this,infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
@@ -1360,10 +1368,7 @@ int Driverpack::genindex()
     SzArEx_Free(&db,&allocImp);
     File_Close(&archiveStream.file);
 
-
     //log_con("%ws, %d\n",getFilename(),cc);
-
-    //driverpack_indexinf_async(this,L"",L"",nullptr,0);
     return 1;
 }
 

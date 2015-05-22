@@ -604,7 +604,7 @@ void bundle_t::bundle_lowprioirity()
 
     redrawmainwnd();
 
-    collection.printstates();
+    collection.printstats();
     state.print();
     matcher.print();
     manager_g->print_hr();
@@ -1540,7 +1540,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if((i==1&&j==7)||(j==12))
                     drawpopup(-1,FLOATING_ABOUT,x,y,hwnd);
                 else
-                    drawpopup(panels[j].items[i].str_id+1,i>0&&i<4&&j==0?FLOATING_SYSINFO:FLOATING_TOOLTIP,x,y,hwnd);
+                    //drawpopup(panels[j].items[i].str_id+1,i>0&&i<4&&j==0?FLOATING_SYSINFO:FLOATING_TOOLTIP,x,y,hwnd);
+                    drawpopup(panels[j].getStr(i)+1,i>0&&i<4&&j==0?FLOATING_SYSINFO:FLOATING_TOOLTIP,x,y,hwnd);
             }
             else
                 drawpopup(-1,FLOATING_NONE,x,y,hwnd);
@@ -1563,7 +1564,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
             else
             //log_con("%d,%d\n",j,i);
-            if(panels[j].items[i].type==TYPE_CHECKBOX||TYPE_BUTTON)
+            /*if(panels[j].items[i].type==TYPE_CHECKBOX||TYPE_BUTTON)
             {
                 panels[j].flipChecked(i);
                 if(panels[j].items[i].action_id==ID_EXPERT_MODE)
@@ -1575,7 +1576,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     PostMessage(hwnd,WM_COMMAND,panels[j].items[i].action_id+(BN_CLICKED<<16),0);
 
                 InvalidateRect(hwnd,nullptr,TRUE);
-            }
+            }*/
+            panels[j].click(i);
             if(j==7||j==12)run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
             break;
 
@@ -1631,21 +1633,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_OPENINF:
                 case ID_LOCATEINF:
-                    {
-                        wchar_t buf[BUFLEN];
-
-                        Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
-                        Driver *cur_driver=devicematch_f->driver;
-                        wsprintf(buf,L"%s%s%s",
-                                (wp==ID_LOCATEINF)?L"/select,":L"",
-                               manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()),
-                               manager_g->matcher->getState()->textas.get(cur_driver->getInfPath()));
-
-                        if(wp==ID_OPENINF)
-                            run_command(buf,L"",SW_SHOW,0);
-                        else
-                            run_command(L"explorer.exe",buf,SW_SHOW,0);
-                    }
+                    manager_g->getINFpath(wp);
                     break;
 
                 case ID_DEVICEMNG:
@@ -1668,9 +1656,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_DIS_RESTPNT:
                     flags^=FLAG_NORESTOREPOINT;
-                    //manager_g->items_list[SLOT_RESTORE_POINT].isactive=(flags&FLAG_NORESTOREPOINT)==0;
                     manager_g->set_rstpnt(flags&FLAG_NORESTOREPOINT?1:0);
-                    //manager_g->setpos();
                     break;
 
                 default:
@@ -1694,7 +1680,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 {
                     wchar_t buf[BUFLEN];
                     wchar_t buf2[BUFLEN];
-                    const wchar_t *str=manager_g->items_list[floating_itembar].devicematch->device->getHWIDby(id);
+                    const wchar_t *str=manager_g->getHWIDby(id);
                     //wsprintf(buf,L"https://www.google.com/#q=%s",str);
                     wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",str);
                     escapeAmpUrl(buf2,buf);
@@ -1703,7 +1689,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 }
                 else
                 {
-                    const wchar_t *str=manager_g->items_list[floating_itembar].devicematch->device->getHWIDby(id);
+                    const wchar_t *str=manager_g->getHWIDby(id);
                     int len=wcslen(str)*2+2;
                     HGLOBAL hMem=GlobalAlloc(GMEM_MOVEABLE,len);
                     memcpy(GlobalLock(hMem),str,len);

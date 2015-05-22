@@ -60,8 +60,6 @@ class obj
     int len;
 
     friend class Driverpack;
-    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 };
 
 class sect_data_t
@@ -209,8 +207,6 @@ private:
     int  scanfolder_count(const wchar_t *path);
     void scanfolder(const wchar_t *path,void *arg);
     void loadOnlineIndexes();
-    static unsigned int __stdcall loaddrp_thread(void *arg);
-    static unsigned int __stdcall savedrp_thread(void *arg);
 
 public:
     wchar_t *getDriverpack_dir()const{return driverpack_dir;}
@@ -226,7 +222,7 @@ public:
     void save();
     void populate();
     void print_index_hr();
-    void printstates();
+    void printstats();
     wchar_t *finddrp(wchar_t *s);
 };
 
@@ -262,6 +258,8 @@ private:
 public:
     wchar_t *getPath(){return texta.getw(drppath);}
     wchar_t *getFilename(){return texta.getw(drpfilename);}
+    int getType(){return type;}
+    int setType(int val){return type=val;}
 
     //Driverpack(const Driverpack&)=delete;
     Driverpack &operator=(const Driverpack&)=delete;
@@ -276,17 +274,18 @@ public:
     void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
     void genhashes();
+    int printstats();
     static unsigned int __stdcall thread_indexinf(void *arg);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
+    static unsigned int __stdcall loaddrp_thread(void *arg);
+    static unsigned int __stdcall savedrp_thread(void *arg);
+    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
     friend class Driver; // TODO: friend
-    friend class Collection; // TODO: friend
     friend class Hwidmatch; // TODO: friend
     friend class Matcher; // TODO: friend
-    friend void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    friend void driverpack_parsecat_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 };
-void driverpack_indexinf_async(Driverpack *drp,wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
 // Misc
 void findosattr(char *bufa,char *adr,int len);
