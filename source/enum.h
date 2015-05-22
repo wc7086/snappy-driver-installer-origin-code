@@ -97,6 +97,7 @@ public:
 
     friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
+    friend class Devicematch; // TODO: friend
     friend class itembar_t; // TODO: friend
 };
 
@@ -126,8 +127,12 @@ private:
 
 public:
     ofst getInfPath()const{return InfPath;}
+    ofst getMatchingDeviceId(){return MatchingDeviceId;}
+    version_t *getVersion(){return &version;}
+
     unsigned calc_score_h(State *state);
     void print(State *state);
+
 
     //Driver(const Driver &)=delete;
     //Driver &operator=(const Driver &)=delete;
@@ -138,9 +143,6 @@ public:
 
     friend class Manager; // TODO: friend
     friend class itembar_t; // TODO: friend
-    friend class Matcher; // TODO: friend
-    friend class Hwidmatch; // TODO: friend
-    friend class Devicematch; // TODO: friend
 };
 
 // State (POD)
@@ -211,6 +213,10 @@ public:
     int getLocale(){return locale;}
     int getArchitecture(){return architecture;}
     void getWinVer(int *major,int *minor);
+    wchar_t *get_szCSDVersion(){return platform.szCSDVersion;}
+    std::vector<Device> *getDevices_list(){return &Devices_list;}
+    Driver *getCurrentDriver(Device *dev){return (dev->getDriverIndex()>=0)?&Drivers_list[dev->getDriverIndex()]:nullptr;}
+
     wchar_t *getProduct();
     wchar_t *getManuf();
     wchar_t *getModel();
@@ -231,9 +237,6 @@ public:
     int  opencatfile(Driver *cur_driver);
     void genmarker(); // in matcher.cpp
     void isnotebook_a();
-
-    friend class Panel; // TODO: friend
-    friend class Matcher; // TODO: friend
 };
 
 // Monitor info

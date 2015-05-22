@@ -192,14 +192,14 @@ void Manager::filter(int options)
                     cnt[NUM_STATUS]++;
             }
 
-            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->altsectscore==2&&!itembar->hwidmatch->isvalidcat(matcher->state))
-                itembar->hwidmatch->altsectscore=1;
+            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->getAltsectscore()==2&&!itembar->hwidmatch->isvalidcat(matcher->state))
+                itembar->hwidmatch->setAltsectscore(1);
 
             for(k=0;k<NUM_STATUS;k++)
                 if((!o1||!cnt[NUM_STATUS])&&(options&statustnl[k].filter)&&itembar->hwidmatch->getStatus()&statustnl[k].status)
             {
                 if((options&FILTER_SHOW_WORSE_RANK)==0/*&&(options&FILTER_SHOW_OLD)==0*/&&(options&FILTER_SHOW_INVALID)==0&&
-                   devicematch->device->problem==0&&devicematch->driver&&itembar->hwidmatch->altsectscore<2)continue;
+                   devicematch->device->problem==0&&devicematch->driver&&itembar->hwidmatch->getAltsectscore()<2)continue;
 
                 if((options&FILTER_SHOW_OLD)!=0&&(itembar->hwidmatch->getStatus()&STATUS_BETTER))continue;
 
@@ -424,7 +424,8 @@ void Manager::clear()
 void Manager::testitembars()
 {
     itembar_t *itembar;
-    unsigned i,j=0,index=1;
+    unsigned i,j=0,index=RES_SLOTS+1;
+    int prev_index=-1;
 
     itembar=&items_list[0];
 
@@ -436,15 +437,16 @@ void Manager::testitembars()
     if(i>SLOT_EMPTY&&i<RES_SLOTS)
     {
         if(i==SLOT_VIRUS_HIDDEN||i==SLOT_VIRUS_RECYCLER||i==SLOT_NODRIVERS||i==SLOT_DPRDIR)continue;
-        itembar->index=index;
-        itembar->isactive=1;
+        itembar_settext(i,1);
     }
     else if(itembar->isactive)
     {
+        if(!itembar->devicematch||prev_index==itembar->index){itembar->isactive=0;continue;}
+        prev_index=itembar->index;
         itembar->checked=0;
         if(j==0||j==6||j==9||j==18||j==21)index++;
         itembar->index=index;
-        itembar->hwidmatch->altsectscore=2;
+        itembar->hwidmatch->setAltsectscore(2);
         switch(j++)
         {
             case  0:itembar->install_status=STR_INST_EXTRACT;itembar->percent=300;itembar->checked=1;break;
