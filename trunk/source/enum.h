@@ -96,8 +96,6 @@ public:
         InstanceId(0),status(0),problem(0),ret(0),DeviceInfoData(){}
 
     friend class Manager; // TODO: friend
-    friend class Matcher; // TODO: friend
-    friend class Devicematch; // TODO: friend
     friend class itembar_t; // TODO: friend
 };
 

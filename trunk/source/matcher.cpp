@@ -363,7 +363,7 @@ void Matcher::sort()
 
             match2=&hwidmatch_list[devicematch.start_matches+i+1];
             for(unsigned j=i+1;j<devicematch.num_matches;j++,match2++)
-                if(match1->isdup(match2,sect1))match2->status|=STATUS_DUP;
+                if(match1->isdup(match2,sect1))match2->markDup();
         }
     }
 }
@@ -428,9 +428,9 @@ Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher
     num_matches=0;
     State *state=matcher->getState();
 
-    if(device->HardwareID)
+    if(device->getHardwareID())
     {
-        wchar_t *p=state->textas.getw(device->HardwareID);
+        wchar_t *p=state->textas.getw(device->getHardwareID());
         int dev_pos=0;
         while(*p)
         {
@@ -440,9 +440,9 @@ Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher
         }
     }
 
-    if(device->CompatibleIDs)
+    if(device->getCompatibleIDs())
     {
-        wchar_t *p=state->textas.getw(device->CompatibleIDs);
+        wchar_t *p=state->textas.getw(device->getCompatibleIDs());
         int dev_pos=0;
         while(*p)
         {

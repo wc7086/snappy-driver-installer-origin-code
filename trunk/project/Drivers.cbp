@@ -54,7 +54,7 @@
 					<Add option="-pg -lgmon" />
 					<Add option="-m32" />
 					<Add library="webp" />
-					<Add library="torrent" />
+					<Add library="torrent_dbg" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="boost_system32" />
@@ -109,7 +109,7 @@
 					<Add option="-pg -lgmon" />
 					<Add option="-m64" />
 					<Add library="webp64" />
-					<Add library="torrent" />
+					<Add library="torrent_dbg" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="boost_system64" />
