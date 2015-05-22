@@ -589,7 +589,7 @@ unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
                 if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
                 {
 #ifndef NDEBUG
-                    dr->objs=new boost::lockfree::queue<obj>(100);
+                    drp->objs=new boost::lockfree::queue<obj>(100);
 #else
                     drp->objs=new boost::lockfree::queue<obj>;
 #endif

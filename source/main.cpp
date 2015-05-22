@@ -1821,7 +1821,6 @@ void itembar_t::contextmenu(int x,int y)
 {
     HMENU hPopupMenu=CreatePopupMenu();
 
-    //itembar_t *itembar=&manager_g->items_list[floating_itembar];
     int flags1=checked?MF_CHECKED:0;
     if(!hwidmatch)flags1|=MF_GRAYED;
 
@@ -1838,11 +1837,10 @@ void itembar_t::contextmenu(int x,int y)
     }
     if(floating_itembar<RES_SLOTS)return;
 
-    Devicematch *devicematch_f=manager_g->items_list[floating_itembar].devicematch;
     Driver *cur_driver=nullptr;
 
     char *t=manager_g->matcher->getState()->textas.get(0);
-    if(devicematch_f->driver)cur_driver=devicematch_f->driver;
+    if(devicematch->driver)cur_driver=devicematch->driver;
     int flags2=isactive&2?MF_CHECKED:0;
     int flags3=cur_driver?0:MF_GRAYED;
     if(manager_g->groupsize(index)<2)flags2|=MF_GRAYED;
@@ -1851,9 +1849,9 @@ void itembar_t::contextmenu(int x,int y)
     int i=0;
     HMENU hSub1=CreatePopupMenu();
     HMENU hSub2=CreatePopupMenu();
-    if(devicematch_f->device->getHardwareID())
+    if(devicematch->device->getHardwareID())
     {
-        wchar_t *p=(wchar_t *)(t+devicematch_f->device->getHardwareID());
+        wchar_t *p=(wchar_t *)(t+devicematch->device->getHardwareID());
         while(*p)
         {
             escapeAmp(buf,p);
@@ -1863,9 +1861,9 @@ void itembar_t::contextmenu(int x,int y)
             i++;
         }
     }
-    if(devicematch_f->device->getCompatibleIDs())
+    if(devicematch->device->getCompatibleIDs())
     {
-        wchar_t *p=(wchar_t *)(t+devicematch_f->device->getCompatibleIDs());
+        wchar_t *p=(wchar_t *)(t+devicematch->device->getCompatibleIDs());
         while(*p)
         {
             escapeAmp(buf,p);

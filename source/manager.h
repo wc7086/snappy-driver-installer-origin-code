@@ -152,8 +152,6 @@ public:
     void drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2);
     void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
     void contextmenu(int x,int y);
-
-    friend class Manager; // TODO: friend
 };
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
@@ -207,7 +205,6 @@ public:
     static unsigned int __stdcall thread_install(void *arg);
     void getINFpath(int wp);
 
-    friend class itembar_t; // TODO: friend
     friend int _7z_setcomplited(long long i); // TODO: friend
 };
 

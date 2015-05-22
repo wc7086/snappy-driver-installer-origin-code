@@ -128,6 +128,7 @@ public:
     int getStatus(){return status;}
     int getAltsectscore(){return altsectscore;}
     void setAltsectscore(int val){altsectscore=val;}
+    void markDup(){status|=STATUS_DUP;}
 
     Hwidmatch(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,Devicematch *devicematch);
     Hwidmatch(Driverpack *drp1,int HWID_index1);
@@ -172,6 +173,5 @@ public:
     char *getdrp_drvHWID();
 // <<< GETTERS
 
-    friend class Matcher; // TODO: friend
     friend class itembar_t; // TODO: friend
 };

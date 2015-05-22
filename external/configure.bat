@@ -239,6 +239,17 @@ bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS%
 popd
 :skipinstallboost
 
+rem Rebuild libtorrent
+goto skiprebuild
+:installtorrent
+rd /S /Q "%GCC_PATH%\include\libtorrent" 2>nul
+rd /S /Q "%GCC64_PATH%\include\libtorrent" 2>nul
+rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul)
+rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul)
+del "%GCC_PATH%\lib\libtorrent.a" 2>nul)
+del "%GCC64_PATH%\lib\libtorrent.a" 2>nul)
+:skiprebuild
+
 rem Copy libtorrent headers
 if /I exist "%GCC_PATH%\include\libtorrent" (echo Skipping copying headers for libtorrent & goto skipcopylibtorrentinc)
 call :ColorText 9F "Copying libtorrent headers"&echo.
@@ -246,20 +257,15 @@ xcopy %LIBTORRENT_PATH%\include %GCC_PATH%\include /E /I /Y > nul
 xcopy %LIBTORRENT_PATH%\include %GCC64_PATH%\include /E /I /Y >nul
 :skipcopylibtorrentinc
 
-rem Rebuild libtorrent
-:installtorrent
-if /I "%menu%"=="T" (rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul)
-if /I "%menu%"=="T" (rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul)
-if /I "%menu%"=="T" (del "%GCC_PATH%\lib\libtorrent.a" 2>nul)
-if /I "%menu%"=="T" (del "%GCC64_PATH%\lib\libtorrent.a" 2>nul)
-
 rem Build libtorrent.a (32-bit)
 if /I exist "%GCC_PATH%\lib\libtorrent.a" (echo Skipping building libtorrent[32-bit] & goto skipbuildlibtorrent)
 call :ColorText 9F "Building libtorrent32"&echo.
 copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 pushd "%LIBTORRENT_PATH%\examples"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=off "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\excpt-hndl-off\libtorrent.a %GCC_PATH%\lib /Y
+copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%\lib\libtorrent_dbg.a /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1\myrls\excpt-hndl-off\libboost_system-mgw48-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system32.a /Y
 popd
 :skipbuildlibtorrent
@@ -272,7 +278,9 @@ set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=off "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-4.9.2\myrls\adrs-mdl-64\excpt-hndl-off\libtorrent.a  %GCC64_PATH%\lib /Y
+copy ..\bin\gcc-mngw-4.9.2\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib\libtorrent_dbg.a /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2\myrls\excpt-hndl-off\libboost_system-mgw49-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system64.a /Y
 set path=%oldpath%
 popd

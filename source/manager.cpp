@@ -708,7 +708,8 @@ int itembar_t::box_status()
 
         case SLOT_DOWNLOAD:
         case SLOT_NOUPDATES:
-            return manager_g->items_list.size()>RES_SLOTS?BOX_NOUPDATES:BOX_DRVITEM_IF;
+            return BOX_NOUPDATES;
+            //return manager_g->items_list.size()>RES_SLOTS?BOX_NOUPDATES:BOX_DRVITEM_IF;
 
         case SLOT_RESTORE_POINT:
             switch(install_status)
