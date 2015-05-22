@@ -204,13 +204,14 @@ public:
     void itembar_setactive(int i,int val);
     void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
     void contextmenu(int x,int y);
+    const wchar_t *getHWIDby(int id);
     static unsigned int __stdcall thread_install(void *arg);
+    void getINFpath(int wp);
 
     friend class Driverpack; // TODO: friend
     friend class bundle_t; // TODO: friend
     friend class itembar_t; // TODO: friend
     friend int _7z_setcomplited(long long i); // TODO: friend
-    friend LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam); // TODO: friend
 };
 
 // Global vars

@@ -492,6 +492,23 @@ void Panel::moveWindow(HWND hwnd,int i,int j,int f)
     MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
 }
 
+void Panel::click(int i)
+{
+    if(items[i].type==TYPE_CHECKBOX||TYPE_BUTTON)
+    {
+        flipChecked(i);
+        if(items[i].action_id==ID_EXPERT_MODE)
+        {
+            expertmode=isChecked(i);
+            ShowWindow(GetConsoleWindow(),expertmode&&ctrl_down?SW_SHOWNOACTIVATE:hideconsole);
+        }
+        else
+            PostMessage(hMain,WM_COMMAND,items[i].action_id+(BN_CLICKED<<16),0);
+
+        InvalidateRect(hMain,nullptr,TRUE);
+    }
+}
+
 static void TextOutH(HDC hdc,int x,int y,LPCTSTR buf){TextOut(hdc,x,y,buf,wcslen(buf));}
 void Panel::draw(HDC hdc)
 {
