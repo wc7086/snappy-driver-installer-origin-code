@@ -413,9 +413,9 @@ void vault_startmonitors()
     wchar_t buf[BUFLEN];
 
     wsprintf(buf,L"%s\\langs",data_dir);
-    mon_lang=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
+    mon_lang=Filemon::start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
     wsprintf(buf,L"%s\\themes",data_dir);
-    mon_theme=monitor_start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
+    mon_theme=Filemon::start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
 }
 
 void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)

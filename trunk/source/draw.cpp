@@ -543,21 +543,21 @@ void Panel::draw(HDC hdc)
         // System Info (2nd line)
         if(i==2&&index==0)
         {
-            wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->architecture?64:32);
+            wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->windir));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getWindir()));
         }
 
         // System Info (3rd line)
         if(i==3&&index==0)
         {
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,(XP()<10+SYSINFO_COL1)?state->getProduct():state->platform.szCSDVersion);
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
             wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->temp));
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getTemp()));
         }
         if(items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;
         switch(items[i].type)

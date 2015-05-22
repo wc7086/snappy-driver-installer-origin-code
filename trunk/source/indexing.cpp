@@ -1131,21 +1131,13 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
         {
             if(!data.drp){exit=1;break;}
 
-            {
-                wchar_t bufw1[BUFLEN];
-                wchar_t bufw2[BUFLEN];
-                if(!drp_count)drp_count=1;
-                wsprintf(bufw1,L"Indexing %d/%d",drp_cur,drp_count);
-                wsprintf(bufw2,L"%s\\%s",data.drp->getPath(),data.drp->getFilename());
-                manager_g->items_list[SLOT_INDEXING].isactive=1;
-                manager_g->items_list[SLOT_INDEXING].val1=drp_cur;
-                manager_g->items_list[SLOT_INDEXING].val2=drp_count;
-                manager_g->itembar_settext(SLOT_INDEXING,bufw2,(drp_cur)*1000/drp_count);
-                manager_g->setpos();
-                drp_cur++;
-            }
+            wchar_t bufw2[BUFLEN];
+            if(!drp_count)drp_count=1;
+            wsprintf(bufw2,L"%s\\%s",data.drp->getPath(),data.drp->getFilename());
+            manager_g->itembar_settext(SLOT_INDEXING,1,bufw2,drp_cur,drp_count,(drp_cur)*1000/drp_count);
+            drp_cur++;
 
-            log_con("Str %ws\n",data.drp->getFilename());
+            //log_con("Str %ws\n",data.drp->getFilename());
             //t.inffile[0]=1;
             //do
             exit1=0;
@@ -1164,7 +1156,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
                     t.drp->texta.shrink();
                     free(t.adr);
                     last=GetTickCount();
-                    log_con("Trm %ws\n",data.drp->getFilename());
+                    //log_con("Trm %ws\n",data.drp->getFilename());
                     delete data.drp->objs;
                     exit1=1;
                     break;
@@ -1182,7 +1174,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
             }
             //while(*t.inffile&&!exit);
             //delete data.drp->objs;
-            log_con("Fin %ws\n",data.drp->getFilename());
+            //log_con("Fin %ws\n",data.drp->getFilename());
         }
     }
     log_con("Starved for %ld\n",tm);

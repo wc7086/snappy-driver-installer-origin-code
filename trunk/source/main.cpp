@@ -412,7 +412,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 #endif
 
 // Start folder monitors
-    Filemon *mon_drp=monitor_start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
+    Filemon *mon_drp=Filemon::start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
     virusmonitor_start();
     viruscheck(L"",0,0);
 
@@ -484,7 +484,7 @@ unsigned int __stdcall bundle_t::thread_loadindexes(void *arg)
     bundle_t *bundle=(bundle_t *)arg;
     Collection *collection=&bundle->collection;
 
-    if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
+    //if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
     collection->updatedir();
     return 0;
 }

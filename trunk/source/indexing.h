@@ -260,6 +260,8 @@ public:
     wchar_t *getFilename(){return texta.getw(drpfilename);}
     int getType(){return type;}
     int setType(int val){return type=val;}
+    int find(int key,int *isFound){return indexesold.find(key,isFound);}
+    int findnext(int *isFound){return indexesold.findnext(isFound);}
 
     //Driverpack(const Driverpack&)=delete;
     Driverpack &operator=(const Driverpack&)=delete;
@@ -282,9 +284,8 @@ public:
     void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
+    friend class Hwidmatch;
     friend class Driver; // TODO: friend
-    friend class Hwidmatch; // TODO: friend
-    friend class Matcher; // TODO: friend
 };
 
 // Misc

@@ -146,13 +146,10 @@ next
 */
 void Hashtable::additem(int key,int value)
 {
-    Hashitem *cur;
-    int curi;
+    int curi=gethashcode((char *)&key,sizeof(int))%size;
+    Hashitem *cur=&items[curi];
+
     int previ=-1;
-
-    curi=gethashcode((char *)&key,sizeof(int))%size;
-    cur=&items[curi];
-
     if(cur->next!=0)
     do
     {
@@ -176,16 +173,14 @@ void Hashtable::additem(int key,int value)
 
 int Hashtable::find(int key,int *isfound)
 {
-    Hashitem *cur;
-    int curi;
-
     if(!size)
     {
         *isfound=0;
         return 0;
     }
-    curi=gethashcode((char *)&key,sizeof(int))%size;
-    cur=&items[curi];
+
+    int curi=gethashcode((char *)&key,sizeof(int))%size;
+    Hashitem *cur=&items[curi];
 
     if(cur->next<0)
     {

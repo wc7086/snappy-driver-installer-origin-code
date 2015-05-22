@@ -68,18 +68,19 @@ class Matcher
     std::vector<Hwidmatch> hwidmatch_list;
 
 private:
-    void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
     void sort();
 
 public:
+    void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
     void init(State *state1,Collection *col1){state=state1;col=col1;}
     void populate();
     void print();
 
     wchar_t *finddrp(wchar_t *s){return col->finddrp(s);}
     State *getState(){return state;}
+    std::vector<Hwidmatch> *getHwidmatch_list(){return &hwidmatch_list;}
 
-    friend class Manager;
+    friend class Manager; // TODO: friend
 };
 
 // Devicematch holds info about device and a list of alternative drivers
@@ -94,7 +95,7 @@ public:
     Driver *driver;
 
 public:
-    Devicematch(Device *cur_device,Driver *cur_driver,int items);
+    Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher);
     int isMissing(State *state);
     int getStatus(){return status;}
 
@@ -109,7 +110,7 @@ class Hwidmatch
     int HWID_index;
 
     Devicematch *devicematch;
-//public:
+
     int identifierscore,decorscore,markerscore,altsectscore,status;
     unsigned score;
 
@@ -125,6 +126,8 @@ public:
     int getHWID_index(){return HWID_index;}
     void setStatus(int status1){status=status1;}
     int getStatus(){return status;}
+    int getAltsectscore(){return altsectscore;}
+    void setAltsectscore(int val){altsectscore=val;}
 
     Hwidmatch(Driverpack *drp,int HWID_index,int dev_pos,int ishw,State *state,Devicematch *devicematch);
     Hwidmatch(Driverpack *drp1,int HWID_index1);
@@ -169,7 +172,6 @@ public:
     char *getdrp_drvHWID();
 // <<< GETTERS
 
-    friend class Manager; // TODO: friend
     friend class Matcher; // TODO: friend
     friend class itembar_t; // TODO: friend
 };

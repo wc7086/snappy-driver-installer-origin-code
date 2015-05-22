@@ -79,7 +79,6 @@ void virusmonitor_stop();
 // FileMonitor
 class Filemon;
 typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
-Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
 class Filemon
 {
 	OVERLAPPED ol;
@@ -97,7 +96,7 @@ private:
     int  refresh();
 
 public:
-    friend Filemon *monitor_start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
+    static Filemon *start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
     void stop();
 };
 

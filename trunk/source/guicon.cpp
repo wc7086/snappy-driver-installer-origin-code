@@ -377,7 +377,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
 
 void virusmonitor_start()
 {
-    mon_vir=monitor_start(L"\\",FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,0,viruscheck);
+    mon_vir=Filemon::start(L"\\",FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,0,viruscheck);
 }
 
 void virusmonitor_stop()
@@ -387,7 +387,7 @@ void virusmonitor_stop()
 //}
 
 //{ FileMonitor
-Filemon *monitor_start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
+Filemon *Filemon::start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
 {
 	Filemon *pMonitor = static_cast<Filemon*>(HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor)));
 

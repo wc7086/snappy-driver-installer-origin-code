@@ -320,12 +320,12 @@ void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int 
     for(auto &drp:*col->getList())
     {
         int isfound;
-        int val=drp.indexesold.find(code,&isfound);
+        int val=drp.find(code,&isfound);
         while(isfound)
         {
             hwidmatch_list.push_back(Hwidmatch(&drp,val,dev_pos,ishw,state,devicematch));
             devicematch->num_matches++;
-            val=drp.indexesold.findnext(&isfound);
+            val=drp.findnext(&isfound);
         }
     }
 }
@@ -377,45 +377,10 @@ void Matcher::populate()
     isLaptop=state->isLaptop;
     //wcscpy(marker,state->marker);
 
-    for(auto &cur_device:state->Devices_list)
+    for(auto &cur_device:*state->getDevices_list())
     {
-        Driver *cur_driver=(cur_device.driver_index>=0)?&state->Drivers_list[cur_device.driver_index]:nullptr;
-        devicematch_list.push_back(Devicematch(&cur_device,cur_driver,hwidmatch_list.size()));
-        Devicematch *devicematch=&devicematch_list.back();
-        if(cur_device.HardwareID)
-        {
-            wchar_t *p=state->textas.getw(cur_device.HardwareID);
-            int dev_pos=0;
-            while(*p)
-            {
-                findHWIDs(devicematch,p,dev_pos,1);
-                p+=lstrlen(p)+1;
-                dev_pos++;
-            }
-        }
-
-        if(cur_device.CompatibleIDs)
-        {
-            wchar_t *p=state->textas.getw(cur_device.CompatibleIDs);
-            int dev_pos=0;
-            while(*p)
-            {
-                findHWIDs(devicematch,p,dev_pos,0);
-                p+=lstrlen(p)+1;
-                dev_pos++;
-            }
-        }
-        if(devicematch->num_matches==0)
-        {
-            hwidmatch_list.push_back(Hwidmatch(nullptr,0));
-
-            if(devicematch->isMissing(state))
-                devicematch->status=STATUS_NF_MISSING;
-            else if(devicematch->driver&&StrStrIW(state->textas.getw(devicematch->driver->InfPath),L"oem"))
-                devicematch->status=STATUS_NF_UNKNOWN;
-            else
-                devicematch->status=STATUS_NF_STANDARD;
-        }
+        Driver *cur_driver=state->getCurrentDriver(&cur_device);
+        devicematch_list.push_back(Devicematch(&cur_device,cur_driver,hwidmatch_list.size(),this));
     }
     sort();
     devicematch_list.shrink_to_fit();
@@ -455,19 +420,55 @@ void Matcher::print()
 //}
 
 //{ Devicematch
-Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items)
+Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher)
 {
     device=cur_device;
     driver=cur_driver;
     start_matches=items;
     num_matches=0;
+    State *state=matcher->getState();
+
+    if(device->HardwareID)
+    {
+        wchar_t *p=state->textas.getw(device->HardwareID);
+        int dev_pos=0;
+        while(*p)
+        {
+            matcher->findHWIDs(this,p,dev_pos,1);
+            p+=lstrlen(p)+1;
+            dev_pos++;
+        }
+    }
+
+    if(device->CompatibleIDs)
+    {
+        wchar_t *p=state->textas.getw(device->CompatibleIDs);
+        int dev_pos=0;
+        while(*p)
+        {
+            matcher->findHWIDs(this,p,dev_pos,0);
+            p+=lstrlen(p)+1;
+            dev_pos++;
+        }
+    }
+    if(num_matches==0)
+    {
+        matcher->getHwidmatch_list()->push_back(Hwidmatch(nullptr,0));
+
+        if(isMissing(state))
+            status=STATUS_NF_MISSING;
+        else if(driver&&StrStrIW(state->textas.getw(driver->getInfPath()),L"oem"))
+            status=STATUS_NF_UNKNOWN;
+        else
+            status=STATUS_NF_STANDARD;
+    }
 }
 
 int Devicematch::isMissing(State *state)
 {
     if(device->getProblem()==CM_PROB_DISABLED)return 0;
     if(device->getProblem()&&device->getHardwareID())return 1;
-    if(driver&&!StrCmpIW(state->textas.getw(driver->MatchingDeviceId),L"PCI\\CC_0300"))return 1;
+    if(driver&&!StrCmpIW(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
     return 0;
 }
 //}
@@ -584,7 +585,7 @@ int Hwidmatch::calc_status(State *state)
     {
         if(getdrp_drvversion())
         {
-            int res=cmpdate(&devicematch->driver->version,getdrp_drvversion());
+            int res=cmpdate(devicematch->driver->getVersion(),getdrp_drvversion());
             if(res<0)r+=STATUS_NEW;else
             if(res>0)r+=STATUS_OLD;else
                 r+=STATUS_CURRENT;
