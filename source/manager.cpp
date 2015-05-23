@@ -39,13 +39,13 @@ void Manager::init(Matcher *matchera)
         items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
 }
 
-void Manager::sorta(Matcher *m,int *v)
+void Matcher::sorta(int *v)
 {
     Devicematch *devicematch_i,*devicematch_j;
     Hwidmatch *hwidmatch_i,*hwidmatch_j;
     int i,j,num;
 
-    num=m->devicematch_list.size();
+    num=devicematch_list.size();
 
     for(i=0;i<num;i++)v[i]=i;
 
@@ -53,12 +53,12 @@ void Manager::sorta(Matcher *m,int *v)
     {
         for(j=i+1;j<num;j++)
         {
-            devicematch_i=&m->devicematch_list[v[i]];
-            devicematch_j=&m->devicematch_list[v[j]];
-            hwidmatch_i=(devicematch_i->num_matches)?&m->hwidmatch_list[devicematch_i->start_matches]:nullptr;
-            hwidmatch_j=(devicematch_j->num_matches)?&m->hwidmatch_list[devicematch_j->start_matches]:nullptr;
-            int ismi=devicematch_i->isMissing(m->state);
-            int ismj=devicematch_j->isMissing(m->state);
+            devicematch_i=&devicematch_list[v[i]];
+            devicematch_j=&devicematch_list[v[j]];
+            hwidmatch_i=(devicematch_i->num_matches)?&hwidmatch_list[devicematch_i->start_matches]:nullptr;
+            hwidmatch_j=(devicematch_j->num_matches)?&hwidmatch_list[devicematch_j->start_matches]:nullptr;
+            int ismi=devicematch_i->isMissing(state);
+            int ismj=devicematch_j->isMissing(state);
 
             if(ismi<ismj)
             {
@@ -105,13 +105,13 @@ int  Manager::manager_drplive(wchar_t *s)
 void Manager::populate()
 {
     int remap[1024];
-    sorta(matcher,remap);
+    matcher->sorta(remap);
     items_list.resize(RES_SLOTS);
 
-    for(unsigned i=0;i<matcher->devicematch_list.size();i++)
+    for(unsigned i=0;i<matcher->getDwidmatch_list()->size();i++)
     {
-        Devicematch *devicematch=&matcher->devicematch_list[remap[i]];
-        Hwidmatch *hwidmatch=&matcher->hwidmatch_list[devicematch->start_matches];
+        Devicematch *devicematch=matcher->getDevicematch_i(remap[i]);
+        Hwidmatch *hwidmatch=matcher->getHwidmatch_i(devicematch->start_matches);
 
         for(unsigned j=0;j<devicematch->num_matches;j++,hwidmatch++)
         {
@@ -192,7 +192,7 @@ void Manager::filter(int options)
                     cnt[NUM_STATUS]++;
             }
 
-            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->getAltsectscore()==2&&!itembar->hwidmatch->isvalidcat(matcher->state))
+            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->getAltsectscore()==2&&!itembar->hwidmatch->isvalidcat(matcher->getState()))
                 itembar->hwidmatch->setAltsectscore(1);
 
             for(k=0;k<NUM_STATUS;k++)
@@ -259,7 +259,7 @@ void Manager::filter(int options)
 
     items_list[SLOT_NOUPDATES].isactive=
         items_list.size()==RES_SLOTS||
-        (i==0&&statemode==0&&matcher->col->size()>1)?1:0;
+        (i==0&&statemode==0&&matcher->getCol()->size()>1)?1:0;
 
     items_list[SLOT_RESTORE_POINT].isactive=statemode==
         STATEMODE_EMUL||i==0||(flags&FLAG_NORESTOREPOINT)?0:1;
@@ -290,7 +290,7 @@ void Manager::print_tbl()
             if(itembar->hwidmatch)
                 itembar->hwidmatch->print_tbl(limits);
             else
-                log_file("'%S'\n",matcher->state->textas.get(itembar->devicematch->device->Devicedesc));
+                log_file("'%S'\n",matcher->getState()->textas.get(itembar->devicematch->device->Devicedesc));
             act++;
         }else
         {
@@ -309,19 +309,19 @@ void Manager::print_hr()
     for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
-            if(flags&FLAG_FILTERSP&&!itembar->hwidmatch->isvalidcat(matcher->state))continue;
+            if(flags&FLAG_FILTERSP&&!itembar->hwidmatch->isvalidcat(matcher->getState()))continue;
             wchar_t buf[BUFLEN];
             itembar->str_status(buf);
             log_file("\n$%04d, %S\n",k,buf);
             if(itembar->devicematch->device)
             {
-                itembar->devicematch->device->print(matcher->state);
+                itembar->devicematch->device->print(matcher->getState());
                 //device_printHWIDS(itembar->devicematch->device,matcher->state);
             }
             if(itembar->devicematch->driver)
             {
                 log_file("Installed driver\n");
-                itembar->devicematch->driver->print(matcher->state);
+                itembar->devicematch->driver->print(matcher->getState());
             }
 
             if(itembar->hwidmatch)
@@ -1054,7 +1054,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_NODRIVERS:
-            itembar->drawbutton(hdc,x,pos,STR(STR_EMPTYDRP),matcher->col->getDriverpack_dir());
+            itembar->drawbutton(hdc,x,pos,STR(STR_EMPTYDRP),matcher->getCol()->getDriverpack_dir());
             break;
 
         case SLOT_NOUPDATES:
@@ -1174,7 +1174,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 
                 if(flags&FLAG_SHOWDRPNAMES1)
                 {
-                    int len=wcslen(matcher->col->getDriverpack_dir());
+                    int len=wcslen(matcher->getCol()->getDriverpack_dir());
                     int lnn=len-wcslen(itembar->hwidmatch->getdrp_packpath());
 
                     SetTextColor(hdc,0);// todo: color
@@ -1190,7 +1190,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 // Device desc
                 if(itembar->devicematch)
                 {
-                    wsprintf(bufw,L"%ws",matcher->state->textas.get(itembar->devicematch->device->Devicedesc));
+                    wsprintf(bufw,L"%ws",matcher->getState()->textas.get(itembar->devicematch->device->Devicedesc));
                     SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
                     RECT rect;
                     int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
@@ -1408,8 +1408,8 @@ void Manager::restorepos(Manager *manager_old)
     if((log_verbose&LOG_VERBOSE_DEVSYNC)==0)show_changes=0;
     //show_changes=1;
 
-    t_old=manager_old->matcher->state->textas.getw(0);
-    t_new=matcher->state->textas.getw(0);
+    t_old=manager_old->matcher->getState()->textas.getw(0);
+    t_new=matcher->getState()->textas.getw(0);
 
     if(manager_old->items_list[SLOT_EMPTY].curpos==1)
     {
@@ -1474,7 +1474,7 @@ void Manager::restorepos(Manager *manager_old)
                 itembar_new->hwidmatch->print_tbl(limits);
             }
             else
-                itembar_new->devicematch->device->print(matcher->state);
+                itembar_new->devicematch->device->print(matcher->getState());
         }
     }
 
@@ -1494,7 +1494,7 @@ void Manager::restorepos(Manager *manager_old)
                 itembar_old->hwidmatch->print_tbl(limits);
             }
             else
-                itembar_old->devicematch->device->print(manager_old->matcher->state);
+                itembar_old->devicematch->device->print(manager_old->matcher->getState());
 
         }
     }

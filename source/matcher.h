@@ -75,12 +75,15 @@ public:
     void init(State *state1,Collection *col1){state=state1;col=col1;}
     void populate();
     void print();
+    void sorta(int *v);
 
     wchar_t *finddrp(wchar_t *s){return col->finddrp(s);}
     State *getState(){return state;}
+    Collection *getCol(){return col;}
+    std::vector<Devicematch> *getDwidmatch_list(){return &devicematch_list;}
+    Devicematch *getDevicematch_i(int i){return &devicematch_list[i];}
     std::vector<Hwidmatch> *getHwidmatch_list(){return &hwidmatch_list;}
-
-    friend class Manager; // TODO: friend
+    Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
 };
 
 // Devicematch holds info about device and a list of alternative drivers
