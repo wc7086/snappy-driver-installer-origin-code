@@ -170,7 +170,6 @@ public:
     void filter(int options);
     void print_tbl();
     void print_hr();
-    void sorta(Matcher *m,int *v);
 
 // User interaction
     void hitscan(int x,int y, int *i,int *zone);

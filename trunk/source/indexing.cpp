@@ -1158,7 +1158,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
                 {
                     t.drp->genhashes();
                     t.drp->texta.shrink();
-                    free(t.adr);
+                    //free(t.adr);
                     last=GetTickCount();
                     //log_con("Trm %ws\n",data.drp->getFilename());
                     delete data.drp->objs;

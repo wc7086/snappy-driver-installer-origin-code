@@ -153,12 +153,12 @@ class data_HWID_t // 12
 
 public:
     //data_HWID_t(){}
+    ofst getHWID(){return HWID;}
     data_HWID_t():desc_index(0),inf_pos(0),HWID(0){}
     data_HWID_t(unsigned desc_indexv,int inf_posv,ofst HWIDv):desc_index(desc_indexv),inf_pos(inf_posv),HWID(HWIDv){}
 
     friend class Driverpack;
     friend class Hwidmatch;
-    friend class Driver; // TODO: friend
 };
 
 // Parser
@@ -261,6 +261,7 @@ public:
     wchar_t *getPath(){return texta.getw(drppath);}
     wchar_t *getFilename(){return texta.getw(drpfilename);}
     int getType(){return type;}
+    int getSize(){return HWID_list.size();}
     int setType(int val){return type=val;}
     int find(int key,int *isFound){return indexesold.find(key,isFound);}
     int findnext(int *isFound){return indexesold.findnext(isFound);}
@@ -281,13 +282,13 @@ public:
     int printstats();
     static unsigned int __stdcall thread_indexinf(void *arg);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
+    void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,int *cat,int *catalogfile,int *feature);
     static unsigned int __stdcall loaddrp_thread(void *arg);
     static unsigned int __stdcall savedrp_thread(void *arg);
     void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
     friend class Hwidmatch;
-    friend class Driver; // TODO: friend
 };
 
 // Misc

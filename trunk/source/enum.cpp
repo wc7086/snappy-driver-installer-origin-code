@@ -286,13 +286,36 @@ void Driver::read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val)
     }
 }
 
+void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,int *cat,int *catalogfile,int *feature)
+{
+    *inf_pos=-1;
+    for(unsigned HWID_index=start_index;HWID_index<HWID_list.size();HWID_index++)
+    {
+        if(!StrCmpIA(texta.get(HWID_list[HWID_index].getHWID()),hwid))
+        {
+            Hwidmatch hwidmatch(this,HWID_index);
+            if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
+            {
+                *feature=hwidmatch.getdrp_drvfeature();
+                //if(got==inf_list->end())
+                *catalogfile=hwidmatch.calc_catalogfile();
+                if(*inf_pos<0||*inf_pos>hwidmatch.getdrp_drvinfpos())*inf_pos=hwidmatch.getdrp_drvinfpos();
+            }
+        }
+    }
+    if(*inf_pos==-1)
+    {
+        *inf_pos=0;
+        *cat=0;
+        *feature=0xFF;
+        log_err("ERROR: sect not found '%s'\n",sect);
+    }
+}
+
 void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 {
-    wchar_t filename[BUFLEN];
-    wchar_t fnm_hwid[BUFLEN];
     auto inf_list=&state->inf_list_new;
-
-    unsigned HWID_index,start_index=0;
+    unsigned start_index=0;
 
     if(flags&FLAG_FAILSAFE)
     {
@@ -300,8 +323,11 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         return;
     }
 
+    wchar_t filename[BUFLEN];
+    wchar_t fnm_hwid[BUFLEN];
     wsprintf(filename,L"%s%s",state->textas.get(state->getWindir()),state->textas.get(InfPath));
     wsprintf(fnm_hwid,L"%s%s",filename,state->textas.get(MatchingDeviceId));
+
     auto got=inf_list->find(std::wstring(fnm_hwid));
     if(got!=inf_list->end())
     {
@@ -345,7 +371,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 
         if(len>0)
         {
-            start_index=unpacked_drp->HWID_list.size();
+            start_index=unpacked_drp->getSize();
             unpacked_drp->indexinf(state->textas.getw(state->getWindir()),state->textas.getw(InfPath),buft.get(),len);
         }
 
@@ -357,27 +383,9 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     inf_pos=-1;
     wsprintfA(sect,"%ws%ws",state->textas.get(InfSection),state->textas.get(InfSectionExt));
     wsprintfA(hwid,"%ws",state->textas.get(MatchingDeviceId));
-    for(HWID_index=start_index;HWID_index<unpacked_drp->HWID_list.size();HWID_index++)
-    if(!StrCmpIA(unpacked_drp->texta.get(unpacked_drp->HWID_list[HWID_index].HWID),hwid))
-    {
-        Hwidmatch hwidmatch(unpacked_drp,HWID_index);
-        if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
-        {
-            feature=hwidmatch.getdrp_drvfeature();
-            if(got==inf_list->end())catalogfile=hwidmatch.calc_catalogfile();
-            if(inf_pos<0||inf_pos>hwidmatch.getdrp_drvinfpos())inf_pos=hwidmatch.getdrp_drvinfpos();
-        }
-    }
-    if(inf_pos==-1)
-    {
-        inf_pos=0;
-        cat=0;
-        feature=0xFF;
-        log_err("ERROR: sect not found '%s'\n",sect);
-    }
+    unpacked_drp->fillinfo(sect,hwid,start_index,&inf_pos,&cat,&catalogfile,&feature);
 
     //log_file("Added  %d,%d,%d,%d\n",feature,catalogfile,cat,inf_pos);
-
     inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,inf_pos,cat,start_index)});
     inf_list->insert({std::wstring(filename),infdata_t(catalogfile,0,0,cat,start_index)});
 }
