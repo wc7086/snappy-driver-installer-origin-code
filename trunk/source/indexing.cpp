@@ -411,10 +411,8 @@ void Parser::readStr(char **vb,char **ve)
     *ve=strEnd;
 }
 
-Parser::Parser(sect_data_t *lnk,Driverpack *drpv,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf)
+Parser::Parser(Driverpack *drpv,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf)
 {
-    blockBeg=lnk->blockbeg;
-    blockEnd=lnk->blockend;
     pack=drpv;
     string_list=&string_listv;
     inffile=inf;
@@ -425,6 +423,12 @@ Parser::Parser(char *vb,char *ve)
     strBeg=vb;
     strEnd=ve;
     pack=nullptr;
+}
+
+void Parser::setRange(sect_data_t *lnk)
+{
+    blockBeg=lnk->blockbeg;
+    blockEnd=lnk->blockend;
 }
 //}
 
@@ -1423,6 +1427,9 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     wcscpy(inffull,drpdir);
     wcscat(inffull,inffilename);
 
+    Parser parse_info{this,string_list,inffull};
+    Parser parse_info2{this,string_list,inffull};
+    Parser parse_info3{this,string_list,inffull};
     //log_con("%S%S\n",drpdir,inffilename);
 
     // Populate sections
@@ -1491,7 +1498,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         sect_data_t *lnk=&got->second;
         char *s1b,*s1e,*s2b,*s2e;
 
-        Parser parse_info{lnk,this,string_list,inffull};
+        parse_info.setRange(lnk);
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
@@ -1518,7 +1525,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         sect_data_t *lnk=&got->second;
         char *s1b,*s1e;
 
-        Parser parse_info{lnk,this,string_list,inffull};
+        parse_info.setRange(lnk);
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
@@ -1572,7 +1579,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
-        Parser parse_info{lnk,this,string_list,inffull};
+        parse_info.setRange(lnk);
         while(parse_info.parseItem())
         {
             char *s1b,*s1e;
@@ -1606,7 +1613,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     for(auto got2=range2.first;got2!=range2.second;++got2)
                     {
                         sect_data_t *lnk2=&got2->second;
-                        Parser parse_info2{lnk2,this,string_list,inffull};
+                        parse_info2.setRange(lnk2);
                         while(parse_info2.parseItem())
                         {
                             parse_info2.readStr(&s1b,&s1e);
@@ -1691,7 +1698,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             for(auto got3=range3.first;got3!=range3.second;++got3)
                             {
                                 lnk3=&got3->second;
-                                Parser parse_info3{lnk3,this,string_list,inffull};
+                                parse_info3.setRange(lnk3);
                                 if(!strcmp(secttry,installsection))
                                 {
                                     log_index("ERROR: [%s] refers to itself in %S\n",installsection,inffull);
