@@ -191,8 +191,10 @@ public:
 
     Parser(const Parser&)=delete;
     Parser &operator=(const Parser&)=delete;
-    Parser(sect_data_t *lnk,Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
+    Parser(Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
     Parser(char *vb,char *ve);
+    void setRange(sect_data_t *lnk);
+
 };
 
 // Collection
