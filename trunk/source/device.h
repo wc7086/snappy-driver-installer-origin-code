@@ -16,13 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifdef _WIN64
 #include <cfgmgr32.h>
-#include <cfg.h>
 #include <newdev.h>
-#define CR_SUCCESS (0x00000000)
-#define CR_NO_SUCH_DEVICE_INTERFACE (0x00000037)
-#define CR_NO_SUCH_VALUE (0x00000025)
-#define CR_NO_SUCH_DEVNODE (0x0000000D)
-#define CR_NO_SUCH_DEVINST CR_NO_SUCH_DEVNODE
 #else
 #include <ddk\cfgmgr32.h>
 #include <ddk\newdev.h>

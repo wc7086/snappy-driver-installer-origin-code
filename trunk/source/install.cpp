@@ -99,11 +99,6 @@ void _7z_total(long long i)
     ar_total=i;
 }
 
-#ifndef _WIN64
-#define S_OK    ((HRESULT)0x00000000L)
-#define E_ABORT ((HRESULT)0x80004004L)
-#endif
-
 int showpercent(int a)
 {
     switch(a)

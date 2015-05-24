@@ -129,6 +129,8 @@ public:
     int getHWID_index(){return HWID_index;}
     void setStatus(int status1){status=status1;}
     int getStatus(){return status;}
+    unsigned getScore(){return score;}
+    int getDecorscore(){return decorscore;}
     int getAltsectscore(){return altsectscore;}
     void setAltsectscore(int val){altsectscore=val;}
     void markDup(){status|=STATUS_DUP;}
@@ -175,6 +177,4 @@ public:
     short getdrp_drvinfpos();
     char *getdrp_drvHWID();
 // <<< GETTERS
-
-    friend class itembar_t; // TODO: friend
 };

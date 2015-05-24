@@ -35,11 +35,11 @@ public:
 typedef boost::lockfree::queue<frm> drplist_t;
 drplist_t queuedriverpack1(100);
 
-typedef struct _tbl_t
+struct tbl_t
 {
     const char *s;
     int sz;
-}tbl_t;
+};
 const tbl_t table_version[NUM_VER_NAMES]=
 {
     {"classguid",                  9},
@@ -1030,7 +1030,6 @@ void Driverpack::print_index_hr()
                 //if(text+manufacturer_list[manuf_index].manufacturer!=get_manufacturer(&hwidmatch))
                 //fprintf(f,"*%s\n",get_manufacturer(&hwidmatch));
                 //get_section(&hwidmatch,buf+500);
-                //if(strcmp(buf+1000,buf+500))
                 //fprintf(f,"*%s,%s\n",buf+1000,buf+500);
                         if(i>=0)cnts[i]++;
                         if(pos==0&&i<0)plain++;
@@ -1699,7 +1698,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             {
                                 lnk3=&got3->second;
                                 parse_info3.setRange(lnk3);
-                                if(!strcmp(secttry,installsection))
+                                if(!StrCmpA(secttry,installsection))
                                 {
                                     log_index("ERROR: [%s] refers to itself in %S\n",installsection,inffull);
                                     break;

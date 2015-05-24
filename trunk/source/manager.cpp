@@ -677,7 +677,7 @@ void itembar_t::str_status(wchar_t *buf)
             }
         }
         if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
-        if(hwidmatch->altsectscore<2/*&&manager_g->matcher->state->platform.dwMajorVersion>=6*/)
+        if(hwidmatch->getAltsectscore()<2/*&&manager_g->matcher->state->platform.dwMajorVersion>=6*/)
         {
             wcscat(buf,STR(STR_STATUS_NOTSIGNED));
         }
@@ -784,7 +784,7 @@ int itembar_t::box_status()
                 return BOX_DRVITEM_MS;
             else
             {
-                if(hwidmatch->altsectscore<2)return BOX_DRVITEM_WO;
+                if(hwidmatch->getAltsectscore()<2)return BOX_DRVITEM_WO;
 
                 if(status&STATUS_BETTER&&status&STATUS_NEW)        return BOX_DRVITEM_BN;
                 if(status&STATUS_SAME  &&status&STATUS_NEW)        return BOX_DRVITEM_SN;
@@ -1689,7 +1689,7 @@ int Hwidmatch::isvalidcat(State *state)
     state->getWinVer(&major,&minor);
     wsprintfA(bufa,"2:%d.%d",major,minor);
     if(!*s)return 0;
-    return strstr(s,bufa)?1:0;
+    return StrStrA(s,bufa)?1:0;
 }
 
 void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
@@ -1742,8 +1742,8 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         if(r<0)cm_date=2;
 
         score=cur_driver->calc_score_h(state);
-        if(score<hwidmatch_f->score)cm_score=1;
-        if(score>hwidmatch_f->score)cm_score=2;
+        if(score<hwidmatch_f->getScore())cm_score=1;
+        if(score>hwidmatch_f->getScore())cm_score=2;
 
         r=cmpversion(&cur_driver->version,a_v);
         if(r>0)cm_ver=1;
@@ -1852,8 +1852,8 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         TextOutF(&td,cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
         TextOutF(&td,cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
         TextOutF(&td,               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
-        TextOutF(&td,hwidmatch_f->decorscore?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
-        TextOutF(&td,cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->score);
+        TextOutF(&td,hwidmatch_f->getDecorscore()?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
+        TextOutF(&td,cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
     }
 
     if(!devicematch_f->device->HardwareID&&!hwidmatch_f)td.maxsz/=2;
@@ -1889,7 +1889,6 @@ void popup_about(HDC hdcMem)
     popup_resize(D(POPUP_WX),td.y+D(POPUP_OFSY));
 }
 
-#include <sstream>
 void format_size(wchar_t *buf,long long val,int isspeed)
 {
 #ifdef USE_TORRENT
