@@ -269,8 +269,7 @@ void Image::createBitmap(BYTE *data,int sz)
     bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,nullptr,0);
 
     BYTE *p2=big;
-    for(int i=0;i<sy;i++)
-    for(int j=0;j<sx;j++)
+    for(int i=0;i<sy*sx;i++)
     {
         BYTE B,G,R,A;
         B=*p2++;
@@ -280,20 +279,10 @@ void Image::createBitmap(BYTE *data,int sz)
         double dA=A/255.;
         if(A!=255)hasalpha=1;
 
-        if(rtl)
-        {
-            bits[(sx-j-1+i*sx)*4]=(BYTE)(B*dA);
-            bits[(sx-j-1+i*sx)*4+1]=(BYTE)(G*dA);
-            bits[(sx-j-1+i*sx)*4+2]=(BYTE)(R*dA);
-            bits[(sx-j-1+i*sx)*4+3]=A;
-        }else
-        {
-            *bits++=(BYTE)(B*dA);
-            *bits++=(BYTE)(G*dA);
-            *bits++=(BYTE)(R*dA);
-            *bits++=A;
-
-        }
+        *bits++=(BYTE)(B*dA);
+        *bits++=(BYTE)(G*dA);
+        *bits++=(BYTE)(R*dA);
+        *bits++=A;
     }
     SelectObject(ldc,bitmap);
     free(big);
@@ -406,6 +395,7 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
     SetStretchBltMode(hdcMem,HALFTONE);
     r32=SelectClipRgn(hdcMem,clipping);
     if(!r32)log_err("ERROR in canvas_begin(): failed SelectClipRgn\n");
+    if(rtl)SetLayout(hdcMem,LAYOUT_RTL);
 }
 
 void Canvas::end()
@@ -472,7 +462,11 @@ void Panel::draw_inv()
     rect.top=y;
     rect.right=x+XP();
     rect.bottom=y+(wy+1)*items[0].action_id+ofsy*2;
-    InvalidateRect(hMain,&rect,0);
+
+    if(rtl)
+        InvalidateRect(hMain,nullptr,0);
+    else
+        InvalidateRect(hMain,&rect,0);
 }
 
 int Panel::calcFilters()
@@ -516,7 +510,6 @@ void Panel::click(int i)
     }
 }
 
-static void TextOutH(HDC hdc,int x,int y,LPCTSTR buf){TextOut(hdc,x,y,buf,wcslen(buf));}
 void Panel::draw(HDC hdc)
 {
     wchar_t buf[BUFLEN];
@@ -539,7 +532,6 @@ void Panel::draw(HDC hdc)
     for(i=0;i<items[0].action_id+1;i++)
     {
         SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
-
         // System Info (1st line)
         if(i==1&&index==0)
         {
@@ -570,17 +562,15 @@ void Panel::draw(HDC hdc)
         switch(items[i].type)
         {
             case TYPE_CHECKBOX:
-                //SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 drawcheckbox(hdc,mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,i==cur_i);
                 SetTextColor(hdc,D(i==cur_i?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOut(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                TextOutH(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
                 if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
                 y+=D(PNLITEM_WY);
                 SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_BUTTON:
-                //SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
                     drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
                 else
@@ -591,17 +581,16 @@ void Panel::draw(HDC hdc)
                 if(i==1&&index==8) // Install button
                 {
                     wsprintf(buf,L"%s (%d)",STR(items[i].str_id),manager_g->countItems());
-                    TextOut(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf,wcslen(buf));
+                    TextOutH(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf);
                 }
                 else
-                    TextOut(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                    TextOutH(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id));
 
                 y+=D(PNLITEM_WY);
                 SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_TEXT:
-                //SetTextAlign(hdc,rtl?TA_RIGHT:TA_LEFT);
                 if(i==1&&index==7) // Revision number
                 {
                     version_t v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
@@ -614,12 +603,11 @@ void Panel::draw(HDC hdc)
                     v.str_date(buf+wcslen(buf));
                     wcscat(buf,L")");
                     SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
-                    TextOut(hdc,mirw(x,ofsx,XP()),y+ofsy,buf,wcslen(buf));
+                    TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,buf);
                 }
                 SetTextColor(hdc,D(i==cur_i&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOut(hdc,mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id),wcslen(STR(items[i].str_id)));
+                TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id));
                 y+=D(PNLITEM_WY);
-                SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_GROUP_BREAK:
@@ -646,24 +634,19 @@ void Panel::draw(HDC hdc)
 //}
 
 //{ Draw
-//int mir(int x){return rtl?(main1x_c-x):x;}
-//int mirc(int x){return 0?(mainx_c-x):x;}
 int mirw(int x,int ofs,int w)
 {
     UNREFERENCED_PARAMETER(w)
-    //if(rtl)return x+w-ofs;
     return x+ofs;
 }
-
+void TextOutH(HDC hdc,int x,int y,LPCTSTR buf)
+{
+    //if(rtl)SetLayout(hdc,LAYOUT_RTL);
+    TextOut(hdc,x,y,buf,wcslen(buf));
+}
 int Xm(int x,int o)
 {
     UNREFERENCED_PARAMETER(o)
-    /*int w=(main1x_c+o-x);
-    if(rtl&&o>=0&&x>=0)return mir(x)-o;
-    if(rtl&&o>=0&&x< 0)return mir(main1x_c+x)-o;
-    if(rtl&&o< 0&&x>=0)return mir(x)-w;
-    if(rtl&&o< 0&&x< 0)return mir(main1x_c+x)-w;*/
-
     return x>=0?x:(main1x_c+x);
 }
 int Ym(int y){return y>=0?y:(main1y_c+y);}
@@ -673,12 +656,6 @@ int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
 int Xg(int x,int o)
 {
     UNREFERENCED_PARAMETER(o)
-    //int w=(mainx_c+o-x);
-    //if(rtl&&o>=0&&x>=0)return mirc(x)-o;
-    //if(rtl&&o>=0&&x< 0)return mirc(mainx_c+x)-o;
-    //if(rtl&&o< 0&&x>=0)return mirc(x)-w;
-    //if(rtl&&o< 0&&x< 0)return mirc(mainx_c+x)-w;
-
     return x>=0?x:(mainx_c+x);
 }
 int Yg(int y){return y>=0?y:(mainy_c+y);}

@@ -128,9 +128,10 @@ public:
 };
 
 // Misc functions
-int mir(int x);
-int mirc(int x);
+//int mir(int x);
+//int mirc(int x);
 int mirw(int x,int ofs,int w);
+void TextOutH(HDC hdc,int x,int y,LPCTSTR buf);
 
 int Xm(int x,int o);
 int Ym(int y);

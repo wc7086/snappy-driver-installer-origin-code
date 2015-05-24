@@ -1005,9 +1005,9 @@ void itembar_t::drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar
 {
     pos+=D(ITEM_TEXT_OFS_Y);
     SetTextColor(hdc,D(boxindex[box_status()]+14));
-    TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1,wcslen(str1));
+    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1);
     SetTextColor(hdc,D(boxindex[box_status()]+15));
-    TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2,wcslen(str2));
+    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2);
 }
 
 int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
@@ -1085,19 +1085,19 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                          itembar->checked,zone>=0);
 
             wcscpy(bufw,STR(itembar->install_status));
-            TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw,wcslen(bufw));
+            TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw);
             break;
 
         case SLOT_INDEXING:
             wsprintf(bufw,L"%s (%d%s%d)",STR(itembar->isactive==2?STR_INDEXLZMA:STR_INDEXING),
                         items_list[SLOT_INDEXING].val1,STR(STR_OF),
                         items_list[SLOT_INDEXING].val2);
-            TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
+            TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);
 
             if(*itembar->txt1)
             {
                 wsprintf(bufw,L"%s",itembar->txt1);
-                TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
+                TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
             }
             break;
 
@@ -1116,21 +1116,21 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                     if(itembar->install_status)wsprintf(bufw,STR(itembar->install_status),itembar->percent);
 
                 SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
-                TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
+                TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);
                 if(itembar_act>=RES_SLOTS)
                 {
                     wsprintf(bufw,L"%S",items_list[itembar_act].hwidmatch->getdrp_drvdesc());
                     SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
-                    TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
+                    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
                 }
             }else
             {
                 wsprintf(bufw,L"%s",STR(itembar->install_status));
                 SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
-                TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
+                TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);
                 wsprintf(bufw,L"%s",STR(STR_INST_CLOSE));
                 SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
-                TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
+                TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
             }
             break;
 
@@ -1142,7 +1142,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             pos+=D(ITEM_TEXT_OFS_Y);
             wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
             SetTextColor(hdc,D(boxindex[itembar->box_status()]+14));
-            TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw,wcslen(bufw));
+            TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw);
             break;
 
         case SLOT_DOWNLOAD:
@@ -1188,12 +1188,12 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             {
                     /*wsprintf(bufw,L"%ws",matcher->state->text+itembar->devicematch->device->Devicedesc);
                     SetTextColor(hdc,D(boxindex[box_status(index)]+14));
-                    TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));*/
+                    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);*/
 
                     //str_status(bufw,itembar);
                     wsprintf(bufw,L"%ws",itembar->hwidmatch->getdrp_packname());
                     SetTextColor(hdc,D(boxindex[itembar->box_status()]+15));
-                    TextOut(hdc,x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_TEXT_DIST_Y)+5,bufw,wcslen(bufw));
+                    TextOutH(hdc,x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_TEXT_DIST_Y)+5,bufw);
                     break;
             }
             if(itembar->hwidmatch)
@@ -1215,7 +1215,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 rect.right=rect.left+wx1/2;
                 rect.bottom=rect.top+90;
                 if(oldstyle)
-                    TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
+                    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);
                 else
                     DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
 
@@ -1249,7 +1249,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 rect.right=rect.left+wx1/2;
                 rect.bottom=rect.top+90;
                 if(oldstyle)
-                    TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
+                    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
                 else
                     DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
 
@@ -1263,7 +1263,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                             itembar->hwidmatch->getdrp_packpath()+len+(lnn?1:0),
                             lnn?L"\\":L"",
                             itembar->hwidmatch->getdrp_packname());
-                    TextOut(hdc,x+wx-240,pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
+                    TextOutH(hdc,x+wx-240,pos+D(ITEM_TEXT_DIST_Y),bufw);
                 }
             }
             else
@@ -1280,7 +1280,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                     rect.right=rect.left+wx1/2;
                     rect.bottom=rect.top+90;
                     if(oldstyle)
-                        TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw,wcslen(bufw));
+                        TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);
                     else
                         DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
 
@@ -1291,7 +1291,7 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                     rect.right=rect.left+wx1/2;
                     rect.bottom=rect.top+90;
                     if(oldstyle)
-                        TextOut(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw,wcslen(bufw));
+                        TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
                     else
                         DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
                 }
@@ -1593,7 +1593,7 @@ void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,i
 
     if(!mode)return;
     SetTextColor(hdcMem,color);
-    TextOut(hdcMem,x,y,str,wcslen(str));
+    TextOutH(hdcMem,x,y,str);
     //SetTextColor(hdcMem,0);
 }
 
