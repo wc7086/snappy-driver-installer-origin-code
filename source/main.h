@@ -277,6 +277,15 @@ extern const wchar_t *windows_name[NUM_OS];
 extern int windows_ver[NUM_OS];
 //}
 
+// Settings
+void settings_parse(const wchar_t *str,int ind);
+void settings_save();
+int  settings_load(const wchar_t *filename);
+
+// Main
+//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
+void gui(int nCmd);
+
 //Bundle
 class Bundle
 {
@@ -300,34 +309,25 @@ public:
     void bundle_lowprioirity();
 };
 
-// Settings
-void settings_parse(const wchar_t *str,int ind);
-void settings_save();
-int  settings_load(const wchar_t *filename);
-
-// Main
-//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
-void gui(int nCmd);
-
 // Subroutes
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
 void lang_refresh();
 void theme_refresh();
 void snapshot();
 void extractto();
-void invaidate(int v);
 void selectDrpDir();
-
-// Misc
-void mkdir_r(const wchar_t *path);
-void get_resource(int id,void **data,int *size);
-void escapeAmpUrl(wchar_t *buf,wchar_t *source);
-void escapeAmp(wchar_t *buf,wchar_t *source);
+void invaidate(int v);
 
 // Scrollbar
 void setscrollrange(int y);
 int  getscrollpos();
 void setscrollpos(int pos);
+
+// Misc
+void get_resource(int id,void **data,int *size);
+void mkdir_r(const wchar_t *path);
+void escapeAmpUrl(wchar_t *buf,wchar_t *source);
+void escapeAmp(wchar_t *buf,wchar_t *source);
 
 // GUI Helpers
 HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);

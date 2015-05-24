@@ -115,13 +115,7 @@ const wchar_t *windows_name[NUM_OS]=
 int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 //}
 
-//{ Main
-void invaidate(int v)
-{
-    invaidate_set|=v;
-    SetEvent(deviceupdate_event);
-}
-
+//{ Settings
 void settings_parse(const wchar_t *str,int ind)
 {
     log_con("Args:[%S]\n",str);
@@ -280,16 +274,9 @@ int settings_load(const wchar_t *filename)
     settings_parse(buf,0);
     return 1;
 }
+//}
 
-void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(szFile);
-    UNREFERENCED_PARAMETER(action);
-    UNREFERENCED_PARAMETER(lParam);
-
-    if(StrStrIW(szFile,L".7z"))invaidate(INVALIDATE_INDEXES);
-}
-
+//{  Main
 int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 {
     UNREFERENCED_PARAMETER(hinst);
@@ -461,399 +448,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Exit
     return ret_global;
-}
-//}
-
-//{ Bundle
-unsigned int __stdcall Bundle::thread_scandevices(void *arg)
-{
-    State *state=(State *)arg;
-
-    if(statemode==STATEMODE_REAL)state->scanDevices();
-    if(statemode==STATEMODE_EMUL)state->load(state_file);
-
-    return 0;
-}
-
-unsigned int __stdcall Bundle::thread_loadindexes(void *arg)
-{
-    Collection *collection=(Collection *)arg;
-
-    //if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
-    collection->updatedir();
-    return 0;
-}
-
-unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
-{
-    State *state=(State *)arg;
-
-    if(statemode==STATEMODE_REAL)state->getsysinfo_slow();
-    state->isnotebook_a();
-    state->genmarker();
-
-    return 0;
-}
-
-unsigned int __stdcall Bundle::thread_loadall(void *arg)
-{
-    Bundle *bundle=(Bundle *)arg;
-
-    InitializeCriticalSection(&sync);
-    do
-    {
-        int cancel_update=0;
-        //long long t=GetTickCount();
-        WaitForSingleObject(deviceupdate_event,INFINITE);
-
-        log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
-        bundle[bundle_shadow].bundle_prep();
-        bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
-
-        //log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
-
-        if(!(flags&FLAG_NOGUI))
-        if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
-
-        if(!cancel_update)
-        {
-            if((flags&FLAG_NOGUI||hMain==nullptr)&&(flags&FLAG_AUTOINSTALL)==0)
-            {
-                manager_g->matcher=&bundle[bundle_shadow].matcher;
-                manager_g->populate();
-                manager_g->filter(filters);
-            }
-            else
-                SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
-        }
-
-        log_con("{2Sync\n");
-        EnterCriticalSection(&sync);
-        log_con("*");
-        bundle[bundle_shadow].bundle_lowprioirity();
-
-        if(cancel_update)
-            log_con("*** CANCEL ***\n\n");
-        else
-        {
-            log_con("*** FINISH ***\n\n");
-            bundle_display^=1;
-            bundle_shadow^=1;
-        }
-        //printf("%d\n",)
-        bundle[bundle_shadow].bundle_init();
-        if(cancel_update)SetEvent(deviceupdate_event);
-        log_con("}2Sync\n");
-        LeaveCriticalSection(&sync);
-/*        if(snplist)
-        {
-            fgetws(state_file,BUFLEN,snplist);
-            log_con("SNP: '%S'\n",state_file);
-            deviceupdate_exitflag=feof(snplist);
-        }*/
-        //printf("%ld\n",GetTickCount()-t);
-    }while(!deviceupdate_exitflag);
-    DeleteCriticalSection(&sync);
-    return 0;
-}
-
-void Bundle::bundle_init()
-{
-    collection.init(drp_dir,index_dir,output_dir);
-    matcher.init(&state,&collection);
-}
-
-void Bundle::bundle_prep()
-{
-    state.getsysinfo_fast();
-}
-
-void Bundle::bundle_load(Bundle *pbundle)
-{
-    HANDLE thandle[3];
-
-    thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,&state,0,nullptr);
-    thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,&collection,0,nullptr);
-    thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,&state,0,nullptr);
-    WaitForMultipleObjects(3,thandle,1,INFINITE);
-    CloseHandle_log(thandle[0],L"bundle_load",L"0");
-    CloseHandle_log(thandle[1],L"bundle_load",L"1");
-    CloseHandle_log(thandle[2],L"bundle_load",L"2");
-
-    if((invaidate_set&INVALIDATE_DEVICES)==0){state=pbundle->state;time_devicescan=0;}
-    if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
-    invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
-
-    matcher.getState()->textas.shrink();
-    matcher.populate();
-}
-
-void Bundle::bundle_lowprioirity()
-{
-    wchar_t filename[BUFLEN];
-    if(!time_startup)time_startup=GetTickCount()-time_total;
-    log_times();
-
-    redrawmainwnd();
-
-    collection.printstats();
-    state.print();
-    matcher.print();
-    manager_g->print_hr();
-
-#ifdef USE_TORRENT
-    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate)
-    {
-        //log_con("Event 1\n");
-        Updater.checkUpdates();
-    }
-#endif
-    collection.save();
-    gen_timestamp();
-    wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
-    state.save(filename);
-
-    if(flags&COLLECTION_PRINT_INDEX)
-    {
-        log_con("Saving humanreadable indexes...");
-        collection.print_index_hr();
-        flags&=~COLLECTION_PRINT_INDEX;
-        log_con("DONE\n");
-    }
-}
-//}
-
-//{ Windows
-HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id)
-{
-    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE,0,0,0,0,hwnd,id,ghInst,NULL);
-}
-
-HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f)
-{
-    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,id,ghInst,NULL);
-}
-
-void redrawfield()
-{
-    if(!hField)
-    {
-        log_err("ERROR in redrawfield(): hField is 0\n");
-        return;
-    }
-    InvalidateRect(hField,nullptr,0);
-}
-
-void redrawmainwnd()
-{
-    if(!hMain)
-    {
-        log_err("ERROR in redrawmainwnd(): hMain is 0\n");
-        return;
-    }
-    InvalidateRect(hMain,nullptr,0);
-}
-
-void lang_refresh()
-{
-    if(!hMain||!hField)
-    {
-        log_err("ERROR in lang_refresh(): hMain is %d, hField is %d\n",hMain,hField);
-        return;
-    }
-    redrawmainwnd();
-    redrawfield();
-    InvalidateRect(hPopup,nullptr,0);
-
-    POINT p;
-    GetCursorPos(&p);
-    SetCursorPos(p.x+1,p.y);
-    SetCursorPos(p.x,p.y);
-}
-
-void theme_refresh()
-{
-    // Set font
-    if(hFont&&!DeleteObject(hFont))
-        log_err("ERROR in manager_setfont(): failed DeleteObject\n");
-
-    hFont=CreateFont(-D(FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!hFont)
-        log_err("ERROR in manager_setfont(): failed CreateFont\n");
-    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
-    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
-
-    if(!hMain||!hField)
-    {
-        log_err("ERROR in theme_refresh(): hMain is %d, hField is %d\n",hMain,hField);
-        return;
-    }
-
-    // Resize window
-    RECT rect;
-    GetWindowRect(hMain,&rect);
-    MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
-    MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
-}
-
-void setscrollrange(int y)
-{
-    if(!hField)
-    {
-        log_err("ERROR in setscrollrange(): hField is 0\n");
-        return;
-    }
-
-    RECT rect;
-    GetClientRect(hField,&rect);
-
-    SCROLLINFO si;
-    si.cbSize=sizeof(si);
-    si.fMask =SIF_RANGE|SIF_PAGE;
-    si.nMin  =0;
-    si.nMax  =y;
-    si.nPage =rect.bottom;
-    scrollvisible=rect.bottom>y;
-    SetScrollInfo(hField,SB_VERT,&si,TRUE);
-}
-
-int getscrollpos()
-{
-    if(!hField)
-    {
-        log_err("ERROR in getscrollpos(): hField is 0\n");
-        return 0;
-    }
-
-    SCROLLINFO si;
-    si.cbSize=sizeof(si);
-    si.fMask=SIF_POS;
-    si.nPos=0;
-    GetScrollInfo(hField,SB_VERT,&si);
-    return si.nPos;
-}
-
-void setscrollpos(int pos)
-{
-    if(!hField)
-    {
-        log_err("ERROR in setscrollpos(): hField is 0\n");
-        return;
-    }
-
-    SCROLLINFO si;
-    si.cbSize=sizeof(si);
-    si.fMask=SIF_POS;
-    si.nPos=pos;
-    SetScrollInfo(hField,SB_VERT,&si,TRUE);
-}
-//}
-
-//{ Helpers
-void get_resource(int id,void **data,int *size)
-{
-    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
-    if(!myResource)
-    {
-        log_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
-        *size=0;
-        *data=nullptr;
-        return;
-    }
-    *size=SizeofResource(nullptr,myResource);
-    *data=LoadResource(nullptr,myResource);
-}
-
-void mkdir_r(const wchar_t *path)
-{
-    if(path[1]==L':'&&path[2]==0)return;
-    if(!canWrite(path))
-    {
-        log_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
-        return;
-    }
-
-    wchar_t buf[BUFLEN];
-    wcscpy(buf,path);
-    wchar_t *p=buf;
-    while((p=wcschr(p,L'\\')))
-    {
-        *p=0;
-        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
-            log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
-        *p=L'\\';
-        p++;
-    }
-    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
-        log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
-}
-
-void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
-{
-    GetWindowRect(hWnd,rc);
-    MapWindowPoints(nullptr,hWnd,(LPPOINT)&rc,2);
-    rc->right-=rc->left;
-    rc->bottom-=rc->top;
-}
-
-void escapeAmpUrl(wchar_t *buf,wchar_t *source)
-{
-    wchar_t *p1=buf,*p2=source;
-
-    while(*p2)
-    {
-        *p1=*p2;
-        if(*p1==L'&')
-        {
-            *p1++=L'%';
-            *p1++=L'2';
-            *p1=L'6';
-        }
-        if(*p1==L'\\')
-        {
-            *p1++=L'%';
-            *p1++=L'5';
-            *p1=L'C';
-        }
-        p1++;p2++;
-    }
-    *p1=0;
-}
-
-void escapeAmp(wchar_t *buf,wchar_t *source)
-{
-    wchar_t *p1=buf,*p2=source;
-
-    while(*p2)
-    {
-        *p1=*p2;
-        if(*p1==L'&')*(++p1)=L'&';
-        p1++;p2++;
-    }
-    *p1=0;
-}
-//}
-
-//{ GUI
-void tabadvance(int v)
-{
-    while(1)
-    {
-        kbpanel+=v;
-        if(!kbpanel)kbpanel=KB_PANEL_CHK;
-        if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
-
-        if(!expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
-        //if(kbpanel==KB_PANEL_CHK&&!YP(&panels[11]))continue;
-        break;
-    }
-    //log_con("Tab %d,%d\n",kbpanel,YP(&panels[11]));
-    if(kbpanel==KB_LANG)SetFocus(hLang);else
-    if(kbpanel==KB_THEME)SetFocus(hTheme);else
-        SetFocus(hMain);
-    redrawfield();
-    redrawmainwnd();
 }
 
 void gui(int nCmd)
@@ -1027,77 +621,218 @@ void gui(int nCmd)
     UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
     UnregisterClass_log(classField,ghInst,L"gui",L"classField");
 }
+//}
 
-LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+//{ Bundle
+unsigned int __stdcall Bundle::thread_scandevices(void *arg)
 {
-    UNREFERENCED_PARAMETER(wParam);
+    State *state=(State *)arg;
 
-    RECT rect;
-    short x,y;
+    if(statemode==STATEMODE_REAL)state->scanDevices();
+    if(statemode==STATEMODE_EMUL)state->load(state_file);
 
-    x=LOWORD(lParam);
-    y=HIWORD(lParam);
-    switch(uMsg)
-    {
-        case WM_MOUSELEAVE:
-            ShowWindow(hPopup,SW_HIDE);
-            InvalidateRect(hwnd,nullptr,0);
-            break;
-
-        case WM_MOUSEHOVER:
-            InvalidateRect(hPopup,nullptr,0);
-            ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
-            break;
-
-        case WM_ACTIVATE:
-            InvalidateRect(hwnd,nullptr,0);
-            break;
-
-        case WM_MOUSEMOVE:
-            if(mousedown==MOUSE_CLICK||mousedown==MOUSE_MOVE)
-            {
-                GetWindowRect(hMain,&rect);
-                if(mousedown==MOUSE_MOVE||abs(mousex-x)>2||abs(mousey-y)>2)
-                {
-                    mousedown=MOUSE_MOVE;
-                    MoveWindow(hMain,rect.left+x-mousex,rect.top+y-mousey,
-                               rect.right-rect.left,rect.bottom-rect.top,1);
-                }
-            }
-            return 1;
-
-        case WM_LBUTTONDOWN:
-            if(kbpanel&&x&&y)
-            {
-                kbpanel=KB_NONE;
-                redrawmainwnd();
-            }
-            SetFocus(hMain);
-            if(!IsZoomed(hMain))
-            {
-                mousex=x;
-                mousey=y;
-                mousedown=MOUSE_CLICK;
-                SetCapture(hwnd);
-            }
-            break;
-
-        case WM_CANCELMODE:
-        case WM_LBUTTONUP:
-        case WM_MBUTTONUP:
-        case WM_RBUTTONUP:
-            mousex=-1;
-            mousey=-1;
-            SetCursor(LoadCursor(nullptr,IDC_ARROW));
-            ReleaseCapture();
-            mouseclick=uMsg==WM_LBUTTONUP&&mousedown!=MOUSE_MOVE?1:0;
-            mousedown=MOUSE_NONE;
-            return 1;
-
-        default:
-            return 1;
-    }
     return 0;
+}
+
+unsigned int __stdcall Bundle::thread_loadindexes(void *arg)
+{
+    Collection *collection=(Collection *)arg;
+
+    //if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
+    collection->updatedir();
+    return 0;
+}
+
+unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
+{
+    State *state=(State *)arg;
+
+    if(statemode==STATEMODE_REAL)state->getsysinfo_slow();
+    state->isnotebook_a();
+    state->genmarker();
+
+    return 0;
+}
+
+unsigned int __stdcall Bundle::thread_loadall(void *arg)
+{
+    Bundle *bundle=(Bundle *)arg;
+
+    InitializeCriticalSection(&sync);
+    do
+    {
+        int cancel_update=0;
+        //long long t=GetTickCount();
+        WaitForSingleObject(deviceupdate_event,INFINITE);
+
+        log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
+        bundle[bundle_shadow].bundle_prep();
+        bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
+
+        //log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
+
+        if(!(flags&FLAG_NOGUI))
+        if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
+
+        if(!cancel_update)
+        {
+            if((flags&FLAG_NOGUI||hMain==nullptr)&&(flags&FLAG_AUTOINSTALL)==0)
+            {
+                manager_g->matcher=&bundle[bundle_shadow].matcher;
+                manager_g->populate();
+                manager_g->filter(filters);
+            }
+            else
+                SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
+        }
+
+        log_con("{2Sync\n");
+        EnterCriticalSection(&sync);
+        log_con("*");
+        bundle[bundle_shadow].bundle_lowprioirity();
+
+        if(cancel_update)
+            log_con("*** CANCEL ***\n\n");
+        else
+        {
+            log_con("*** FINISH ***\n\n");
+            bundle_display^=1;
+            bundle_shadow^=1;
+        }
+        //printf("%d\n",)
+        bundle[bundle_shadow].bundle_init();
+        if(cancel_update)SetEvent(deviceupdate_event);
+        log_con("}2Sync\n");
+        LeaveCriticalSection(&sync);
+/*        if(snplist)
+        {
+            fgetws(state_file,BUFLEN,snplist);
+            log_con("SNP: '%S'\n",state_file);
+            deviceupdate_exitflag=feof(snplist);
+        }*/
+        //printf("%ld\n",GetTickCount()-t);
+    }while(!deviceupdate_exitflag);
+    DeleteCriticalSection(&sync);
+    return 0;
+}
+
+void Bundle::bundle_init()
+{
+    collection.init(drp_dir,index_dir,output_dir);
+    matcher.init(&state,&collection);
+}
+
+void Bundle::bundle_prep()
+{
+    state.getsysinfo_fast();
+}
+
+void Bundle::bundle_load(Bundle *pbundle)
+{
+    HANDLE thandle[3];
+
+    thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,&state,0,nullptr);
+    thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,&collection,0,nullptr);
+    thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,&state,0,nullptr);
+    WaitForMultipleObjects(3,thandle,1,INFINITE);
+    CloseHandle_log(thandle[0],L"bundle_load",L"0");
+    CloseHandle_log(thandle[1],L"bundle_load",L"1");
+    CloseHandle_log(thandle[2],L"bundle_load",L"2");
+
+    if((invaidate_set&INVALIDATE_DEVICES)==0){state=pbundle->state;time_devicescan=0;}
+    if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
+    invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
+
+    matcher.getState()->textas.shrink();
+    matcher.populate();
+}
+
+void Bundle::bundle_lowprioirity()
+{
+    wchar_t filename[BUFLEN];
+    if(!time_startup)time_startup=GetTickCount()-time_total;
+    log_times();
+
+    redrawmainwnd();
+
+    collection.printstats();
+    state.print();
+    matcher.print();
+    manager_g->print_hr();
+
+#ifdef USE_TORRENT
+    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate)
+    {
+        //log_con("Event 1\n");
+        Updater.checkUpdates();
+    }
+#endif
+    collection.save();
+    gen_timestamp();
+    wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
+    state.save(filename);
+
+    if(flags&COLLECTION_PRINT_INDEX)
+    {
+        log_con("Saving humanreadable indexes...");
+        collection.print_index_hr();
+        flags&=~COLLECTION_PRINT_INDEX;
+        log_con("DONE\n");
+    }
+}
+//}
+
+//{ Subroutes
+void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(szFile);
+    UNREFERENCED_PARAMETER(action);
+    UNREFERENCED_PARAMETER(lParam);
+
+    if(StrStrIW(szFile,L".7z"))invaidate(INVALIDATE_INDEXES);
+}
+
+void lang_refresh()
+{
+    if(!hMain||!hField)
+    {
+        log_err("ERROR in lang_refresh(): hMain is %d, hField is %d\n",hMain,hField);
+        return;
+    }
+    redrawmainwnd();
+    redrawfield();
+    InvalidateRect(hPopup,nullptr,0);
+
+    POINT p;
+    GetCursorPos(&p);
+    SetCursorPos(p.x+1,p.y);
+    SetCursorPos(p.x,p.y);
+}
+
+void theme_refresh()
+{
+    // Set font
+    if(hFont&&!DeleteObject(hFont))
+        log_err("ERROR in manager_setfont(): failed DeleteObject\n");
+
+    hFont=CreateFont(-D(FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
+    if(!hFont)
+        log_err("ERROR in manager_setfont(): failed CreateFont\n");
+    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
+    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
+
+    if(!hMain||!hField)
+    {
+        log_err("ERROR in theme_refresh(): hMain is %d, hField is %d\n",hMain,hField);
+        return;
+    }
+
+    // Resize window
+    RECT rect;
+    GetWindowRect(hMain,&rect);
+    MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
+    MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
 }
 
 void snapshot()
@@ -1172,10 +907,281 @@ void selectDrpDir()
     }
 }
 
+void invaidate(int v)
+{
+    invaidate_set|=v;
+    SetEvent(deviceupdate_event);
+}
+//}
+
+//{ Scrollbar
+void setscrollrange(int y)
+{
+    if(!hField)
+    {
+        log_err("ERROR in setscrollrange(): hField is 0\n");
+        return;
+    }
+
+    RECT rect;
+    GetClientRect(hField,&rect);
+
+    SCROLLINFO si;
+    si.cbSize=sizeof(si);
+    si.fMask =SIF_RANGE|SIF_PAGE;
+    si.nMin  =0;
+    si.nMax  =y;
+    si.nPage =rect.bottom;
+    scrollvisible=rect.bottom>y;
+    SetScrollInfo(hField,SB_VERT,&si,TRUE);
+}
+
+int getscrollpos()
+{
+    if(!hField)
+    {
+        log_err("ERROR in getscrollpos(): hField is 0\n");
+        return 0;
+    }
+
+    SCROLLINFO si;
+    si.cbSize=sizeof(si);
+    si.fMask=SIF_POS;
+    si.nPos=0;
+    GetScrollInfo(hField,SB_VERT,&si);
+    return si.nPos;
+}
+
+void setscrollpos(int pos)
+{
+    if(!hField)
+    {
+        log_err("ERROR in setscrollpos(): hField is 0\n");
+        return;
+    }
+
+    SCROLLINFO si;
+    si.cbSize=sizeof(si);
+    si.fMask=SIF_POS;
+    si.nPos=pos;
+    SetScrollInfo(hField,SB_VERT,&si,TRUE);
+}
+//}
+
+//{ Misc
+void get_resource(int id,void **data,int *size)
+{
+    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
+    if(!myResource)
+    {
+        log_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
+        *size=0;
+        *data=nullptr;
+        return;
+    }
+    *size=SizeofResource(nullptr,myResource);
+    *data=LoadResource(nullptr,myResource);
+}
+
+void mkdir_r(const wchar_t *path)
+{
+    if(path[1]==L':'&&path[2]==0)return;
+    if(!canWrite(path))
+    {
+        log_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
+        return;
+    }
+
+    wchar_t buf[BUFLEN];
+    wcscpy(buf,path);
+    wchar_t *p=buf;
+    while((p=wcschr(p,L'\\')))
+    {
+        *p=0;
+        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
+            log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+        *p=L'\\';
+        p++;
+    }
+    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
+        log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+}
+
+void escapeAmpUrl(wchar_t *buf,wchar_t *source)
+{
+    wchar_t *p1=buf,*p2=source;
+
+    while(*p2)
+    {
+        *p1=*p2;
+        if(*p1==L'&')
+        {
+            *p1++=L'%';
+            *p1++=L'2';
+            *p1=L'6';
+        }
+        if(*p1==L'\\')
+        {
+            *p1++=L'%';
+            *p1++=L'5';
+            *p1=L'C';
+        }
+        p1++;p2++;
+    }
+    *p1=0;
+}
+
+void escapeAmp(wchar_t *buf,wchar_t *source)
+{
+    wchar_t *p1=buf,*p2=source;
+
+    while(*p2)
+    {
+        *p1=*p2;
+        if(*p1==L'&')*(++p1)=L'&';
+        p1++;p2++;
+    }
+    *p1=0;
+}
+//}
+
+//{ GUI Helpers
+HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id)
+{
+    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE,0,0,0,0,hwnd,id,ghInst,NULL);
+}
+
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f)
+{
+    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,id,ghInst,NULL);
+}
+
+void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
+{
+    GetWindowRect(hWnd,rc);
+    MapWindowPoints(nullptr,hWnd,(LPPOINT)&rc,2);
+    rc->right-=rc->left;
+    rc->bottom-=rc->top;
+}
+
 void checktimer(const wchar_t *str,long long t,int uMsg)
 {
     if(GetTickCount()-t>20&&log_verbose&LOG_VERBOSE_LAGCOUNTER)
         log_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
+}
+
+void redrawfield()
+{
+    if(!hField)
+    {
+        log_err("ERROR in redrawfield(): hField is 0\n");
+        return;
+    }
+    InvalidateRect(hField,nullptr,0);
+}
+
+void redrawmainwnd()
+{
+    if(!hMain)
+    {
+        log_err("ERROR in redrawmainwnd(): hMain is 0\n");
+        return;
+    }
+    InvalidateRect(hMain,nullptr,0);
+}
+
+void tabadvance(int v)
+{
+    while(1)
+    {
+        kbpanel+=v;
+        if(!kbpanel)kbpanel=KB_PANEL_CHK;
+        if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
+
+        if(!expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
+        //if(kbpanel==KB_PANEL_CHK&&!YP(&panels[11]))continue;
+        break;
+    }
+    //log_con("Tab %d,%d\n",kbpanel,YP(&panels[11]));
+    if(kbpanel==KB_LANG)SetFocus(hLang);else
+    if(kbpanel==KB_THEME)SetFocus(hTheme);else
+        SetFocus(hMain);
+    redrawfield();
+    redrawmainwnd();
+}
+//}
+
+//{ GUI
+LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(wParam);
+
+    RECT rect;
+    short x,y;
+
+    x=LOWORD(lParam);
+    y=HIWORD(lParam);
+    switch(uMsg)
+    {
+        case WM_MOUSELEAVE:
+            ShowWindow(hPopup,SW_HIDE);
+            InvalidateRect(hwnd,nullptr,0);
+            break;
+
+        case WM_MOUSEHOVER:
+            InvalidateRect(hPopup,nullptr,0);
+            ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
+            break;
+
+        case WM_ACTIVATE:
+            InvalidateRect(hwnd,nullptr,0);
+            break;
+
+        case WM_MOUSEMOVE:
+            if(mousedown==MOUSE_CLICK||mousedown==MOUSE_MOVE)
+            {
+                GetWindowRect(hMain,&rect);
+                if(mousedown==MOUSE_MOVE||abs(mousex-x)>2||abs(mousey-y)>2)
+                {
+                    mousedown=MOUSE_MOVE;
+                    MoveWindow(hMain,rect.left+x-mousex,rect.top+y-mousey,
+                               rect.right-rect.left,rect.bottom-rect.top,1);
+                }
+            }
+            return 1;
+
+        case WM_LBUTTONDOWN:
+            if(kbpanel&&x&&y)
+            {
+                kbpanel=KB_NONE;
+                redrawmainwnd();
+            }
+            SetFocus(hMain);
+            if(!IsZoomed(hMain))
+            {
+                mousex=x;
+                mousey=y;
+                mousedown=MOUSE_CLICK;
+                SetCapture(hwnd);
+            }
+            break;
+
+        case WM_CANCELMODE:
+        case WM_LBUTTONUP:
+        case WM_MBUTTONUP:
+        case WM_RBUTTONUP:
+            mousex=-1;
+            mousey=-1;
+            SetCursor(LoadCursor(nullptr,IDC_ARROW));
+            ReleaseCapture();
+            mouseclick=uMsg==WM_LBUTTONUP&&mousedown!=MOUSE_MOVE?1:0;
+            mousedown=MOUSE_NONE;
+            return 1;
+
+        default:
+            return 1;
+    }
+    return 0;
 }
 
 LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
