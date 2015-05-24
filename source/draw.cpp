@@ -236,12 +236,6 @@ void Image::loadFromRes(int id)
 
 void Image::createBitmap(BYTE *data,int sz)
 {
-    BITMAPINFO bmi;
-    BYTE *bits;
-    BYTE *big;
-    BYTE *p1,*p2;
-    int i;
-
     hasalpha=sx=sy=0;
     ldc=nullptr;
 #ifdef CONSOLE_MODE
@@ -253,13 +247,14 @@ void Image::createBitmap(BYTE *data,int sz)
         log_err("ERROR in image_load(): failed WebPGetInfo(%d)\n",ret);
         return;
     }
-    big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);
+    BYTE *big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);
     if(!big)
     {
         log_err("ERROR in image_load(): failed WebPDecodeBGRA\n");
         return;
     }
 #endif
+    BITMAPINFO bmi;
     ZeroMemory(&bmi,sizeof(BITMAPINFO));
     bmi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth=sx;
@@ -269,11 +264,13 @@ void Image::createBitmap(BYTE *data,int sz)
     bmi.bmiHeader.biCompression=BI_RGB;
     bmi.bmiHeader.biSizeImage=sx*sy*4;
 
+    BYTE *bits;
     ldc=CreateCompatibleDC(nullptr);
     bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,nullptr,0);
 
-    p1=bits;p2=big;
-    for(i=0;i<sx*sy;i++)
+    BYTE *p2=big;
+    for(int i=0;i<sy;i++)
+    for(int j=0;j<sx;j++)
     {
         BYTE B,G,R,A;
         B=*p2++;
@@ -283,10 +280,20 @@ void Image::createBitmap(BYTE *data,int sz)
         double dA=A/255.;
         if(A!=255)hasalpha=1;
 
-        *p1++=(BYTE)(B*dA);
-        *p1++=(BYTE)(G*dA);
-        *p1++=(BYTE)(R*dA);
-        *p1++=A;
+        if(rtl)
+        {
+            bits[(sx-j-1+i*sx)*4]=(BYTE)(B*dA);
+            bits[(sx-j-1+i*sx)*4+1]=(BYTE)(G*dA);
+            bits[(sx-j-1+i*sx)*4+2]=(BYTE)(R*dA);
+            bits[(sx-j-1+i*sx)*4+3]=A;
+        }else
+        {
+            *bits++=(BYTE)(B*dA);
+            *bits++=(BYTE)(G*dA);
+            *bits++=(BYTE)(R*dA);
+            *bits++=A;
+
+        }
     }
     SelectObject(ldc,bitmap);
     free(big);
@@ -505,7 +512,7 @@ void Panel::click(int i)
         else
             PostMessage(hMain,WM_COMMAND,items[i].action_id+(BN_CLICKED<<16),0);
 
-        InvalidateRect(hMain,nullptr,TRUE);
+        InvalidateRect(hMain,nullptr,0);
     }
 }
 

@@ -862,7 +862,6 @@ void State::getsysinfo_fast()
 {
     wchar_t buf[BUFLEN];
 
-    time_test=GetTickCount();
     textas.reset(2);
 
     // Battery

@@ -642,10 +642,92 @@ void itembar_t::itembar_setpos(int *pos,int *cnt)
     if(accel==0)accel=(tagpos<curpos)?500:-500;
 }
 
+void Manager::set_rstpnt(int checked)
+{
+    panels[11].setChecked(2,items_list[SLOT_RESTORE_POINT].checked=checked);
+    //if(D(PANEL12_WY))manager_g->items_list[SLOT_RESTORE_POINT].isactive=checked;
+    setpos();
+    redrawfield();
+}
+
 int Hwidmatch::isdrivervalid()
 {
     if(altsectscore>0&&decorscore>0)return 1;
     return 0;
+}
+
+void itembar_t::contextmenu(int x,int y)
+{
+    HMENU hPopupMenu=CreatePopupMenu();
+
+    int flags1=checked?MF_CHECKED:0;
+    if(!hwidmatch)flags1|=MF_GRAYED;
+
+    if(floating_itembar==SLOT_RESTORE_POINT)
+    {
+        InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
+        InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
+
+        RECT rect;
+        SetForegroundWindow(hMain);
+        GetWindowRect(hField,&rect);
+        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
+        return;
+    }
+    if(floating_itembar<RES_SLOTS)return;
+
+    Driver *cur_driver=nullptr;
+
+    char *t=manager_g->matcher->getState()->textas.get(0);
+    if(devicematch->driver)cur_driver=devicematch->driver;
+    int flags2=isactive&2?MF_CHECKED:0;
+    int flags3=cur_driver?0:MF_GRAYED;
+    if(manager_g->groupsize(index)<2)flags2|=MF_GRAYED;
+    wchar_t buf[512];
+
+    int i=0;
+    HMENU hSub1=CreatePopupMenu();
+    HMENU hSub2=CreatePopupMenu();
+    if(devicematch->device->getHardwareID())
+    {
+        wchar_t *p=(wchar_t *)(t+devicematch->device->getHardwareID());
+        while(*p)
+        {
+            escapeAmp(buf,p);
+            InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
+            InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
+            p+=lstrlenW(p)+1;
+            i++;
+        }
+    }
+    if(devicematch->device->getCompatibleIDs())
+    {
+        wchar_t *p=(wchar_t *)(t+devicematch->device->getCompatibleIDs());
+        while(*p)
+        {
+            escapeAmp(buf,p);
+            InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
+            InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
+            p+=lstrlenW(p)+1;
+            i++;
+        }
+    }
+    int flagssubmenu=i?0:MF_GRAYED;
+
+    i=0;
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_CONT_INSTALL));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags2,ID_SHOWALT,  STR(STR_CONT_SHOWALT));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub1,STR(STR_CONT_HWID_SEARCH));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub2,STR(STR_CONT_HWID_CLIP));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_OPENINF,  STR(STR_CONT_OPENINF));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_LOCATEINF,STR(STR_CONT_LOCATEINF));
+
+    RECT rect;
+    SetForegroundWindow(hMain);
+    GetWindowRect(hField,&rect);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
 }
 
 void itembar_t::str_status(wchar_t *buf)

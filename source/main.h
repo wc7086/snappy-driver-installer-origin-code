@@ -184,6 +184,15 @@ enum KB_ID
     KB_PANEL_CHK      = 10,
 };
 
+// Mouse state
+enum MOUSE_STATE
+{
+    MOUSE_NONE         = 0,
+    MOUSE_CLICK        = 1,
+    MOUSE_MOVE         = 2,
+    MOUSE_SCROLL       = 3,
+};
+
 // Left panel types
 enum panel_type
 {
@@ -291,44 +300,47 @@ public:
     void bundle_lowprioirity();
 };
 
-// Main
+// Settings
 void settings_parse(const wchar_t *str,int ind);
 void settings_save();
 int  settings_load(const wchar_t *filename);
-void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
-//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
 
-// Windows
-HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);
-HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f);
-void setfont();
-void redrawfield();
-void redrawmainwnd();
+// Main
+//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
+void gui(int nCmd);
+
+// Subroutes
+void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
 void lang_refresh();
 void theme_refresh();
+void snapshot();
+void extractto();
+void invaidate(int v);
+void selectDrpDir();
+
+// Misc
+void mkdir_r(const wchar_t *path);
+void get_resource(int id,void **data,int *size);
+void escapeAmpUrl(wchar_t *buf,wchar_t *source);
+void escapeAmp(wchar_t *buf,wchar_t *source);
+
+// Scrollbar
 void setscrollrange(int y);
 int  getscrollpos();
 void setscrollpos(int pos);
 
-// Helpers
-void get_resource(int id,void **data,int *size);
-void mkdir_r(const wchar_t *path);
-void snapshot();
-void extractto();
+// GUI Helpers
+HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f);
+void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
+void checktimer(const wchar_t *str,long long t,int uMsg);
+void redrawfield();
+void redrawmainwnd();
+void tabadvance(int v);
 
 // GUI
-void tabadvance(int v);
-void gui(int nCmd);
-void checktimer(const wchar_t *str,long long t,int uMsg);
 LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
 LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
-void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
-
-//new
-void drvdir();
-void escapeAmpUrl(wchar_t *buf,wchar_t *source);
-void escapeAmp(wchar_t *buf,wchar_t *source);
-void invaidate(int v);

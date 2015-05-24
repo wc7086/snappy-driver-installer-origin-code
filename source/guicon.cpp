@@ -64,7 +64,7 @@ void log_times()
     log_con("  startup:    %7ld (%ld)\n",time_startup,time_startup-time_devicescan-time_indexes-time_matcher-time_sysinfo);
     log_con("  indexsave:  %7ld\n",time_indexsave);
     log_con("  indexprint: %7ld\n",time_indexprint);
-    log_con("  total:      %7ld\n",time_total);
+    log_con("  total:      %7ld\n",GetTickCount()-time_total);
     log_con("  test:       %7ld\n",time_test);
 }
 
