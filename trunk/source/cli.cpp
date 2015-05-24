@@ -94,9 +94,9 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
 
 static void ShowHelp(HINSTANCE AhInst)
 {
-    CLIHelp_Font=CreateFontA(-12,0,0,0,FW_NORMAL,0,0,0,
+    CLIHelp_Font=CreateFont(-12,0,0,0,FW_NORMAL,0,0,0,
                          DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,
-                         DEFAULT_QUALITY,FF_DONTCARE,"Consolas");
+                         DEFAULT_QUALITY,FF_DONTCARE,L"Consolas");
 
     DialogBox(AhInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)ShowHelpProcedure);
     DeleteObject(CLIHelp_Font);
@@ -117,7 +117,7 @@ void SaveHWID(wchar_t *hwid)
 
 void Parse_save_installed_id_swith(const wchar_t *ParamStr)
 {
-    unsigned tmpLen=wcslen(SAVE_INSTALLED_ID_DEF);
+    int tmpLen=wcslen(SAVE_INSTALLED_ID_DEF);
 
     if(wcslen(ParamStr)>tmpLen)
     {
@@ -133,7 +133,7 @@ void Parse_save_installed_id_swith(const wchar_t *ParamStr)
 
 void Parse_HWID_installed_swith(const wchar_t *ParamStr)
 {
-    unsigned tmpLen=wcslen(HWIDINSTALLED_DEF);
+    int tmpLen=wcslen(HWIDINSTALLED_DEF);
     if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
     {
         log_err("invalid parameter %S\n",ParamStr);
@@ -200,7 +200,7 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
             while(fgetws(buf,sizeof(buf),f))
             {
                 //log_con("'%S'\n", buf);
-                if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)
+                if(StrStrW(buf,CLIParam.HWIDSTR)!=NULL)
                 {
                     ret_global=1;
                     break;
@@ -253,7 +253,7 @@ bool loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
         if(*Buff=='#')continue;         // comments
         if(*Buff==';')continue;         // comments
         if(*Buff=='/')*Buff='-';         // replace / with -
-        if(wcsstr(Buff,L"-?"))continue; // ignore -?
+        if(StrStrW(Buff,L"-?"))continue; // ignore -?
         if(Buff[wcslen(Buff)-1]=='\n')Buff[wcslen(Buff)-1]='\0';
         if(wcslen(Buff)==0)continue;
 

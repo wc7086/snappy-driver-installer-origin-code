@@ -45,7 +45,6 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <direct.h>     // for _wmkdir
 
 // C++
-#include <sstream>
 #include <unordered_map>
 #include <vector>
 #include <memory>
@@ -76,6 +75,10 @@ extern "C"
 #include "LzmaEnc.h"
 #include "Lzma86.h"
 }
+
+#define wcslen lstrlenW
+#define wcschr StrChrW
+#define wcscat StrCatW
 
 // SDI
 #include "svnrev.h"

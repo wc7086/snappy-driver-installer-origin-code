@@ -531,7 +531,7 @@ void Collection::save()
             for(i=flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
             {
                 driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf);
-                if(!wcscmp(buf,filename))break;
+                if(!StrCmpW(buf,filename))break;
             }
             if(i==driverpack_list.size())
             {
@@ -560,7 +560,7 @@ int Collection::scanfolder_count(const wchar_t *path)
             cnt+=scanfolder_count(buf);
         } else
         {
-            int i,len=lstrlen(FindFileData.cFileName);
+            int i,len=lstrlenW(FindFileData.cFileName);
             for(i=0;i<5;i++)
             if(StrStrIW(FindFileData.cFileName,olddrps[i]))
             {
@@ -766,7 +766,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
             scanfolder(buf,arg);
         } else
         {
-            int len=lstrlen(FindFileData.cFileName);
+            int len=lstrlenW(FindFileData.cFileName);
             if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
@@ -953,7 +953,7 @@ void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t 
     wsprintf(buf,L"%s",getFilename());
 
     if(*(getPath()))
-        wsprintf(buf+(len-3)*1,L"%s.%s",getPath()+lstrlen(col->getDriverpack_dir()),ext);
+        wsprintf(buf+(len-3)*1,L"%s.%s",getPath()+lstrlenW(col->getDriverpack_dir()),ext);
     else
         wsprintf(buf+(len-3)*1,L".%s",ext);
 
@@ -1226,7 +1226,7 @@ void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const 
 
 void findosattr(char *bufa,char *adr,int len)
 {
-    unsigned bufal=0;
+    int bufal=0;
     char *p=adr;
 
     *bufa=0;
@@ -1509,10 +1509,6 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     }
 
     // Find [version]
-    //char date_s[256];
-    //char build_s[256];
-    //date_s[0]=0;
-    //build_s[0]=0;
     cur_ver=&cur_inffile->version;
     cur_ver->setInvalid();
 
@@ -1543,14 +1539,11 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                         /*if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S\n",
                                  cur_ver->d,cur_ver->m,cur_ver->y,i,inffull);*/
 
-                        //wsprintfA(date_s,"%02d/%02d/%04d",cur_ver->m,cur_ver->d,cur_ver->y);
-
                         // version
                         if(parse_info.parseField())
                         {
                             parse_info.readVersion(cur_ver);
                         }
-                        //wsprintfA(build_s,"%d.%d.%d.%d",cur_ver->v1,cur_ver->v2,cur_ver->v3,cur_ver->v4);
 
                 }else
                 {

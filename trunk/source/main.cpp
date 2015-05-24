@@ -119,8 +119,6 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 //}
 
 //{ Main
-int main2(int argc, char* argv[]);
-
 void invaidate(int v)
 {
     invaidate_set|=v;
@@ -136,36 +134,36 @@ void settings_parse(const wchar_t *str,int ind)
     {
         wchar_t *pr=argv[i];
         if (pr[0] == '/') pr[0]='-';
-        if( wcsstr(pr,L"-drp_dir:"))     wcscpy(drp_dir,pr+9);else
-        if( wcsstr(pr,L"-index_dir:"))   wcscpy(index_dir,pr+11);else
-        if( wcsstr(pr,L"-output_dir:"))  wcscpy(output_dir,pr+12);else
-        if( wcsstr(pr,L"-data_dir:"))    wcscpy(data_dir,pr+10);else
-        if( wcsstr(pr,L"-log_dir:"))     {wcscpy(logO_dir,pr+9);ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);}else
-        if( wcsstr(pr,L"-finish_cmd:"))  wcscpy(finish,pr+12);else
-        if( wcsstr(pr,L"-finishrb_cmd:"))wcscpy(finish_rb,pr+14);else
-        if( wcsstr(pr,L"-finish_upd_cmd:"))wcscpy(finish_upd,pr+16);else
-        if( wcsstr(pr,L"-lang:"))        wcscpy(curlang,pr+6);else
-        if( wcsstr(pr,L"-theme:"))       wcscpy(curtheme,pr+7);else
-        if(!wcscmp(pr,L"-expertmode"))   expertmode=1;else
-        if( wcsstr(pr,L"-hintdelay:"))   hintdelay=_wtoi_my(pr+11);else
-        if( wcsstr(pr,L"-port:"))        Updater.torrentport=_wtoi_my(pr+6);else
-        if( wcsstr(pr,L"-downlimit:"))   Updater.downlimit=_wtoi_my(pr+11);else
-        if( wcsstr(pr,L"-uplimit:"))     Updater.uplimit=_wtoi_my(pr+9);else
-        if( wcsstr(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
-        if(!wcscmp(pr,L"-license"))      license=1;else
-        if(!wcscmp(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
-        if(!wcscmp(pr,L"-showdrpnames1"))flags|=FLAG_SHOWDRPNAMES1;else
-        if(!wcscmp(pr,L"-showdrpnames2"))flags|=FLAG_SHOWDRPNAMES2;else
-        if(!wcscmp(pr,L"-oldstyle"))     flags|=FLAG_OLDSTYLE;else
-        if(!wcscmp(pr,L"-preservecfg"))  flags|=FLAG_PRESERVECFG;else
-        if(!wcscmp(pr,L"-showconsole"))  flags|=FLAG_SHOWCONSOLE;else
-        if(!wcscmp(pr,L"-checkupdates")) flags|=FLAG_CHECKUPDATES;else
-        if(!wcscmp(pr,L"-onlyupdates"))  flags|=FLAG_ONLYUPDATES;else
-        if(!wcscmp(pr,L"-novirusalerts"))flags|=FLAG_NOVIRUSALERTS;else
-        if(!wcscmp(pr,L"-7z"))
+        if( StrStrIW(pr,L"-drp_dir:"))     wcscpy(drp_dir,pr+9);else
+        if( StrStrIW(pr,L"-index_dir:"))   wcscpy(index_dir,pr+11);else
+        if( StrStrIW(pr,L"-output_dir:"))  wcscpy(output_dir,pr+12);else
+        if( StrStrIW(pr,L"-data_dir:"))    wcscpy(data_dir,pr+10);else
+        if( StrStrIW(pr,L"-log_dir:"))     {wcscpy(logO_dir,pr+9);ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);}else
+        if( StrStrIW(pr,L"-finish_cmd:"))  wcscpy(finish,pr+12);else
+        if( StrStrIW(pr,L"-finishrb_cmd:"))wcscpy(finish_rb,pr+14);else
+        if( StrStrIW(pr,L"-finish_upd_cmd:"))wcscpy(finish_upd,pr+16);else
+        if( StrStrIW(pr,L"-lang:"))        wcscpy(curlang,pr+6);else
+        if( StrStrIW(pr,L"-theme:"))       wcscpy(curtheme,pr+7);else
+        if(!StrCmpIW(pr,L"-expertmode"))   expertmode=1;else
+        if( StrStrIW(pr,L"-hintdelay:"))   hintdelay=_wtoi_my(pr+11);else
+        if( StrStrIW(pr,L"-port:"))        Updater.torrentport=_wtoi_my(pr+6);else
+        if( StrStrIW(pr,L"-downlimit:"))   Updater.downlimit=_wtoi_my(pr+11);else
+        if( StrStrIW(pr,L"-uplimit:"))     Updater.uplimit=_wtoi_my(pr+9);else
+        if( StrStrIW(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
+        if(!StrCmpIW(pr,L"-license"))      license=1;else
+        if(!StrCmpIW(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
+        if(!StrCmpIW(pr,L"-showdrpnames1"))flags|=FLAG_SHOWDRPNAMES1;else
+        if(!StrCmpIW(pr,L"-showdrpnames2"))flags|=FLAG_SHOWDRPNAMES2;else
+        if(!StrCmpIW(pr,L"-oldstyle"))     flags|=FLAG_OLDSTYLE;else
+        if(!StrCmpIW(pr,L"-preservecfg"))  flags|=FLAG_PRESERVECFG;else
+        if(!StrCmpIW(pr,L"-showconsole"))  flags|=FLAG_SHOWCONSOLE;else
+        if(!StrCmpIW(pr,L"-checkupdates")) flags|=FLAG_CHECKUPDATES;else
+        if(!StrCmpIW(pr,L"-onlyupdates"))  flags|=FLAG_ONLYUPDATES;else
+        if(!StrCmpIW(pr,L"-novirusalerts"))flags|=FLAG_NOVIRUSALERTS;else
+        if(!StrCmpIW(pr,L"-7z"))
         {
             wchar_t cmd[BUFLEN];
-            wsprintf(cmd,L"7za.exe %s",wcsstr(GetCommandLineW(),L"-7z")+4);
+            wsprintf(cmd,L"7za.exe %s",StrCmpIW(GetCommandLineW(),L"-7z")+4);
             log_con("Executing '%S'\n",cmd);
             registerall();
             statemode=STATEMODE_EXIT;
@@ -174,7 +172,7 @@ void settings_parse(const wchar_t *str,int ind)
             break;
         }
         else
-        if(!wcscmp(pr,L"-PATH"))
+        if(!StrCmpW(pr,L"-PATH"))
         {
             wcscpy(drpext_dir,argv[++i]);
             flags|=FLAG_AUTOCLOSE|
@@ -182,7 +180,7 @@ void settings_parse(const wchar_t *str,int ind)
                 FLAG_PRESERVECFG;
         }
         else
-        if(!wcscmp(pr,L"-install")&&argc-i==3)
+        if(!StrCmpW(pr,L"-install")&&argc-i==3)
         {
             wchar_t buf[BUFLEN];
             log_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
@@ -198,31 +196,31 @@ void settings_parse(const wchar_t *str,int ind)
             break;
         }
         else
-        if( wcsstr(pr,L"-hwid:"))        wcscpy(HWIDs,pr+6);else
-        if(!wcscmp(pr,L"-filtersp"))     {flags|=FLAG_FILTERSP;flags&=~COLLECTION_USE_LZMA;}else
-        if(!wcscmp(pr,L"-reindex"))      flags|=COLLECTION_FORCE_REINDEXING;else
-        if(!wcscmp(pr,L"-index_hr"))     flags|=COLLECTION_PRINT_INDEX;else
-        if(!wcscmp(pr,L"-nogui"))        flags|=FLAG_NOGUI|FLAG_AUTOCLOSE;else
-        if(!wcscmp(pr,L"-autoinstall"))  flags|=FLAG_AUTOINSTALL;else
-        if(!wcscmp(pr,L"-autoclose"))    flags|=FLAG_AUTOCLOSE;else
-        if(!wcscmp(pr,L"-autoupdate"))   flags|=FLAG_AUTOUPDATE;else
-        if(!wcscmp(pr,L"-nologfile"))    flags|=FLAG_NOLOGFILE;else
-        if(!wcscmp(pr,L"-nosnapshot"))   flags|=FLAG_NOSNAPSHOT;else
-        if(!wcscmp(pr,L"-nostamp"))      flags|=FLAG_NOSTAMP;else
-        if( wcsstr(pr,L"-extractdir:"))  {flags|=FLAG_EXTRACTONLY;wcscpy(extractdir,pr+12);}else
-        if(!wcscmp(pr,L"-keepunpackedindex"))flags|=FLAG_KEEPUNPACKINDEX;else
-        if(!wcscmp(pr,L"-keeptempfiles"))flags|=FLAG_KEEPTEMPFILES;else
-        if(!wcscmp(pr,L"-disableinstall"))flags|=FLAG_DISABLEINSTALL;else
-        if(!wcscmp(pr,L"-failsafe"))     flags|=FLAG_FAILSAFE;else
-        if(!wcscmp(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
-        if( wcsstr(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
-        //if( wcsstr(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
-        if( wcsstr(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_EMUL;}else
-        if(!wcscmp(pr,L"-a:32"))         virtual_arch_type=32;else
-        if(!wcscmp(pr,L"-a:64"))         virtual_arch_type=64;else
-        if( wcsstr(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
+        if( StrStrIW(pr,L"-hwid:"))        wcscpy(HWIDs,pr+6);else
+        if(!StrCmpIW(pr,L"-filtersp"))     {flags|=FLAG_FILTERSP;flags&=~COLLECTION_USE_LZMA;}else
+        if(!StrCmpIW(pr,L"-reindex"))      flags|=COLLECTION_FORCE_REINDEXING;else
+        if(!StrCmpIW(pr,L"-index_hr"))     flags|=COLLECTION_PRINT_INDEX;else
+        if(!StrCmpIW(pr,L"-nogui"))        flags|=FLAG_NOGUI|FLAG_AUTOCLOSE;else
+        if(!StrCmpIW(pr,L"-autoinstall"))  flags|=FLAG_AUTOINSTALL;else
+        if(!StrCmpIW(pr,L"-autoclose"))    flags|=FLAG_AUTOCLOSE;else
+        if(!StrCmpIW(pr,L"-autoupdate"))   flags|=FLAG_AUTOUPDATE;else
+        if(!StrCmpIW(pr,L"-nologfile"))    flags|=FLAG_NOLOGFILE;else
+        if(!StrCmpIW(pr,L"-nosnapshot"))   flags|=FLAG_NOSNAPSHOT;else
+        if(!StrCmpIW(pr,L"-nostamp"))      flags|=FLAG_NOSTAMP;else
+        if( StrStrIW(pr,L"-extractdir:"))  {flags|=FLAG_EXTRACTONLY;wcscpy(extractdir,pr+12);}else
+        if(!StrCmpIW(pr,L"-keepunpackedindex"))flags|=FLAG_KEEPUNPACKINDEX;else
+        if(!StrCmpIW(pr,L"-keeptempfiles"))flags|=FLAG_KEEPTEMPFILES;else
+        if(!StrCmpIW(pr,L"-disableinstall"))flags|=FLAG_DISABLEINSTALL;else
+        if(!StrCmpIW(pr,L"-failsafe"))     flags|=FLAG_FAILSAFE;else
+        if(!StrCmpIW(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
+        if( StrStrIW(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
+        //if( StrStrIW(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
+        if( StrStrIW(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_EMUL;}else
+        if(!StrCmpIW(pr,L"-a:32"))         virtual_arch_type=32;else
+        if(!StrCmpIW(pr,L"-a:64"))         virtual_arch_type=64;else
+        if( StrStrIW(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
         if(StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)Parse_save_installed_id_swith(pr);else
-        if( wcsstr(pr,L"-?"))            CLIParam.ShowHelp=TRUE;else
+        if( StrStrIW(pr,L"-?"))            CLIParam.ShowHelp=TRUE;else
         if(StrCmpIW(pr,HWIDINSTALLED_DEF)==0)Parse_HWID_installed_swith(pr); else
         if(StrCmpIW(pr,GFG_DEF)==0)      continue;
         else
@@ -799,12 +797,12 @@ void mkdir_r(const wchar_t *path)
     while((p=wcschr(p,L'\\')))
     {
         *p=0;
-        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlen(buf)>2)
+        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
             log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
         *p=L'\\';
         p++;
     }
-    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlen(buf)>2)
+    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
         log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 //}
@@ -1857,7 +1855,7 @@ void itembar_t::contextmenu(int x,int y)
             escapeAmp(buf,p);
             InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
             InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
             i++;
         }
     }
@@ -1869,7 +1867,7 @@ void itembar_t::contextmenu(int x,int y)
             escapeAmp(buf,p);
             InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
             InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
             i++;
         }
     }
