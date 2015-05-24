@@ -480,11 +480,11 @@ int Panel::calcFilters()
     return sum;
 }
 
-void Panel::setFilters()
+void Panel::setFilters(int filters_)
 {
     for(int i=0;i<items[0].action_id+1;i++)
         if(items[i].action_id>=ID_SHOW_MISSING&&items[i].action_id<=ID_SHOW_INVALID)
-            items[i].checked=filters&(1<<items[i].action_id)?1:0;
+            items[i].checked=filters_&(1<<items[i].action_id)?1:0;
 }
 
 void Panel::moveWindow(HWND hwnd,int i,int j,int f)
@@ -695,9 +695,9 @@ int panels_hitscan(int hx,int hy,int *ii)
     return -1;
 }
 
-void panel_setfilters(Panel *panel)
+void panel_setfilters(Panel *panel,int filters_)
 {
-    for(int j=0;j<7;j++)panel[j].setFilters();
+    for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
 
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)

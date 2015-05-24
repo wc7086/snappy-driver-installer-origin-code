@@ -89,7 +89,7 @@ public:
     int  print_status();
     void print(State *state);
     void printHWIDS(State *state);
-    const wchar_t *getHWIDby(int num);
+    const wchar_t *getHWIDby(int num,State *state);
 
     //Device(const Device &)=delete;
     //Device &operator=(const Device &)=delete;

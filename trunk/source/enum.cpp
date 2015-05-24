@@ -197,13 +197,13 @@ void Device::printHWIDS(State *state)
     }
 }
 
-const wchar_t *Device::getHWIDby(int num)
+const wchar_t *Device::getHWIDby(int num,State *state)
 {
     int i=0;
 
     if(HardwareID)
     {
-        wchar_t *p=manager_g->matcher->getState()->textas.getw(HardwareID);
+        wchar_t *p=state->textas.getw(HardwareID);
         while(*p)
         {
             if(i==num)return p;
@@ -213,7 +213,7 @@ const wchar_t *Device::getHWIDby(int num)
     }
     if(CompatibleIDs)
     {
-        wchar_t *p=manager_g->matcher->getState()->textas.getw(CompatibleIDs);
+        wchar_t *p=state->textas.getw(CompatibleIDs);
         while(*p)
         {
             if(i==num)return p;

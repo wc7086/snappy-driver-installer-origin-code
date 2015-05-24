@@ -235,7 +235,7 @@ int calc_secttype(const char *s)
     s=StrStrIA(s,".nt");
     if(!s)return -1;
 
-    strcpy(buf,s);
+    StrCpyA(buf,s);
 
     if((p=StrChrA(p+1,'.')))
         if((p=StrChrA(p+1,'.')))
@@ -269,7 +269,7 @@ int calc_markerscore(State *state,const char *path)
     int score=0;
     state->getWinVer(&majver,&minver);
 
-    strcpy(buf,path);
+    StrCpyA(buf,path);
     strtolower(buf,strlen(buf));
 
     for(i=0;i<NUM_MARKERS;i++)
@@ -873,12 +873,12 @@ void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
     int *rr=reinterpret_cast<int *>(texta.get(manufacturer_list[manuf_index].sections));
     if(pos)
     {
-        strcpy(buf,texta.get(rr[0]));
+        StrCpyA(buf,texta.get(rr[0]));
         strcat(buf,".");
         strcat(buf,texta.get(rr[pos]));
     }
     else
-        strcpy(buf,texta.get(rr[pos]));
+        StrCpyA(buf,texta.get(rr[pos]));
 }
 void Hwidmatch::getdrp_drvsection(char *buf)
 {

@@ -247,7 +247,7 @@ void Parser::subStr()
                 if(rr!=string_list->end())
                 {
                     char *res=const_cast<char *>(rr->second.c_str());
-                    strcpy(p_s,res);
+                    StrCpyA(p_s,res);
                     p_s+=strlen(res);
                     v1b=p+1;
                     flag=1;
@@ -1015,7 +1015,7 @@ void Driverpack::print_index_hr()
                 if(i>=0&&cnts[i]<0)cnts[i]=0;
                 if(i<0&&pos>0)fprintf(f,"!!![%s]\n",buf);
                 fprintf(f,"        [%s]\n",buf);
-//                strcpy(buf+1000,buf);
+
                 for(desc_index=0;desc_index<desc_list.size();desc_index++)
                     if(desc_list[desc_index].manufacturer_index==manuf_index&&
                        desc_list[desc_index].sect_pos==pos)
@@ -1077,12 +1077,12 @@ void Driverpack::genhashes()
     for(auto &it:inffile)
     {
         char filename[BUFLEN];
-        strcpy(filename,texta.get(it.infpath));
+        StrCpyA(filename,texta.get(it.infpath));
         char *field=filename+strlen(filename);
 
         for(int j=CatalogFile;j<=CatalogFile_ntamd64;j++)if(it.fields[j])
         {
-            strcpy(field,texta.get(it.fields[j]));
+            StrCpyA(field,texta.get(it.fields[j]));
             strtolower(filename,strlen(filename));
 
             auto got=cat_list.find(filename);
