@@ -394,7 +394,7 @@ goaround:
             redrawfield();
         }
         else
-        if(wcsstr(hwidmatch->getdrp_packname(),L"unpacked.7z"))
+        if(StrStrW(hwidmatch->getdrp_packname(),L"unpacked.7z"))
         {
             log_con("Unpacked '%S'\n",hwidmatch->getdrp_packpath());
             unpacked=1;
@@ -411,11 +411,11 @@ goaround:
             itembar1=itembar;
             for(j=i;j<manager_g->items_list.size();j++,itembar1++)
                 if(itembar1->checked&&
-                   !wcscmp(hwidmatch->getdrp_packpath(),itembar1->hwidmatch->getdrp_packpath())&&
-                   !wcscmp(hwidmatch->getdrp_packname(),itembar1->hwidmatch->getdrp_packname()))
+                   !StrCmpW(hwidmatch->getdrp_packpath(),itembar1->hwidmatch->getdrp_packpath())&&
+                   !StrCmpW(hwidmatch->getdrp_packname(),itembar1->hwidmatch->getdrp_packname()))
             {
                 wsprintf(buf,L" \"%S\"",itembar1->hwidmatch->getdrp_infpath());
-                if(!wcsstr(cmd,buf))wcscat(cmd,buf);
+                if(!StrStrW(cmd,buf))wcscat(cmd,buf);
             }
             log_con("Extracting via '%S'\n",cmd);
             itembar->install_status=instflag&INSTALLDRIVERS?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;

@@ -70,7 +70,7 @@ void Matcher::sorta(int *v)
             }
             else
             if(ismi==ismj)
-            if((hwidmatch_i&&hwidmatch_j&&wcscmp(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
+            if((hwidmatch_i&&hwidmatch_j&&StrCmpW(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
                ||
                (!hwidmatch_i&&hwidmatch_j))
             {
@@ -226,7 +226,7 @@ void Manager::filter(int options)
             {
                 if(itembar_drp)
                 {
-                    if(!itembar_drpcur||(wcscmp(itembar_drp->hwidmatch->getdrp_packname(),itembar_drpcur->hwidmatch->getdrp_packname())!=0))
+                    if(!itembar_drpcur||(StrCmpW(itembar_drp->hwidmatch->getdrp_packname(),itembar_drpcur->hwidmatch->getdrp_packname())!=0))
                     {
                         itembar_drp->isactive=1;
                         itembar_drpcur=itembar_drp;
@@ -1313,13 +1313,13 @@ int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
     }
     if(wcslen(ta+a->devicematch->device->getDriver())>0)
     {
-        if(!wcscmp(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
+        if(!StrCmpW(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
     }
     else
     {
         if(wcslen(ta+a->devicematch->device->getDescr())>0)
         {
-            if(!wcscmp(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
+            if(!StrCmpW(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
         }
     }
 
@@ -1788,7 +1788,7 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
         }
     }
     if(devicematch_f->device->CompatibleIDs)
@@ -1802,7 +1802,7 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
         }
     }
     if(!cur_driver||!hwidmatch_f)cm_hwid=0;
@@ -1892,16 +1892,7 @@ void popup_about(HDC hdcMem)
 void format_size(wchar_t *buf,long long val,int isspeed)
 {
 #ifdef USE_TORRENT
-    std::wstringbuf buffer;
-    std::wostream os (&buffer);
-    os.precision(3);
-    os.setf(std::ios::fixed);
-    if(val<(1<<10))os<<val <<' ' <<STR(STR_UPD_BYTES);else
-    if(val<(1<<20))os<<(double)val/(1<<10) <<' ' <<STR(STR_UPD_BYTES+1);else
-    if(val<(1<<30))os<<(double)val/(1<<20) <<' ' <<STR(STR_UPD_BYTES+2);else
-    if(val<((long long)1<<40))os<<(double)val/(1<<30) <<' ' <<STR(STR_UPD_BYTES+3);
-    const wchar_t* cstr = buffer.str().c_str();
-    lstrcpy(buf,cstr);
+    StrFormatByteSizeW(val,buf,BUFLEN);
 #else
     buf[0]=0;
     UNREFERENCED_PARAMETER(val)

@@ -132,7 +132,7 @@ void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem
     wchar_t buf[BUFLEN];
 
     ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
-    if(wcscmp(str,buf)!=0)
+    if(StrCmpW(str,buf)!=0)
         ListView_SetItemText(hwnd,iItem,iSubItem,const_cast<wchar_t *>(str));
 }
 
@@ -412,7 +412,7 @@ int UpdateDialog_t::populate(int update)
             indexsize+=fe.size;
             indexdownloaded+=file_progress[i];
             wsprintf(buf,L"%S",filenamefull);
-            *wcsstr(buf,L"DP_")=L'_';
+            *StrStrW(buf,L"DP_")=L'_';
             strsub(buf,L"indexes\\SDI",index_dir);
             if(!PathFileExists(buf))
                 missingindexes=1;

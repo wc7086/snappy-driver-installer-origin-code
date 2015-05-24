@@ -60,7 +60,7 @@ int Vault::readvalue(const wchar_t *str)
 {
     wchar_t *p;
 
-    p=wcsstr(str,L"0x");
+    p=StrStrW(str,L"0x");
     return p?wcstol(str,nullptr,16):_wtoi_my(str);
 }
 
@@ -76,7 +76,7 @@ void Vault::parse()
         if(le)*le=0;
 
         // Comments
-        if(wcsstr(lhs,L"//"))*wcsstr(lhs,L"//")=0;
+        if(StrStrW(lhs,L"//"))*StrStrW(lhs,L"//")=0;
 
         // Split LHS and RHS
         rhs=wcschr(lhs,L'=');
@@ -101,15 +101,15 @@ void Vault::parse()
 
             if(r1)               // String
             {
-                while(wcsstr(r1,L"\\n"))
+                while(StrStrW(r1,L"\\n"))
                 {
-                    wchar_t *yy=wcsstr(r1,L"\\n");
+                    wchar_t *yy=StrStrW(r1,L"\\n");
                     wcscpy(yy,yy+1);
                     *yy=L'\n';
                 }
-                while(wcsstr(r1,L"\\0"))
+                while(StrStrW(r1,L"\\0"))
                 {
-                    wchar_t *yy=wcsstr(r1,L"\\0");
+                    wchar_t *yy=StrStrW(r1,L"\\0");
                     wcscpy(yy,yy+1);
                     *yy=1;
                 }
@@ -303,7 +303,7 @@ void theme_set(int i)
         wchar_t *str=D_STR(boxindex[i]+4);
         int j;
         for(j=0;j<i;j++)
-            if(!wcscmp(str,D_STR(boxindex[j]+4)))
+            if(!StrCmpW(str,D_STR(boxindex[j]+4)))
         {
             box[i].makecopy(box[j]);
             //log_con("%d Copy %S %d\n",i,str,j);
@@ -320,7 +320,7 @@ void theme_set(int i)
         wchar_t *str=D_STR(iconindex[i]);
         int j;
         for(j=0;j<i;j++)
-            if(!wcscmp(str,D_STR(iconindex[j])))
+            if(!StrCmpW(str,D_STR(iconindex[j])))
         {
             icon[i].makecopy(icon[j]);
             //log_con("%d Copy %S %d\n",i,str,j);

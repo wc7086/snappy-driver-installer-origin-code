@@ -177,7 +177,7 @@ void Device::printHWIDS(State *state)
         while(*p)
         {
             log_file("  %S\n",p);
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
         }
     }
     else
@@ -192,7 +192,7 @@ void Device::printHWIDS(State *state)
         while(*p)
         {
             log_file("  %S\n",p);
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
         }
     }
 }
@@ -207,7 +207,7 @@ const wchar_t *Device::getHWIDby(int num)
         while(*p)
         {
             if(i==num)return p;
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
             i++;
         }
     }
@@ -217,7 +217,7 @@ const wchar_t *Device::getHWIDby(int num)
         while(*p)
         {
             if(i==num)return p;
-            p+=lstrlen(p)+1;
+            p+=lstrlenW(p)+1;
             i++;
         }
     }
@@ -396,7 +396,7 @@ int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
     while(*p)
     {
         if(!StrCmpIW(p,str))return dev_pos;
-        p+=lstrlen(p)+1;
+        p+=lstrlenW(p)+1;
         dev_pos++;
     }
     return -1;
@@ -1126,7 +1126,7 @@ void State::isnotebook_a()
             while(*p)
             {
                 if(StrStrIW(p,L"*ACPI0003"))batdev=1;
-                p+=lstrlen(p)+1;
+                p+=lstrlenW(p)+1;
             }
         }
     }
@@ -1194,7 +1194,7 @@ int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
                     size=MAX_PATH;
                     if(RegQueryValueEx(hKey2, L"Driver",nullptr,nullptr,(LPBYTE)&str,&size)==ERROR_SUCCESS)
                     {
-                        if(wcscmp(str,path)==0)
+                        if(StrCmpW(str,path)==0)
                         {
                             HKEY hKey3;
                             if(RegOpenKeyEx(hKey2,L"Device Parameters",0,KEY_READ,&hKey3)==ERROR_SUCCESS)
@@ -1212,7 +1212,7 @@ int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
                                     model2[1]=((byte1&3)<<3)+((byte2&0xE0)>>5)+64;
                                     model2[2]=(byte2&0x1F)+64;
                                     wsprintf(model2+3,L"%X%X%X%X",(EDID[p+3]&0xf0)>>4,EDID[p+3]&0xf,(EDID[p+2]&0xf0)>>4,EDID[p+2]&0x0f);
-                                    if(wcscmp(model,model2)==0)
+                                    if(StrCmpW(model,model2)==0)
                                     {
                                         *Width=EDID[22];
                                         *Height=EDID[21];

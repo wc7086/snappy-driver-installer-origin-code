@@ -170,7 +170,7 @@ void Image::load(int i)
 
     release();
 
-    if(wcsstr(filename,L"RES_"))
+    if(StrStrW(filename,L"RES_"))
         loadFromRes(_wtoi_my(filename+4));
     else
         loadFromFile(filename);

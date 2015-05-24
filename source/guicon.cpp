@@ -546,7 +546,7 @@ DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait)
     ShExecInfo.nShow=show;
 
     log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
-    if(!wcscmp(file,L"open"))
+    if(!StrCmpW(file,L"open"))
         ShellExecute(nullptr,L"open",cmd,nullptr,nullptr,SW_SHOWNORMAL);
     else
         ShellExecuteEx(&ShExecInfo);
