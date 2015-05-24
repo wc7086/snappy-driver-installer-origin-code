@@ -677,7 +677,7 @@ void itembar_t::str_status(wchar_t *buf)
             }
         }
         if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
-        if(hwidmatch->getAltsectscore()<2/*&&manager_g->matcher->state->platform.dwMajorVersion>=6*/)
+        if(hwidmatch->getAltsectscore()<2)
         {
             wcscat(buf,STR(STR_STATUS_NOTSIGNED));
         }
@@ -709,7 +709,6 @@ int itembar_t::box_status()
         case SLOT_DOWNLOAD:
         case SLOT_NOUPDATES:
             return BOX_NOUPDATES;
-            //return manager_g->items_list.size()>RES_SLOTS?BOX_NOUPDATES:BOX_DRVITEM_IF;
 
         case SLOT_RESTORE_POINT:
             switch(install_status)
@@ -814,7 +813,7 @@ int itembar_t::box_status()
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
 void Manager::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index){items_list[floating_itembar].popup_drivercmp(manager,hdcMem,rect,index);}
 void Manager::contextmenu(int x,int y){items_list[floating_itembar].contextmenu(x,y);}
-const wchar_t *Manager::getHWIDby(int id){return items_list[floating_itembar].devicematch->device->getHWIDby(id);}
+const wchar_t *Manager::getHWIDby(int id){return items_list[floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
 void Manager::getINFpath(int wp)
 {

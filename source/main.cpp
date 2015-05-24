@@ -22,63 +22,56 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Manager
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
-int manager_active=0;
-int bundle_display=1;
-int bundle_shadow=0;
 int volatile installmode=MODE_NONE;
+int ctrl_down=0;
+int space_down=0;
+int shift_down=0;
 int invaidate_set;
-CRITICAL_SECTION sync;
 int num_cores;
 
 // Window
 HINSTANCE ghInst;
+int main1x_c,main1y_c;
+int mainx_c,mainy_c;
+CRITICAL_SECTION sync;
 HFONT hFont=nullptr;
+HWND hMain=nullptr,hField=nullptr,hPopup=nullptr,hLang=nullptr,hTheme=nullptr;
+
+// Window helpers
+int floating_type=0;
+int floating_itembar=-1;
+int floating_x=1,floating_y=1;
+int horiz_sh=0;
+int hideconsole=SW_HIDE;
+unsigned offset_target=0;
+int kbpanel=KB_NONE,kbitem[]={0,0,0,0,0,0,0,0,0,0,0};
+int ret_global=0;
+
+// Window helpers (local)
+int panel_lasti=0;
+int field_lasti,field_lastz;
+
 Canvas *canvasMain;
 Canvas *canvasField;
 Canvas *canvasPopup;
 const wchar_t classMain[]= L"classSDIMain";
 const wchar_t classField[]=L"classSDIField";
 const wchar_t classPopup[]=L"classSDIPopup";
-HWND hMain=nullptr;
-HWND hField=nullptr;
-HWND hPopup=nullptr;
-HWND hLang=nullptr;
-HWND hTheme=nullptr;
 
-// Window helpers
-int panel_lasti=0;
-int field_lasti,field_lastz;
-int main1x_c,main1y_c;
-int mainx_c,mainy_c;
-int mainx_w,mainy_w;
 int mousex=-1,mousey=-1,mousedown=0,mouseclick=0;
-//int cntd=0;
-int hideconsole=SW_HIDE;
-unsigned offset_target=0;
-
-int kbpanel=KB_NONE;
-int kbitem[]={0,0,0,0,0,0,0,0,0,0,0};
-int ctrl_down=0;
-int space_down=0;
-int shift_down=0;
-int floating_type=0;
-int floating_itembar=-1;
-int floating_x=1,floating_y=1;
-int horiz_sh=0;
+volatile int deviceupdate_exitflag=0;
+HANDLE deviceupdate_event;
 int scrollvisible=0;
 
-int ret_global=0;
-volatile int deviceupdate_exitflag=0;
-//FILE *snplist=nullptr;
-HANDLE deviceupdate_event;
+int manager_active=0;
+int bundle_display=1;
+int bundle_shadow=0;
 
 // Settings
 wchar_t drp_dir   [BUFLEN]=L"drivers";
 wchar_t drpext_dir[BUFLEN]=L"";
 wchar_t index_dir [BUFLEN]=L"indexes\\SDI";
-wchar_t output_dir[BUFLEN]=L"indexes\\SDI\\txt";
 wchar_t data_dir  [BUFLEN]=L"tools\\SDI";
-wchar_t logO_dir  [BUFLEN]=L"logs";
 wchar_t log_dir   [BUFLEN];
 
 wchar_t state_file[BUFLEN]=L"untitled.snp";
@@ -88,12 +81,8 @@ wchar_t finish_rb [BUFLEN]=L"";
 wchar_t HWIDs     [BUFLEN]=L"";
 
 int flags=COLLECTION_USE_LZMA;
-//int flags=0;
 int statemode=STATEMODE_REAL;
 int expertmode=0;
-int license=0;
-wchar_t curlang [BUFLEN]=L"";
-wchar_t curtheme[BUFLEN]=L"(default)";
 int hintdelay=500;
 int filters=
     (1<<ID_SHOW_MISSING)+
@@ -104,6 +93,14 @@ int filters=
 int virtual_os_version=0;
 int virtual_arch_type=0;
 
+// Settings (local)
+wchar_t curlang [BUFLEN]=L"";
+wchar_t curtheme[BUFLEN]=L"(default)";
+wchar_t output_dir[BUFLEN]=L"indexes\\SDI\\txt";
+wchar_t logO_dir  [BUFLEN]=L"logs";
+int license=0;
+
+// Windows name
 const wchar_t *windows_name[NUM_OS]=
 {
     L"Windows 2000",
@@ -234,7 +231,7 @@ void settings_parse(const wchar_t *str,int ind)
     panel3_w[3].checked=expertmode;
 
     // Left panel
-    panel_setfilters(panels);
+    panel_setfilters(panels,filters);
 }
 
 void settings_save()
@@ -392,7 +389,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     vLang.load(0);
 
 // Allocate resources
-    bundle_t bundle[2];
+    Bundle bundle[2];
     bundle[0].bundle_init();
     bundle[1].bundle_init();
     manager_v[0].init(bundle[bundle_display].getMatcher());
@@ -402,7 +399,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 // Start device/driver scan
     bundle[bundle_display].bundle_prep();
     invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
-    HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&thread_loadall,&bundle[0],0,nullptr);
+    HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&Bundle::thread_loadall,&bundle[0],0,nullptr);
 
 // Check updates
 #ifdef USE_TORRENT
@@ -466,9 +463,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 //}
 
 //{ Threads
-unsigned int __stdcall bundle_t::thread_scandevices(void *arg)
+unsigned int __stdcall Bundle::thread_scandevices(void *arg)
 {
-    bundle_t *bundle=(bundle_t *)arg;
+    Bundle *bundle=(Bundle *)arg;
     State *state=&bundle->state;
 
     if(statemode==STATEMODE_REAL)state->scanDevices();
@@ -477,9 +474,9 @@ unsigned int __stdcall bundle_t::thread_scandevices(void *arg)
     return 0;
 }
 
-unsigned int __stdcall bundle_t::thread_loadindexes(void *arg)
+unsigned int __stdcall Bundle::thread_loadindexes(void *arg)
 {
-    bundle_t *bundle=(bundle_t *)arg;
+    Bundle *bundle=(Bundle *)arg;
     Collection *collection=&bundle->collection;
 
     //if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
@@ -487,9 +484,9 @@ unsigned int __stdcall bundle_t::thread_loadindexes(void *arg)
     return 0;
 }
 
-unsigned int __stdcall bundle_t::thread_getsysinfo(void *arg)
+unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
 {
-    bundle_t *bundle=(bundle_t *)arg;
+    Bundle *bundle=(Bundle *)arg;
     State *state=&bundle->state;
 
     if(statemode==STATEMODE_REAL)state->getsysinfo_slow();
@@ -499,9 +496,9 @@ unsigned int __stdcall bundle_t::thread_getsysinfo(void *arg)
     return 0;
 }
 
-unsigned int __stdcall thread_loadall(void *arg)
+unsigned int __stdcall Bundle::thread_loadall(void *arg)
 {
-    bundle_t *bundle=(bundle_t *)arg;
+    Bundle *bundle=(Bundle *)arg;
 
     InitializeCriticalSection(&sync);
     do
@@ -563,18 +560,18 @@ unsigned int __stdcall thread_loadall(void *arg)
 //}
 
 //{ Bundle
-void bundle_t::bundle_init()
+void Bundle::bundle_init()
 {
     collection.init(drp_dir,index_dir,output_dir);
     matcher.init(&state,&collection);
 }
 
-void bundle_t::bundle_prep()
+void Bundle::bundle_prep()
 {
     state.getsysinfo_fast();
 }
 
-void bundle_t::bundle_load(bundle_t *pbundle)
+void Bundle::bundle_load(Bundle *pbundle)
 {
     HANDLE thandle[3];
 
@@ -594,7 +591,7 @@ void bundle_t::bundle_load(bundle_t *pbundle)
     matcher.populate();
 }
 
-void bundle_t::bundle_lowprioirity()
+void Bundle::bundle_lowprioirity()
 {
     wchar_t filename[BUFLEN];
     time_startup=GetTickCount()-time_startup;
@@ -1027,7 +1024,8 @@ LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if(mousedown==2||abs(mousex-x)>2||abs(mousey-y)>2)
                 {
                     mousedown=2;
-                    MoveWindow(hMain,rect.left+x-mousex,rect.top+y-mousey,mainx_w,mainy_w,1);
+                    MoveWindow(hMain,rect.left+x-mousex,rect.top+y-mousey,
+                               rect.right-rect.left,rect.bottom-rect.top,1);
                 }
             }
             return 1;
@@ -1294,7 +1292,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_BUNDLEREADY:
             {
-                bundle_t *bb=(bundle_t *)wParam;
+                Bundle *bb=(Bundle *)wParam;
                 Manager *manager_prev=manager_g;
                 log_con("{Sync");
                 EnterCriticalSection(&sync);
@@ -1484,8 +1482,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             GetWindowRect(hwnd,&rect);
             main1x_c=x;
             main1y_c=y;
-            mainx_w=rect.right-rect.left;
-            mainy_w=rect.bottom-rect.top;
 
             i=D(PNLITEM_OFSX)+D(PANEL_LIST_OFSX);
             j=D(PANEL_LIST_OFSX)?0:1;

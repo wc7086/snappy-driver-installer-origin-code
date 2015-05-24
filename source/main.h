@@ -76,9 +76,11 @@ extern "C"
 #include "Lzma86.h"
 }
 
-#define wcslen lstrlenW
-#define wcschr StrChrW
-#define wcscat StrCatW
+#define wcscpy StrCpyW      // 72
+#define wcslen lstrlenW     // 56
+#define wcschr StrChrW      // 14
+#define wcscat StrCatW      // 33
+// Total: 175
 
 // SDI
 #include "svnrev.h"
@@ -215,58 +217,59 @@ enum install_mode
 // Manager
 extern Manager *manager_g;
 extern int volatile installmode;
-extern int driverpackpath;
-extern CRITICAL_SECTION sync;
 extern int ctrl_down;
 extern int space_down;
+extern int shift_down;
 extern int invaidate_set;
 extern int num_cores;
-
-// Windows ver
-#define NUM_OS 8
-extern const wchar_t *windows_name[NUM_OS];
-extern int windows_ver[NUM_OS];
 
 // Window
 extern HINSTANCE ghInst;
 extern int main1x_c,main1y_c;
 extern int mainx_c,mainy_c;
+extern CRITICAL_SECTION sync;
 extern HFONT hFont;
-extern HWND hPopup,hMain,hField;
-extern HWND hTheme;
+extern HWND hPopup,hMain,hField,hLang,hTheme;
 
 // Window helpers
 extern int floating_type;
 extern int floating_itembar;
 extern int floating_x,floating_y;
 extern int horiz_sh;
-extern int ret_global;
+extern int hideconsole;
 extern unsigned offset_target;
 extern int kbpanel,kbitem[KB_PANEL_CHK+1];
-extern int hideconsole;
+extern int ret_global;
 
 // Settings
 extern wchar_t drp_dir   [BUFLEN];
-extern wchar_t index_dir [BUFLEN];
 extern wchar_t drpext_dir[BUFLEN];
+extern wchar_t index_dir [BUFLEN];
 extern wchar_t data_dir  [BUFLEN];
 extern wchar_t log_dir   [BUFLEN];
+
 extern wchar_t state_file[BUFLEN];
 extern wchar_t finish    [BUFLEN];
 extern wchar_t finish_upd[BUFLEN];
 extern wchar_t finish_rb [BUFLEN];
 extern wchar_t HWIDs     [BUFLEN];
-extern int hintdelay;
-extern int filters;
+
 extern int flags;
 extern int statemode;
 extern int expertmode;
+extern int hintdelay;
+extern int filters;
 extern int virtual_os_version;
 extern int virtual_arch_type;
+
+// Windows version
+#define NUM_OS 8
+extern const wchar_t *windows_name[NUM_OS];
+extern int windows_ver[NUM_OS];
 //}
 
-//{ Structs
-class bundle_t
+//Bundle
+class Bundle
 {
     State state;
     Collection collection;
@@ -278,18 +281,15 @@ private:
     static unsigned int __stdcall thread_getsysinfo(void *arg);
 
 public:
-    friend unsigned int __stdcall thread_loadall(void *arg);
-
     Matcher *getMatcher(){return &matcher;}
+
+    static unsigned int __stdcall thread_loadall(void *arg);
 
     void bundle_init();
     void bundle_prep();
-    void bundle_load(bundle_t *pbundle);
+    void bundle_load(Bundle *pbundle);
     void bundle_lowprioirity();
 };
-//}
-
-unsigned int __stdcall thread_loadall(void *arg);
 
 // Main
 void settings_parse(const wchar_t *str,int ind);
