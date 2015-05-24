@@ -197,6 +197,12 @@ public:
 
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+//warning: 'class Collection' has pointer data members
+//warning: 'Collection::driverpack_list' should be initialized in the member initialization list
+//warning: 'class Driverpack' has pointer data members
+
 // Collection
 class Collection
 {
@@ -290,6 +296,7 @@ public:
 
     friend class Hwidmatch;
 };
+#pragma GCC diagnostic pop
 
 // Misc
 void findosattr(char *bufa,char *adr,int len);

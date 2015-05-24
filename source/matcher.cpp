@@ -237,9 +237,9 @@ int calc_secttype(const char *s)
 
     strcpy(buf,s);
 
-    if((p=strchr(p+1,'.')))
-        if((p=strchr(p+1,'.')))
-            if((p=strchr(p+1,'.')))*p=0;
+    if((p=StrChrA(p+1,'.')))
+        if((p=StrChrA(p+1,'.')))
+            if((p=StrChrA(p+1,'.')))*p=0;
 
     for(int i=0;i<NUM_DECS;i++)if(!StrCmpIA(buf+3,nts[i]+2))return i;
     return -1;
@@ -274,7 +274,7 @@ int calc_markerscore(State *state,const char *path)
 
     for(i=0;i<NUM_MARKERS;i++)
     {
-        if(strstr(buf,markers[i].name))
+        if(StrStrIA(buf,markers[i].name))
         {
             score=1;
             if(markers[i].major==0){continue;}
@@ -619,7 +619,7 @@ Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State
     markerscore=calc_markerscore(state,getdrp_infpath());
     altsectscore=calc_altsectscore(state,decorscore);
     score=calc_score(calc_catalogfile(),getdrp_drvfeature(),
-        identifierscore,state,strstr(getdrp_drvinstallPicked(),".nt")?1:0);
+        identifierscore,state,StrStrIA(getdrp_drvinstallPicked(),".nt")?1:0);
     status=calc_status(state);
 }
 
@@ -787,8 +787,8 @@ int Hwidmatch::isdup(Hwidmatch *match2,char *sect1)
     match2->getdrp_drvsection(sect2);
 
     if(getdrp_infcrc()==match2->getdrp_infcrc()&&
-        !strcmp(getdrp_drvHWID(),match2->getdrp_drvHWID())&&
-        !strcmp(sect1,sect2))return 1;
+        !StrCmpA(getdrp_drvHWID(),match2->getdrp_drvHWID())&&
+        !StrCmpA(sect1,sect2))return 1;
     return 0;
 }
 //}

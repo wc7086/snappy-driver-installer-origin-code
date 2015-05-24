@@ -334,7 +334,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
                 fread(buf,BUFLEN,1,f);
                 fclose(f);
                 buf[BUFLEN-1]=0;
-                if(!strstr(buf,"[NOT_A_VIRUS]")&&StrStrIA(buf,"open"))
+                if(!StrStrIA(buf,"[NOT_A_VIRUS]")&&StrStrIA(buf,"open"))
                     manager_g->itembar_setactive(SLOT_VIRUS_AUTORUN,update=1);
             }
             else

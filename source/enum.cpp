@@ -416,7 +416,7 @@ void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos
 unsigned Driver::calc_score_h(State *state)
 {
     return calc_score(catalogfile,feature,identifierscore, // TODO: check signature
-        state,StrStrI(state->textas.getw(InfSectionExt),L".nt")?1:0);
+        state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")?1:0);
 }
 
 void Driver::print(State *state)
@@ -1125,7 +1125,7 @@ void State::isnotebook_a()
             wchar_t *p=textas.getw(cur_device.getHardwareID());
             while(*p)
             {
-                if(StrStrI(p,L"*ACPI0003"))batdev=1;
+                if(StrStrIW(p,L"*ACPI0003"))batdev=1;
                 p+=lstrlen(p)+1;
             }
         }

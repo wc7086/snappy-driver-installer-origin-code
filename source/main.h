@@ -22,14 +22,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Windows
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <commdlg.h>
-#include <setupapi.h>
-#include <shlwapi.h>
-#include <shobjidl.h>
-#include <shellapi.h>
-#include <shlobj.h>
-#include <winerror.h>
-#include "SRRestorePtAPI.h"
+#include <commdlg.h>        // for GetOpenFileName()
+#include <setupapi.h>       // for SetupDiGetClassDescription()
+#include <shlwapi.h>        // for StrStr
+#include <shobjidl.h>       // for ShowProgressInTaskbar()
+#include <shellapi.h>       // for CommandLineToArgvW [x64]
+#include <shlobj.h>         // for SHBrowseForFolder()
+#include "SRRestorePtAPI.h" // for RestorePoint
+
 typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 #ifndef _WIN64
 #define DISPLAY_DEVICE_ACTIVE         1
@@ -37,22 +37,17 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #endif
 
 // C
-#include <assert.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
-#include <errno.h>
-#include <ctype.h>
-#include <signal.h>
-#include <process.h>
-#include <direct.h>
-#include <locale.h>
+#include <stdio.h>      // for _wfopen
+#include <time.h>       // for time
+#include <math.h>       // for sqrt
+#include <signal.h>     // for signal
+#include <process.h>    // for _beginthreadex
+#include <direct.h>     // for _wmkdir
 
 // C++
+#include <sstream>
 #include <unordered_map>
-#include <string>
 #include <vector>
-#include <exception>
 #include <memory>
 
 // BOOST
@@ -66,6 +61,21 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <boost/lockfree/queue.hpp>
 #pragma GCC diagnostic pop
 #endif
+
+// webp
+#include <webp\decode.h>
+
+// 7-zip
+extern "C"
+{
+#include "7z.h"
+#include "7zAlloc.h"
+#include "7zCrc.h"
+#include "7zFile.h"
+#include "7zVersion.h"
+#include "LzmaEnc.h"
+#include "Lzma86.h"
+}
 
 // SDI
 #include "svnrev.h"
@@ -82,21 +92,6 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include "draw.h"
 #include "cli.h"
 #include "update.h"
-
-// webp
-#include <webp\decode.h>
-
-// 7-zip
-extern "C"
-{
-#include "7z.h"
-#include "7zAlloc.h"
-#include "7zCrc.h"
-#include "7zFile.h"
-#include "7zVersion.h"
-#include "LzmaEnc.h"
-#include "Lzma86.h"
-}
 //}
 
 //{ Defines
@@ -150,10 +145,10 @@ enum STATEMODE
 // Mode
 enum INVALIDATE
 {
-    INVALIDATE_INDEXES      =1,
-    INVALIDATE_SYSINFO      =2,
-    INVALIDATE_DEVICES      =4,
-    INVALIDATE_MANAGER      =8,
+    INVALIDATE_INDEXES  =1,
+    INVALIDATE_SYSINFO  =2,
+    INVALIDATE_DEVICES  =4,
+    INVALIDATE_MANAGER  =8,
 };
 
 // Popup window
