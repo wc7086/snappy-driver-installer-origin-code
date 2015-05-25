@@ -15,16 +15,18 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define BUFLEN              4096
+#define BUFLEN 4096
+#define WIN32_LEAN_AND_MEAN
+#undef __STRICT_ANSI__
+//#define BENCH_MODE
 
 //{ Includes
 
 // Windows
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commdlg.h>        // for GetOpenFileName()
 #include <setupapi.h>       // for SetupDiGetClassDescription()
-#include <shlwapi.h>        // for StrStr
+#include <shlwapi.h>        // for StrStrIW
 #include <shobjidl.h>       // for ShowProgressInTaskbar()
 #include <shellapi.h>       // for CommandLineToArgvW [x64]
 #include <shlobj.h>         // for SHBrowseForFolder()
@@ -76,11 +78,11 @@ extern "C"
 #include "Lzma86.h"
 }
 
-#define wcscpy StrCpyW      // 72
-#define wcslen lstrlenW     // 56
-#define wcschr StrChrW      // 14
-#define wcscat StrCatW      // 33
-// Total: 175
+#ifndef BENCH_MODE
+#define StrStrW wcsstr
+#define StrCmpIW wcsicmp
+#define StrCmpW wcscmp
+#endif
 
 // SDI
 #include "svnrev.h"

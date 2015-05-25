@@ -367,6 +367,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         log_con("\n");
     }
 
+#ifdef BENCH_MODE
+    benchmark();
+#endif
+
     // Make dirs
     mkdir_r(drp_dir);
     mkdir_r(index_dir);

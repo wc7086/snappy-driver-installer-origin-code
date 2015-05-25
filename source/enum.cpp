@@ -291,10 +291,10 @@ void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_po
     *inf_pos=-1;
     for(unsigned HWID_index=start_index;HWID_index<HWID_list.size();HWID_index++)
     {
-        if(!StrCmpIA(texta.get(HWID_list[HWID_index].getHWID()),hwid))
+        if(!strcmpi(texta.get(HWID_list[HWID_index].getHWID()),hwid))
         {
             Hwidmatch hwidmatch(this,HWID_index);
-            if(StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
+            if(!strcmpi(sect,hwidmatch.getdrp_drvinstallPicked()))
             {
                 *feature=hwidmatch.getdrp_drvfeature();
                 //if(got==inf_list->end())

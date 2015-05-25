@@ -556,4 +556,105 @@ DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait)
     GetExitCodeProcess(ShExecInfo.hProcess,&ret);
     return ret;
 }
+
+#ifdef BENCH_MODE
+void benchmark()
+{
+    char buf[BUFLEN];
+    wchar_t bufw[BUFLEN];
+    long long i,tm1,tm2;
+    int a;
+
+    // wsprintfA is faster but doesn't support %f
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024;i++)wsprintfA(buf,"Test str %ws",L"wchar str");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024;i++)sprintf(buf,"Test str %ws",L"wchar str");
+    tm2=GetTickCount()-tm2;
+    log_con("%c wsprintfA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c sprintf   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024;i++)wsprintfW(bufw,L"Test str %s",L"wchar str");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024;i++)swprintf(bufw,L"Test str %s",L"wchar str");
+    tm2=GetTickCount()-tm2;
+    log_con("%c wsprintfW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c swprintf  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)strcasecmp("Test str %ws","wchar str");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
+    tm2=GetTickCount()-tm2;
+    log_con("%c strcasecmp \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)StrCmpIA("Test str %ws","wchar str");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrCmpIA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)StrCmpW(L"Test str %ws",bufw); // StrCmpW == lstrcmp
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)wcscmp(L"Test str %ws",bufw);
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrCmpW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c wcscmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)a=StrCmpA("Test str %ws",buf);
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)a=strcmp("Test str %ws",buf);
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrCmpA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c strcmp \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)StrStrA("Test str %ws",buf);
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)strstr("Test str %ws","Test str %ws");
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrStrA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c strstr \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)StrStrW(L"Test str %ws",bufw);
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)wcsstr(L"Test str %ws",bufw);
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrStrW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c wcsstr  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5*2;i++)lstrlenA(buf);
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5*2;i++)strlen(buf);
+    tm2=GetTickCount()-tm2;
+    log_con("%c lstrlenA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c strlen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5*2;i++)lstrlenW(bufw);
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5*2;i++)wcslen(bufw);
+    tm2=GetTickCount()-tm2;
+    log_con("%c lstrlenW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c wcslen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+}
+#endif
 //}
