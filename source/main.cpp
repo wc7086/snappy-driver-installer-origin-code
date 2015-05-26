@@ -1076,6 +1076,7 @@ void checktimer(const wchar_t *str,long long t,int uMsg)
 
 void redrawfield()
 {
+    if(flags&FLAG_NOGUI)return;
     if(!hField)
     {
         log_err("ERROR in redrawfield(): hField is 0\n");
@@ -1086,6 +1087,7 @@ void redrawfield()
 
 void redrawmainwnd()
 {
+    if(flags&FLAG_NOGUI)return;
     if(!hMain)
     {
         log_err("ERROR in redrawmainwnd(): hMain is 0\n");

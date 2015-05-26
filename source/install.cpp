@@ -255,7 +255,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     wchar_t hwid[BUFLEN];
     wchar_t inf[BUFLEN];
     wchar_t buf[BUFLEN];
-    unsigned i,j,downdrivers=0;
+    unsigned i,j;
     RESTOREPOINTINFOW pRestorePtSpec;
     STATEMGRSTATUS pSMgrStatus;
     HINSTANCE hinstLib=nullptr;
@@ -276,6 +276,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
 
     // Download driverpacks
 #ifdef USE_TORRENT
+    unsigned downdrivers=0;
     itembar=&manager_g->items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
         if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())

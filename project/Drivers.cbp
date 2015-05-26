@@ -8,10 +8,10 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Win32 ReleaseU">
+			<Target title="Win32 Release">
 				<Option output="../SDI_R" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
-				<Option object_output="../obj/ReleaseU" />
+				<Option object_output="../obj/Release" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -33,12 +33,13 @@
 					<Add library="ws2_32" />
 					<Add library="boost_system32" />
 					<Add directory="../lib/ReleaseU" />
+					<Add directory="C:/Boost/lib" />
 				</Linker>
 			</Target>
-			<Target title="Win32 DebugU">
+			<Target title="Win32 Debug">
 				<Option output="../SDI_RD" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
-				<Option object_output="../obj/DebugU" />
+				<Option object_output="../obj/Debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -54,17 +55,18 @@
 					<Add option="-pg -lgmon" />
 					<Add option="-m32" />
 					<Add library="webp" />
-					<Add library="torrent_dbg" />
+					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
 					<Add library="boost_system32" />
 					<Add directory="../lib/DebugU" />
+					<Add directory="C:/Boost/lib" />
 				</Linker>
 			</Target>
-			<Target title="Win64 ReleaseU">
+			<Target title="Win64 Release">
 				<Option output="../SDI_x64_R" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
-				<Option object_output="../obj/Release64U" />
+				<Option object_output="../obj/Release64" />
 				<Option type="1" />
 				<Option compiler="gcc_64" />
 				<Option use_console_runner="0" />
@@ -85,11 +87,12 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system64" />
+					<Add library="boost_system-mt" />
 					<Add directory="../lib/Release64U" />
+					<Add directory="C:/Boost64/lib" />
 				</Linker>
 			</Target>
-			<Target title="Win64 DebugU">
+			<Target title="Win64 Debug">
 				<Option output="../SDI_x64_RD" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option object_output="../obj/Debug64U" />
@@ -109,17 +112,18 @@
 					<Add option="-pg -lgmon" />
 					<Add option="-m64" />
 					<Add library="webp64" />
-					<Add library="torrent_dbg" />
+					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system64" />
+					<Add library="boost_system-mt" />
 					<Add directory="../lib/Debug64U" />
+					<Add directory="C:/Boost64/lib" />
 				</Linker>
 			</Target>
 			<Target title="Win32 Console">
 				<Option output="../SDI_RC" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
-				<Option object_output="../obj/ReleaseU" />
+				<Option object_output="../obj/Console" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -135,7 +139,9 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m32" />
+					<Add library="boost_system32" />
 					<Add directory="../lib/ReleaseU" />
+					<Add directory="C:/Boost/lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -200,8 +206,8 @@
 			<Add library="newdev" />
 			<Add library="comctl32" />
 			<Add library="wbemuuid" />
+			<Add library="boost_thread-mt" />
 			<Add directory="../external" />
-			<Add directory="C:/Boost/lib" />
 		</Linker>
 		<ExtraCommands>
 			<Add before="..\SubWCRev32.exe .. ..\source\svnrev_template.h ..\source\svnrev.h" />
