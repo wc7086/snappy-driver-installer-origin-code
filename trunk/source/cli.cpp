@@ -117,7 +117,7 @@ void SaveHWID(wchar_t *hwid)
 
 void Parse_save_installed_id_swith(const wchar_t *ParamStr)
 {
-    int tmpLen=wcslen(SAVE_INSTALLED_ID_DEF);
+    unsigned tmpLen=wcslen(SAVE_INSTALLED_ID_DEF);
 
     if(wcslen(ParamStr)>tmpLen)
     {
@@ -133,7 +133,7 @@ void Parse_save_installed_id_swith(const wchar_t *ParamStr)
 
 void Parse_HWID_installed_swith(const wchar_t *ParamStr)
 {
-    int tmpLen=wcslen(HWIDINSTALLED_DEF);
+    unsigned tmpLen=wcslen(HWIDINSTALLED_DEF);
     if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
     {
         log_err("invalid parameter %S\n",ParamStr);

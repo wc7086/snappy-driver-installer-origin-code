@@ -54,8 +54,8 @@ enum DRIVERPACK_TYPE
 class obj
 {
     Driverpack *drp;
-    wchar_t pathinf[BUFLEN];
-    wchar_t inffile[BUFLEN];
+    wchar_t *pathinf;
+    wchar_t *inffile;
     char *adr;
     int len;
 
@@ -252,12 +252,7 @@ class Driverpack
     std::vector<data_desc_t> desc_list;
     std::vector<data_HWID_t> HWID_list;
     Txt texta;
-
-#ifdef INDEXING_H
-    boost::lockfree::queue<obj> *objs;
-#else
-    void *objs;
-#endif
+    concurrent_queue<obj> *objs_new;
 
 private:
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);

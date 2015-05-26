@@ -236,9 +236,12 @@ void Image::loadFromRes(int id)
 
 void Image::createBitmap(BYTE *data,int sz)
 {
+    BYTE *big;
     hasalpha=sx=sy=0;
     ldc=nullptr;
 #ifdef CONSOLE_MODE
+    UNREFERENCED_PARAMETER(data)
+    UNREFERENCED_PARAMETER(sz)
     return;
 #else
     int ret=WebPGetInfo((PBYTE)data,sz,&sx,&sy);
@@ -247,7 +250,7 @@ void Image::createBitmap(BYTE *data,int sz)
         log_err("ERROR in image_load(): failed WebPGetInfo(%d)\n",ret);
         return;
     }
-    BYTE *big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);
+    big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);
     if(!big)
     {
         log_err("ERROR in image_load(): failed WebPDecodeBGRA\n");

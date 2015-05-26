@@ -48,20 +48,9 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 
 // C++
 #include <unordered_map>
+#include <queue>
 #include <vector>
 #include <memory>
-
-// BOOST
-#ifdef INDEXING_H
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wstrict-aliasing"
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma GCC diagnostic ignored "-Winline"
-#pragma GCC diagnostic ignored "-Wundef"
-#include <boost/lockfree/queue.hpp>
-#pragma GCC diagnostic pop
-#endif
 
 // webp
 #include <webp\decode.h>
