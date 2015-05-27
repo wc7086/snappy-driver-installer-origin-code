@@ -775,7 +775,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
                 fseek(f,0,SEEK_END);
                 len=ftell(f);
                 fseek(f,0,SEEK_SET);
-                buft=(char *)malloc(len);
+                buft=new char[len];
                 fread(buft,len,1,f);
                 fclose(f);
                 wsprintf(buf,L"%s\\",path+wcslen(driverpack_dir)+1);
@@ -785,7 +785,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
                 else
                     driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
 
-                free(buft);
+                delete []buft;
             }
         }
     }
@@ -1135,7 +1135,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
         {
             data.drp->objs_new->wait_and_pop(t);
             if(last)tm+=GetTickCount()-last;
-            if(!*t.inffile)
+            if(!t.adr)
             {
                 t.drp->genhashes();
                 t.drp->texta.shrink();
@@ -1164,6 +1164,14 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
 {
     obj data;
 
+    data.drp=this;
+    if(!adr)
+    {
+        data.adr=nullptr;
+        if(objs_new)objs_new->push(data);
+        return;
+    }
+
     if(len>4&&((adr[0]==-1&&adr[3]==0)||adr[0]==0))
     {
         data.adr=(char *)malloc(len+2);
@@ -1183,9 +1191,9 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
     data.len=len;
     data.pathinf=new wchar_t[wcslen(pathinf)+1];
     data.inffile=new wchar_t[wcslen(inffile1)+1];
+
     wcscpy(data.pathinf,pathinf);
     wcscpy(data.inffile,inffile1);
-    data.drp=this;
     if(objs_new)objs_new->push(data);
 }
 
@@ -1241,6 +1249,32 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
         log_con("Not found singature in '%ws%ws'(%d)\n",pathinf,inffilename,len);
     }
 
+}
+
+void *mySzAlloc(void *p, size_t size)
+{
+    p = p;
+    void *mem;
+    if (size == 0)return 0;
+
+    try
+    {
+
+        mem=((void*)(new char[size]));
+    }catch(std::bad_alloc)
+    {
+        mem=0;
+        log_err("Failed to allocate %d bytes\n",size);
+    }
+
+    return mem;
+
+}
+
+void mySzFree(void *p, void *address)
+{
+  p = p;
+  delete[] (char*)(address);
 }
 
 int Driverpack::genindex()

@@ -432,10 +432,11 @@ int Panel::hitscan(int hx,int hy)
     {
         if(kbpanel==KB_INSTALL)
         {
-            if(kbitem[kbpanel]>2)kbitem[kbpanel]=2;
+            if(kbitem[kbpanel]>2)kbitem[kbpanel]=0;
+            if(index-8!=kbitem[kbpanel])return -1;
             return index-8==kbitem[kbpanel];
         }
-        if(kbitem[kbpanel]>items[0].action_id)kbitem[kbpanel]=items[0].action_id;
+        if(kbitem[kbpanel]>items[0].action_id)kbitem[kbpanel]=0;
         while(items[kbitem[kbpanel]].type!=TYPE_CHECKBOX&&
               items[kbitem[kbpanel]].type!=TYPE_BUTTON)kbitem[kbpanel]++;
 

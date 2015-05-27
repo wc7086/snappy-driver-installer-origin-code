@@ -17,6 +17,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #define BUFLEN 4096
 #define WIN32_LEAN_AND_MEAN
+#define _WIN32_IE 0x0501
 #undef __STRICT_ANSI__
 //#define BENCH_MODE
 
@@ -88,6 +89,12 @@ extern "C"
 #include "draw.h"
 #include "cli.h"
 #include "update.h"
+
+//#define _DEBUG_NEW_EMULATE_MALLOC
+//#define _DEBUG_NEW_ERROR_ACTION (throw "Mem");
+//#define _DEBUG_NEW_ERROR_ACTION {int *f=NULL;*f = 0;}
+
+#include "debug_new.h"
 //}
 
 //{ Defines

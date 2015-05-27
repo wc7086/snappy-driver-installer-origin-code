@@ -301,6 +301,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     HMODULE backtrace=nullptr;
     #ifdef _DEBUG
     backtrace=LoadLibraryA("backtrace.dll");
+    if(!backtrace)signal(SIGSEGV,SignalHandler);
     #else
     signal(SIGSEGV,SignalHandler);
     #endif
@@ -582,6 +583,17 @@ void gui(int nCmd)
                         redrawmainwnd();
                         redrawfield();
                     }
+                    if((msg.wParam==VK_LEFT||msg.wParam==VK_RIGHT)&&kbpanel==KB_INSTALL)
+                    {
+                        switch(kbitem[kbpanel])
+                        {
+                            case 0:kbitem[kbpanel]=1;break;
+                            case 1:kbitem[kbpanel]=0;break;
+                            case 2:kbitem[kbpanel]=0;break;
+                        }
+                        redrawmainwnd();
+                        redrawfield();
+                    }
                     if(msg.wParam==VK_DOWN)
                     {
                         kbitem[kbpanel]++;
@@ -793,7 +805,7 @@ void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    if(StrStrIW(szFile,L".7z"))invaidate(INVALIDATE_INDEXES);
+    if(StrStrIW(szFile,L".7z")&&Updater.isPaused())invaidate(INVALIDATE_INDEXES);
 }
 
 void lang_refresh()

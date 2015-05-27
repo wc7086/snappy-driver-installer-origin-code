@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "main.h"
 #include "device.h"
+#include "main.h"
 
 //{ Global vars
 long long ar_total,ar_proceed;
@@ -203,6 +203,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     }
 
     if(!*ret)*ret=GetLastError();
+    if((flags&FLAG_DISABLEINSTALL)==0)
     if((unsigned)*ret==0xE0000235||manager_g->matcher->getState()->getArchitecture())//ERROR_IN_WOW64
     {
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);

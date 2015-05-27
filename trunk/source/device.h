@@ -14,6 +14,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#define WIN32_LEAN_AND_MEAN
+#undef __STRICT_ANSI__
+
 #ifdef _WIN64
 #include <cfgmgr32.h>
 #include <newdev.h>

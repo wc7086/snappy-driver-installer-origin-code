@@ -21,7 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define BOOST_ASIO_ENABLE_CANCELIO
 #define BOOST_ASIO_HASH_MAP_BUCKETS 1021
 #define BOOST_ASIO_SEPARATE_COMPILATION
-#define BOOST_EXCEPTION_DISABLE
+//#define BOOST_EXCEPTION_DISABLE
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
 #define BOOST_SYSTEM_STATIC_LINK 1
 #define TORRENT_DISABLE_GEO_IP
@@ -40,11 +40,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "libtorrent/alert_types.hpp"
 #include "libtorrent/session.hpp"
 
+#include "main.h"
+
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
-
-#define _WIN32_IE 0x0501
-#include "main.h"
 
 using namespace libtorrent;
 
@@ -1021,6 +1020,7 @@ bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 #else
 
 #include "main.h"
+TorrentStatus_t TorrentStatus;
 Updater_t Updater;
 int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
