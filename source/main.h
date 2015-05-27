@@ -90,10 +90,6 @@ extern "C"
 #include "cli.h"
 #include "update.h"
 
-//#define _DEBUG_NEW_EMULATE_MALLOC
-//#define _DEBUG_NEW_ERROR_ACTION (throw "Mem");
-//#define _DEBUG_NEW_ERROR_ACTION {int *f=NULL;*f = 0;}
-
 #include "debug_new.h"
 //}
 

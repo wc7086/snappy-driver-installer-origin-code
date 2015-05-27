@@ -160,7 +160,6 @@
 			<Add option="-Weffc++" />
 			<Add option="-Wzero-as-null-pointer-constant" />
 			<Add option="-Wmain" />
-			<Add option="-pedantic" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
@@ -168,6 +167,7 @@
 			<Add option="-m32" />
 			<Add option="-finput-charset=CP1251" />
 			<Add option="-Wunused" />
+			<Add option="-mthreads" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
 			<Add option="-DEXCLUDE_COM" />
