@@ -15,8 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "main.h"
 #include "device.h"
+#include "main.h"
 
 //{ Global variables
 
