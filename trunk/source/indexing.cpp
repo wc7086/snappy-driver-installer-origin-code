@@ -33,7 +33,7 @@ public:
 };
 
 typedef concurrent_queue<frm> drplist_t;
-drplist_t queuedriverpack1;
+drplist_t *queuedriverpack_p;
 
 struct tbl_t
 {
@@ -591,7 +591,7 @@ unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
         if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
         {
             drp->objs_new=new concurrent_queue<obj>;
-            queuedriverpack1.push(frm{drp});
+            queuedriverpack_p->push(frm{drp});
             drp->genindex();
             drp->driverpack_indexinf_async(L"",L"",nullptr,0);
         }
@@ -640,6 +640,8 @@ void Collection::populate()
     unpacked_drp=&driverpack_list.back();
 
 //{thread
+    drplist_t queuedriverpack1;
+    queuedriverpack_p=&queuedriverpack1;
     int num_thr=num_cores;
     int num_thr_1=num_cores;
     if(drp_count&&num_thr>3)num_thr=3;
@@ -1250,6 +1252,10 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
     }
 
 }
+/*namespace nvwa
+{
+extern size_t total_mem_alloc;
+}*/
 
 void *mySzAlloc(void *p, size_t size)
 {
@@ -1264,9 +1270,16 @@ void *mySzAlloc(void *p, size_t size)
     }catch(std::bad_alloc)
     {
         mem=0;
-        log_err("Failed to allocate %d bytes\n",size);
+        log_err("Failed to alloc\n");
+        //log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
+    }catch(...)
+    {
+        log_err("Failed to alloc\n");
     }
 
+    //if(size>1024*1024)log_err("%10ld, Allocated %ld MB\n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
+
+    //if(!mem)log_err("Failed to alloc a\n");
     return mem;
 
 }
@@ -1274,7 +1287,14 @@ void *mySzAlloc(void *p, size_t size)
 void mySzFree(void *p, void *address)
 {
   p = p;
-  delete[] (char*)(address);
+    try
+    {
+
+    delete[] (char*)(address);
+    }catch(...)
+    {
+        log_err("Failed to free\n");
+    }
 }
 
 int Driverpack::genindex()

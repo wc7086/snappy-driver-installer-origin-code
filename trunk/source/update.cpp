@@ -16,6 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifdef USE_TORRENT
+#define _WIN32_IE 0x0501
 
 #define BOOST_ALL_NO_LIB
 #define BOOST_ASIO_ENABLE_CANCELIO
