@@ -673,7 +673,7 @@ void itembar_t::contextmenu(int x,int y)
     HMENU hPopupMenu=CreatePopupMenu();
 
     int flags1=checked?MF_CHECKED:0;
-    if(!hwidmatch)flags1|=MF_GRAYED;
+    if(!hwidmatch&&index!=SLOT_RESTORE_POINT)flags1|=MF_GRAYED;
 
     if(floating_itembar==SLOT_RESTORE_POINT)
     {

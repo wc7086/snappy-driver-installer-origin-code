@@ -778,7 +778,6 @@ void Bundle::bundle_lowprioirity()
 //{ Subroutes
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
@@ -792,8 +791,8 @@ void lang_refresh()
         log_err("ERROR in lang_refresh(): hMain is %d, hField is %d\n",hMain,hField);
         return;
     }
-    rtl=language[STR_RTL].val;
 
+    rtl=language[STR_RTL].val;
     setMirroring(hMain);
     setMirroring(hLang);
     setMirroring(hTheme);
@@ -804,15 +803,7 @@ void lang_refresh()
     GetWindowRect(hMain,&rect);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
-
-    redrawmainwnd();
-    //redrawfield();
     InvalidateRect(hPopup,nullptr,0);
-
-    POINT p;
-    GetCursorPos(&p);
-    SetCursorPos(p.x+1,p.y);
-    SetCursorPos(p.x,p.y);
 }
 
 void theme_refresh()
@@ -1984,8 +1975,10 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             GetClientRect(hwnd,&rect);
             rect.right=D(POPUP_WX);
             rect.bottom=floating_y;
+
             SelectObject(hdcMem,hFont);
             DrawText(hdcMem,STR(floating_itembar),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
+
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
             popup_resize(rect.right-rect.left+D(POPUP_OFSX)*2,rect.bottom-rect.top+D(POPUP_OFSY)*2);
             wp->cx=rect.right+D(POPUP_OFSX)*2;
@@ -2063,11 +2056,11 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(lParam);
-
+    WINDOWPOS *wpos;
     HWND hEditBox;
     RECT rect;
-    LPCSTR s;int sz;
+    LPCSTR s;
+    int sz;
 
     switch(Message)
     {
@@ -2096,30 +2089,28 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
             }
             break;
 
-        case WM_WINDOWPOSCHANGED :
+        case WM_WINDOWPOSCHANGED:
+            wpos=(WINDOWPOS*)lParam;
+
+            SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
+            if(wpos->cy-rect.bottom>0)
             {
-                WINDOWPOS *wpos=(WINDOWPOS*)lParam;
+                sz=rect.bottom-20-wpos->cy;
+                wpos->y=10;
+                wpos->cy=rect.bottom-20;
+                MoveWindow(hwnd,wpos->x,wpos->y,wpos->cx,wpos->cy,1);
 
-                SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
-                if(wpos->cy-rect.bottom>0)
-                {
-                    sz=rect.bottom-20-wpos->cy;
-                    wpos->y=10;
-                    wpos->cy=rect.bottom-20;
-                    MoveWindow(hwnd,wpos->x,wpos->y,wpos->cx,wpos->cy,1);
+                GetRelativeCtrlRect(GetDlgItem(hwnd,IDC_EDIT1),&rect);
+                rect.bottom+=sz;
+                MoveWindow(GetDlgItem(hwnd,IDC_EDIT1),rect.left,rect.top,rect.right,rect.bottom,1);
 
-                    GetRelativeCtrlRect(GetDlgItem(hwnd,IDC_EDIT1),&rect);
-                    rect.bottom+=sz;
-                    MoveWindow(GetDlgItem(hwnd,IDC_EDIT1),rect.left,rect.top,rect.right,rect.bottom,1);
+                GetRelativeCtrlRect(GetDlgItem(hwnd,IDOK),&rect);
+                rect.top+=sz;
+                MoveWindow(GetDlgItem(hwnd,IDOK),rect.left,rect.top,rect.right,rect.bottom,1);
 
-                    GetRelativeCtrlRect(GetDlgItem(hwnd,IDOK),&rect);
-                    rect.top+=sz;
-                    MoveWindow(GetDlgItem(hwnd,IDOK),rect.left,rect.top,rect.right,rect.bottom,1);
-
-                    GetRelativeCtrlRect(GetDlgItem(hwnd,IDCANCEL),&rect);
-                    rect.top+=sz;
-                    MoveWindow(GetDlgItem(hwnd,IDCANCEL),rect.left,rect.top,rect.right,rect.bottom,1);
-                }
+                GetRelativeCtrlRect(GetDlgItem(hwnd,IDCANCEL),&rect);
+                rect.top+=sz;
+                MoveWindow(GetDlgItem(hwnd,IDCANCEL),rect.left,rect.top,rect.right,rect.bottom,1);
             }
             return TRUE;
 
