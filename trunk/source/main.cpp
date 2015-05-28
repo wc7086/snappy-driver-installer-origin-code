@@ -43,7 +43,7 @@ int floating_itembar=-1;
 int floating_x=1,floating_y=1;
 int horiz_sh=0;
 int hideconsole=SW_HIDE;
-unsigned offset_target=0;
+int offset_target=0;
 int kbpanel=KB_NONE,kbitem[]={0,0,0,0,0,0,0,0,0,0,0};
 int ret_global=0;
 
@@ -564,11 +564,26 @@ void gui(int nCmd)
                         if(msg.wParam==VK_SPACE)  space_down=1;
                         if(msg.wParam==VK_SHIFT||msg.wParam==VK_LSHIFT||msg.wParam==VK_RSHIFT)  space_down=shift_down=1;
                     }
-                    if(msg.wParam==VK_SPACE)
+                    if(msg.wParam==VK_SPACE&&kbpanel)
                     {
-                        SendMessage(hMain,WM_LBUTTONDOWN,0,0);
-                        SendMessage(hMain,WM_LBUTTONUP,0,0);
+                        if(kbpanel==KB_FIELD)
+                        {
+                            SendMessage(hField,WM_LBUTTONDOWN,0,0);
+                            SendMessage(hField,WM_LBUTTONUP,0,0);
+                        }
+                        else
+                        {
+                            SendMessage(hMain,WM_LBUTTONDOWN,0,0);
+                            SendMessage(hMain,WM_LBUTTONUP,0,0);
+                        }
                     }
+                    if((msg.wParam==VK_LEFT||msg.wParam==VK_RIGHT)&&kbpanel==KB_INSTALL)
+                    {
+                        arrowsAdvance(msg.wParam==VK_LEFT?-1:1);
+                    }
+                    if(msg.wParam==VK_UP)arrowsAdvance(-1);else
+                    if(msg.wParam==VK_DOWN)arrowsAdvance(1);
+
                     if(msg.wParam==VK_TAB&&shift_down)
                     {
                         tabadvance(-1);
@@ -577,41 +592,6 @@ void gui(int nCmd)
                     {
                         tabadvance(1);
                     }
-                    if(msg.wParam==VK_UP)
-                    {
-                        if(kbitem[kbpanel]>0)kbitem[kbpanel]--;
-                        redrawmainwnd();
-                        redrawfield();
-                    }
-                    if((msg.wParam==VK_LEFT||msg.wParam==VK_RIGHT)&&kbpanel==KB_INSTALL)
-                    {
-                        switch(kbitem[kbpanel])
-                        {
-                            case 0:kbitem[kbpanel]=1;break;
-                            case 1:kbitem[kbpanel]=0;break;
-                            case 2:kbitem[kbpanel]=0;break;
-                        }
-                        redrawmainwnd();
-                        redrawfield();
-                    }
-                    if(msg.wParam==VK_DOWN)
-                    {
-                        kbitem[kbpanel]++;
-                        redrawmainwnd();
-                        redrawfield();
-                    }
-                    /*if(msg.wParam==VK_LEFT)
-                    {
-                        if(kbitem[kbpanel]>0)kbitem[kbpanel]--;
-                        redrawmainwnd();
-                        redrawfield();
-                    }
-                    if(msg.wParam==VK_RIGHT)
-                    {
-                        kbitem[kbpanel]++;
-                        redrawmainwnd();
-                        redrawfield();
-                    }*/
                 }else
                 if(msg.message==WM_KEYUP)
                 {
@@ -677,57 +657,49 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
     InitializeCriticalSection(&sync);
     do
     {
-        int cancel_update=0;
-        //long long t=GetTickCount();
+        // Wait for an update request
         WaitForSingleObject(deviceupdate_event,INFINITE);
 
+        // Update bundle
         log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
+        bundle[bundle_shadow].bundle_init();
         bundle[bundle_shadow].bundle_prep();
         bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
-        //log_con("TEST %d,%d,%d\n",bundle[bundle_shadow].state.textas.getSize(),bundle[bundle_shadow].state.Devices_list.size(),bundle[bundle_shadow].state.Drivers_list.size());
-
+        // Check if the state has been udated during scanning
+        int cancel_update=0;
         if(!(flags&FLAG_NOGUI))
         if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
 
-        if(!cancel_update)
+        if(cancel_update)
         {
+            log_con("*** CANCEL ***\n\n");
+            SetEvent(deviceupdate_event);
+        }
+        else
+        {
+            log_con("*** FINISH primary ***\n\n");
+
             if((flags&FLAG_NOGUI||hMain==nullptr)&&(flags&FLAG_AUTOINSTALL)==0)
             {
+                // NOGUI mode
                 manager_g->matcher=&bundle[bundle_shadow].matcher;
                 manager_g->populate();
                 manager_g->filter(filters);
             }
-            else
+            else // GUI mode
                 SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
-        }
 
-        log_con("{2Sync\n");
-        EnterCriticalSection(&sync);
-        log_con("*");
-        bundle[bundle_shadow].bundle_lowprioirity();
+            // Save indexes, write info, etc
+            bundle[bundle_shadow].bundle_lowprioirity();
+            log_con("*** FINISH secondary ***\n\n");
 
-        if(cancel_update)
-            log_con("*** CANCEL ***\n\n");
-        else
-        {
-            log_con("*** FINISH ***\n\n");
+            // Swap display and shadow bundle
             bundle_display^=1;
             bundle_shadow^=1;
         }
-        //printf("%d\n",)
-        bundle[bundle_shadow].bundle_init();
-        if(cancel_update)SetEvent(deviceupdate_event);
-        log_con("}2Sync\n");
-        LeaveCriticalSection(&sync);
-/*        if(snplist)
-        {
-            fgetws(state_file,BUFLEN,snplist);
-            log_con("SNP: '%S'\n",state_file);
-            deviceupdate_exitflag=feof(snplist);
-        }*/
-        //printf("%ld\n",GetTickCount()-t);
     }while(!deviceupdate_exitflag);
+
     DeleteCriticalSection(&sync);
     return 0;
 }
@@ -755,6 +727,7 @@ void Bundle::bundle_load(Bundle *pbundle)
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
+    // Copy data from shadow if it's not updated
     if((invaidate_set&INVALIDATE_DEVICES)==0){state=pbundle->state;time_devicescan=0;}
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
     invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
@@ -872,27 +845,23 @@ void snapshot()
 
 void extractto()
 {
-    BROWSEINFO lpbi;
     wchar_t dir[BUFLEN];
-    wchar_t buf[BUFLEN];
-    LPITEMIDLIST list;
-    wchar_t **argv;
-    int argc;
 
+    BROWSEINFO lpbi;
     memset(&lpbi,0,sizeof(BROWSEINFO));
     lpbi.hwndOwner=hMain;
     lpbi.pszDisplayName=dir;
     lpbi.lpszTitle=STR(STR_EXTRACTFOLDER);
     lpbi.ulFlags=BIF_NEWDIALOGSTYLE|BIF_EDITBOX;
 
-
-    list=SHBrowseForFolder(&lpbi);
+    LPITEMIDLIST list=SHBrowseForFolder(&lpbi);
     if(list)
     {
         SHGetPathFromIDList(list,dir);
 
-        argv=CommandLineToArgvW(GetCommandLineW(),&argc);
-        //printf("'%S',%d\n",argv[0],argc);
+        int argc;
+        wchar_t buf[BUFLEN];
+        wchar_t **argv=CommandLineToArgvW(GetCommandLineW(),&argc);
         wsprintf(buf,L"%s\\drv.exe",dir);
         if(!CopyFile(argv[0],buf,0))
             log_err("ERROR in extractto(): failed CopyFile(%S,%S)\n",argv[0],buf);
@@ -1023,41 +992,37 @@ void mkdir_r(const wchar_t *path)
         log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 
-void escapeAmpUrl(wchar_t *buf,wchar_t *source)
+void escapeAmpUrl(wchar_t *buf,const wchar_t *source)
 {
-    wchar_t *p1=buf,*p2=source;
-
-    while(*p2)
+    while(*source)
     {
-        *p1=*p2;
-        if(*p1==L'&')
+        *buf=*source;
+        if(*buf==L'&')
         {
-            *p1++=L'%';
-            *p1++=L'2';
-            *p1=L'6';
+            *buf++=L'%';
+            *buf++=L'2';
+            *buf=L'6';
         }
-        if(*p1==L'\\')
+        if(*buf==L'\\')
         {
-            *p1++=L'%';
-            *p1++=L'5';
-            *p1=L'C';
+            *buf++=L'%';
+            *buf++=L'5';
+            *buf=L'C';
         }
-        p1++;p2++;
+        buf++;source++;
     }
-    *p1=0;
+    *buf=0;
 }
 
-void escapeAmp(wchar_t *buf,wchar_t *source)
+void escapeAmp(wchar_t *buf,const wchar_t *source)
 {
-    wchar_t *p1=buf,*p2=source;
-
-    while(*p2)
+    while(*source)
     {
-        *p1=*p2;
-        if(*p1==L'&')*(++p1)=L'&';
-        p1++;p2++;
+        *buf=*source;
+        if(*buf==L'&')*(++buf)=L'&';
+        buf++;source++;
     }
-    *p1=0;
+    *buf=0;
 }
 //}
 
@@ -1120,11 +1085,39 @@ void tabadvance(int v)
         //if(kbpanel==KB_PANEL_CHK&&!YP(&panels[11]))continue;
         break;
     }
-    //log_con("Tab %d,%d\n",kbpanel,YP(&panels[11]));
-    if(kbpanel==KB_LANG)SetFocus(hLang);else
-    if(kbpanel==KB_THEME)SetFocus(hTheme);else
+
+    if(kbpanel==KB_LANG)
+        SetFocus(hLang);
+    else if(kbpanel==KB_THEME)
+        SetFocus(hTheme);
+    else
         SetFocus(hMain);
+
     redrawfield();
+    redrawmainwnd();
+}
+
+extern int setaa;
+void arrowsAdvance(int v)
+{
+    if(!kbpanel)return;
+
+    if(kbpanel==KB_INSTALL)
+    {
+        kbitem[kbpanel]+=v;
+        if(kbitem[kbpanel]<0)kbitem[kbpanel]=2;
+        redrawmainwnd();
+        return;
+    }
+    if(kbpanel==KB_FIELD)
+    {
+        kbitem[kbpanel]+=v;
+        setaa=1;
+        redrawfield();
+        return;
+    }
+
+    for(int i=0;i<NUM_PANELS;i++)panels[i].keybAdvance(v);
     redrawmainwnd();
 }
 //}
@@ -1428,8 +1421,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 PostMessage(hMain,WM_COMMAND,ID_REBOOT,0);
                 redrawmainwnd();
             }
-            if(wParam==VK_F5)
+            if(wParam==VK_F5&&ctrl_down)
                 invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+            if(wParam==VK_F5)
+                invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             if(wParam==VK_F6&&ctrl_down)
             {
                 manager_g->testitembars();
@@ -1531,14 +1526,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             GetClientRect(hwnd,&rect);
             i=panels_hitscan(x,y,&j);
             if(j==0||j==7||j==12)SetCursor(LoadCursor(nullptr,IDC_HAND));
-            //log_con("%d,%d\n",j,i);
 
             if(i>0)
             {
                 if((i==1&&j==7)||(j==12))
                     drawpopup(-1,FLOATING_ABOUT,x,y,hwnd);
                 else
-                    //drawpopup(panels[j].items[i].str_id+1,i>0&&i<4&&j==0?FLOATING_SYSINFO:FLOATING_TOOLTIP,x,y,hwnd);
                     drawpopup(panels[j].getStr(i)+1,i>0&&i<4&&j==0?FLOATING_SYSINFO:FLOATING_TOOLTIP,x,y,hwnd);
             }
             else
@@ -1554,6 +1547,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_LBUTTONUP:
             if(!mouseclick)break;
+
             i=panels_hitscan(x,y,&j);
             if(i<0)break;
 
@@ -1652,8 +1646,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
             {
                 int id=wp%100;
-                //printf("%S\n",getHWIDby(floating_itembar,id));
-
                 if(wp>=ID_HWID_WEB)
                 {
                     wchar_t buf[BUFLEN];
@@ -1754,7 +1746,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     for(i=0;i<NUM_PANELS;i++)filters+=panels[i].calcFilters();
                     manager_g->filter(filters);
                     manager_g->setpos();
-                    //manager_print(manager_g);
                     break;
 
                 case ID_RESTPNT:
@@ -1921,6 +1912,8 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 int type=FLOATING_NONE;
                 int itembar_i;
 
+                if(space_down&&kbpanel)break;
+
                 if(space_down)type=FLOATING_DRIVERLST;else
                 if(ctrl_down||expertmode)type=FLOATING_CMPDRIVER;
 
@@ -1996,7 +1989,6 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             GetClientRect(hwnd,&rect);
             canvasPopup->begin(hwnd,rect.right,rect.bottom);
 
-            //log_con("Redraw Popup %d\n",cntd++);
             drawbox(canvasPopup->getDC(),0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)
             {
