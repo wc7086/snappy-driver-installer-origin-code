@@ -23,6 +23,7 @@ enum
 // Lang info
     STR_LANG_NAME,
     STR_LANG_CODE,
+    STR_RTL,
 
 // Left panel
     STR_SHOW_SYSINFO,

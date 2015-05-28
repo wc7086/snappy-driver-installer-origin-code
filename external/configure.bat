@@ -267,8 +267,8 @@ if /I exist "%GCC_PATH%\lib\libtorrent.a" (echo Skipping building libtorrent[32-
 call :ColorText 9F "Building libtorrent32"&echo.
 copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 pushd "%LIBTORRENT_PATH%\examples"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=on "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%\lib /Y
 copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%\lib\libtorrent_dbg.a /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1\myrls\libboost_system-mgw48-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system32.a /Y
@@ -282,8 +282,8 @@ copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=on "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "-sBUILD=<define>BOOST_NO_EXCEPTIONS" "-sBUILD=<define>BOOST_EXCEPTION_DISABLE" "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-4.9.2\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib /Y
 copy ..\bin\gcc-mngw-4.9.2\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib\libtorrent_dbg.a /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2\myrls\libboost_system-mgw49-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system64.a /Y

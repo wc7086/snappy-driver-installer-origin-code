@@ -141,6 +141,7 @@ void settings_parse(const wchar_t *str,int ind)
         if( StrStrIW(pr,L"-port:"))        Updater.torrentport=_wtoi_my(pr+6);else
         if( StrStrIW(pr,L"-downlimit:"))   Updater.downlimit=_wtoi_my(pr+11);else
         if( StrStrIW(pr,L"-uplimit:"))     Updater.uplimit=_wtoi_my(pr+9);else
+        if( StrStrIW(pr,L"-connections:")) Updater.connections=_wtoi_my(pr+13);else
         if( StrStrIW(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
         if(!StrCmpIW(pr,L"-license"))      license=1;else
         if(!StrCmpIW(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
@@ -244,13 +245,13 @@ void settings_save()
               "\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
               "\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n"
               "\"-lang:%s\"\n\"-theme:%s\"\n\n"
-              "-hintdelay:%d\n-port:%d\n-downlimit:%d\n-uplimit:%d\n-filters:%d\n\n",
+              "-hintdelay:%d\n-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n-filters:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,
             curlang,curtheme,
             hintdelay,
-            Updater.torrentport,Updater.downlimit,Updater.uplimit,
+            Updater.torrentport,Updater.downlimit,Updater.uplimit,Updater.connections,
             filters);
 
     if(license)fwprintf(f,L"-license ");
@@ -295,6 +296,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     SYSTEM_INFO siSysInfo;
     GetSystemInfo(&siSysInfo);
     num_cores=siSysInfo.dwNumberOfProcessors;
+
+    // Check if the mouse present
+    if(!GetSystemMetrics(SM_MOUSEPRESENT))kbpanel=KB_FIELD;
 
     // Runtime error handlers
     start_exception_hadnlers();
@@ -788,8 +792,21 @@ void lang_refresh()
         log_err("ERROR in lang_refresh(): hMain is %d, hField is %d\n",hMain,hField);
         return;
     }
+    rtl=language[STR_RTL].val;
+
+    setMirroring(hMain);
+    setMirroring(hLang);
+    setMirroring(hTheme);
+    setMirroring(hField);
+    setMirroring(hPopup);
+
+    RECT rect;
+    GetWindowRect(hMain,&rect);
+    MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
+    MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
+
     redrawmainwnd();
-    redrawfield();
+    //redrawfield();
     InvalidateRect(hPopup,nullptr,0);
 
     POINT p;
@@ -1045,6 +1062,13 @@ void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
     rc->bottom-=rc->top;
 }
 
+void setMirroring(HWND hwnd)
+{
+    LONG v=GetWindowLong(hwnd,GWL_EXSTYLE);
+    if(rtl)v|=WS_EX_LAYOUTRTL;else v&=~WS_EX_LAYOUTRTL;
+    SetWindowLong(hwnd,GWL_EXSTYLE,v);
+}
+
 void checktimer(const wchar_t *str,long long t,int uMsg)
 {
     if(GetTickCount()-t>20&&log_verbose&LOG_VERBOSE_LAGCOUNTER)
@@ -1231,14 +1255,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             // Theme
             hTheme=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)ID_THEME,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
             PostMessage(hwnd,WM_UPDATETHEME,1,0);
-            if(rtl)
-            {
-                SetWindowLong(hLang,GWL_EXSTYLE,GetWindowLong(hLang,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
-                SetWindowLong(hTheme,GWL_EXSTYLE,GetWindowLong(hTheme,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
-                SetWindowLong(hField,GWL_EXSTYLE,GetWindowLong(hField,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
-                SetWindowLong(hPopup,GWL_EXSTYLE,GetWindowLong(hPopup,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
-                SetWindowLong(hMain,GWL_EXSTYLE,GetWindowLong(hMain,GWL_EXSTYLE)|WS_EX_LAYOUTRTL);
-            }
 
             // Misc
             vault_startmonitors();

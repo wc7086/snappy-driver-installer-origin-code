@@ -6,10 +6,10 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc_64" />
 		<Build>
-			<Target title="Win32 ReleaseU">
-				<Option output="../../lib/ReleaseU/baseboard" prefix_auto="1" extension_auto="1" />
+			<Target title="Win32 Release">
+				<Option output="../../lib/Release/baseboard" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/ReleaseU" />
+				<Option object_output="../../obj/Release" />
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
@@ -19,10 +19,10 @@
 					<Add option="-m32" />
 				</Compiler>
 			</Target>
-			<Target title="Win32 DebugU">
-				<Option output="../../lib/DebugU/baseboard" prefix_auto="1" extension_auto="1" />
+			<Target title="Win32 Debug">
+				<Option output="../../lib/Debug/baseboard" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/DebugU" />
+				<Option object_output="../../obj/Debug" />
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
@@ -34,10 +34,10 @@
 					<Add option="-pg -lgmon" />
 				</Linker>
 			</Target>
-			<Target title="Win64 ReleaseU">
-				<Option output="../../lib/Release64U/baseboard" prefix_auto="1" extension_auto="1" />
+			<Target title="Win64 Release">
+				<Option output="../../lib/Release64/baseboard" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/Release64U" />
+				<Option object_output="../../obj/Release64" />
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
@@ -47,10 +47,10 @@
 					<Add option="-m64" />
 				</Compiler>
 			</Target>
-			<Target title="Win64 DebugU">
-				<Option output="../../lib/Debug64U/baseboard" prefix_auto="1" extension_auto="1" />
+			<Target title="Win64 Debug">
+				<Option output="../../lib/Debug64/baseboard" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/Debug64U" />
+				<Option object_output="../../obj/Debug64" />
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
@@ -61,6 +61,19 @@
 				<Linker>
 					<Add option="-pg -lgmon" />
 				</Linker>
+			</Target>
+			<Target title="Win32 Console">
+				<Option output="../../lib/Console/baseboard" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="../../obj/Console" />
+				<Option type="2" />
+				<Option compiler="gcc_64" />
+				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-m32" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
