@@ -378,9 +378,9 @@ goaround:
         hwidmatch->print_hr();
         wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
-        SetTimer(hMain,1,1000/60,nullptr);
         manager_g->animstart=GetTickCount();
-        offset_target=(itembar->curpos>>16)-mainy_c+D(DRVITEM_DIST_Y0)-3;
+        offset_target=(itembar->curpos>>16);
+        SetTimer(hMain,1,1000/60,nullptr);
 
         // Extract
         extracttime=GetTickCount();

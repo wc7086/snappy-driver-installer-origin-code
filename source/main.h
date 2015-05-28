@@ -240,7 +240,7 @@ extern int floating_itembar;
 extern int floating_x,floating_y;
 extern int horiz_sh;
 extern int hideconsole;
-extern unsigned offset_target;
+extern int offset_target;
 extern int kbpanel,kbitem[KB_PANEL_CHK+1];
 extern int ret_global;
 
@@ -320,8 +320,8 @@ void setscrollpos(int pos);
 // Misc
 void get_resource(int id,void **data,int *size);
 void mkdir_r(const wchar_t *path);
-void escapeAmpUrl(wchar_t *buf,wchar_t *source);
-void escapeAmp(wchar_t *buf,wchar_t *source);
+void escapeAmpUrl(wchar_t *buf,const wchar_t *source);
+void escapeAmp(wchar_t *buf,const wchar_t *source);
 
 // GUI Helpers
 HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);
@@ -331,6 +331,7 @@ void checktimer(const wchar_t *str,long long t,int uMsg);
 void redrawfield();
 void redrawmainwnd();
 void tabadvance(int v);
+void arrowsAdvance(int v);
 
 // GUI
 LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);

@@ -345,6 +345,7 @@ void Manager::print_hr()
 // 1 checkbox
 // 2 downarrow
 // 3 text
+int setaa=0;
 void Manager::hitscan(int x,int y,int *r,int *zone)
 {
     itembar_t *itembar;
@@ -359,6 +360,17 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
     *zone=0;
     int cnt=0;
 
+    if(kbpanel==KB_FIELD)
+    {
+        int max_cnt=0;
+        itembar=&items_list[0];
+        for(i=0;i<items_list.size();i++,itembar++)
+        if(itembar->isactive&&(itembar->first&2)==0)max_cnt++;
+
+        if(kbitem[kbpanel]<0)kbitem[kbpanel]=max_cnt-1;
+        if(kbitem[kbpanel]>=max_cnt)kbitem[kbpanel]=0;
+    }
+
     y-=-D(DRVITEM_DIST_Y0);
     x-=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
     if(kbpanel==KB_NONE)if(x<0||x>wx)return;
@@ -372,7 +384,13 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             *r=i;
             if(kbitem[kbpanel]==cnt)
             {
-        log_con("%d\n",kbitem[kbpanel]);
+                if(setaa)
+                {
+                    animstart=GetTickCount();
+                    offset_target=(itembar->curpos>>16);
+                    SetTimer(hMain,1,1000/60,nullptr);
+                    setaa=0;
+                }
                 return;
             }
             cnt++;
@@ -393,12 +411,6 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             if(!*zone&&(x>240+190))*zone=3;
             if(kbpanel==KB_NONE)return;
         }
-    }
-    if(kbpanel==KB_FIELD)
-    {
-        kbitem[kbpanel]=cnt-1;
-        log_con("%d,%d\n",kbitem[kbpanel],*r);
-        return;
     }
     *r=-1;
 }
@@ -950,31 +962,45 @@ void Manager::setpos()
 
 int Manager::animate()
 {
-    itembar_t *itembar;
-    unsigned i;
-    int pos=0;
     int chg=0;
     long tt1=GetTickCount()-animstart;
 
-    itembar=&items_list[0];
-    for(i=0;i<items_list.size();i++,itembar++)
+    // Move itembars
+    for(auto &itembar:items_list)
     {
-        if(itembar->curpos==itembar->tagpos)continue;
+        if(itembar.curpos==itembar.tagpos)continue;
         chg=1;
-        pos=itembar->oldpos+itembar->accel*tt1;
-        if(itembar->accel>0&&pos>itembar->tagpos)pos=itembar->tagpos;
-        if(itembar->accel<0&&pos<itembar->tagpos)pos=itembar->tagpos;
-        itembar->curpos=pos;
+        int pos=itembar.oldpos+itembar.accel*tt1;
+        if(itembar.accel>0&&pos>itembar.tagpos)pos=itembar.tagpos;
+        if(itembar.accel<0&&pos<itembar.tagpos)pos=itembar.tagpos;
+        itembar.curpos=pos;
     }
-    i=getscrollpos();
-    if(offset_target&&i!=offset_target)
+
+    // Animate scrolling
+    int i=getscrollpos();
+    if(offset_target)
     {
-        if(i<offset_target)i+=4;
-        //log_con("Y:%d/%d\n",i,offset_target);
-        setscrollpos(i);
-        if(i>offset_target)offset_target=0;
-        chg=1;
+        int v=offset_target-D(DRVITEM_DIST_Y0)*2;
+        if(i>v)
+        {
+            i--;
+            i-=(i-v)/10;
+            if(i<v)i=v;
+            setscrollpos(i);
+            chg=1;
+        }
+
+        v=offset_target+D(DRVITEM_DIST_Y0)-mainy_c;
+        if(i<v)
+        {
+            i++;
+            i-=(i-v)/10;
+            if(i>v)i=v;
+            setscrollpos(i);
+            chg=1;
+        }
     }
+
     return chg||
         (installmode==MODE_NONE&&items_list[SLOT_EXTRACTING].install_status);
 }

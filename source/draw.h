@@ -121,6 +121,7 @@ public:
     int calcFilters();
     void setFilters(int filters);
     int  hitscan(int x,int y);
+    void keybAdvance(int v);
     void draw_inv();
     void draw(HDC hdc);
     void moveWindow(HWND hwnd,int i,int j,int f);

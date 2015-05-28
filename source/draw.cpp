@@ -455,6 +455,23 @@ int Panel::hitscan(int hx,int hy)
     return r;
 }
 
+void Panel::keybAdvance(int v)
+{
+    if(kbpanel&&items[0].str_id==kbpanel)
+    {
+        kbitem[kbpanel]+=v;
+
+        while(kbitem[kbpanel]>=0&&kbitem[kbpanel]<=items[0].action_id&&
+              items[kbitem[kbpanel]].type!=TYPE_CHECKBOX&&
+              items[kbitem[kbpanel]].type!=TYPE_BUTTON)
+              kbitem[kbpanel]+=v;
+
+        if(kbitem[kbpanel]>items[0].action_id)kbitem[kbpanel]=0;
+        if(kbitem[kbpanel]<0)kbitem[kbpanel]=items[0].action_id;
+    }
+
+}
+
 void Panel::draw_inv()
 {
     int x=Xp(),y=Yp();

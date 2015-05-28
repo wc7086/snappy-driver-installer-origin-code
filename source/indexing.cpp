@@ -644,7 +644,7 @@ void Collection::populate()
     queuedriverpack_p=&queuedriverpack1;
     int num_thr=num_cores;
     int num_thr_1=num_cores;
-    if(drp_count&&num_thr>3)num_thr=3;
+    if(drp_count)num_thr=1;
     log_con("Cores: %d\n",num_cores);
 
     HANDLE thr[16],cons[16];
@@ -1252,16 +1252,16 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
     }
 
 }
-/*namespace nvwa
+namespace nvwa
 {
 extern size_t total_mem_alloc;
-}*/
+}
 
-void *mySzAlloc(void *p, size_t size)
+static void *mySzAlloc(void *p, size_t size)
 {
     p = p;
-    void *mem;
-    if (size == 0)return 0;
+    void *mem=nullptr;
+    if (size == 0)return nullptr;
 
     try
     {
@@ -1269,9 +1269,8 @@ void *mySzAlloc(void *p, size_t size)
         mem=((void*)(new char[size]));
     }catch(std::bad_alloc)
     {
-        mem=0;
         log_err("Failed to alloc\n");
-        //log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
+        log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
     }catch(...)
     {
         log_err("Failed to alloc\n");
@@ -1284,7 +1283,7 @@ void *mySzAlloc(void *p, size_t size)
 
 }
 
-void mySzFree(void *p, void *address)
+static void mySzFree(void *p, void *address)
 {
   p = p;
     try
@@ -1318,8 +1317,8 @@ int Driverpack::genindex()
 
     ISzAlloc allocImp;
     ISzAlloc allocTempImp;
-    allocImp.Alloc=SzAlloc;
-    allocImp.Free=SzFree;
+    allocImp.Alloc=mySzAlloc;
+    allocImp.Free=mySzFree;
     allocTempImp.Alloc=SzAllocTemp;
     allocTempImp.Free=SzFreeTemp;
 
