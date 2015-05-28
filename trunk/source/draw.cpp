@@ -398,7 +398,7 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
     SetStretchBltMode(hdcMem,HALFTONE);
     r32=SelectClipRgn(hdcMem,clipping);
     if(!r32)log_err("ERROR in canvas_begin(): failed SelectClipRgn\n");
-    if(rtl)SetLayout(hdcMem,LAYOUT_RTL);
+    SetLayout(hdcMem,rtl?LAYOUT_RTL:0);
 }
 
 void Canvas::end()
@@ -662,7 +662,6 @@ int mirw(int x,int ofs,int w)
 }
 void TextOutH(HDC hdc,int x,int y,LPCTSTR buf)
 {
-    //if(rtl)SetLayout(hdc,LAYOUT_RTL);
     TextOut(hdc,x,y,buf,wcslen(buf));
 }
 int Xm(int x,int o)

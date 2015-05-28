@@ -28,6 +28,7 @@ entry_t language[STR_NM]=
 // Lang info
     DEF_STR("STR_LANG_NAME")
     DEF_VAL("STR_LANG_CODE")
+    DEF_VAL("STR_RTL")
 
 // Left panel
     DEF_STR("STR_SHOW_SYSINFO")

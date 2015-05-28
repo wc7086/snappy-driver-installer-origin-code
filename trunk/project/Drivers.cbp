@@ -31,8 +31,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system32" />
-					<Add directory="../lib/ReleaseU" />
+					<Add directory="../lib/Release" />
 					<Add directory="C:/Boost/lib" />
 				</Linker>
 			</Target>
@@ -58,8 +57,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system32" />
-					<Add directory="../lib/DebugU" />
+					<Add directory="../lib/Debug" />
 					<Add directory="C:/Boost/lib" />
 				</Linker>
 			</Target>
@@ -87,8 +85,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system-mt" />
-					<Add directory="../lib/Release64U" />
+					<Add directory="../lib/Release64" />
 					<Add directory="C:/Boost64/lib" />
 				</Linker>
 			</Target>
@@ -115,8 +112,7 @@
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
-					<Add library="boost_system-mt" />
-					<Add directory="../lib/Debug64U" />
+					<Add directory="../lib/Debug64" />
 					<Add directory="C:/Boost64/lib" />
 				</Linker>
 			</Target>
@@ -139,8 +135,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m32" />
-					<Add library="boost_system32" />
-					<Add directory="../lib/ReleaseU" />
+					<Add directory="../lib/Console" />
 					<Add directory="C:/Boost/lib" />
 				</Linker>
 			</Target>
@@ -208,6 +203,7 @@
 			<Add library="comctl32" />
 			<Add library="wbemuuid" />
 			<Add library="boost_thread-mt" />
+			<Add library="boost_system-mt" />
 			<Add directory="../external" />
 		</Linker>
 		<ExtraCommands>

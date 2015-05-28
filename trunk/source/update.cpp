@@ -71,6 +71,7 @@ int UpdateDialog_t::bMouseInWindow=0;
 int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
+int Updater_t::connections=0;
 int Updater_t::downloadmangar_exitflag;
 int Updater_t::finishedupdating;
 int Updater_t::finisheddownloading;
@@ -863,6 +864,7 @@ void Updater_t::downloadTorrent()
     hSession->pause();
     hTorrent.set_download_limit(downlimit*1024);
     hTorrent.set_upload_limit(uplimit*1024);
+    hTorrent.set_max_connections(connections);
     hTorrent.resume();
 
     // Download torrent
@@ -1026,4 +1028,5 @@ Updater_t Updater;
 int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
+int Updater_t::connections=0;
 #endif

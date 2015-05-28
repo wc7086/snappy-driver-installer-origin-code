@@ -327,6 +327,7 @@ void escapeAmp(wchar_t *buf,const wchar_t *source);
 HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);
 HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f);
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
+void setMirroring(HWND hwnd);
 void checktimer(const wchar_t *str,long long t,int uMsg);
 void redrawfield();
 void redrawmainwnd();

@@ -7,11 +7,11 @@
 		<Option makefile="makefile" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Win32 ReleaseU">
+			<Target title="Win32 Release">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/ReleaseU/7Z" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Release/7Z" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/ReleaseU/7Z" />
+				<Option object_output="../../obj/Release/7Z" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -37,11 +37,11 @@
 					<Add library="odbccp32" />
 				</Linker>
 			</Target>
-			<Target title="Win32 DebugU">
+			<Target title="Win32 Debug">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/DebugU/7Z" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Debug/7Z" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/DebugU/7Z" />
+				<Option object_output="../../obj/Debug/7Z" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -66,11 +66,11 @@
 					<Add library="odbccp32" />
 				</Linker>
 			</Target>
-			<Target title="Win64 ReleaseU">
+			<Target title="Win64 Release">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Release64U/7Z" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Release64/7Z" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/Release64U/7Z" />
+				<Option object_output="../../obj/Release64/7Z" />
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
@@ -96,11 +96,11 @@
 					<Add library="odbccp32" />
 				</Linker>
 			</Target>
-			<Target title="Win64 DebugU">
+			<Target title="Win64 Debug">
 				<Option platforms="Windows;" />
-				<Option output="../../lib/Debug64U/7Z" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/Debug64/7Z" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../obj/Debug64U/7Z" />
+				<Option object_output="../../obj/Debug64/7Z" />
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
@@ -111,6 +111,36 @@
 					<Add option="-D_DEBUG" />
 				</Compiler>
 				<Linker>
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+				</Linker>
+			</Target>
+			<Target title="Win32 Console">
+				<Option platforms="Windows;" />
+				<Option output="../../lib/Console/7Z" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="../../obj/Console/7Z" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-m32" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
 					<Add library="kernel32" />
 					<Add library="user32" />
 					<Add library="gdi32" />

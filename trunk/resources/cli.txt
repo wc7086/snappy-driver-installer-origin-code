@@ -67,6 +67,7 @@ Torrent
 -port:<num>       Port for torrent client.
 -downlimit:<num>  Sets download speed limit (in KBs).
 -uplimit:<num>    Sets upload speed limit (in KBs).
+-connections:<num>Sets the maximum number of connection.
 -finish_upd_cmd:<cmd> Specifies a command executed upon completion of download.
 -autoclose        Close the application after downloading.
 

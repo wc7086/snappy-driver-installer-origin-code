@@ -93,7 +93,7 @@ private:
     void moveNewFiles();
 
 public:
-    static int torrentport,downlimit,uplimit;
+    static int torrentport,downlimit,uplimit,connections;
 
     void checkUpdates();
     void showProgress(wchar_t *buf);
