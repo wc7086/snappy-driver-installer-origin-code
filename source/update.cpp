@@ -290,7 +290,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
 
             lvc.mask=LVCF_FMT|LVCF_WIDTH|LVCF_SUBITEM|LVCF_TEXT;
-            lvc.pszText=(wchar_t *)L"";
+            lvc.pszText=L"";
             for(i=0;i<6;i++)
             {
                 lvc.cx=cxn[i];
@@ -548,7 +548,7 @@ void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
 
 void UpdateDialog_t::openDialog()
 {
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,UpdateProcedure);
 }
 
 void UpdateDialog_t::clearList()
@@ -583,7 +583,7 @@ void Updater_t::updateTorrentStatus()
     t->uploaded=st.total_payload_upload;
 
     t->elapsed=13;
-    t->status=STR(STR_TR_ST0+(int)st.state);
+    t->status=STR(STR_TR_ST0+st.state);
     if(hSession->is_paused())t->status=STR(STR_TR_ST4);
     finisheddownloading=st.is_finished;
 

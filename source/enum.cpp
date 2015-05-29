@@ -115,7 +115,7 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
         p=(PBYTE)(state->textas.get(*val));
         *p=0;
     }
-    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,(PBYTE)p,buffersize,&buffersize))
+    if(!SetupDiGetDeviceRegistryProperty(hDevInfo,DeviceInfoDataloc,id,&DataT,p,buffersize,&buffersize))
     {
         int ret_er=GetLastError();
         log_file("Property %d\n",id);

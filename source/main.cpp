@@ -470,7 +470,7 @@ void gui(int nCmd)
     wcx.lpfnWndProc=    WndProc;
     wcx.hInstance=      ghInst;
     wcx.hIcon=          LoadIcon(ghInst,MAKEINTRESOURCE(IDI_ICON1));
-    wcx.hCursor=        (HCURSOR)LoadCursor(nullptr,IDC_ARROW);
+    wcx.hCursor=        LoadCursor(nullptr,IDC_ARROW);
     wcx.lpszClassName=  classMain;
     wcx.hbrBackground=  (HBRUSH)(COLOR_WINDOW+1);
     if(!RegisterClassEx(&wcx))

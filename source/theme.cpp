@@ -179,7 +179,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
         int q=fread(datav,1,sz,f);
         szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,nullptr,0);
         wchar_t *dataloc1=new wchar_t[szo+1];
-        sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,(LPWSTR)dataloc1,szo);
+        sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,dataloc1,szo);
         fclose(f);
         dataloc1[sz]=0;
         datav_ptr.reset(dataloc1);
