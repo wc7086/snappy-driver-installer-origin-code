@@ -118,6 +118,7 @@ unsigned Hashtable::gethashcode(const char *s,int sz)
 void Hashtable::reset(int size1)
 {
     size=size1;
+    if(!size)size=1;
     items.resize(size);
     items.reserve(size*4);
     memset(items.data(),0,size*sizeof(Hashitem));
@@ -281,7 +282,7 @@ int unicode2ansi(char *s,char *out,int size)
     /*if(!out)log_err("Error out:\n");
     if(!s)log_err("Error in:\n");
     if(size<0)log_err("Error size:\n");*/
-    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),(CHAR *)out,size,nullptr,&flag);
+    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),out,size,nullptr,&flag);
     if(!ret)print_error(GetLastError(),L"unicode2ansi()");
     out[size]=0;
     return ret;

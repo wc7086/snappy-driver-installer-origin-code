@@ -667,7 +667,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
                     SetCursorPos(pwi.rcClient.left+w.btn_x+w.btn_wx/2,pwi.rcClient.top+w.btn_y+w.btn_wy/2);
                     int x=w.btn_x+w.btn_wx/2;
                     int y=w.btn_y+w.btn_wy/2;
-                    int pos=(int)((y<<16)|x);
+                    int pos=(y<<16)|x;
                     SendMessage(GetParent(hwnd),WM_LBUTTONDOWN,0,pos);
                     SendMessage(GetParent(hwnd),WM_LBUTTONUP,  0,pos);
                     SetActiveWindow(hwnd);

@@ -244,13 +244,13 @@ void Image::createBitmap(BYTE *data,int sz)
     UNREFERENCED_PARAMETER(sz)
     return;
 #else
-    int ret=WebPGetInfo((PBYTE)data,sz,&sx,&sy);
+    int ret=WebPGetInfo(data,sz,&sx,&sy);
     if(!ret)
     {
         log_err("ERROR in image_load(): failed WebPGetInfo(%d)\n",ret);
         return;
     }
-    big=WebPDecodeBGRA((PBYTE)data,sz,&sx,&sy);
+    big=WebPDecodeBGRA(data,sz,&sx,&sy);
     if(!big)
     {
         log_err("ERROR in image_load(): failed WebPDecodeBGRA\n");

@@ -36,7 +36,7 @@ class Txt
 public:
     unsigned getSize()const{return text.size();}
     std::vector<char> *getVector(){return &text;}
-    char *get(int offset){return (char *)(&text[offset]);}
+    char *get(int offset){return &text[offset];}
     wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
 
     int strcpy(const char *mem);
