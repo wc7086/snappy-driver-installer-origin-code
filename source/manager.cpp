@@ -1796,7 +1796,7 @@ int Hwidmatch::isvalidcat(State *state)
     state->getWinVer(&major,&minor);
     wsprintfA(bufa,"2:%d.%d",major,minor);
     if(!*s)return 0;
-    return StrStrA(s,bufa)?1:0;
+    return strstr(s,bufa)?1:0;
 }
 
 void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
