@@ -180,7 +180,6 @@
 			<Add directory="C:/Boost/include" />
 		</Compiler>
 		<Linker>
-			<Add option="-static-libstdc++" />
 			<Add option="-static" />
 			<Add library="msimg32" />
 			<Add library="baseboard" />
@@ -188,22 +187,17 @@
 			<Add library="kernel32" />
 			<Add library="user32" />
 			<Add library="gdi32" />
-			<Add library="winspool" />
 			<Add library="comdlg32" />
 			<Add library="advapi32" />
 			<Add library="shell32" />
 			<Add library="ole32" />
 			<Add library="oleaut32" />
-			<Add library="uuid" />
-			<Add library="odbc32" />
-			<Add library="odbccp32" />
 			<Add library="setupapi" />
 			<Add library="shlwapi" />
 			<Add library="newdev" />
-			<Add library="comctl32" />
-			<Add library="wbemuuid" />
-			<Add library="boost_thread-mt" />
 			<Add library="boost_system-mt" />
+			<Add library="uuid" />
+			<Add library="wbemuuid" />
 			<Add directory="../external" />
 		</Linker>
 		<ExtraCommands>

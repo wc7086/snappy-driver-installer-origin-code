@@ -835,7 +835,7 @@ void Driverpack::saveindex()
         indexesold.getSize()*sizeof(Hashitem)+sizeof(int)+
         6*sizeof(int)*2;
 
-    p=mem=(char *)malloc(sz);
+    p=mem=new char[sz];
     fwrite("SDW",3,1,f);
     fwrite(&version,sizeof(int),1,f);
 
@@ -848,14 +848,14 @@ void Driverpack::saveindex()
 
     if(flags&COLLECTION_USE_LZMA)
     {
-        mem_pack=(char *)malloc(sz);
+        mem_pack=new char[sz];
         sz=encode(mem_pack,sz,mem,sz);
         fwrite(mem_pack,sz,1,f);
-        free(mem_pack);
+        delete[] mem_pack;
     }
     else fwrite(mem,sz,1,f);
 
-    free(mem);
+    delete[] mem;
     fclose(f);
 }
 
@@ -910,7 +910,7 @@ int Driverpack::loadindex()
     if(memcmp(buf,"SDW",3)||version!=VER_INDEX)return 0;
     if(*drpext_dir)return 0;
 
-    p=mem=(char *)malloc(sz);
+    p=mem=new char[sz];
     fread(mem,sz,1,f);
 
     if(flags&COLLECTION_USE_LZMA)
@@ -918,7 +918,7 @@ int Driverpack::loadindex()
         UInt64 sz_unpack;
 
         Lzma86_GetUnpackSize((Byte *)p,sz,&sz_unpack);
-        mem_unpack=(char *)malloc(sz_unpack);
+        mem_unpack=new char[sz_unpack];
         decode(mem_unpack,sz_unpack,mem,sz);
         p=mem_unpack;
     }
@@ -930,8 +930,8 @@ int Driverpack::loadindex()
     p=vector_load(texta.getVector(),p);
     p=indexesold.load(p);
 
-    free(mem);
-    if(mem_unpack)free(mem_unpack);
+    delete[] mem;
+    if(mem_unpack)delete[] mem_unpack;
     fclose(f);
     texta.shrink();
 
@@ -1151,9 +1151,9 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
             else
                 t.drp->parsecat(t.pathinf,t.inffile,t.adr,t.len);
 
-            delete []t.pathinf;
-            delete []t.inffile;
-            free(t.adr);
+            delete[] t.pathinf;
+            delete[] t.inffile;
+            delete[] t.adr;
             last=GetTickCount();
         }
         //log_con("Fin %ws\n",data.drp->getFilename());
@@ -1176,7 +1176,7 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
 
     if(len>4&&((adr[0]==-1&&adr[3]==0)||adr[0]==0))
     {
-        data.adr=(char *)malloc(len+2);
+        data.adr=new char[len+2];
         if(!data.adr)
         {
             log_err("ERROR in driverpack_indexinf: malloc(%d)\n",len+2);
@@ -1186,7 +1186,7 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
     }
     else
     {
-        data.adr=(char *)malloc(len);
+        data.adr=new char[len];
         memmove(data.adr,adr,len);
     }
 
@@ -1203,7 +1203,7 @@ void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const 
 {
     obj data;
 
-    data.adr=(char *)malloc(len);
+    data.adr=new char[len];
     memmove(data.adr,adr,len);
     data.len=len;
     wcscpy(data.pathinf,pathinf);
@@ -1270,7 +1270,7 @@ static void *mySzAlloc(void *p, size_t size)
     }catch(std::bad_alloc)
     {
         log_err("Failed to alloc\n");
-        log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
+        //log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
     }catch(...)
     {
         log_err("Failed to alloc\n");
@@ -1402,10 +1402,9 @@ void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char
 {
     if(inf_len>4&&((bb[0]==-1&&bb[3]==0)||bb[0]==0))
     {
-        char *buf_out;
         int size=inf_len;
 
-        buf_out=(char *)malloc(size+2);
+        char *buf_out=new char[size+2];
         if(!buf_out)
         {
             log_err("ERROR in driverpack_indexinf: malloc(%d)\n",size+2);
@@ -1413,7 +1412,7 @@ void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char
         }
         size=unicode2ansi(bb,buf_out,size);
         indexinf_ansi(drpdir,iinfdilename,buf_out,size);
-        free(buf_out);
+        delete[] buf_out;
     }
     else
     {

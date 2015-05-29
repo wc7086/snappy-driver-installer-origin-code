@@ -406,7 +406,7 @@ int UpdateDialog_t::populate(int update)
     for(int i=0;i<numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
-        const char *filenamefull=StrChrA(fe.path.c_str(),'\\')+1;
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
 
         if(StrStrIA(filenamefull,"indexes\\"))
         {
@@ -477,8 +477,8 @@ int UpdateDialog_t::populate(int update)
     for(int i=0;i<numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
-        const char *filenamefull=StrChrA(fe.path.c_str(),'\\')+1;
-        const char *filename=StrChrA(filenamefull,'\\')+1;
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
+        const char *filename=strchr(filenamefull,'\\')+1;
         if(!filename)filename=filenamefull;
 
         if(StrStrIA(filenamefull,".7z"))
@@ -662,7 +662,7 @@ void Updater_t::moveNewFiles()
     if(hTorrent.file_priority(i))
     {
         file_entry fe=ti->file_at(i);
-        const char *filenamefull=StrChrA(fe.path.c_str(),'\\')+1;
+        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
 
         // Skip autorun.inf and del_old_driverpacks.bat
         if(StrStrIA(filenamefull,"autorun.inf")||StrStrIA(filenamefull,".bat"))continue;

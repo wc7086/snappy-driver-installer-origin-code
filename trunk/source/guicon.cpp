@@ -280,7 +280,7 @@ static void myterminate()
     }
     log_err("ERROR: %S\n",buf);
     log_save();
-    StrCatW(buf,L"\n\nThe program will self terminate now.");
+    wcscat(buf,L"\n\nThe program will self terminate now.");
     MessageBox(hMain,buf,L"Exception",MB_ICONERROR);
 
     abort();
