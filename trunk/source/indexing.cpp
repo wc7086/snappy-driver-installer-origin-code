@@ -644,7 +644,7 @@ void Collection::populate()
     queuedriverpack_p=&queuedriverpack1;
     int num_thr=num_cores;
     int num_thr_1=num_cores;
-    if(drp_count)num_thr=1;
+    if(drp_count)num_thr=3;
     log_con("Cores: %d\n",num_cores);
 
     HANDLE thr[16],cons[16];
@@ -911,6 +911,7 @@ int Driverpack::loadindex()
     if(*drpext_dir)return 0;
 
     p=mem=new char[sz];
+    log_con("");// A fix for a compiler bug
     fread(mem,sz,1,f);
 
     if(flags&COLLECTION_USE_LZMA)

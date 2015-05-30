@@ -20,7 +20,7 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
-					<Add option="-std=c++11" />
+					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSE_TORRENT" />
 				</Compiler>
@@ -44,9 +44,9 @@
 				<Option use_console_runner="0" />
 				<Option parameters="-disableinstall -extractdir:temp1 -showconsole" />
 				<Compiler>
-					<Add option="-std=c++11" />
 					<Add option="-pg" />
 					<Add option="-g" />
+					<Add option="-m32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSE_TORRENT" />
 				</Compiler>
@@ -73,7 +73,6 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
-					<Add option="-std=c++11" />
 					<Add option="-m64" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSE_TORRENT" />
@@ -98,7 +97,6 @@
 				<Option use_console_runner="0" />
 				<Option parameters="-disableinstall -extractdir:temp1 -showconsole" />
 				<Compiler>
-					<Add option="-std=c++11" />
 					<Add option="-pg" />
 					<Add option="-g" />
 					<Add option="-m64" />
@@ -128,7 +126,7 @@
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
-					<Add option="-std=c++11" />
+					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DCONSOLE_MODE" />
 				</Compiler>
@@ -152,14 +150,12 @@
 			<Add option="-Wmissing-include-dirs" />
 			<Add option="-Wswitch-enum" />
 			<Add option="-Wswitch-default" />
-			<Add option="-Weffc++" />
 			<Add option="-Wzero-as-null-pointer-constant" />
 			<Add option="-Wmain" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
-			<Add option="-m32" />
 			<Add option="-finput-charset=CP1251" />
 			<Add option="-Wunused" />
 			<Add option="-mthreads" />
@@ -209,59 +205,33 @@
 		<Unit filename="../resources/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
-		<Unit filename="../source/cli.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/cli.cpp" />
 		<Unit filename="../source/cli.h" />
-		<Unit filename="../source/common.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/common.cpp" />
 		<Unit filename="../source/common.h" />
 		<Unit filename="../source/device.h" />
-		<Unit filename="../source/draw.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/draw.cpp" />
 		<Unit filename="../source/draw.h" />
-		<Unit filename="../source/enum.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/enum.cpp" />
 		<Unit filename="../source/enum.h" />
-		<Unit filename="../source/guicon.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/guicon.cpp" />
 		<Unit filename="../source/guicon.h" />
-		<Unit filename="../source/indexing.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/indexing.cpp" />
 		<Unit filename="../source/indexing.h" />
-		<Unit filename="../source/install.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/install.cpp" />
 		<Unit filename="../source/install.h" />
-		<Unit filename="../source/langlist.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/langlist.cpp" />
 		<Unit filename="../source/langlist.h" />
-		<Unit filename="../source/main.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/main.cpp" />
 		<Unit filename="../source/main.h" />
-		<Unit filename="../source/manager.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/manager.cpp" />
 		<Unit filename="../source/manager.h" />
-		<Unit filename="../source/matcher.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/matcher.cpp" />
 		<Unit filename="../source/matcher.h" />
 		<Unit filename="../source/svnrev.h" />
-		<Unit filename="../source/theme.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/theme.cpp" />
 		<Unit filename="../source/theme.h" />
-		<Unit filename="../source/themelist.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="../source/themelist.cpp" />
 		<Unit filename="../source/themelist.h" />
 		<Unit filename="../source/update.cpp" />
 		<Unit filename="../source/update.h" />
@@ -269,16 +239,6 @@
 			<code_completion />
 			<envvars />
 			<debugger />
-			<lib_finder disable_auto="1" />
-			<DoxyBlocks>
-				<comment_style block="0" line="0" />
-				<doxyfile_project />
-				<doxyfile_build />
-				<doxyfile_warnings />
-				<doxyfile_output />
-				<doxyfile_dot />
-				<general />
-			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
