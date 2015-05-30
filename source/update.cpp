@@ -548,7 +548,7 @@ void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
 
 void UpdateDialog_t::openDialog()
 {
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,UpdateProcedure);
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
 }
 
 void UpdateDialog_t::clearList()
