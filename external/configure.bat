@@ -255,6 +255,8 @@ popd
 rem Rebuild libtorrent
 goto skiprebuild
 :installtorrent
+rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1 2>nul
+rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2 2>nul
 rd /S /Q "%GCC_PATH%\include\libtorrent" 2>nul
 rd /S /Q "%GCC64_PATH%\include\libtorrent" 2>nul
 rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul)
@@ -279,6 +281,7 @@ bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelea
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%\lib /Y
 copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%\lib\libtorrent_dbg.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1\myrls\libboost_system-mgw48-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system_tr.a /Y
 popd
 :skipbuildlibtorrent
 
@@ -293,6 +296,7 @@ bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 to
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-4.9.2\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib /Y
 copy ..\bin\gcc-mngw-4.9.2\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib\libtorrent_dbg.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2\myrls\libboost_system-mgw49-mt-s-1_58.a %BOOST64_INSTALL_PATH%\lib\libboost_system_tr.a /Y
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64
