@@ -90,7 +90,7 @@ extern "C"
 #include "cli.h"
 #include "update.h"
 
-#include "debug_new.h"
+//#include "debug_new.h"
 //}
 
 //{ Defines

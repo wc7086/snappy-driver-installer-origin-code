@@ -19,22 +19,12 @@
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
 					<Add option="-m32" />
+					<Add option="-flto" />
 					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
+					<Add option="-flto" />
 				</Linker>
 			</Target>
 			<Target title="Win32 Debug">
@@ -52,18 +42,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
 				</Linker>
 			</Target>
 			<Target title="Win64 Release">
@@ -82,18 +60,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
 				</Linker>
 			</Target>
 			<Target title="Win64 Debug">
@@ -104,26 +70,11 @@
 				<Option type="2" />
 				<Option compiler="gcc_64" />
 				<Compiler>
-					<Add option="-fomit-frame-pointer" />
-					<Add option="-fexpensive-optimizations" />
-					<Add option="-O3" />
+					<Add option="-pg" />
+					<Add option="-g" />
 					<Add option="-m64" />
 					<Add option="-D_DEBUG" />
 				</Compiler>
-				<Linker>
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-				</Linker>
 			</Target>
 			<Target title="Win32 Console">
 				<Option platforms="Windows;" />
@@ -141,18 +92,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="kernel32" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="winspool" />
-					<Add library="comdlg32" />
-					<Add library="advapi32" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
 				</Linker>
 			</Target>
 		</Build>
@@ -173,7 +112,6 @@
 		</Compiler>
 		<Linker>
 			<Add option="-lstdc++" />
-			<Add option="-m32" />
 		</Linker>
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zCompressionMode.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zCompressionMode.h" />
@@ -556,7 +494,6 @@
 			<code_completion />
 			<envvars />
 			<debugger />
-			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
