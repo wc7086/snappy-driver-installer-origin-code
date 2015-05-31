@@ -296,6 +296,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     SYSTEM_INFO siSysInfo;
     GetSystemInfo(&siSysInfo);
     num_cores=siSysInfo.dwNumberOfProcessors;
+    registerall();
 
     // Check if the mouse present
     if(!GetSystemMetrics(SM_MOUSEPRESENT))kbpanel=KB_FIELD;
@@ -372,9 +373,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         log_con("\n");
     }
 
-#ifdef BENCH_MODE
+    #ifdef BENCH_MODE
     benchmark();
-#endif
+    #endif
 
     // Make dirs
     mkdir_r(drp_dir);
@@ -400,9 +401,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&Bundle::thread_loadall,&bundle[0],0,nullptr);
 
     // Check updates
-#ifdef USE_TORRENT
+    #ifdef USE_TORRENT
     Updater.createThreads();
-#endif
+    #endif
 
     // Start folder monitors
     Filemon *mon_drp=Filemon::start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
@@ -516,10 +517,10 @@ void gui(int nCmd)
         //if(MessageBox(0,STR(STR_UPD_DIALOG_MSG),STR(STR_UPD_DIALOG_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
         {
             flags|=FLAG_CHECKUPDATES;
-#ifdef USE_TORRENT
+            #ifdef USE_TORRENT
             Updater.createThreads();
             Updater.checkUpdates();
-#endif
+            #endif
         }
     }
 
@@ -638,8 +639,7 @@ unsigned int __stdcall Bundle::thread_loadindexes(void *arg)
 {
     Collection *collection=(Collection *)arg;
 
-    //if(manager_g->items_list[SLOT_EMPTY].curpos==1)*drpext_dir=0;
-    collection->updatedir();
+    if(invaidate_set&INVALIDATE_INDEXES)collection->updatedir();
     return 0;
 }
 
@@ -662,11 +662,14 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
     do
     {
         // Wait for an update request
+        bundle[bundle_shadow].bundle_init();
+            /*long long prmem;
+            log_con("Total mem:%ld KB(%ld)\n",nvwa::total_mem_alloc/1024,nvwa::total_mem_alloc-prmem);
+            prmem=nvwa::total_mem_alloc;*/
         WaitForSingleObject(deviceupdate_event,INFINITE);
 
         // Update bundle
         log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
-        bundle[bundle_shadow].bundle_init();
         bundle[bundle_shadow].bundle_prep();
         bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
@@ -710,6 +713,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
 
 void Bundle::bundle_init()
 {
+    state.init();
     collection.init(drp_dir,index_dir,output_dir);
     matcher.init(&state,&collection);
 }
@@ -718,11 +722,11 @@ void Bundle::bundle_prep()
 {
     state.getsysinfo_fast();
 }
-
 void Bundle::bundle_load(Bundle *pbundle)
 {
     HANDLE thandle[3];
 
+    time_test=GetTickCount();
     thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,&state,0,nullptr);
     thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,&collection,0,nullptr);
     thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,&state,0,nullptr);
@@ -734,10 +738,13 @@ void Bundle::bundle_load(Bundle *pbundle)
     // Copy data from shadow if it's not updated
     if((invaidate_set&INVALIDATE_DEVICES)==0){state=pbundle->state;time_devicescan=0;}
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
+    if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;time_indexes=0;}
+
     invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
     matcher.getState()->textas.shrink();
     matcher.populate();
+    time_test=GetTickCount()-time_test;
 }
 
 void Bundle::bundle_lowprioirity()
@@ -1429,7 +1436,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 redrawmainwnd();
             }
             if(wParam==VK_F5&&ctrl_down)
-                invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);else
             if(wParam==VK_F5)
                 invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             if(wParam==VK_F6&&ctrl_down)

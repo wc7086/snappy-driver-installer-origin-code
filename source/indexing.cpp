@@ -452,6 +452,7 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
     driverpack_dir=driverpacks_dirv;
     index_bin_dir=index_bin_dirv;
     index_linear_dir=index_linear_dirv;
+    driverpack_list.clear();
 }
 
 unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
@@ -495,7 +496,7 @@ void Collection::save()
     for(auto &driverpack:driverpack_list)
         if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
 
-    log_con("Saving indexes...\n");
+    if(count_)log_con("Saving indexes...\n");
     HANDLE thr[16];
     drplist_t queuedriverpack_loc;
     for(int i=0;i<num_cores;i++)
@@ -511,7 +512,7 @@ void Collection::save()
         CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
     }
     manager_g->itembar_settext(SLOT_INDEXING,0);
-    log_con("DONE\n");
+    if(count_)log_con("DONE\n");
 
     // Delete unused indexes
     WIN32_FIND_DATA FindFileData;
@@ -632,10 +633,9 @@ void Collection::populate()
     time_indexes=GetTickCount();
 
     drp_count=scanfolder_count(driverpack_dir);
-    driverpack_list.clear();
     driverpack_list.reserve(drp_count+1+100); // TODO
 
-    registerall();
+    //registerall();
     driverpack_list.push_back(Driverpack(driverpack_dir,L"unpacked.7z",this));
     unpacked_drp=&driverpack_list.back();
 
@@ -685,7 +685,7 @@ void Collection::populate()
     }
 //}thread
     time_indexes=GetTickCount()-time_indexes;
-    log_con("DONE Indexes\n");
+    //log_con("DONE Indexes\n");
     flags&=~COLLECTION_FORCE_REINDEXING;
     driverpack_list.shrink_to_fit();
 }
@@ -1159,7 +1159,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
         }
         //log_con("Fin %ws\n",data.drp->getFilename());
     }
-    log_con("Starved for %ld\n",tm);
+    //log_con("Starved for %ld\n",tm);
     return 0;
 }
 
@@ -1252,10 +1252,6 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
         log_con("Not found singature in '%ws%ws'(%d)\n",pathinf,inffilename,len);
     }
 
-}
-namespace nvwa
-{
-extern size_t total_mem_alloc;
 }
 
 static void *mySzAlloc(void *p, size_t size)

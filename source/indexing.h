@@ -268,7 +268,7 @@ public:
     int findnext(int *isFound){return indexesold.findnext(isFound);}
 
     //Driverpack(const Driverpack&)=delete;
-    Driverpack &operator=(const Driverpack&)=delete;
+    //Driverpack &operator=(const Driverpack&)=delete;
     Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
     ~Driverpack();
 

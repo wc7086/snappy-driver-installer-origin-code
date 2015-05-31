@@ -674,6 +674,7 @@ void itembar_t::contextmenu(int x,int y)
 
     int flags1=checked?MF_CHECKED:0;
     if(!hwidmatch&&index!=SLOT_RESTORE_POINT)flags1|=MF_GRAYED;
+    if(rtl)x=mainx_c-x;
 
     if(floating_itembar==SLOT_RESTORE_POINT)
     {
@@ -1325,6 +1326,13 @@ int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             // Device icon
             if(itembar->devicematch&&SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr))
             {
+                if(rtl)
+                {
+                    HICON miricon;
+                    miricon=CreateMirroredIcon(hIcon);
+                    DestroyIcon(hIcon);
+                    hIcon=miricon;
+                }
                 DrawIconEx(hdc,x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
                 DestroyIcon(hIcon);
             }

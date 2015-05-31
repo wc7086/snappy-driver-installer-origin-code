@@ -153,3 +153,4 @@ void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int i);
 void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
+HICON CreateMirroredIcon(HICON hiconOrg);

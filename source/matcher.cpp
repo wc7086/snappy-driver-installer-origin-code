@@ -371,8 +371,6 @@ void Matcher::sort()
 void Matcher::populate()
 {
     time_matcher=GetTickCount();
-    devicematch_list.clear();
-    hwidmatch_list.clear();
 
     isLaptop=state->isLaptop;
     //wcscpy(marker,state->marker);

@@ -191,7 +191,7 @@
 			<Add library="setupapi" />
 			<Add library="shlwapi" />
 			<Add library="newdev" />
-			<Add library="boost_system-tr" />
+			<Add library="boost_system_tr" />
 			<Add library="uuid" />
 			<Add library="wbemuuid" />
 			<Add directory="../external" />
