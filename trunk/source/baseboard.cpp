@@ -16,13 +16,10 @@ void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
 int init=0;
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type)
 {
-    IWbemLocator *pLoc=0;
-    IWbemServices *pSvc=0;
-    IEnumWbemClassObject *pEnumerator=NULL;
-    int hres;
 
-    *manuf=*model=*product=0;
-    hres=CoInitializeEx(0,COINIT_MULTITHREADED);
+    *manuf=*model=*product=*cs_model=*type=0;
+
+    int hres=CoInitializeEx(0,COINIT_MULTITHREADED);
     if(FAILED(hres))
     {
         printf("FAILED to initialize COM library. Error code = 0x%X\n",hres);
@@ -41,6 +38,7 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
         }
     }
 
+    IWbemLocator *pLoc=0;
     hres=CoCreateInstance(CLSID_WbemLocator,0,CLSCTX_INPROC_SERVER,IID_IWbemLocator,(LPVOID *)&pLoc);
     if(FAILED(hres))
     {
@@ -49,6 +47,7 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
         return 0;
     }
 
+    IWbemServices *pSvc=0;
     hres=pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),NULL,NULL,0,NULL,0,0,&pSvc);
     if(FAILED(hres))
     {
@@ -58,7 +57,7 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
         return 0;
     }
 
-    printf("Connected to ROOT\\CIMV2 WMI namespace\n");
+    //printf("Connected to ROOT\\CIMV2 WMI namespace\n");
 
     hres=CoSetProxyBlanket(pSvc,RPC_C_AUTHN_WINNT,RPC_C_AUTHZ_NONE,NULL,
        RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,NULL,EOAC_NONE);
@@ -71,6 +70,7 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
         return 0;
     }
 
+    IEnumWbemClassObject *pEnumerator=NULL;
     hres=pSvc->ExecQuery(
         _bstr_t(L"WQL"),
         _bstr_t(L"SELECT * FROM Win32_BaseBoard"),
@@ -186,11 +186,12 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
         }
     }
 
-    init=1;
+    //init=1;
 
     pSvc->Release();
     pLoc->Release();
     CoUninitialize();
+
     return 1;
 }
 

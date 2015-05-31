@@ -72,7 +72,7 @@ private:
 
 public:
     void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
-    void init(State *state1,Collection *col1){state=state1;col=col1;}
+    void init(State *state1,Collection *col1){state=state1;col=col1;devicematch_list.clear();hwidmatch_list.clear();}
     void populate();
     void print();
     void sorta(int *v);

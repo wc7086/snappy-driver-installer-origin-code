@@ -626,7 +626,7 @@ void State::print()
         log_file("\n\n");
     }
 
-    log_con("State: %d+%d+%d*%d+%d*%d\n",sizeof(State),textas.getSize(),Devices_list.size(),sizeof(Device),Drivers_list.size(),sizeof(Driver));
+    //log_con("State: %d+%d+%d*%d+%d*%d\n",sizeof(State),textas.getSize(),Devices_list.size(),sizeof(Device),Drivers_list.size(),sizeof(Driver));
     //log_file("Errors: %d\n",error_count);
 }
 
@@ -748,6 +748,7 @@ void State::contextmenu2(int x,int y)
 
     RECT rect;
     SetForegroundWindow(hMain);
+    if(rtl)x=main1x_c-x;
     GetWindowRect(hMain,&rect);
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
 }
@@ -759,7 +760,7 @@ void State::save(const wchar_t *filename)
     int version=VER_STATE;
 
     if(flags&FLAG_NOSNAPSHOT)return;
-    log_file("Saving state in '%S'...",filename);
+    log_con("Saving state in '%S'...",filename);
     if(!canWrite(filename))
     {
         log_err("ERROR in state_save(): Write-protected,'%S'\n",filename);
@@ -963,9 +964,6 @@ void State::scanDevices()
 
     time_devicescan=GetTickCount();
     //collection.init(textas.getw(windir),L"",L"");
-    Devices_list.clear();
-    Drivers_list.clear();
-    inf_list_new.clear();
 
     hDevInfo=SetupDiGetClassDevs(nullptr,nullptr,nullptr,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
@@ -1012,6 +1010,14 @@ void State::scanDevices()
 
     SetupDiDestroyDeviceInfoList(hDevInfo);
     time_devicescan=GetTickCount()-time_devicescan;
+}
+
+void State::init()
+{
+    Devices_list.clear();
+    Drivers_list.clear();
+    inf_list_new.clear();
+    textas.reset(2);
 }
 
 const wchar_t *State::get_winverstr()

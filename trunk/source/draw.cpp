@@ -563,7 +563,7 @@ void Panel::draw(HDC hdc)
         // System Info (2nd line)
         if(i==2&&index==0)
         {
-            wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
+            wsprintf(buf,L"%s (%d-bit)\u200E",state->get_winverstr(),state->getArchitecture()?64:32);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
@@ -573,7 +573,8 @@ void Panel::draw(HDC hdc)
         // System Info (3rd line)
         if(i==3&&index==0)
         {
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
+            wsprintf(buf,L"%s\u200E",(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
+            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
@@ -622,7 +623,7 @@ void Panel::draw(HDC hdc)
 
                     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
                     v.str_date(buf+wcslen(buf));
-                    wcscat(buf,L")");
+                    wcscat(buf,L")\u200E");
                     SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
                     TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,buf);
                 }
@@ -793,7 +794,7 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
     rect.right=x+wx;
     rect.bottom=y+wy;
 
-    if(icon[i].isLoaded())
+    if(icon[i].isLoaded()&&!rtl)
         icon[i].draw(hdc,x,y,x+wx,y+wy,0,Image::HSTR|Image::VSTR);
     else
         DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
@@ -841,5 +842,66 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
         TrackMouseEvent(&tme);
     }
     if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
+}
+
+HICON CreateMirroredIcon(HICON hiconOrg)
+{
+    HDC hdcScreen,hdcBitmap,hdcMask=nullptr;
+    HBITMAP hbm,hbmMask,hbmOld,hbmOldMask;
+    BITMAP bm;
+    ICONINFO ii;
+    HICON hicon=nullptr;
+
+    hdcBitmap=CreateCompatibleDC(nullptr);
+    if(hdcBitmap)
+    {
+        hdcMask=CreateCompatibleDC(nullptr);
+        if(hdcMask)
+        {
+            SetLayout(hdcBitmap,LAYOUT_RTL);
+            SetLayout(hdcMask,LAYOUT_RTL);
+        }
+        else
+        {
+            DeleteDC(hdcBitmap);
+            hdcBitmap=nullptr;
+        }
+    }
+    hdcScreen=GetDC(nullptr);
+    if(hdcScreen)
+    {
+        if(hdcBitmap&&hdcMask)
+        {
+            if(hiconOrg)
+            {
+                if(GetIconInfo(hiconOrg,&ii)&&GetObject(ii.hbmColor,sizeof(BITMAP),&bm))
+                {
+                    // Do the cleanup for the bitmaps.
+                    DeleteObject(ii.hbmMask);
+                    DeleteObject(ii.hbmColor);
+                    ii.hbmMask=ii.hbmColor=nullptr;
+                    hbm=CreateCompatibleBitmap(hdcScreen,bm.bmWidth,bm.bmHeight);
+                    hbmMask=CreateBitmap(bm.bmWidth,bm.bmHeight,1,1,nullptr);
+                    hbmOld=(HBITMAP)SelectObject(hdcBitmap,hbm);
+                    hbmOldMask=(HBITMAP)SelectObject(hdcMask,hbmMask);
+                    DrawIconEx(hdcBitmap,0,0,hiconOrg,bm.bmWidth,bm.bmHeight,0,nullptr,DI_IMAGE);
+                    DrawIconEx(hdcMask,0,0,hiconOrg,bm.bmWidth,bm.bmHeight,0,nullptr,DI_MASK);
+                    SelectObject(hdcBitmap,hbmOld);
+                    SelectObject(hdcMask,hbmOldMask);
+
+                    // Create the new mirrored icon and delete bitmaps
+                    ii.hbmMask=hbmMask;
+                    ii.hbmColor=hbm;
+                    hicon=CreateIconIndirect(&ii);
+                    DeleteObject(hbm);
+                    DeleteObject(hbmMask);
+                }
+            }
+        }
+        ReleaseDC(nullptr,hdcScreen);
+    }
+    if(hdcBitmap)DeleteDC(hdcBitmap);
+    if(hdcMask)DeleteDC(hdcMask);
+    return hicon;
 }
 //}

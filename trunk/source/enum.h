@@ -234,6 +234,7 @@ public:
     void getsysinfo_slow();
     void getsysinfo_slow(State *prev);
     void scanDevices();
+    void init();
 
     const wchar_t *get_winverstr();
     int  opencatfile(Driver *cur_driver);

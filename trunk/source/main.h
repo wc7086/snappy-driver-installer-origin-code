@@ -91,6 +91,7 @@ extern "C"
 #include "update.h"
 
 //#include "debug_new.h"
+namespace nvwa {extern size_t total_mem_alloc;}
 //}
 
 //{ Defines
