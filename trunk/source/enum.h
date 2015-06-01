@@ -63,8 +63,8 @@ class Device
     ofst Driver;
     ofst Mfg;
     ofst FriendlyName;
-    int Capabilities;
-    int ConfigFlags;
+    unsigned Capabilities;
+    unsigned ConfigFlags;
 
     ofst InstanceId;
     ULONG status,problem;

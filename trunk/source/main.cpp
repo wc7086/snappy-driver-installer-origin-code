@@ -629,6 +629,8 @@ unsigned int __stdcall Bundle::thread_scandevices(void *arg)
 {
     State *state=(State *)arg;
 
+    if((invaidate_set&INVALIDATE_DEVICES)==0)return 0;
+
     if(statemode==STATEMODE_REAL)state->scanDevices();
     if(statemode==STATEMODE_EMUL)state->load(state_file);
 
@@ -647,7 +649,9 @@ unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
 {
     State *state=(State *)arg;
 
-    if(statemode==STATEMODE_REAL)state->getsysinfo_slow();
+    if(statemode==STATEMODE_REAL&&invaidate_set&INVALIDATE_SYSINFO)
+        state->getsysinfo_slow();
+
     state->isnotebook_a();
     state->genmarker();
 
@@ -662,11 +666,12 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
     do
     {
         // Wait for an update request
+        WaitForSingleObject(deviceupdate_event,INFINITE);
+        if(deviceupdate_exitflag)break;
         bundle[bundle_shadow].bundle_init();
-            /*long long prmem;
+            /*static long long prmem;
             log_con("Total mem:%ld KB(%ld)\n",nvwa::total_mem_alloc/1024,nvwa::total_mem_alloc-prmem);
             prmem=nvwa::total_mem_alloc;*/
-        WaitForSingleObject(deviceupdate_event,INFINITE);
 
         // Update bundle
         log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
@@ -727,6 +732,17 @@ void Bundle::bundle_load(Bundle *pbundle)
     HANDLE thandle[3];
 
     time_test=GetTickCount();
+
+    // Copy data from shadow if it's not updated
+    if((invaidate_set&INVALIDATE_DEVICES)==0)
+    {
+        state=pbundle->state;time_devicescan=0;
+        if(invaidate_set&INVALIDATE_SYSINFO)state.getsysinfo_fast();
+    }
+    if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
+    if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;time_indexes=0;}
+
+
     thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,&state,0,nullptr);
     thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,&collection,0,nullptr);
     thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,&state,0,nullptr);
@@ -735,11 +751,9 @@ void Bundle::bundle_load(Bundle *pbundle)
     CloseHandle_log(thandle[1],L"bundle_load",L"1");
     CloseHandle_log(thandle[2],L"bundle_load",L"2");
 
-    // Copy data from shadow if it's not updated
-    if((invaidate_set&INVALIDATE_DEVICES)==0){state=pbundle->state;time_devicescan=0;}
-    if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
-    if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;time_indexes=0;}
-
+    /*if((invaidate_set&INVALIDATE_DEVICES)==0)
+    {
+        state=pbundle->state;time_devicescan=0;}*/
     invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
     matcher.getState()->textas.shrink();
@@ -1488,7 +1502,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             else
                 instflag&=~RESTOREPOS;
 
-            SetEvent(deviceupdate_event);
+            invaidate(INVALIDATE_DEVICES);
             break;
 
         case WM_SIZE:
@@ -1632,12 +1646,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_EMU_32:
                     virtual_arch_type=32;
-                    invaidate(INVALIDATE_SYSINFO);
+                    invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     break;
 
                 case ID_EMU_64:
                     virtual_arch_type=64;
-                    invaidate(INVALIDATE_SYSINFO);
+                    invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     break;
 
                 case ID_DIS_INSTALL:
@@ -1655,7 +1669,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
             {
                 virtual_os_version=windows_ver[wp-ID_WIN_2000];
-                invaidate(INVALIDATE_SYSINFO);
+                invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
             {
