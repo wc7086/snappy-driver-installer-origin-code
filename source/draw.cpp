@@ -299,6 +299,8 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 
     if(!sx)return;
 
+    SetLayout(ldc,rtl?LAYOUT_RTL:0);
+
     wx=(fill&HSTR)?x2-x1:sx;
     wy=(fill&VSTR)?y2-y1:sy;
     if(fill&ASPECT)
@@ -563,7 +565,8 @@ void Panel::draw(HDC hdc)
         // System Info (2nd line)
         if(i==2&&index==0)
         {
-            wsprintf(buf,L"%s (%d-bit)\u200E",state->get_winverstr(),state->getArchitecture()?64:32);
+            wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
+            if(rtl)wcscat(buf,L"\u200E");
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
@@ -573,7 +576,8 @@ void Panel::draw(HDC hdc)
         // System Info (3rd line)
         if(i==3&&index==0)
         {
-            wsprintf(buf,L"%s\u200E",(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
+            wsprintf(buf,L"%s",(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
+            if(rtl)wcscat(buf,L"\u200E");
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
@@ -623,7 +627,7 @@ void Panel::draw(HDC hdc)
 
                     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
                     v.str_date(buf+wcslen(buf));
-                    wcscat(buf,L")\u200E");
+                    wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
                     SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
                     TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,buf);
                 }
@@ -794,7 +798,7 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
     rect.right=x+wx;
     rect.bottom=y+wy;
 
-    if(icon[i].isLoaded()&&!rtl)
+    if(icon[i].isLoaded())
         icon[i].draw(hdc,x,y,x+wx,y+wy,0,Image::HSTR|Image::VSTR);
     else
         DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));

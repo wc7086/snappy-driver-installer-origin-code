@@ -805,11 +805,6 @@ Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_
     type=DRIVERPACK_TYPE_PENDING_SAVE;
 }
 
-Driverpack::~Driverpack()
-{
-
-}
-
 void Driverpack::saveindex()
 {
     wchar_t filename[BUFLEN];

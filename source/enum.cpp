@@ -286,7 +286,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val)
     }
 }
 
-void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,int *cat,int *catalogfile,int *feature)
+void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature)
 {
     *inf_pos=-1;
     for(unsigned HWID_index=start_index;HWID_index<HWID_list.size();HWID_index++)
@@ -863,8 +863,6 @@ void State::getsysinfo_fast()
 {
     wchar_t buf[BUFLEN];
 
-    textas.reset(2);
-
     // Battery
     battery=textas.alloc(sizeof(SYSTEM_POWER_STATUS));
     SYSTEM_POWER_STATUS *batteryloc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
@@ -928,7 +926,6 @@ void State::getsysinfo_slow()
     wchar_t scs_manuf[BUFLEN];
     wchar_t scs_model[BUFLEN];
 
-    if((invaidate_set&INVALIDATE_SYSINFO)==0)return;
     time_sysinfo=GetTickCount();
 
     getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
@@ -959,8 +956,6 @@ void State::scanDevices()
     wchar_t buf[BUFLEN];
     Collection collection{textas.getw(windir),L"",L""};
     Driverpack unpacked_drp{L"",L"windir.7z",&collection};
-
-    if((invaidate_set&INVALIDATE_DEVICES)==0)return;
 
     time_devicescan=GetTickCount();
     //collection.init(textas.getw(windir),L"",L"");

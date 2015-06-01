@@ -23,8 +23,7 @@ class data_inffile_t;
 class data_desc_t;
 class data_HWID_t;
 
-#define STR_LN 4096
-typedef int ofst;
+typedef unsigned ofst;
 
 // Misc
 enum
@@ -51,6 +50,7 @@ enum DRIVERPACK_TYPE
     DRIVERPACK_TYPE_EMPTY          = 3,
 };
 
+// Obj
 class obj
 {
     Driverpack *drp;
@@ -62,6 +62,7 @@ class obj
     friend class Driverpack;
 };
 
+// Sect_data_t
 class sect_data_t
 {
     char *blockbeg,*blockend;
@@ -267,10 +268,7 @@ public:
     int find(int key,int *isFound){return indexesold.find(key,isFound);}
     int findnext(int *isFound){return indexesold.findnext(isFound);}
 
-    //Driverpack(const Driverpack&)=delete;
-    //Driverpack &operator=(const Driverpack&)=delete;
     Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
-    ~Driverpack();
 
     void saveindex();
     int  checkindex();
@@ -283,7 +281,7 @@ public:
     int printstats();
     static unsigned int __stdcall thread_indexinf(void *arg);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
-    void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,int *cat,int *catalogfile,int *feature);
+    void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
     static unsigned int __stdcall loaddrp_thread(void *arg);
     static unsigned int __stdcall savedrp_thread(void *arg);
     void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
