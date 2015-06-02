@@ -577,7 +577,7 @@ goaround:
     if(needreboot)ret_global|=0x40<<24;
     LeaveCriticalSection(&sync);
     ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
-    invaidate(INVALIDATE_DEVICES);
+    invalidate(INVALIDATE_DEVICES);
     redrawmainwnd();
 
     return 0;

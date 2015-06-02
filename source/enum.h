@@ -115,7 +115,7 @@ class Driver
     ofst InfSection;
     ofst InfSectionExt;
     ofst cat;
-    version_t version;
+    Version version;
 
     int catalogfile;
     int feature;
@@ -130,7 +130,7 @@ private:
 public:
     ofst getInfPath()const{return InfPath;}
     ofst getMatchingDeviceId(){return MatchingDeviceId;}
-    version_t *getVersion(){return &version;}
+    Version *getVersion(){return &version;}
 
     unsigned calc_score_h(State *state);
     void print(State *state);

@@ -162,7 +162,7 @@ public:
     char *getdrp_infname();
     const char *getdrp_drvfield(int n);
     const char *getdrp_drvcat(int n);
-    version_t *getdrp_drvversion();
+    Version *getdrp_drvversion();
     int   getdrp_infsize();
     int   getdrp_infcrc();
     //manufacturer
