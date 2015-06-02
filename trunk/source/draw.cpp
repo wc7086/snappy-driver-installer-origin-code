@@ -554,6 +554,8 @@ void Panel::draw(HDC hdc)
     State *state=manager_g->matcher->getState();
     for(i=0;i<items[0].action_id+1;i++)
     {
+        bool isSelected=i==cur_i;
+
         SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
         // System Info (1st line)
         if(i==1&&index==0)
@@ -588,19 +590,24 @@ void Panel::draw(HDC hdc)
         switch(items[i].type)
         {
             case TYPE_CHECKBOX:
-                drawcheckbox(hdc,mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,i==cur_i);
-                SetTextColor(hdc,D(i==cur_i?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+                if(isSelected&&kbpanel)
+                {
+                    drawbox(hdc,x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
+                    isSelected=false;
+                }
+                drawcheckbox(hdc,mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,isSelected);
+                SetTextColor(hdc,D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
                 TextOutH(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
-                if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
+                //if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
                 y+=D(PNLITEM_WY);
                 SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_BUTTON:
                 if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
-                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,i==cur_i?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
+                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,isSelected?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
                 else
-                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,i==cur_i?BOX_BUTTON_H:BOX_BUTTON);
+                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
                 SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
 
@@ -631,7 +638,7 @@ void Panel::draw(HDC hdc)
                     SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
                     TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,buf);
                 }
-                SetTextColor(hdc,D(i==cur_i&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+                SetTextColor(hdc,D(isSelected&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
                 TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id));
                 y+=D(PNLITEM_WY);
                 break;
@@ -747,32 +754,6 @@ void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,in
     if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
     r32=DeleteObject(newbrush);
     if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
-}
-
-void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w)
-{
-    HPEN newpen,oldpen;
-    HBRUSH oldbrush;
-    HGDIOBJ r;
-    x1-=2;
-    y1-=2;
-    x2+=2;
-    y2-=2;
-
-    oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
-    if(!oldbrush)log_err("ERROR in drawrectsel(): failed SelectObject(GetStockObject)\n");
-
-    newpen=CreatePen(PS_DOT,w,color2);
-    if(!newpen)log_err("ERROR in drawrectsel(): failed CreatePen\n");
-    oldpen=(HPEN)SelectObject(hdc,newpen);
-    if(!oldpen)log_err("ERROR in drawrectsel(): failed SelectObject(newpen)\n");
-
-    Rectangle(hdc,x1,y1,x2,y2);
-
-    r=SelectObject(hdc,oldpen);
-    if(!r)log_err("ERROR in drawrectsel(): failed SelectObject(oldpen)\n");
-    r=SelectObject(hdc,oldbrush);
-    if(!r)log_err("ERROR in drawrectsel(): failed SelectObject(oldbrush)\n");
 }
 
 void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int id)

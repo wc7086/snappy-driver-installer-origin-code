@@ -129,8 +129,6 @@ public:
 };
 
 // Misc functions
-//int mir(int x);
-//int mirc(int x);
 int mirw(int x,int ofs,int w);
 void TextOutH(HDC hdc,int x,int y,LPCTSTR buf);
 
@@ -148,7 +146,6 @@ int  panels_hitscan(int hx,int hy,int *ii);
 void panel_loadsettings(Panel *panel,int filters);
 
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
-void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);
 void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int i);
 void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrevision(HDC hdcMem,int y);

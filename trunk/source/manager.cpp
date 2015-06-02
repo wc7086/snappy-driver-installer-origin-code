@@ -497,10 +497,9 @@ void Manager::toggle(int index)
     unsigned i;
     int group;
 
-#ifdef USE_TORRENT
-    if(installmode&&!Updater.isPaused())
-        return;
-#endif
+    #ifdef USE_TORRENT
+    if(installmode&&!Updater.isPaused())return;
+    #endif
 
     itembar1=&items_list[index];
     if(index>=RES_SLOTS&&!itembar1->hwidmatch)return;
@@ -561,10 +560,9 @@ void Manager::selectnone()
     itembar_t *itembar;
     unsigned i;
 
-#ifdef USE_TORRENT
-    if(installmode&&!Updater.isPaused())
-        return;
-#endif
+    #ifdef USE_TORRENT
+    if(installmode&&!Updater.isPaused())return;
+    #endif
 
     if(items_list[SLOT_RESTORE_POINT].isactive)
     {
@@ -580,10 +578,9 @@ void Manager::selectall()
     unsigned i;
     int group=-1;
 
-#ifdef USE_TORRENT
-    if(installmode&&!Updater.isPaused())
-        return;
-#endif
+    #ifdef USE_TORRENT
+    if(installmode&&!Updater.isPaused())return;
+    #endif
 
     itembar=&items_list[SLOT_RESTORE_POINT];
     if(itembar->install_status==STR_RESTOREPOINT&&itembar->isactive)
@@ -1457,9 +1454,9 @@ void Manager::restorepos1(Manager *manager_prev)
     invaidate_set=0;
     LeaveCriticalSection(&sync);
 
-#ifdef USE_TORRENT
+    #ifdef USE_TORRENT
     UpdateDialog.populate(0);
-#endif
+    #endif
     //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
     if(flags&FLAG_AUTOINSTALL)
     {
@@ -1751,8 +1748,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
         {
             SelectObject(hdcMem,GetStockObject(DC_BRUSH));
             SelectObject(hdcMem,GetStockObject(DC_PEN));
-//            SetDCBrushColor(hdcMem,RGB(115,125,255));
-            SetDCBrushColor(hdcMem,RGB(255,255,255));//todo: color
+            SetDCBrushColor(hdcMem,D(POPUP_LST_SELECTED_COLOR));
             Rectangle(hdcMem,D(POPUP_OFSX)+horiz_sh,td.y,rect.right+horiz_sh-D(POPUP_OFSX),td.y+lne);
         }
         itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,1,k);

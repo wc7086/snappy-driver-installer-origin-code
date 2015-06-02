@@ -260,23 +260,23 @@ static void myterminate()
     }
     catch(const std::exception& e)
     {
-        wsprintfW(buf,L"Exception: %S\n",e.what());
+        wsprintf(buf,L"Exception: %S\n",e.what());
     }
     catch(int i)
     {
-        wsprintfW(buf,L"Exception: %d\n",i);
+        wsprintf(buf,L"Exception: %d\n",i);
     }
     catch(char const*str)
     {
-        wsprintfW(buf,L"Exception: %S\n",str);
+        wsprintf(buf,L"Exception: %S\n",str);
     }
     catch(wchar_t const*str)
     {
-        wsprintfW(buf,L"Exception: %s\n",str);
+        wsprintf(buf,L"Exception: %s\n",str);
     }
     catch(...)
     {
-        wsprintfW(buf,L"Exception: unknown");
+        wsprintf(buf,L"Exception: unknown");
     }
     log_err("ERROR: %S\n",buf);
     log_save();
