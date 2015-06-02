@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define INDEXING_H
 #include "main.h"
 
 //{ Global variables
@@ -23,23 +22,8 @@ int drp_count;
 int drp_cur;
 int loaded_unpacked=0;
 int volatile cur_,count_;
-
-class frm
-{
-public:
-    Driverpack *drp;
-    frm(Driverpack *a):drp(a){}
-    frm():drp(nullptr){}
-};
-
-typedef concurrent_queue<frm> drplist_t;
 drplist_t *queuedriverpack_p;
 
-struct tbl_t
-{
-    const char *s;
-    int sz;
-};
 const tbl_t table_version[NUM_VER_NAMES]=
 {
     {"classguid",                  9},
@@ -65,7 +49,7 @@ const wchar_t *olddrps[]=
 //}
 
 //{ Version
-int version_t::setDate(int d_,int m_,int y_)
+int Version::setDate(int d_,int m_,int y_)
 {
     d=d_;
     m=m_;
@@ -92,7 +76,7 @@ int version_t::setDate(int d_,int m_,int y_)
     return flag;
 }
 
-void version_t::setVersion(int v1_,int v2_,int v3_,int v4_)
+void Version::setVersion(int v1_,int v2_,int v3_,int v4_)
 {
     v1=v1_;
     v2=v2_;
@@ -100,7 +84,7 @@ void version_t::setVersion(int v1_,int v2_,int v3_,int v4_)
     v4=v4_;
 }
 
-void version_t::str_date(wchar_t *buf)
+void Version::str_date(wchar_t *buf)
 {
     SYSTEMTIME tm;
     FILETIME ft;
@@ -118,7 +102,7 @@ void version_t::str_date(wchar_t *buf)
         GetDateFormat(manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf,100);
 }
 
-void version_t::str_version(wchar_t *buf)
+void Version::str_version(wchar_t *buf)
 {
     if(v1<0)
         wsprintf(buf,STR(STR_HINT_UNKNOWN));
@@ -126,7 +110,7 @@ void version_t::str_version(wchar_t *buf)
         wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
 }
 
-int cmpdate(version_t *t1,version_t *t2)
+int cmpdate(Version *t1,Version *t2)
 {
     int res;
 
@@ -144,7 +128,7 @@ int cmpdate(version_t *t1,version_t *t2)
     return 0;
 }
 
-int cmpversion(version_t *t1,version_t *t2)
+int cmpversion(Version *t1,Version *t2)
 {
     int res;
 
@@ -385,7 +369,7 @@ int Parser::readHex()
     return val;
 }
 
-int Parser::readDate(version_t *t)
+int Parser::readDate(Version *t)
 {
 
     while(strBeg<strEnd&&!(*strBeg>='0'&&*strBeg<='9'))strBeg++;
@@ -396,7 +380,7 @@ int Parser::readDate(version_t *t)
 
 }
 
-void Parser::readVersion(version_t *t)
+void Parser::readVersion(Version *t)
 {
     int v1=readNumber();
     int v2=readNumber();
@@ -458,7 +442,7 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
 unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
 {
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
-    frm data;
+    driverpack_task data;
 
     while(1)
     {
@@ -503,9 +487,9 @@ void Collection::save()
         thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::savedrp_thread,&queuedriverpack_loc,0,nullptr);
     for(auto &driverpack:driverpack_list)
     if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)
-        queuedriverpack_loc.push(frm{&driverpack});
+        queuedriverpack_loc.push(driverpack_task{&driverpack});
 
-    for(int i=0;i<num_cores;i++)queuedriverpack_loc.push(frm{nullptr});
+    for(int i=0;i<num_cores;i++)queuedriverpack_loc.push(driverpack_task{nullptr});
     for(int i=0;i<num_cores;i++)
     {
         WaitForSingleObject(thr[i],INFINITE);
@@ -581,7 +565,7 @@ int Collection::scanfolder_count(const wchar_t *path)
 unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
 {
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
-    frm data;
+    driverpack_task data;
 
     while(1)
     {
@@ -591,8 +575,8 @@ unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
         Driverpack *drp=data.drp;
         if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
         {
-            drp->objs_new=new concurrent_queue<obj>;
-            queuedriverpack_p->push(frm{drp});
+            drp->objs_new=new concurrent_queue<inffile_task>;
+            queuedriverpack_p->push(driverpack_task{drp});
             drp->genindex();
             drp->driverpack_indexinf_async(L"",L"",nullptr,0);
         }
@@ -649,7 +633,7 @@ void Collection::populate()
 
     HANDLE thr[16],cons[16];
     for(int i=0;i<num_thr_1;i++)
-        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::thread_indexinf,&queuedriverpack1,0,nullptr);
+        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::indexinf_thread,&queuedriverpack1,0,nullptr);
 
     drplist_t queuedriverpack;
     for(int i=0;i<num_thr;i++)
@@ -660,7 +644,7 @@ void Collection::populate()
     drp_cur=1;
 
     scanfolder(driverpack_dir,&queuedriverpack);
-    for(int i=0;i<num_thr;i++)queuedriverpack.push(frm{nullptr});
+    for(int i=0;i<num_thr;i++)queuedriverpack.push(driverpack_task{nullptr});
 
     for(int i=0;i<num_thr;i++)
     {
@@ -676,7 +660,7 @@ void Collection::populate()
     driverpack_list[0].genhashes();
 
 //{thread
-    for(int i=0;i<num_thr_1;i++)queuedriverpack1.push(frm{nullptr});
+    for(int i=0;i<num_thr_1;i++)queuedriverpack1.push(driverpack_task{nullptr});
 
     for(int i=0;i<num_thr_1;i++)
     {
@@ -765,7 +749,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
             if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
-                reinterpret_cast<drplist_t *>(arg)->push(frm{&driverpack_list.back()});
+                reinterpret_cast<drplist_t *>(arg)->push(driverpack_task{&driverpack_list.back()});
             }else
             if((StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0||
                StrCmpIW(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
@@ -956,7 +940,7 @@ void Driverpack::print_index_hr()
     int pos;
     unsigned inffile_index,manuf_index,HWID_index,desc_index;
     unsigned n=inffile.size();
-    version_t *t;
+    Version *t;
     data_inffile_t *d_i;
     Hwidmatch hwidmatch(this,0);
     char buf[BUFLEN];
@@ -1098,11 +1082,11 @@ int Driverpack::printstats()
     return sum;
 }
 
-unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
+unsigned int __stdcall Driverpack::indexinf_thread(void *arg)
 {
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
-    obj t;
-    frm data;
+    inffile_task t;
+    driverpack_task data;
     long long tm=0,last=0;
 
     while(1)
@@ -1148,7 +1132,7 @@ unsigned int __stdcall Driverpack::thread_indexinf(void *arg)
 
 void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,int len)
 {
-    obj data;
+    inffile_task data;
 
     data.drp=this;
     if(!adr)
@@ -1185,7 +1169,7 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
 
 void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,int len)
 {
-    obj data;
+    inffile_task data;
 
     data.adr=new char[len];
     memmove(data.adr,adr,len);
@@ -1403,7 +1387,7 @@ void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char
 // http://msdn.microsoft.com/en-us/library/ff547485(v=VS.85).aspx
 void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,char *inf_base,int inf_len)
 {
-    version_t *cur_ver;
+    Version *cur_ver;
 
     int cur_inffile_index;
     data_inffile_t *cur_inffile;

@@ -491,7 +491,7 @@ int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *sectio
 
 int Hwidmatch::isvalid_ver(State *state)
 {
-    version_t *v;
+    Version *v;
     int major,minor;
     state->getWinVer(&major,&minor);
 
@@ -646,7 +646,7 @@ void Hwidmatch::minlen(CHAR *s,int *len)
 void Hwidmatch::calclen(int *limits)
 {
     char buf[BUFLEN];
-    version_t *v;
+    Version *v;
 
     getdrp_drvsection(buf);
     minlen(buf,&limits[0]);
@@ -665,7 +665,7 @@ void Hwidmatch::calclen(int *limits)
 void Hwidmatch::print_tbl(int *limits)
 {
     CHAR buf[BUFLEN];
-    version_t *v;
+    Version *v;
 
     v=getdrp_drvversion();
     log_file("  %d |",               altsectscore);
@@ -693,7 +693,7 @@ void Hwidmatch::print_tbl(int *limits)
 void Hwidmatch::print_hr()
 {
     CHAR buf[BUFLEN];
-    version_t *v;
+    Version *v;
 
     v=getdrp_drvversion();
 /*    log_file("  Alt:   %d\n",               altsectscore);
@@ -718,7 +718,7 @@ void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index
 {
     char buf[BUFLEN];
     wchar_t bufw[BUFLEN];
-    version_t *v=getdrp_drvversion();
+    Version *v=getdrp_drvversion();
 
     textdata_t td;
     td.hdcMem=hdcMem;
@@ -837,7 +837,7 @@ const char *Hwidmatch::getdrp_drvcat(int n)
     if(!drp->inffile[inffile_index].cats[n])return "";
     return drp->text_ind.get(drp->inffile[inffile_index].cats[n]);
 }
-version_t *Hwidmatch::getdrp_drvversion()
+Version *Hwidmatch::getdrp_drvversion()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;

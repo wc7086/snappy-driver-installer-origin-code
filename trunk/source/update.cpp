@@ -1010,7 +1010,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         hSession->pause();
         Updater.updateTorrentStatus();
         monitor_pause=0;
-        invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+        invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
         log_con("}torrent_stop\n");
         ResetEvent(downloadmangar_event);
     }

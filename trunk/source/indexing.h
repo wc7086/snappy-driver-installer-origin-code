@@ -22,10 +22,17 @@ class data_manufacturer_t;
 class data_inffile_t;
 class data_desc_t;
 class data_HWID_t;
+class driverpack_task;
 
 typedef unsigned ofst;
+typedef concurrent_queue<driverpack_task> drplist_t;
 
-// Misc
+// CatalogFile
+struct tbl_t
+{
+    const char *s;
+    int sz;
+};
 enum
 {
     ClassGuid_,
@@ -42,6 +49,7 @@ enum
     NUM_VER_NAMES
 };
 
+// Driverpack type
 enum DRIVERPACK_TYPE
 {
     DRIVERPACK_TYPE_PENDING_SAVE   = 0,
@@ -50,8 +58,19 @@ enum DRIVERPACK_TYPE
     DRIVERPACK_TYPE_EMPTY          = 3,
 };
 
-// Obj
-class obj
+// Driverpack_task
+class driverpack_task
+{
+    Driverpack *drp;
+    driverpack_task(Driverpack *a):drp(a){}
+    driverpack_task():drp(nullptr){}
+
+    friend class Driverpack;
+    friend class Collection;
+};
+
+// Inffile_task
+class inffile_task
 {
     Driverpack *drp;
     wchar_t *pathinf;
@@ -75,28 +94,64 @@ public:
 };
 
 // Version
-class version_t
+class Version
 {
     int d,m,y;
     int v1,v2,v3,v4;
 
 public:
-    void str_date(wchar_t *buf);
-    void str_version(wchar_t *buf);
-    int setDate(int d_,int m_,int y_);
+    int  setDate(int d_,int m_,int y_);
     void setVersion(int v1_,int v2_,int v3_,int v4_);
     void setInvalid(){y=v1=-1;}
+    void str_date(wchar_t *buf);
+    void str_version(wchar_t *buf);
 
-    version_t():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
-    version_t(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
+    Version():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
+    Version(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
 
     friend class Driverpack;
     friend class Hwidmatch;
-    friend int cmpdate(version_t *t1,version_t *t2);
-    friend int cmpversion(version_t *t1,version_t *t2);
+    friend int cmpdate(Version *t1,Version *t2);
+    friend int cmpversion(Version *t1,Version *t2);
 };
-int cmpdate(version_t *t1,version_t *t2);
-int cmpversion(version_t *t1,version_t *t2);
+int cmpdate(Version *t1,Version *t2);
+int cmpversion(Version *t1,Version *t2);
+
+// Parser
+class Parser
+{
+    Driverpack *pack;
+    std::unordered_map<std::string,std::string> *string_list;
+    const wchar_t *inffile;
+    Txt textholder;
+
+    char *blockBeg;
+    char *blockEnd;
+    char *strBeg;
+    char *strEnd;
+
+private:
+    void parseWhitespace(bool eatnewline);
+    void trimtoken();
+    void subStr();
+
+public:
+    int  parseItem();
+    int  parseField();
+
+    int  readNumber();
+    int  readHex();
+    int  readDate(Version *t);
+    void readVersion(Version *t);
+    void readStr(char **vb,char **ve);
+
+    Parser(const Parser&)=delete;
+    Parser &operator=(const Parser&)=delete;
+    Parser(Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
+    Parser(char *vb,char *ve);
+
+    void setRange(sect_data_t *lnk);
+};
 
 // Indexes
 class data_inffile_t // 132
@@ -105,7 +160,7 @@ class data_inffile_t // 132
     ofst inffilename;
     ofst fields[NUM_VER_NAMES];
     ofst cats[NUM_VER_NAMES];
-    version_t version;
+    Version version;
     int infsize;
     int infcrc;
 
@@ -160,42 +215,6 @@ public:
     friend class Hwidmatch;
 };
 
-// Parser
-class Parser
-{
-    Driverpack *pack;
-    std::unordered_map<std::string,std::string> *string_list;
-    const wchar_t *inffile;
-    Txt textholder;
-
-    char *blockBeg;
-    char *blockEnd;
-    char *strBeg;
-    char *strEnd;
-
-private:
-    void parseWhitespace(bool eatnewline);
-    void trimtoken();
-    void subStr();
-
-public:
-    int  parseItem();
-    int  parseField();
-
-    int  readNumber();
-    int  readHex();
-    int  readDate(version_t *t);
-    void readVersion(version_t *t);
-    void readStr(char **vb,char **ve);
-
-    Parser(const Parser&)=delete;
-    Parser &operator=(const Parser&)=delete;
-    Parser(Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
-    Parser(char *vb,char *ve);
-
-    void setRange(sect_data_t *lnk);
-};
-
 // Collection
 class Collection
 {
@@ -246,7 +265,7 @@ class Driverpack
     std::vector<data_desc_t> desc_list;
     std::vector<data_HWID_t> HWID_list;
     Txt text_ind;
-    concurrent_queue<obj> *objs_new;
+    concurrent_queue<inffile_task> *objs_new;
 
 private:
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
@@ -276,7 +295,7 @@ public:
     void print_index_hr();
 
     static unsigned int __stdcall loaddrp_thread(void *arg);
-    static unsigned int __stdcall thread_indexinf(void *arg);
+    static unsigned int __stdcall indexinf_thread(void *arg);
     static unsigned int __stdcall savedrp_thread(void *arg);
 
     void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);

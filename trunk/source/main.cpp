@@ -135,7 +135,7 @@ static bool argopt(const wchar_t *s,const wchar_t *cmp,int *d)
 
 static bool argflg(const wchar_t *s,const wchar_t *cmp,int f)
 {
-    if(StrCmpIW(s,cmp)){flags|=f;return true;}
+    if(!StrCmpIW(s,cmp)){flags|=f;return true;}
     return false;
 }
 
@@ -182,7 +182,6 @@ void settings_parse(const wchar_t *str,int ind)
 
         if(argflg(pr,L"-checkupdates",FLAG_CHECKUPDATES))continue;
         if(argflg(pr,L"-onlyupdates",FLAG_NORESTOREPOINT))continue;
-
         if(!StrCmpIW(pr,L"-7z"))
         {
             wchar_t cmd[BUFLEN];
@@ -428,7 +427,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Start device/driver scan
     bundle[bundle_display].bundle_prep();
-    invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+    invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
     HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&Bundle::thread_loadall,&bundle[0],0,nullptr);
 
     // Check updates
@@ -833,7 +832,7 @@ void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    if(StrStrIW(szFile,L".7z")&&Updater.isPaused())invaidate(INVALIDATE_INDEXES);
+    if(StrStrIW(szFile,L".7z")&&Updater.isPaused())invalidate(INVALIDATE_INDEXES);
 }
 
 void lang_refresh()
@@ -899,7 +898,7 @@ void snapshot()
     if(GetOpenFileName(&ofn))
     {
         statemode=STATEMODE_EMUL;
-        invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
+        invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
     }
 }
 
@@ -948,11 +947,11 @@ void selectDrpDir()
         SHGetPathFromIDList(list,drpext_dir);
         //int len=wcslen(drpext_dir);
         //drpext_dir[len]=0;
-        invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+        invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
     }
 }
 
-void invaidate(int v)
+void invalidate(int v)
 {
     invaidate_set|=v;
     SetEvent(deviceupdate_event);
@@ -1387,13 +1386,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     if(uFile!=INVALID_FILE_ATTRIBUTES&&uFile&FILE_ATTRIBUTE_DIRECTORY)
                     {
                         wcscpy(drpext_dir,lpszFile);
-                        invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                        invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
                     }
                     else if(StrStrI(lpszFile,L".snp"))
                     {
                         wcscpy(state_file,lpszFile);
                         statemode=STATEMODE_EMUL;
-                        invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
+                        invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     }
                     //else
                     //    MessageBox(NULL,lpszFile,NULL,MB_ICONINFORMATION);
@@ -1482,9 +1481,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 redrawmainwnd();
             }
             if(wParam==VK_F5&&ctrl_down)
-                invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);else
+                invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);else
             if(wParam==VK_F5)
-                invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             if(wParam==VK_F6&&ctrl_down)
             {
                 manager_g->testitembars();
@@ -1534,7 +1533,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             else
                 instflag&=~RESTOREPOS;
 
-            invaidate(INVALIDATE_DEVICES);
+            invalidate(INVALIDATE_DEVICES);
             break;
 
         case WM_SIZE:
@@ -1678,12 +1677,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_EMU_32:
                     virtual_arch_type=32;
-                    invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
+                    invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     break;
 
                 case ID_EMU_64:
                     virtual_arch_type=64;
-                    invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
+                    invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     break;
 
                 case ID_DIS_INSTALL:
@@ -1701,7 +1700,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
             {
                 virtual_os_version=windows_ver[wp-ID_WIN_2000];
-                invaidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
+                invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
             {
@@ -1900,12 +1899,12 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             if(floating_itembar==SLOT_SNAPSHOT)
             {
                 statemode=STATEMODE_REAL;
-                invaidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
+                invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(floating_itembar==SLOT_DPRDIR)
             {
                 *drpext_dir=0;
-                invaidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             }
             if(floating_itembar==SLOT_EXTRACTING)
             {

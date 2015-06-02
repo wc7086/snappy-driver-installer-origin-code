@@ -308,7 +308,7 @@ void theme_refresh();
 void snapshot();
 void extractto();
 void selectDrpDir();
-void invaidate(int v);
+void invalidate(int v);
 
 // Scrollbar
 void setscrollrange(int y);

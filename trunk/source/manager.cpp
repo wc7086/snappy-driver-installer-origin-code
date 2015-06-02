@@ -430,7 +430,7 @@ void Manager::clear()
     items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
     filter(filters);
     setpos();
-    invaidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
+    invalidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
 }
 
 void Manager::testitembars()
@@ -1826,7 +1826,7 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     wchar_t *p;
     Driver *cur_driver=nullptr;
     textdata_t td;
-    version_t *a_v=nullptr;
+    Version *a_v=nullptr;
     unsigned score=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
     int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);

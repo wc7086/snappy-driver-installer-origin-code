@@ -619,7 +619,7 @@ void Panel::draw(HDC hdc)
             case TYPE_TEXT:
                 if(i==1&&index==7) // Revision number
                 {
-                    version_t v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
+                    Version v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
 
                     /*v.d=atoi(SVN_REV_D);
                     v.m=atoi(SVN_REV_M);
