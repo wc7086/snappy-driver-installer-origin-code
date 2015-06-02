@@ -286,32 +286,6 @@ void Driver::read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val)
     }
 }
 
-void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature)
-{
-    *inf_pos=-1;
-    for(unsigned HWID_index=start_index;HWID_index<HWID_list.size();HWID_index++)
-    {
-        if(!strcmpi(text_ind.get(HWID_list[HWID_index].getHWID()),hwid))
-        {
-            Hwidmatch hwidmatch(this,HWID_index);
-            if(!strcmpi(sect,hwidmatch.getdrp_drvinstallPicked()))
-            {
-                *feature=hwidmatch.getdrp_drvfeature();
-                //if(got==inf_list->end())
-                *catalogfile=hwidmatch.calc_catalogfile();
-                if(*inf_pos<0||*inf_pos>hwidmatch.getdrp_drvinfpos())*inf_pos=hwidmatch.getdrp_drvinfpos();
-            }
-        }
-    }
-    if(*inf_pos==-1)
-    {
-        *inf_pos=0;
-        *cat=0;
-        *feature=0xFF;
-        log_err("ERROR: sect not found '%s'\n",sect);
-    }
-}
-
 void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
 {
     auto inf_list=&state->inf_list_new;

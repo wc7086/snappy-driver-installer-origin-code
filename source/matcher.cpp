@@ -866,18 +866,6 @@ char *Hwidmatch::getdrp_drvmanufacturer()
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     return drp->text_ind.get(drp->manufacturer_list[manufacturer_index].manufacturer);
 }
-void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
-{
-    int *rr=reinterpret_cast<int *>(text_ind.get(manufacturer_list[manuf_index].sections));
-    if(pos)
-    {
-        strcpy(buf,text_ind.get(rr[0]));
-        strcat(buf,".");
-        strcat(buf,text_ind.get(rr[pos]));
-    }
-    else
-        strcpy(buf,text_ind.get(rr[pos]));
-}
 void Hwidmatch::getdrp_drvsection(char *buf)
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
