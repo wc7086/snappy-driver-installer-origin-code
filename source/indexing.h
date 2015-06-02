@@ -136,7 +136,6 @@ class data_desc_t // 24
     unsigned int feature;
 
 public:
-    //data_desc_t(){}
     data_desc_t():manufacturer_index(0),sect_pos(0),desc(0),install(0),install_picked(0),feature(0){}
     data_desc_t(unsigned manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
         manufacturer_index(manufacturer_indexv),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
@@ -153,7 +152,6 @@ class data_HWID_t // 12
     ofst HWID;
 
 public:
-    //data_HWID_t(){}
     ofst getHWID(){return HWID;}
     data_HWID_t():desc_index(0),inf_pos(0),HWID(0){}
     data_HWID_t(unsigned desc_indexv,int inf_posv,ofst HWIDv):desc_index(desc_indexv),inf_pos(inf_posv),HWID(HWIDv){}
@@ -194,15 +192,9 @@ public:
     Parser &operator=(const Parser&)=delete;
     Parser(Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
     Parser(char *vb,char *ve);
+
     void setRange(sect_data_t *lnk);
-
 };
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Weffc++"
-//warning: 'class Collection' has pointer data members
-//warning: 'Collection::driverpack_list' should be initialized in the member initialization list
-//warning: 'class Driverpack' has pointer data members
 
 // Collection
 class Collection
@@ -228,6 +220,7 @@ public:
     void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
     Collection(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
     Collection():index_bin_dir(nullptr),index_linear_dir(nullptr),driverpack_dir(nullptr){}
+
     void save();
     void populate();
     void print_index_hr();
@@ -245,51 +238,54 @@ class Driverpack
 
     Collection *col;
 
-    Hashtable indexesold;
+    Hashtable indexes;
     std::unordered_map<std::string,ofst> cat_list;
 
     std::vector<data_inffile_t> inffile;
     std::vector<data_manufacturer_t> manufacturer_list;
     std::vector<data_desc_t> desc_list;
     std::vector<data_HWID_t> HWID_list;
-    Txt texta;
+    Txt text_ind;
     concurrent_queue<obj> *objs_new;
 
 private:
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
     int  genindex();
+    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
+    void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
 
 public:
-    wchar_t *getPath(){return texta.getw(drppath);}
-    wchar_t *getFilename(){return texta.getw(drpfilename);}
+    wchar_t *getPath(){return text_ind.getw(drppath);}
+    wchar_t *getFilename(){return text_ind.getw(drpfilename);}
     int getType(){return type;}
     int getSize(){return HWID_list.size();}
     int setType(int val){return type=val;}
-    int find(int key,int *isFound){return indexesold.find(key,isFound);}
-    int findnext(int *isFound){return indexesold.findnext(isFound);}
+    int find(int key,int *isFound){return indexes.find(key,isFound);}
+    int findnext(int *isFound){return indexes.findnext(isFound);}
 
+    Driverpack(const Driverpack&)=default;
+    Driverpack &operator=(const Driverpack&)=default;
     Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
 
-    void saveindex();
     int  checkindex();
     int  loadindex();
-    void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
+    void saveindex();
+    void genhashes();
+    int  printstats();
     void print_index_hr();
+
+    static unsigned int __stdcall loaddrp_thread(void *arg);
+    static unsigned int __stdcall thread_indexinf(void *arg);
+    static unsigned int __stdcall savedrp_thread(void *arg);
+
+    void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
+    void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
     void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
-    void genhashes();
-    int printstats();
-    static unsigned int __stdcall thread_indexinf(void *arg);
-    void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index); // in matcher.h
-    void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
-    static unsigned int __stdcall loaddrp_thread(void *arg);
-    static unsigned int __stdcall savedrp_thread(void *arg);
-    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
 
     friend class Hwidmatch;
 };
-#pragma GCC diagnostic pop
 
 // Misc
 void findosattr(char *bufa,char *adr,int len);

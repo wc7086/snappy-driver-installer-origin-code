@@ -69,9 +69,7 @@ extern "C"
 }
 
 #ifndef BENCH_MODE
-//#define StrStrW wcsstr
-#define StrCmpIW wcsicmp
-//#define StrCmpW wcscmp
+#define wcsicmp StrCmpIW
 #endif
 
 // SDI
