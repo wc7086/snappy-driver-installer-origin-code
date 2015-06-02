@@ -78,7 +78,6 @@ wchar_t state_file[BUFLEN]=L"untitled.snp";
 wchar_t finish    [BUFLEN]=L"";
 wchar_t finish_upd[BUFLEN]=L"";
 wchar_t finish_rb [BUFLEN]=L"";
-wchar_t HWIDs     [BUFLEN]=L"";
 
 int flags=COLLECTION_USE_LZMA;
 int statemode=STATEMODE_REAL;
@@ -116,6 +115,30 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 //}
 
 //{ Settings
+static bool argstr(const wchar_t *s,const wchar_t *cmp,wchar_t *d)
+{
+    if(StrStrIW(s,cmp)){wcscpy(d,s+wcslen(cmp));return true;}
+    return false;
+}
+
+static bool argint(const wchar_t *s,const wchar_t *cmp,int *d)
+{
+    if(StrStrIW(s,cmp)){*d=_wtoi_my(s+wcslen(cmp));return true;}
+    return false;
+}
+
+static bool argopt(const wchar_t *s,const wchar_t *cmp,int *d)
+{
+    if(StrStrIW(s,cmp)){*d=1;return true;}
+    return false;
+}
+
+static bool argflg(const wchar_t *s,const wchar_t *cmp,int f)
+{
+    if(StrCmpIW(s,cmp)){flags|=f;return true;}
+    return false;
+}
+
 void settings_parse(const wchar_t *str,int ind)
 {
     log_con("Args:[%S]\n",str);
@@ -126,33 +149,40 @@ void settings_parse(const wchar_t *str,int ind)
         wchar_t *pr=argv[i];
         if(pr[0]=='/')pr[0]='-';
 
-        if( StrStrIW(pr,L"-drp_dir:"))     wcscpy(drp_dir,pr+9);else
-        if( StrStrIW(pr,L"-index_dir:"))   wcscpy(index_dir,pr+11);else
-        if( StrStrIW(pr,L"-output_dir:"))  wcscpy(output_dir,pr+12);else
-        if( StrStrIW(pr,L"-data_dir:"))    wcscpy(data_dir,pr+10);else
-        if( StrStrIW(pr,L"-log_dir:"))     {wcscpy(logO_dir,pr+9);ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);}else
-        if( StrStrIW(pr,L"-finish_cmd:"))  wcscpy(finish,pr+12);else
-        if( StrStrIW(pr,L"-finishrb_cmd:"))wcscpy(finish_rb,pr+14);else
-        if( StrStrIW(pr,L"-finish_upd_cmd:"))wcscpy(finish_upd,pr+16);else
-        if( StrStrIW(pr,L"-lang:"))        wcscpy(curlang,pr+6);else
-        if( StrStrIW(pr,L"-theme:"))       wcscpy(curtheme,pr+7);else
-        if(!StrCmpIW(pr,L"-expertmode"))   expertmode=1;else
-        if( StrStrIW(pr,L"-hintdelay:"))   hintdelay=_wtoi_my(pr+11);else
-        if( StrStrIW(pr,L"-port:"))        Updater.torrentport=_wtoi_my(pr+6);else
-        if( StrStrIW(pr,L"-downlimit:"))   Updater.downlimit=_wtoi_my(pr+11);else
-        if( StrStrIW(pr,L"-uplimit:"))     Updater.uplimit=_wtoi_my(pr+9);else
-        if( StrStrIW(pr,L"-connections:")) Updater.connections=_wtoi_my(pr+13);else
-        if( StrStrIW(pr,L"-filters:"))     filters=_wtoi_my(pr+9);else
-        if(!StrCmpIW(pr,L"-license"))      license=1;else
-        if(!StrCmpIW(pr,L"-norestorepnt")) flags|=FLAG_NORESTOREPOINT;else
-        if(!StrCmpIW(pr,L"-showdrpnames1"))flags|=FLAG_SHOWDRPNAMES1;else
-        if(!StrCmpIW(pr,L"-showdrpnames2"))flags|=FLAG_SHOWDRPNAMES2;else
-        if(!StrCmpIW(pr,L"-oldstyle"))     flags|=FLAG_OLDSTYLE;else
-        if(!StrCmpIW(pr,L"-preservecfg"))  flags|=FLAG_PRESERVECFG;else
-        if(!StrCmpIW(pr,L"-showconsole"))  flags|=FLAG_SHOWCONSOLE;else
-        if(!StrCmpIW(pr,L"-checkupdates")) flags|=FLAG_CHECKUPDATES;else
-        if(!StrCmpIW(pr,L"-onlyupdates"))  flags|=FLAG_ONLYUPDATES;else
-        if(!StrCmpIW(pr,L"-novirusalerts"))flags|=FLAG_NOVIRUSALERTS;else
+        if(argstr(pr,L"-drp_dir:",drp_dir))continue;
+        if(argstr(pr,L"-index_dir:",index_dir))continue;
+        if(argstr(pr,L"-output_dir:",output_dir))continue;
+        if(argstr(pr,L"-data_dir:",data_dir))continue;
+        if(argstr(pr,L"-log_dir:",logO_dir))continue;
+
+        if(argstr(pr,L"-finish_cmd:",finish))continue;
+        if(argstr(pr,L"-finishrb_cmd:",finish_rb))continue;
+        if(argstr(pr,L"-finish_upd_cmd:",finish_upd))continue;
+
+        if(argstr(pr,L"-lang:",curlang))continue;
+        if(argstr(pr,L"-theme:",curtheme))continue;
+        if(argint(pr,L"-hintdelay:",&hintdelay))continue;
+        if(argint(pr,L"-filters:",&filters))continue;
+
+        if(argint(pr,L"-port:",&Updater.torrentport))continue;
+        if(argint(pr,L"-downlimit:",&Updater.downlimit))continue;
+        if(argint(pr,L"-uplimit:",&Updater.uplimit))continue;
+        if(argint(pr,L"-connections:",&Updater.connections))continue;
+
+        if(argopt(pr,L"-license",&license))continue;
+        if(argopt(pr,L"-expertmode",&expertmode))continue;
+        if(argflg(pr,L"-showconsole",FLAG_SHOWCONSOLE))continue;
+        if(argflg(pr,L"-norestorepnt",FLAG_NORESTOREPOINT))continue;
+        if(argflg(pr,L"-novirusalerts",FLAG_NOVIRUSALERTS))continue;
+        if(argflg(pr,L"-preservecfg",FLAG_PRESERVECFG))continue;
+
+        if(argflg(pr,L"-showdrpnames1",FLAG_SHOWDRPNAMES1))continue;
+        if(argflg(pr,L"-showdrpnames2",FLAG_SHOWDRPNAMES2))continue;
+        if(argflg(pr,L"-oldstyle",FLAG_OLDSTYLE))continue;
+
+        if(argflg(pr,L"-checkupdates",FLAG_CHECKUPDATES))continue;
+        if(argflg(pr,L"-onlyupdates",FLAG_NORESTOREPOINT))continue;
+
         if(!StrCmpIW(pr,L"-7z"))
         {
             wchar_t cmd[BUFLEN];
@@ -165,7 +195,7 @@ void settings_parse(const wchar_t *str,int ind)
             break;
         }
         else
-        if(!StrCmpW(pr,L"-PATH"))
+        if(!wcscmp(pr,L"-PATH"))
         {
             wcscpy(drpext_dir,argv[++i]);
             flags|=FLAG_AUTOCLOSE|
@@ -173,7 +203,7 @@ void settings_parse(const wchar_t *str,int ind)
                 FLAG_PRESERVECFG;
         }
         else
-        if(!StrCmpW(pr,L"-install")&&argc-i==3)
+        if(!wcscmp(pr,L"-install")&&argc-i==3)
         {
             wchar_t buf[BUFLEN];
             log_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
@@ -189,7 +219,6 @@ void settings_parse(const wchar_t *str,int ind)
             break;
         }
         else
-        if( StrStrIW(pr,L"-hwid:"))        wcscpy(HWIDs,pr+6);else
         if(!StrCmpIW(pr,L"-filtersp"))     {flags|=FLAG_FILTERSP;flags&=~COLLECTION_USE_LZMA;}else
         if(!StrCmpIW(pr,L"-reindex"))      flags|=COLLECTION_FORCE_REINDEXING;else
         if(!StrCmpIW(pr,L"-index_hr"))     flags|=COLLECTION_PRINT_INDEX;else
@@ -197,38 +226,38 @@ void settings_parse(const wchar_t *str,int ind)
         if(!StrCmpIW(pr,L"-autoinstall"))  flags|=FLAG_AUTOINSTALL;else
         if(!StrCmpIW(pr,L"-autoclose"))    flags|=FLAG_AUTOCLOSE;else
         if(!StrCmpIW(pr,L"-autoupdate"))   flags|=FLAG_AUTOUPDATE;else
-        if(!StrCmpIW(pr,L"-nologfile"))    flags|=FLAG_NOLOGFILE;else
-        if(!StrCmpIW(pr,L"-nosnapshot"))   flags|=FLAG_NOSNAPSHOT;else
-        if(!StrCmpIW(pr,L"-nostamp"))      flags|=FLAG_NOSTAMP;else
+
         if( StrStrIW(pr,L"-extractdir:"))  {flags|=FLAG_EXTRACTONLY;wcscpy(extractdir,pr+12);}else
         if(!StrCmpIW(pr,L"-keepunpackedindex"))flags|=FLAG_KEEPUNPACKINDEX;else
         if(!StrCmpIW(pr,L"-keeptempfiles"))flags|=FLAG_KEEPTEMPFILES;else
         if(!StrCmpIW(pr,L"-disableinstall"))flags|=FLAG_DISABLEINSTALL;else
         if(!StrCmpIW(pr,L"-failsafe"))     flags|=FLAG_FAILSAFE;else
         if(!StrCmpIW(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
-        if( StrStrIW(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
-        //if( StrStrIW(pr,L"-snplist:"))     snplist=_wfopen(pr+9,L"rt");else
+
         if( StrStrIW(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_EMUL;}else
+        if( StrStrIW(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
+        if(!StrCmpIW(pr,L"-nologfile"))    flags|=FLAG_NOLOGFILE;else
+        if(!StrCmpIW(pr,L"-nosnapshot"))   flags|=FLAG_NOSNAPSHOT;else
+        if(!StrCmpIW(pr,L"-nostamp"))      flags|=FLAG_NOSTAMP;else
+
         if(!StrCmpIW(pr,L"-a:32"))         virtual_arch_type=32;else
         if(!StrCmpIW(pr,L"-a:64"))         virtual_arch_type=64;else
         if( StrStrIW(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
-        if(StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)Parse_save_installed_id_swith(pr);else
+
+        if( StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)Parse_save_installed_id_swith(pr);else
         if( StrStrIW(pr,L"-?"))            CLIParam.ShowHelp=TRUE;else
-        if(StrCmpIW(pr,HWIDINSTALLED_DEF)==0)Parse_HWID_installed_swith(pr); else
-        if(StrCmpIW(pr,GFG_DEF)==0)      continue;
+        if( StrCmpIW(pr,HWIDINSTALLED_DEF)==0)Parse_HWID_installed_swith(pr); else
+        if( StrCmpIW(pr,GFG_DEF)==0)      continue;
         else
             log_err("Unknown argument '%S'\n",pr);
         if(statemode==STATEMODE_EXIT)break;
     }
+    ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
     LocalFree(argv);
     if(statemode==STATEMODE_EXIT)return;
 
-    // Expert mode
-    panel3[5].checked=expertmode;
-    panel3_w[3].checked=expertmode;
-
     // Left panel
-    panel_setfilters(panels,filters);
+    panel_loadsettings(panels,filters);
 }
 
 void settings_save()
@@ -243,25 +272,25 @@ void settings_save()
     if(!f)return;
     fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
               "\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
-              "\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n"
-              "\"-lang:%s\"\n\"-theme:%s\"\n\n"
-              "-hintdelay:%d\n-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n-filters:%d\n\n",
+              "\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n\"-finish_upd_cmd:%s\"\n\n"
+              "\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-filters:%d\n\n"
+              "-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
-            finish,finish_rb,
-            curlang,curtheme,
-            hintdelay,
-            Updater.torrentport,Updater.downlimit,Updater.uplimit,Updater.connections,
-            filters);
+            finish,finish_rb,finish_upd,
+            curlang,curtheme,hintdelay,filters,
+            Updater.torrentport,Updater.downlimit,Updater.uplimit,Updater.connections);
 
     if(license)fwprintf(f,L"-license ");
     if(expertmode)fwprintf(f,L"-expertmode ");
-    if(flags&FLAG_NOVIRUSALERTS)fwprintf(f,L"-novirusalerts ");
+    if(flags&FLAG_SHOWCONSOLE)fwprintf(f,L"-showconsole ");
     if(flags&FLAG_NORESTOREPOINT)fwprintf(f,L"-norestorepnt ");
+    if(flags&FLAG_NOVIRUSALERTS)fwprintf(f,L"-novirusalerts ");
+
     if(flags&FLAG_SHOWDRPNAMES1)fwprintf(f,L"-showdrpnames1 ");
     if(flags&FLAG_SHOWDRPNAMES2)fwprintf(f,L"-showdrpnames2 ");
     if(flags&FLAG_OLDSTYLE)fwprintf(f,L"-oldstyle ");
-    if(flags&FLAG_SHOWCONSOLE)fwprintf(f,L"-showconsole ");
+
     if(flags&FLAG_CHECKUPDATES)fwprintf(f,L"-checkupdates ");
     if(flags&FLAG_ONLYUPDATES)fwprintf(f,L"-onlyupdates ");
     fclose(f);
@@ -296,6 +325,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     SYSTEM_INFO siSysInfo;
     GetSystemInfo(&siSysInfo);
     num_cores=siSysInfo.dwNumberOfProcessors;
+
+    // 7-zip
     registerall();
 
     // Check if the mouse present
@@ -1307,7 +1338,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             SendMessage(hTheme,CB_RESETCONTENT,0,0);
             theme_enum(hTheme,L"themes");
             f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)curtheme);
-            theme_set(f==CB_ERR?vTheme.pickTheme():f);
+            if(f==CB_ERR)f=vTheme.pickTheme();
+            theme_set(f);
             SendMessage(hTheme,CB_SETCURSEL,f,0);
             theme_refresh();
 

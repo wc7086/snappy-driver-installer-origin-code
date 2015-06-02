@@ -145,7 +145,7 @@ int XG(int x,int o);
 int YG(int y,int o);
 
 int  panels_hitscan(int hx,int hy,int *ii);
-void panel_setfilters(Panel *panel,int filters);
+void panel_loadsettings(Panel *panel,int filters);
 
 void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
 void drawrectsel(HDC hdc,int x1,int y1,int x2,int y2,int color2,int w);

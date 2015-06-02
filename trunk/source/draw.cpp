@@ -170,7 +170,7 @@ void Image::load(int i)
 
     release();
 
-    if(StrStrW(filename,L"RES_"))
+    if(wcsstr(filename,L"RES_"))
         loadFromRes(_wtoi_my(filename+4));
     else
         loadFromFile(filename);
@@ -704,8 +704,12 @@ int panels_hitscan(int hx,int hy,int *ii)
     return -1;
 }
 
-void panel_setfilters(Panel *panel,int filters_)
+void panel_loadsettings(Panel *panel,int filters_)
 {
+     // Expert mode
+    panel3[5].checked=expertmode;
+    panel3_w[3].checked=expertmode;
+
     for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
 

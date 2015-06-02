@@ -70,7 +70,7 @@ void Matcher::sorta(int *v)
             }
             else
             if(ismi==ismj)
-            if((hwidmatch_i&&hwidmatch_j&&StrCmpW(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
+            if((hwidmatch_i&&hwidmatch_j&&wcscmp(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
                ||
                (!hwidmatch_i&&hwidmatch_j))
             {
@@ -226,7 +226,7 @@ void Manager::filter(int options)
             {
                 if(itembar_drp)
                 {
-                    if(!itembar_drpcur||(StrCmpW(itembar_drp->hwidmatch->getdrp_packname(),itembar_drpcur->hwidmatch->getdrp_packname())!=0))
+                    if(!itembar_drpcur||(wcscmp(itembar_drp->hwidmatch->getdrp_packname(),itembar_drpcur->hwidmatch->getdrp_packname())!=0))
                     {
                         itembar_drp->isactive=1;
                         itembar_drpcur=itembar_drp;
@@ -1428,13 +1428,13 @@ int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
     }
     if(wcslen(ta+a->devicematch->device->getDriver())>0)
     {
-        if(!StrCmpW(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
+        if(!wcscmp(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
     }
     else
     {
         if(wcslen(ta+a->devicematch->device->getDescr())>0)
         {
-            if(!StrCmpW(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
+            if(!wcscmp(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
         }
     }
 
