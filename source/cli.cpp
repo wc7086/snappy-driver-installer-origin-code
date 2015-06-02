@@ -200,7 +200,7 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
             while(fgetws(buf,sizeof(buf),f))
             {
                 //log_con("'%S'\n", buf);
-                if(StrStrW(buf,CLIParam.HWIDSTR)!=NULL)
+                if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)
                 {
                     ret_global=1;
                     break;
@@ -253,7 +253,7 @@ bool loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
         if(*Buff=='#')continue;         // comments
         if(*Buff==';')continue;         // comments
         if(*Buff=='/')*Buff='-';         // replace / with -
-        if(StrStrW(Buff,L"-?"))continue; // ignore -?
+        if(wcsstr(Buff,L"-?"))continue; // ignore -?
         if(Buff[wcslen(Buff)-1]=='\n')Buff[wcslen(Buff)-1]='\0';
         if(wcslen(Buff)==0)continue;
 

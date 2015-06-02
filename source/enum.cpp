@@ -1194,7 +1194,7 @@ int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
                     size=MAX_PATH;
                     if(RegQueryValueEx(hKey2, L"Driver",nullptr,nullptr,(LPBYTE)&str,&size)==ERROR_SUCCESS)
                     {
-                        if(StrCmpW(str,path)==0)
+                        if(wcscmp(str,path)==0)
                         {
                             HKEY hKey3;
                             if(RegOpenKeyEx(hKey2,L"Device Parameters",0,KEY_READ,&hKey3)==ERROR_SUCCESS)
@@ -1212,7 +1212,7 @@ int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
                                     model2[1]=((byte1&3)<<3)+((byte2&0xE0)>>5)+64;
                                     model2[2]=(byte2&0x1F)+64;
                                     wsprintf(model2+3,L"%X%X%X%X",(EDID[p+3]&0xf0)>>4,EDID[p+3]&0xf,(EDID[p+2]&0xf0)>>4,EDID[p+2]&0x0f);
-                                    if(StrCmpW(model,model2)==0)
+                                    if(wcscmp(model,model2)==0)
                                     {
                                         *Width=EDID[22];
                                         *Height=EDID[21];

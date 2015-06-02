@@ -530,7 +530,7 @@ void Collection::save()
             for(i=flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
             {
                 driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf);
-                if(!StrCmpW(buf,filename))break;
+                if(!wcscmp(buf,filename))break;
             }
             if(i==driverpack_list.size())
             {

@@ -133,7 +133,7 @@ void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem
     wchar_t buf[BUFLEN];
 
     ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
-    if(StrCmpW(str,buf)!=0)
+    if(wcscmp(str,buf)!=0)
         ListView_SetItemText(hwnd,iItem,iSubItem,const_cast<wchar_t *>(str));
 }
 
@@ -290,7 +290,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
 
             lvc.mask=LVCF_FMT|LVCF_WIDTH|LVCF_SUBITEM|LVCF_TEXT;
-            lvc.pszText=L"";
+            lvc.pszText=const_cast<wchar_t *>(L"");
             for(i=0;i<6;i++)
             {
                 lvc.cx=cxn[i];
@@ -413,7 +413,7 @@ int UpdateDialog_t::populate(int update)
             indexsize+=fe.size;
             indexdownloaded+=file_progress[i];
             wsprintf(buf,L"%S",filenamefull);
-            *StrStrW(buf,L"DP_")=L'_';
+            *wcsstr(buf,L"DP_")=L'_';
             strsub(buf,L"indexes\\SDI",index_dir);
             if(!PathFileExists(buf))
                 missingindexes=1;

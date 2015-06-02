@@ -69,9 +69,9 @@ extern "C"
 }
 
 #ifndef BENCH_MODE
-#define StrStrW wcsstr
+//#define StrStrW wcsstr
 #define StrCmpIW wcsicmp
-#define StrCmpW wcscmp
+//#define StrCmpW wcscmp
 #endif
 
 // SDI
@@ -256,7 +256,6 @@ extern wchar_t state_file[BUFLEN];
 extern wchar_t finish    [BUFLEN];
 extern wchar_t finish_upd[BUFLEN];
 extern wchar_t finish_rb [BUFLEN];
-extern wchar_t HWIDs     [BUFLEN];
 
 extern int flags;
 extern int statemode;
