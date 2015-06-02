@@ -315,10 +315,12 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     time_total=GetTickCount();
 
     // Hide the console window as soon as possible
+    #ifndef CONSOLE_MODE
     DWORD dwProcessId;
     GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
     if(GetCurrentProcessId()!=dwProcessId)hideconsole=SW_SHOWNOACTIVATE;
     ShowWindow(GetConsoleWindow(),hideconsole);
+    #endif
 
     // Determine number of CPU cores
     SYSTEM_INFO siSysInfo;
@@ -471,9 +473,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Bring the console window back
     ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
-    #ifdef CONSOLE_MODE
-    //MessageBox(0,L"В папке logs отчет создан!",L"Сообщение",0);
-    #endif
 
     // Stop runtime error handlers
     #ifdef NDEBUG
@@ -721,6 +720,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
         else
         {
             log_con("*** FINISH primary ***\n\n");
+            invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
             if((flags&FLAG_NOGUI||hMain==nullptr)&&(flags&FLAG_AUTOINSTALL)==0)
             {
@@ -784,7 +784,6 @@ void Bundle::bundle_load(Bundle *pbundle)
     /*if((invaidate_set&INVALIDATE_DEVICES)==0)
     {
         state=pbundle->state;time_devicescan=0;}*/
-    invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
     matcher.getState()->textas.shrink();
     matcher.populate();
@@ -804,13 +803,10 @@ void Bundle::bundle_lowprioirity()
     matcher.print();
     manager_g->print_hr();
 
-#ifdef USE_TORRENT
-    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate)
-    {
-        //log_con("Event 1\n");
-        Updater.checkUpdates();
-    }
-#endif
+    #ifdef USE_TORRENT
+    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate)Updater.checkUpdates();
+    #endif
+
     collection.save();
     gen_timestamp();
     wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
@@ -1147,8 +1143,8 @@ void tabadvance(int v)
         if(!kbpanel)kbpanel=KB_PANEL_CHK;
         if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
 
+        if(kbpanel==KB_PANEL_CHK&&!D(PANEL12_WY))continue;
         if(!expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
-        //if(kbpanel==KB_PANEL_CHK&&!YP(&panels[11]))continue;
         break;
     }
 
@@ -1915,10 +1911,10 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             }
             if(floating_itembar==SLOT_DOWNLOAD)
             {
-#ifdef USE_TORRENT
+                #ifdef USE_TORRENT
                 UpdateDialog.openDialog();
+                #endif
                 break;
-#endif
             }
 
             if(floating_itembar>=0&&(i==1||i==0||i==3))
@@ -2085,9 +2081,9 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
                 case FLOATING_DOWNLOAD:
                     SelectObject(canvasPopup->getDC(),hFont);
-#ifdef USE_TORRENT
+                    #ifdef USE_TORRENT
                     Updater.showPopup(canvasPopup->getDC());
-#endif
+                    #endif
                     break;
 
                 default:

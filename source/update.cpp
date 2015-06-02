@@ -22,7 +22,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define BOOST_ASIO_ENABLE_CANCELIO
 #define BOOST_ASIO_HASH_MAP_BUCKETS 1021
 #define BOOST_ASIO_SEPARATE_COMPILATION
-//#define BOOST_EXCEPTION_DISABLE
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
 #define BOOST_SYSTEM_STATIC_LINK 1
 #define TORRENT_DISABLE_GEO_IP
