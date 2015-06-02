@@ -594,6 +594,15 @@ void benchmark()
     log_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)StrCmpIW(L"Test str %ws",L"wchar str");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)wcsicmp(L"Test str %ws",L"wchar str");
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrCmpIW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c wcsicmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrCmpIA("Test str %ws","wchar str");
     tm1=GetTickCount()-tm1;
     tm2=GetTickCount();
@@ -655,6 +664,15 @@ void benchmark()
     tm2=GetTickCount()-tm2;
     log_con("%c lstrlenW \t%ld\n",tm1<tm2?'+':' ',tm1);
     log_con("%c wcslen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)StrCpyA(buf,"Test str %ws");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)strcpy(buf,"Test str %ws");
+    tm2=GetTickCount()-tm2;
+    log_con("%c StrCpyA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    log_con("%c strcpy \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 }
 #endif
 //}

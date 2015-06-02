@@ -235,7 +235,7 @@ int calc_secttype(const char *s)
     s=StrStrIA(s,".nt");
     if(!s)return -1;
 
-    StrCpyA(buf,s);
+    strcpy(buf,s);
 
     if((p=strchr(p+1,'.')))
         if((p=strchr(p+1,'.')))
@@ -269,7 +269,7 @@ int calc_markerscore(State *state,const char *path)
     int score=0;
     state->getWinVer(&majver,&minver);
 
-    StrCpyA(buf,path);
+    strcpy(buf,path);
     strtolower(buf,strlen(buf));
 
     for(i=0;i<NUM_MARKERS;i++)
@@ -785,8 +785,8 @@ int Hwidmatch::isdup(Hwidmatch *match2,char *sect1)
     match2->getdrp_drvsection(sect2);
 
     if(getdrp_infcrc()==match2->getdrp_infcrc()&&
-        !StrCmpA(getdrp_drvHWID(),match2->getdrp_drvHWID())&&
-        !StrCmpA(sect1,sect2))return 1;
+        !strcmp(getdrp_drvHWID(),match2->getdrp_drvHWID())&&
+        !strcmp(sect1,sect2))return 1;
     return 0;
 }
 //}
@@ -812,14 +812,14 @@ char *Hwidmatch::getdrp_infpath()
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
-    return drp->texta.get(drp->inffile[inffile_index].infpath);
+    return drp->text_ind.get(drp->inffile[inffile_index].infpath);
 }
 char *Hwidmatch::getdrp_infname()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
-    return drp->texta.get(drp->inffile[inffile_index].inffilename);
+    return drp->text_ind.get(drp->inffile[inffile_index].inffilename);
 }
 const char *Hwidmatch::getdrp_drvfield(int n)
 {
@@ -827,7 +827,7 @@ const char *Hwidmatch::getdrp_drvfield(int n)
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     if(!drp->inffile[inffile_index].fields[n])return "";
-    return drp->texta.get(drp->inffile[inffile_index].fields[n]);
+    return drp->text_ind.get(drp->inffile[inffile_index].fields[n]);
 }
 const char *Hwidmatch::getdrp_drvcat(int n)
 {
@@ -835,7 +835,7 @@ const char *Hwidmatch::getdrp_drvcat(int n)
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     if(!drp->inffile[inffile_index].cats[n])return "";
-    return drp->texta.get(drp->inffile[inffile_index].cats[n]);
+    return drp->text_ind.get(drp->inffile[inffile_index].cats[n]);
 }
 version_t *Hwidmatch::getdrp_drvversion()
 {
@@ -864,19 +864,19 @@ char *Hwidmatch::getdrp_drvmanufacturer()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
     int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    return drp->texta.get(drp->manufacturer_list[manufacturer_index].manufacturer);
+    return drp->text_ind.get(drp->manufacturer_list[manufacturer_index].manufacturer);
 }
 void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
 {
-    int *rr=reinterpret_cast<int *>(texta.get(manufacturer_list[manuf_index].sections));
+    int *rr=reinterpret_cast<int *>(text_ind.get(manufacturer_list[manuf_index].sections));
     if(pos)
     {
-        StrCpyA(buf,texta.get(rr[0]));
+        strcpy(buf,text_ind.get(rr[0]));
         strcat(buf,".");
-        strcat(buf,texta.get(rr[pos]));
+        strcat(buf,text_ind.get(rr[pos]));
     }
     else
-        StrCpyA(buf,texta.get(rr[pos]));
+        strcpy(buf,text_ind.get(rr[pos]));
 }
 void Hwidmatch::getdrp_drvsection(char *buf)
 {
@@ -889,17 +889,17 @@ void Hwidmatch::getdrp_drvsection(char *buf)
 char *Hwidmatch::getdrp_drvdesc()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
-    return drp->texta.get(drp->desc_list[desc_index].desc);
+    return drp->text_ind.get(drp->desc_list[desc_index].desc);
 }
 char *Hwidmatch::getdrp_drvinstall()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
-    return drp->texta.get(drp->desc_list[desc_index].install);
+    return drp->text_ind.get(drp->desc_list[desc_index].install);
 }
 char *Hwidmatch::getdrp_drvinstallPicked()
 {
     int desc_index=drp->HWID_list[HWID_index].desc_index;
-    return drp->texta.get(drp->desc_list[desc_index].install_picked);
+    return drp->text_ind.get(drp->desc_list[desc_index].install_picked);
 }
 int Hwidmatch::getdrp_drvfeature()
 {
@@ -918,6 +918,6 @@ short Hwidmatch::getdrp_drvinfpos()
 }
 char *Hwidmatch::getdrp_drvHWID()
 {
-    return drp->texta.get(drp->HWID_list[HWID_index].HWID);
+    return drp->text_ind.get(drp->HWID_list[HWID_index].HWID);
 }
 //}
