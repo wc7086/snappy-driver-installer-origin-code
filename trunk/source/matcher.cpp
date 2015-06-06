@@ -415,6 +415,51 @@ void Matcher::print()
     }
     log_file("}matcher_print\n\n");
 }
+
+void Matcher::sorta(int *v)
+{
+    Devicematch *devicematch_i,*devicematch_j;
+    Hwidmatch *hwidmatch_i,*hwidmatch_j;
+    int i,j,num;
+
+    num=devicematch_list.size();
+
+    for(i=0;i<num;i++)v[i]=i;
+
+    for(i=0;i<num;i++)
+    {
+        for(j=i+1;j<num;j++)
+        {
+            devicematch_i=&devicematch_list[v[i]];
+            devicematch_j=&devicematch_list[v[j]];
+            hwidmatch_i=(devicematch_i->num_matches)?&hwidmatch_list[devicematch_i->start_matches]:nullptr;
+            hwidmatch_j=(devicematch_j->num_matches)?&hwidmatch_list[devicematch_j->start_matches]:nullptr;
+            int ismi=devicematch_i->isMissing(state);
+            int ismj=devicematch_j->isMissing(state);
+
+            if(ismi<ismj)
+            {
+                int t;
+
+                t=v[i];
+                v[i]=v[j];
+                v[j]=t;
+            }
+            else
+            if(ismi==ismj)
+            if((hwidmatch_i&&hwidmatch_j&&wcscmp(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
+               ||
+               (!hwidmatch_i&&hwidmatch_j))
+            {
+                int t;
+
+                t=v[i];
+                v[i]=v[j];
+                v[j]=t;
+            }
+        }
+    }
+}
 //}
 
 //{ Devicematch
@@ -787,6 +832,45 @@ int Hwidmatch::isdup(Hwidmatch *match2,char *sect1)
     if(getdrp_infcrc()==match2->getdrp_infcrc()&&
         !strcmp(getdrp_drvHWID(),match2->getdrp_drvHWID())&&
         !strcmp(sect1,sect2))return 1;
+    return 0;
+}
+
+int Hwidmatch::isdrivervalid()
+{
+    if(altsectscore>0&&decorscore>0)return 1;
+    return 0;
+}
+
+int Hwidmatch::isvalidcat(State *state)
+{
+    CHAR bufa[BUFLEN];
+    int n=pickcat(state);
+    const char *s=getdrp_drvcat(n);
+
+    int major,minor;
+    state->getWinVer(&major,&minor);
+    wsprintfA(bufa,"2:%d.%d",major,minor);
+    if(!*s)return 0;
+    return strstr(s,bufa)?1:0;
+}
+
+int Hwidmatch::pickcat(State *state)
+{
+    if(state->getArchitecture()==1&&*getdrp_drvcat(CatalogFile_ntamd64))
+    {
+        return CatalogFile_ntamd64;
+    }
+    else if(*getdrp_drvcat(CatalogFile_ntx86))
+    {
+        return CatalogFile_ntx86;
+    }
+
+    if(*getdrp_drvcat(CatalogFile_nt))
+       return CatalogFile_nt;
+
+    if(*getdrp_drvcat(CatalogFile))
+       return CatalogFile;
+
     return 0;
 }
 //}

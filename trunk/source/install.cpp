@@ -20,138 +20,19 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global vars
 long long ar_total,ar_proceed;
-int itembar_act;
-wchar_t extractdir[BUFLEN];
 int instflag;
+int itembar_act;
 int needreboot=0;
+wchar_t extractdir[BUFLEN];
 
 long long totalinstalltime,totalextracttime;
 long long installtime,extracttime;
 
-// Clicker
-const wnddata_t clicktbl[NUM_CLICKDATA]=
-{
-    // Windows XP
-    {
-        396,-1,
-        390,283,
-#ifdef AUTOCLICKER_CONFIRM
-        107,249,// continue
-#else
-        245,249,  // stop
-#endif
-        132,23
-    },
-    // Windows 7 and Windows 8.1 (normal)
-    {
-        500,270,
-        500,270,
-#ifdef AUTOCLICKER_CONFIRM
-        47,139,  // continue
-        448,87   // continue
-#else
-        47,67,     // stop
-        448,72     // stop
-#endif
-    },
-    // Windows 7 and Windows 8.1 (rare)
-    {
-        500,230,
-        500,230,
-#ifdef AUTOCLICKER_CONFIRM
-        47,120,  // continue
-        448,66   // continue
-#else
-        47,67,     // stop
-        448,53     // stop
-#endif
-    },
-    // Windows 7 and Windows 8.1 (rare)
-    {
-        500,244,
-        500,244,
-#ifdef AUTOCLICKER_CONFIRM
-        47,126,  // continue
-        448,74   // continue
-#else
-        47,67,     // stop
-        448,59     // stop
-#endif
-    },
-    {
-        -1,212,
-        -1,212,
-#ifdef AUTOCLICKER_CONFIRM
-        -1,118,   // continue
-        94,23     // continue
-#else
-        -1,118,   // stop
-        129,23    // stop
-#endif
-    }
-};
-volatile int clicker_flag;
-//}
-
+//{ Installer
 void _7z_total(long long i)
 {
     ar_proceed=0;
     ar_total=i;
-}
-
-int showpercent(int a)
-{
-    switch(a)
-    {
-        case STR_INST_EXTRACT:
-        case STR_INST_INSTALL:
-        case STR_INST_INSTALLING:
-        case STR_EXTR_EXTRACTING:
-        case STR_REST_CREATING:
-            return 1;
-
-        default:
-            return 0;
-    }
-}
-
-void Manager::updateoverall()
-{
-    int _totalitems=0;
-    int _processeditems=0;
-    unsigned j;
-
-    if(installmode==MODE_NONE)
-    {
-        items_list[SLOT_EXTRACTING].percent=0;
-        return;
-    }
-    itembar_t *itembar1=&items_list[RES_SLOTS];
-    for(j=RES_SLOTS;j<items_list.size();j++,itembar1++)
-    {
-        if(itembar1->checked||itembar1->install_status){_totalitems++;}
-        if(itembar1->install_status&&!itembar1->checked){_processeditems++;}
-    }
-    if(_totalitems)
-    {
-        double d=(items_list[itembar_act].percent)/_totalitems;
-        if(items_list[itembar_act].checked==0)d=0;
-        if(itembar_act==SLOT_RESTORE_POINT)d=0;
-        items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
-        items_list[SLOT_EXTRACTING].val1=_processeditems;
-        items_list[SLOT_EXTRACTING].val2=_totalitems;
-        if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING)
-            ShowProgressInTaskbar(hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
-    }
-}
-
-void itembar_t::updatecur()
-{
-    if(itembar_act==SLOT_RESTORE_POINT)return;
-    if(showpercent(install_status))
-        percent=(int)(ar_proceed*(instflag&INSTALLDRIVERS&&checked?900.:1000.)/ar_total);
-    else
-        percent=0;
 }
 
 int _7z_setcomplited(long long i)
@@ -192,9 +73,9 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
         fclose(f);
     }
 
-    clicker_flag=1;
+    Autoclicker.setflag(1);
     log_save();
-    thr=(HANDLE)_beginthreadex(nullptr,0,&thread_clicker,nullptr,0,nullptr);
+    thr=(HANDLE)_beginthreadex(nullptr,0,&Autoclicker_t::thread_clicker,nullptr,0,nullptr);
     {
         if(flags&FLAG_DISABLEINSTALL)
             Sleep(2000);
@@ -216,7 +97,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
             *ret&=~0x80000000;
         }
     }
-    clicker_flag=0;
+    Autoclicker.setflag(0);
     WaitForSingleObject(thr,INFINITE);
     CloseHandle_log(thr,L"driver_install",L"thr");
     if(*ret==1)SaveHWID(hwid);
@@ -582,14 +463,74 @@ goaround:
 
     return 0;
 }
+//}
 
-void manager_install(int flagsv)
+//{ Autoclicker
+const wnddata_t Autoclicker_t::clicktbl[NUM_CLICKDATA]=
 {
-    instflag=flagsv;
-    _beginthreadex(nullptr,0,&Manager::thread_install,nullptr,0,nullptr);
-}
+    // Windows XP
+    {
+        396,-1,
+        390,283,
+#ifdef AUTOCLICKER_CONFIRM
+        107,249,// continue
+#else
+        245,249,  // stop
+#endif
+        132,23
+    },
+    // Windows 7 and Windows 8.1 (normal)
+    {
+        500,270,
+        500,270,
+#ifdef AUTOCLICKER_CONFIRM
+        47,139,  // continue
+        448,87   // continue
+#else
+        47,67,     // stop
+        448,72     // stop
+#endif
+    },
+    // Windows 7 and Windows 8.1 (rare)
+    {
+        500,230,
+        500,230,
+#ifdef AUTOCLICKER_CONFIRM
+        47,120,  // continue
+        448,66   // continue
+#else
+        47,67,     // stop
+        448,53     // stop
+#endif
+    },
+    // Windows 7 and Windows 8.1 (rare)
+    {
+        500,244,
+        500,244,
+#ifdef AUTOCLICKER_CONFIRM
+        47,126,  // continue
+        448,74   // continue
+#else
+        47,67,     // stop
+        448,59     // stop
+#endif
+    },
+    {
+        -1,212,
+        -1,212,
+#ifdef AUTOCLICKER_CONFIRM
+        -1,118,   // continue
+        94,23     // continue
+#else
+        -1,118,   // stop
+        129,23    // stop
+#endif
+    }
+};
+volatile int Autoclicker_t::clicker_flag;
+Autoclicker_t Autoclicker;
 
-void calcwnddata(wnddata_t *w,HWND hwnd)
+void Autoclicker_t::calcwnddata(wnddata_t *w,HWND hwnd)
 {
     WINDOWINFO pwi,pwb;
     HWND parent=GetParent(hwnd);
@@ -608,7 +549,7 @@ void calcwnddata(wnddata_t *w,HWND hwnd)
     w->btn_wy=pwb.rcClient.bottom-pwb.rcClient.top;
 }
 
-int cmpclickdata(int *a,int *b)
+int Autoclicker_t::cmpclickdata(int *a,int *b)
 {
     int i;
 
@@ -618,7 +559,7 @@ int cmpclickdata(int *a,int *b)
     return 1;
 }
 
-BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
+BOOL CALLBACK Autoclicker_t::EnumWindowsProc(HWND hwnd,LPARAM lParam)
 {
     wchar_t buf[BUFLEN];
     WINDOWINFO pwi;
@@ -641,7 +582,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
 
     if((lParam&1)==1)
     {
-        calcwnddata(&w,hwnd);
+        Autoclicker.calcwnddata(&w,hwnd);
         if(lParam&2)
         {
             log_file("* MainWindow (%d,%d) (%d,%d)\n",w.wnd_wx,w.wnd_wy,w.cln_wx,w.cln_wy);
@@ -650,7 +591,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
         }
 
         if((lParam&2)==0)for(i=0;i<NUM_CLICKDATA;i++)
-            if(cmpclickdata((int *)&w,(int *)&clicktbl[i]))
+            if(Autoclicker.cmpclickdata((int *)&w,(int *)&clicktbl[i]))
         {
             SwitchToThisWindow(hwnd,0);
             GetWindowInfo(GetParent(hwnd),&pwi);
@@ -659,9 +600,9 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
             if(IsWindow(hwnd))
             {
                 GetWindowInfo(hwnd,&pwi);
-                calcwnddata(&w,hwnd);
+                Autoclicker.calcwnddata(&w,hwnd);
 
-                if(cmpclickdata((int *)&w,(int *)&clicktbl[i]))
+                if(Autoclicker.cmpclickdata((int *)&w,(int *)&clicktbl[i]))
                 {
                     GetWindowInfo(GetParent(hwnd),&pwi);
                     SetCursorPos(pwi.rcClient.left+w.btn_x+w.btn_wx/2,pwi.rcClient.top+w.btn_y+w.btn_wy/2);
@@ -684,12 +625,12 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam)
     return 1;
 }
 
-void wndclicker(int mode)
+void Autoclicker_t::wndclicker(int mode)
 {
     EnumChildWindows(GetDesktopWindow(),EnumWindowsProc,mode);
 }
 
-unsigned int __stdcall thread_clicker(void *arg)
+unsigned int __stdcall Autoclicker_t::thread_clicker(void *arg)
 {
     UNREFERENCED_PARAMETER(arg);
 
@@ -700,3 +641,4 @@ unsigned int __stdcall thread_clicker(void *arg)
     }
     return 0;
 }
+//}

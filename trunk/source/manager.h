@@ -147,11 +147,12 @@ public:
     itembar_t();
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
-    int box_status();
-    void updatecur();
     void drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2);
-    void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    void updatecur();
+    int  box_status();
+
     void contextmenu(int x,int y);
+    void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
 };
 int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
 
@@ -164,6 +165,11 @@ class Manager
 public:
     Matcher *matcher;
 
+private:
+    int  calc_cutoff();
+    int  isbehind(int pos,int ofs,int j);
+    int  drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
+
 public:
     void init(Matcher *matcher);
     void populate();
@@ -174,6 +180,8 @@ public:
 // User interaction
     void hitscan(int x,int y, int *i,int *zone);
     void clear();
+    void updateoverall();
+    void install(int flags);
     void testitembars();
     void toggle(int index);
     void expand(int index);
@@ -181,17 +189,15 @@ public:
     void selectall();
 
 // Driver list
+    int countItems();
+    int groupsize(int index);
     void setpos();
     int  animate();
-    int  drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
-    int  isbehind(int pos,int ofs,int j);
-    int  calc_cutoff();
+
+    void getINFpath(int wp);
     void draw(HDC hdc,int ofsy);
     void restorepos1(Manager *manager_prev);
     void restorepos(Manager *manager_prev);
-    void updateoverall();
-    int groupsize(int index);
-    int countItems();
     void popup_driverlist(HDC hdcMem,RECT rect,unsigned i);
     int  manager_drplive(wchar_t *s);
     void set_rstpnt(int checked);
@@ -202,37 +208,6 @@ public:
     void contextmenu(int x,int y);
     const wchar_t *getHWIDby(int id);
     static unsigned int __stdcall thread_install(void *arg);
-    void getINFpath(int wp);
 
     friend int _7z_setcomplited(long long i); // TODO: friend
 };
-
-// Global vars
-extern wchar_t extractdir[BUFLEN];
-
-// Manager
-void manager_install(int flags);
-
-// Draw
-struct textdata_t
-{
-    HDC hdcMem;
-    int x;
-    int y;
-    int wy;
-    int maxsz;
-    int col;
-    int i;
-    int *limits;
-    int mode;
-};
-void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
-void TextOutP(textdata_t *td,const wchar_t *format,...);
-void TextOutF(textdata_t *td,int col,const wchar_t *format,...);
-void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...);
-
-// Popup
-void format_size(wchar_t *buf,long long val,int isspeed);
-void format_time(wchar_t *buf,long long val);
-void popup_resize(int x,int y);
-void popup_about(HDC hdcMem);

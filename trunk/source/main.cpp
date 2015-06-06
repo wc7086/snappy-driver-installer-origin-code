@@ -739,6 +739,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             // Swap display and shadow bundle
             bundle_display^=1;
             bundle_shadow^=1;
+            bundle[bundle_shadow].bundle_init();
         }
     }while(!deviceupdate_exitflag);
 
@@ -924,7 +925,7 @@ void extractto()
 
         wcscat(dir,L"\\drivers");
         wcscpy(extractdir,dir);
-        manager_install(OPENFOLDER);
+        manager_g->install(OPENFOLDER);
     }
 }
 
@@ -1217,7 +1218,7 @@ LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if(mousedown==MOUSE_MOVE||abs(mousex-x)>2||abs(mousey-y)>2)
                 {
                     mousedown=MOUSE_MOVE;
-                    MoveWindow(hMain,rect.left+x-mousex,rect.top+y-mousey,
+                    MoveWindow(hMain,rect.left+(x-mousex)*(rtl?-1:1),rect.top+y-mousey,
                                rect.right-rect.left,rect.bottom-rect.top,1);
                 }
             }
@@ -1488,7 +1489,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
             if(wParam==VK_F7)
             {
-                wndclicker(2);
+                Autoclicker.wndclicker(2);
                 MessageBox(hMain,L"Windows data recorded into the log.",L"Message",0);
             }
             if(wParam==VK_F8)
@@ -1753,7 +1754,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     {
                         if((flags&FLAG_EXTRACTONLY)==0)
                         wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
-                        manager_install(INSTALLDRIVERS);
+                        manager_g->install(INSTALLDRIVERS);
                     }
                     break;
 
@@ -1924,7 +1925,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 {
                     if((flags&FLAG_EXTRACTONLY)==0)
                     wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
-                    manager_install(INSTALLDRIVERS);
+                    manager_g->install(INSTALLDRIVERS);
                 }
                 redrawfield();
             }

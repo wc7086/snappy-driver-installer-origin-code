@@ -29,6 +29,499 @@ const status_t statustnl[NUM_STATUS]=
 };
 //}
 
+//{ Itembar
+itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupindex,int rm1,int first1)
+{
+    memset(this,0,sizeof(itembar_t));
+    devicematch=devicematch1;
+    hwidmatch=hwidmatch1;
+    curpos=(-D(DRVITEM_DIST_Y0))<<16;
+    tagpos=(-D(DRVITEM_DIST_Y0))<<16;
+    index=groupindex;
+    rm=rm1;
+    first=first1;
+}
+
+itembar_t::itembar_t()
+{
+}
+
+void itembar_t::itembar_setpos(int *pos,int *cnt)
+{
+    if(isactive)
+    {
+        *pos+=*cnt?D(DRVITEM_DIST_Y1):D(DRVITEM_DIST_Y0);
+        (*cnt)--;
+    }
+    oldpos=curpos;
+    tagpos=*pos<<16;
+    accel=(tagpos-curpos)/(1000/2);
+    if(accel==0)accel=(tagpos<curpos)?500:-500;
+}
+
+void itembar_t::str_status(wchar_t *buf)
+{
+    buf[0]=0;
+
+    if(hwidmatch)
+    {
+        int status=hwidmatch->getStatus();
+        if(status&STATUS_INVALID)
+            wcscat(buf,STR(STR_STATUS_INVALID));
+        else
+        {
+            if(status&STATUS_MISSING)
+                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),devicematch->device->getProblem());
+            else
+            {
+                if(status&STATUS_BETTER&&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_BETTER_NEW));
+                if(status&STATUS_SAME  &&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_SAME_NEW));
+                if(status&STATUS_WORSE &&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_WORSE_NEW));
+
+                if(status&STATUS_BETTER&&status&STATUS_CURRENT)    wcscat(buf,STR(STR_STATUS_BETTER_CUR));
+                if(status&STATUS_SAME  &&status&STATUS_CURRENT)    wcscat(buf,STR(STR_STATUS_SAME_CUR));
+                if(status&STATUS_WORSE &&status&STATUS_CURRENT)    wcscat(buf,STR(STR_STATUS_WORSE_CUR));
+
+                if(status&STATUS_BETTER&&status&STATUS_OLD)        wcscat(buf,STR(STR_STATUS_BETTER_OLD));
+                if(status&STATUS_SAME  &&status&STATUS_OLD)        wcscat(buf,STR(STR_STATUS_SAME_OLD));
+                if(status&STATUS_WORSE &&status&STATUS_OLD)        wcscat(buf,STR(STR_STATUS_WORSE_OLD));
+            }
+        }
+        if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
+        if(hwidmatch->getAltsectscore()<2)
+        {
+            wcscat(buf,STR(STR_STATUS_NOTSIGNED));
+        }
+        if(hwidmatch->getdrp_packontorrent())wcscat(buf,STR(STR_UPD_WEBSTATUS));
+    }
+    else
+    //if(devicematch)
+    {
+        if(devicematch->getStatus()&STATUS_NF_STANDARD)wcscat(buf,STR(STR_STATUS_NF_STANDARD));
+        if(devicematch->getStatus()&STATUS_NF_UNKNOWN) wcscat(buf,STR(STR_STATUS_NF_UNKNOWN));
+        if(devicematch->getStatus()&STATUS_NF_MISSING) wcscat(buf,STR(STR_STATUS_NF_MISSING));
+    }
+}
+
+void itembar_t::drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2)
+{
+    pos+=D(ITEM_TEXT_OFS_Y);
+    SetTextColor(hdc,D(boxindex[box_status()]+14));
+    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1);
+    SetTextColor(hdc,D(boxindex[box_status()]+15));
+    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2);
+}
+
+static int showpercent(int a)
+{
+    switch(a)
+    {
+        case STR_INST_EXTRACT:
+        case STR_INST_INSTALL:
+        case STR_INST_INSTALLING:
+        case STR_EXTR_EXTRACTING:
+        case STR_REST_CREATING:
+            return 1;
+
+        default:
+            return 0;
+    }
+}
+
+void itembar_t::updatecur()
+{
+    if(itembar_act==SLOT_RESTORE_POINT)return;
+    if(showpercent(install_status))
+        percent=(int)(ar_proceed*(instflag&INSTALLDRIVERS&&checked?900.:1000.)/ar_total);
+    else
+        percent=0;
+}
+
+int itembar_t::box_status()
+{
+    switch(index)
+    {
+        case SLOT_VIRUS_AUTORUN:
+        case SLOT_VIRUS_RECYCLER:
+        case SLOT_VIRUS_HIDDEN:
+            return BOX_DRVITEM_VI;
+
+        case SLOT_NODRIVERS:
+        case SLOT_DPRDIR:
+        case SLOT_SNAPSHOT:
+            return BOX_DRVITEM_IF;
+
+        case SLOT_DOWNLOAD:
+        case SLOT_NOUPDATES:
+            return BOX_NOUPDATES;
+
+        case SLOT_RESTORE_POINT:
+            switch(install_status)
+            {
+                case STR_REST_CREATING:
+                    return BOX_DRVITEM_D0;
+
+                case STR_REST_CREATED:
+                    return BOX_DRVITEM_D1;
+
+                case STR_REST_FAILED:
+                    return BOX_DRVITEM_DE;
+
+                default:
+                    break;
+            }
+            break;
+
+        case SLOT_EXTRACTING:
+            switch(install_status)
+            {
+                case STR_EXTR_EXTRACTING:
+                case STR_INST_INSTALLING:
+                    return BOX_DRVITEM_D0;
+
+                case STR_INST_COMPLITED:
+                    return BOX_DRVITEM_D1;
+
+                case STR_INST_COMPLITED_RB:
+                    return BOX_DRVITEM_D2;
+
+                case STR_INST_STOPPING:
+                    return BOX_DRVITEM_DE;
+
+                default:break;
+            }
+            break;
+
+        default:
+            break;
+    }
+    if(hwidmatch)
+    {
+        int status=hwidmatch->getStatus();
+
+        if(first&2)return BOX_DRVITEM_PN;
+
+        if(status&STATUS_INVALID)
+            return BOX_DRVITEM_IN;
+        else
+        {
+            switch(install_status)
+            {
+                case STR_INST_EXTRACT:
+                case STR_INST_INSTALL:
+                    return BOX_DRVITEM_D0;
+
+                case STR_INST_OK:
+                case STR_EXTR_OK:
+                    return BOX_DRVITEM_D1;
+
+                case STR_INST_REBOOT:
+                    return BOX_DRVITEM_D2;
+
+                case STR_INST_FAILED:
+                case STR_EXTR_FAILED:
+                    return BOX_DRVITEM_DE;
+
+                default:break;
+            }
+            if(status&STATUS_MISSING)
+                return BOX_DRVITEM_MS;
+            else
+            {
+                if(hwidmatch->getAltsectscore()<2)return BOX_DRVITEM_WO;
+
+                if(status&STATUS_BETTER&&status&STATUS_NEW)        return BOX_DRVITEM_BN;
+                if(status&STATUS_SAME  &&status&STATUS_NEW)        return BOX_DRVITEM_SN;
+                if(status&STATUS_WORSE &&status&STATUS_NEW)        return BOX_DRVITEM_WN;
+
+                if(status&STATUS_BETTER&&status&STATUS_CURRENT)    return BOX_DRVITEM_BC;
+                if(status&STATUS_SAME  &&status&STATUS_CURRENT)    return BOX_DRVITEM_SC;
+                if(status&STATUS_WORSE &&status&STATUS_CURRENT)    return BOX_DRVITEM_WC;
+
+                if(status&STATUS_BETTER&&status&STATUS_OLD)        return BOX_DRVITEM_BO;
+                if(status&STATUS_SAME  &&status&STATUS_OLD)        return BOX_DRVITEM_SO;
+                if(status&STATUS_WORSE &&status&STATUS_OLD)        return BOX_DRVITEM_WO;
+            }
+        }
+    }
+    else
+    if(devicematch)
+    {
+        if(devicematch->getStatus()&STATUS_NF_STANDARD)  return BOX_DRVITEM_NS;
+        if(devicematch->getStatus()&STATUS_NF_UNKNOWN)   return BOX_DRVITEM_NU;
+        if(devicematch->getStatus()&STATUS_NF_MISSING)   return BOX_DRVITEM_NM;
+    }
+        //if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
+    return BOX_DRVITEM;
+}
+
+void itembar_t::contextmenu(int x,int y)
+{
+    HMENU hPopupMenu=CreatePopupMenu();
+
+    int flags1=checked?MF_CHECKED:0;
+    if(!hwidmatch&&index!=SLOT_RESTORE_POINT)flags1|=MF_GRAYED;
+    if(rtl)x=mainx_c-x;
+
+    if(floating_itembar==SLOT_RESTORE_POINT)
+    {
+        InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
+        InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
+
+        RECT rect;
+        SetForegroundWindow(hMain);
+        GetWindowRect(hField,&rect);
+        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
+        return;
+    }
+    if(floating_itembar<RES_SLOTS)return;
+
+    Driver *cur_driver=nullptr;
+
+    char *t=manager_g->matcher->getState()->textas.get(0);
+    if(devicematch->driver)cur_driver=devicematch->driver;
+    int flags2=isactive&2?MF_CHECKED:0;
+    int flags3=cur_driver?0:MF_GRAYED;
+    if(manager_g->groupsize(index)<2)flags2|=MF_GRAYED;
+    wchar_t buf[512];
+
+    int i=0;
+    HMENU hSub1=CreatePopupMenu();
+    HMENU hSub2=CreatePopupMenu();
+    if(devicematch->device->getHardwareID())
+    {
+        wchar_t *p=(wchar_t *)(t+devicematch->device->getHardwareID());
+        while(*p)
+        {
+            escapeAmp(buf,p);
+            InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
+            InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
+            p+=lstrlenW(p)+1;
+            i++;
+        }
+    }
+    if(devicematch->device->getCompatibleIDs())
+    {
+        wchar_t *p=(wchar_t *)(t+devicematch->device->getCompatibleIDs());
+        while(*p)
+        {
+            escapeAmp(buf,p);
+            InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
+            InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
+            p+=lstrlenW(p)+1;
+            i++;
+        }
+    }
+    int flagssubmenu=i?0:MF_GRAYED;
+
+    i=0;
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_CONT_INSTALL));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags2,ID_SHOWALT,  STR(STR_CONT_SHOWALT));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub1,STR(STR_CONT_HWID_SEARCH));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub2,STR(STR_CONT_HWID_CLIP));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_OPENINF,  STR(STR_CONT_OPENINF));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_LOCATEINF,STR(STR_CONT_LOCATEINF));
+
+    RECT rect;
+    SetForegroundWindow(hMain);
+    GetWindowRect(hField,&rect);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
+}
+
+void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
+{
+    if(index1<RES_SLOTS)return;
+
+    //itembar_t *itembar=&manager->items_list[index];
+    Devicematch *devicematch_f=devicematch;
+    Hwidmatch *hwidmatch_f=hwidmatch;
+    State *state=manager->matcher->getState();
+
+    wchar_t bufw[BUFLEN];
+    wchar_t i_hwid[BUFLEN];
+    wchar_t a_hwid[BUFLEN];
+
+    char *t=state->textas.get(0);
+    int maxln=0;
+    int bolder=rect.right/2;
+    wchar_t *p;
+    Driver *cur_driver=nullptr;
+    textdata_t td;
+    Version *a_v=nullptr;
+    unsigned score=0;
+    int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
+    int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
+    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
+
+
+    td.y=D(POPUP_OFSY);
+    td.wy=D(POPUP_WY);
+    td.hdcMem=hdcMem;
+    td.maxsz=0;
+
+    if(devicematch_f->driver)
+    {
+        int i;
+        cur_driver=devicematch_f->driver;
+        wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
+        for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
+    }
+    if(hwidmatch_f)
+    {
+        a_v=hwidmatch_f->getdrp_drvversion();
+        wsprintf(a_hwid,L"%S",hwidmatch_f->getdrp_drvHWID());
+    }
+    if(cur_driver&&hwidmatch_f)
+    {
+        int r=cmpdate(&cur_driver->version,a_v);
+        if(r>0)cm_date=1;
+        if(r<0)cm_date=2;
+
+        score=cur_driver->calc_score_h(state);
+        if(score<hwidmatch_f->getScore())cm_score=1;
+        if(score>hwidmatch_f->getScore())cm_score=2;
+
+        r=cmpversion(&cur_driver->version,a_v);
+        if(r>0)cm_ver=1;
+        if(r<0)cm_ver=2;
+    }
+
+    // Device info (hwidmatch_f,devicematch_f)
+    td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_ANALYSIS));td.x=p1;
+    TextOutF(&td,c0,L"$%04d",index1);
+    if(hwidmatch_f)
+    {
+        TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
+                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->pickcat(state),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
+
+        td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
+        TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
+        TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
+                 ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
+    }
+
+    SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
+
+    td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
+    TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
+    TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
+    TextOutF(&td,c0,L"%s",bufw);
+    TextOutF(&td,c0,L"%s",t+devicematch_f->device->Driver);
+    wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
+    TextOutF(&td,c0,L"%s",bufw);
+
+    // HWID list (devicematch_f)
+    maxln=td.y;
+    td.y=D(POPUP_OFSY);
+    if(devicematch_f->device->HardwareID)
+    {
+        td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_HARDWAREID));td.x=p1+bolder;
+        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
+        while(*p)
+        {
+            int pp=0;
+            if(!StrCmpIW(i_hwid,p))pp|=1;
+            if(!StrCmpIW(a_hwid,p))pp|=2;
+            if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
+            TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
+            p+=lstrlenW(p)+1;
+        }
+    }
+    if(devicematch_f->device->CompatibleIDs)
+    {
+        td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_COMPID));td.x=p1+bolder;
+        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
+        while(*p)
+        {
+            int pp=0;
+            if(!StrCmpIW(i_hwid,p))pp|=1;
+            if(!StrCmpIW(a_hwid,p))pp|=2;
+            if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
+            TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
+            p+=lstrlenW(p)+1;
+        }
+    }
+    if(!cur_driver||!hwidmatch_f)cm_hwid=0;
+    if(td.y>maxln)maxln=td.y;
+    maxln+=td.wy;
+    td.y=maxln;
+
+    // Cur driver (cur_driver)
+    if(cur_driver||hwidmatch_f)
+    {
+        MoveToEx(hdcMem,0,td.y-td.wy/2,nullptr);
+        LineTo(hdcMem,rect.right,td.y-td.wy/2);
+    }
+    if(devicematch_f->device->HardwareID||hwidmatch_f)
+    {
+        MoveToEx(hdcMem,bolder,0,nullptr);
+        LineTo(hdcMem,bolder,rect.bottom);
+    }
+    if(cur_driver)
+    {
+        cur_driver->version.str_date(bufw);
+
+        td.x=p0;
+        TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
+        TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
+        TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
+        TextOutF(&td,cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
+        TextOutF(&td,cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
+        TextOutF(&td,cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
+        TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
+        TextOutF(&td,               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
+        TextOutF(&td,cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
+    }
+
+    // Available driver (hwidmatch_f)
+    if(hwidmatch_f)
+    {
+        td.y=maxln;
+        a_v->str_date(bufw);
+        hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
+
+        td.x=p0+bolder;
+        TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
+        TextOutF(&td,               c0,L"%s",bufw+1000);
+        TextOutF(&td,               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
+        TextOutF(&td,cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
+        TextOutF(&td,cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
+        TextOutF(&td,cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
+        TextOutF(&td,               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
+        TextOutF(&td,hwidmatch_f->getDecorscore()?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
+        TextOutF(&td,cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
+    }
+
+    if(!devicematch_f->device->HardwareID&&!hwidmatch_f)td.maxsz/=2;
+
+    popup_resize((td.maxsz+10+p0*2)*2,td.y+D(POPUP_OFSY));
+}
+
+int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
+{
+    if(a->hwidmatch&&b->hwidmatch)
+    {
+        if(a->hwidmatch->getHWID_index()==b->hwidmatch->getHWID_index())return 3;
+        return 0;
+    }
+    if(wcslen(ta+a->devicematch->device->getDriver())>0)
+    {
+        if(!wcscmp(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
+    }
+    else
+    {
+        if(wcslen(ta+a->devicematch->device->getDescr())>0)
+        {
+            if(!wcscmp(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
+        }
+    }
+
+    return 0;
+}
+//}
+
 //{ Manager
 void Manager::init(Matcher *matchera)
 {
@@ -37,51 +530,6 @@ void Manager::init(Matcher *matchera)
 
     for(int i=0;i<RES_SLOTS;i++)
         items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
-}
-
-void Matcher::sorta(int *v)
-{
-    Devicematch *devicematch_i,*devicematch_j;
-    Hwidmatch *hwidmatch_i,*hwidmatch_j;
-    int i,j,num;
-
-    num=devicematch_list.size();
-
-    for(i=0;i<num;i++)v[i]=i;
-
-    for(i=0;i<num;i++)
-    {
-        for(j=i+1;j<num;j++)
-        {
-            devicematch_i=&devicematch_list[v[i]];
-            devicematch_j=&devicematch_list[v[j]];
-            hwidmatch_i=(devicematch_i->num_matches)?&hwidmatch_list[devicematch_i->start_matches]:nullptr;
-            hwidmatch_j=(devicematch_j->num_matches)?&hwidmatch_list[devicematch_j->start_matches]:nullptr;
-            int ismi=devicematch_i->isMissing(state);
-            int ismj=devicematch_j->isMissing(state);
-
-            if(ismi<ismj)
-            {
-                int t;
-
-                t=v[i];
-                v[i]=v[j];
-                v[j]=t;
-            }
-            else
-            if(ismi==ismj)
-            if((hwidmatch_i&&hwidmatch_j&&wcscmp(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
-               ||
-               (!hwidmatch_i&&hwidmatch_j))
-            {
-                int t;
-
-                t=v[i];
-                v[i]=v[j];
-                v[j]=t;
-            }
-        }
-    }
 }
 
 int  Manager::manager_drplive(wchar_t *s)
@@ -433,6 +881,41 @@ void Manager::clear()
     invalidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
 }
 
+void Manager::updateoverall()
+{
+    int _totalitems=0;
+    int _processeditems=0;
+    unsigned j;
+
+    if(installmode==MODE_NONE)
+    {
+        items_list[SLOT_EXTRACTING].percent=0;
+        return;
+    }
+    itembar_t *itembar1=&items_list[RES_SLOTS];
+    for(j=RES_SLOTS;j<items_list.size();j++,itembar1++)
+    {
+        if(itembar1->checked||itembar1->install_status){_totalitems++;}
+        if(itembar1->install_status&&!itembar1->checked){_processeditems++;}
+    }
+    if(_totalitems)
+    {
+        double d=(items_list[itembar_act].percent)/_totalitems;
+        if(items_list[itembar_act].checked==0)d=0;
+        if(itembar_act==SLOT_RESTORE_POINT)d=0;
+        items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
+        items_list[SLOT_EXTRACTING].val1=_processeditems;
+        items_list[SLOT_EXTRACTING].val2=_totalitems;
+        if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING)
+            ShowProgressInTaskbar(hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
+    }
+}
+void Manager::install(int flagsv)
+{
+    instflag=flagsv;
+    _beginthreadex(nullptr,0,&thread_install,nullptr,0,nullptr);
+}
+
 void Manager::testitembars()
 {
     itembar_t *itembar;
@@ -600,22 +1083,6 @@ void Manager::selectall()
 //}
 
 //{ Helpers
-itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupindex,int rm1,int first1)
-{
-    memset(this,0,sizeof(itembar_t));
-    devicematch=devicematch1;
-    hwidmatch=hwidmatch1;
-    curpos=(-D(DRVITEM_DIST_Y0))<<16;
-    tagpos=(-D(DRVITEM_DIST_Y0))<<16;
-    index=groupindex;
-    rm=rm1;
-    first=first1;
-}
-
-itembar_t::itembar_t()
-{
-}
-
 void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
 {
     itembar_t *itembar=&items_list[i];
@@ -638,268 +1105,12 @@ void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int va
     redrawfield();
 }
 
-void itembar_t::itembar_setpos(int *pos,int *cnt)
-{
-    if(isactive)
-    {
-        *pos+=*cnt?D(DRVITEM_DIST_Y1):D(DRVITEM_DIST_Y0);
-        (*cnt)--;
-    }
-    oldpos=curpos;
-    tagpos=*pos<<16;
-    accel=(tagpos-curpos)/(1000/2);
-    if(accel==0)accel=(tagpos<curpos)?500:-500;
-}
-
 void Manager::set_rstpnt(int checked)
 {
     panels[11].setChecked(2,items_list[SLOT_RESTORE_POINT].checked=checked);
     //if(D(PANEL12_WY))manager_g->items_list[SLOT_RESTORE_POINT].isactive=checked;
     setpos();
     redrawfield();
-}
-
-int Hwidmatch::isdrivervalid()
-{
-    if(altsectscore>0&&decorscore>0)return 1;
-    return 0;
-}
-
-void itembar_t::contextmenu(int x,int y)
-{
-    HMENU hPopupMenu=CreatePopupMenu();
-
-    int flags1=checked?MF_CHECKED:0;
-    if(!hwidmatch&&index!=SLOT_RESTORE_POINT)flags1|=MF_GRAYED;
-    if(rtl)x=mainx_c-x;
-
-    if(floating_itembar==SLOT_RESTORE_POINT)
-    {
-        InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
-        InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
-
-        RECT rect;
-        SetForegroundWindow(hMain);
-        GetWindowRect(hField,&rect);
-        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
-        return;
-    }
-    if(floating_itembar<RES_SLOTS)return;
-
-    Driver *cur_driver=nullptr;
-
-    char *t=manager_g->matcher->getState()->textas.get(0);
-    if(devicematch->driver)cur_driver=devicematch->driver;
-    int flags2=isactive&2?MF_CHECKED:0;
-    int flags3=cur_driver?0:MF_GRAYED;
-    if(manager_g->groupsize(index)<2)flags2|=MF_GRAYED;
-    wchar_t buf[512];
-
-    int i=0;
-    HMENU hSub1=CreatePopupMenu();
-    HMENU hSub2=CreatePopupMenu();
-    if(devicematch->device->getHardwareID())
-    {
-        wchar_t *p=(wchar_t *)(t+devicematch->device->getHardwareID());
-        while(*p)
-        {
-            escapeAmp(buf,p);
-            InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
-            InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
-            p+=lstrlenW(p)+1;
-            i++;
-        }
-    }
-    if(devicematch->device->getCompatibleIDs())
-    {
-        wchar_t *p=(wchar_t *)(t+devicematch->device->getCompatibleIDs());
-        while(*p)
-        {
-            escapeAmp(buf,p);
-            InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
-            InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
-            p+=lstrlenW(p)+1;
-            i++;
-        }
-    }
-    int flagssubmenu=i?0:MF_GRAYED;
-
-    i=0;
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_CONT_INSTALL));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags2,ID_SHOWALT,  STR(STR_CONT_SHOWALT));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub1,STR(STR_CONT_HWID_SEARCH));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|MF_POPUP|flagssubmenu,(UINT_PTR)hSub2,STR(STR_CONT_HWID_CLIP));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_OPENINF,  STR(STR_CONT_OPENINF));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_LOCATEINF,STR(STR_CONT_LOCATEINF));
-
-    RECT rect;
-    SetForegroundWindow(hMain);
-    GetWindowRect(hField,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
-}
-
-void itembar_t::str_status(wchar_t *buf)
-{
-    buf[0]=0;
-
-    if(hwidmatch)
-    {
-        int status=hwidmatch->getStatus();
-        if(status&STATUS_INVALID)
-            wcscat(buf,STR(STR_STATUS_INVALID));
-        else
-        {
-            if(status&STATUS_MISSING)
-                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),devicematch->device->getProblem());
-            else
-            {
-                if(status&STATUS_BETTER&&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_BETTER_NEW));
-                if(status&STATUS_SAME  &&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_SAME_NEW));
-                if(status&STATUS_WORSE &&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_WORSE_NEW));
-
-                if(status&STATUS_BETTER&&status&STATUS_CURRENT)    wcscat(buf,STR(STR_STATUS_BETTER_CUR));
-                if(status&STATUS_SAME  &&status&STATUS_CURRENT)    wcscat(buf,STR(STR_STATUS_SAME_CUR));
-                if(status&STATUS_WORSE &&status&STATUS_CURRENT)    wcscat(buf,STR(STR_STATUS_WORSE_CUR));
-
-                if(status&STATUS_BETTER&&status&STATUS_OLD)        wcscat(buf,STR(STR_STATUS_BETTER_OLD));
-                if(status&STATUS_SAME  &&status&STATUS_OLD)        wcscat(buf,STR(STR_STATUS_SAME_OLD));
-                if(status&STATUS_WORSE &&status&STATUS_OLD)        wcscat(buf,STR(STR_STATUS_WORSE_OLD));
-            }
-        }
-        if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
-        if(hwidmatch->getAltsectscore()<2)
-        {
-            wcscat(buf,STR(STR_STATUS_NOTSIGNED));
-        }
-        if(hwidmatch->getdrp_packontorrent())wcscat(buf,STR(STR_UPD_WEBSTATUS));
-    }
-    else
-    //if(devicematch)
-    {
-        if(devicematch->getStatus()&STATUS_NF_STANDARD)wcscat(buf,STR(STR_STATUS_NF_STANDARD));
-        if(devicematch->getStatus()&STATUS_NF_UNKNOWN) wcscat(buf,STR(STR_STATUS_NF_UNKNOWN));
-        if(devicematch->getStatus()&STATUS_NF_MISSING) wcscat(buf,STR(STR_STATUS_NF_MISSING));
-    }
-}
-
-int itembar_t::box_status()
-{
-    switch(index)
-    {
-        case SLOT_VIRUS_AUTORUN:
-        case SLOT_VIRUS_RECYCLER:
-        case SLOT_VIRUS_HIDDEN:
-            return BOX_DRVITEM_VI;
-
-        case SLOT_NODRIVERS:
-        case SLOT_DPRDIR:
-        case SLOT_SNAPSHOT:
-            return BOX_DRVITEM_IF;
-
-        case SLOT_DOWNLOAD:
-        case SLOT_NOUPDATES:
-            return BOX_NOUPDATES;
-
-        case SLOT_RESTORE_POINT:
-            switch(install_status)
-            {
-                case STR_REST_CREATING:
-                    return BOX_DRVITEM_D0;
-
-                case STR_REST_CREATED:
-                    return BOX_DRVITEM_D1;
-
-                case STR_REST_FAILED:
-                    return BOX_DRVITEM_DE;
-
-                default:
-                    break;
-            }
-            break;
-
-        case SLOT_EXTRACTING:
-            switch(install_status)
-            {
-                case STR_EXTR_EXTRACTING:
-                case STR_INST_INSTALLING:
-                    return BOX_DRVITEM_D0;
-
-                case STR_INST_COMPLITED:
-                    return BOX_DRVITEM_D1;
-
-                case STR_INST_COMPLITED_RB:
-                    return BOX_DRVITEM_D2;
-
-                case STR_INST_STOPPING:
-                    return BOX_DRVITEM_DE;
-
-                default:break;
-            }
-            break;
-
-        default:
-            break;
-    }
-    if(hwidmatch)
-    {
-        int status=hwidmatch->getStatus();
-
-        if(first&2)return BOX_DRVITEM_PN;
-
-        if(status&STATUS_INVALID)
-            return BOX_DRVITEM_IN;
-        else
-        {
-            switch(install_status)
-            {
-                case STR_INST_EXTRACT:
-                case STR_INST_INSTALL:
-                    return BOX_DRVITEM_D0;
-
-                case STR_INST_OK:
-                case STR_EXTR_OK:
-                    return BOX_DRVITEM_D1;
-
-                case STR_INST_REBOOT:
-                    return BOX_DRVITEM_D2;
-
-                case STR_INST_FAILED:
-                case STR_EXTR_FAILED:
-                    return BOX_DRVITEM_DE;
-
-                default:break;
-            }
-            if(status&STATUS_MISSING)
-                return BOX_DRVITEM_MS;
-            else
-            {
-                if(hwidmatch->getAltsectscore()<2)return BOX_DRVITEM_WO;
-
-                if(status&STATUS_BETTER&&status&STATUS_NEW)        return BOX_DRVITEM_BN;
-                if(status&STATUS_SAME  &&status&STATUS_NEW)        return BOX_DRVITEM_SN;
-                if(status&STATUS_WORSE &&status&STATUS_NEW)        return BOX_DRVITEM_WN;
-
-                if(status&STATUS_BETTER&&status&STATUS_CURRENT)    return BOX_DRVITEM_BC;
-                if(status&STATUS_SAME  &&status&STATUS_CURRENT)    return BOX_DRVITEM_SC;
-                if(status&STATUS_WORSE &&status&STATUS_CURRENT)    return BOX_DRVITEM_WC;
-
-                if(status&STATUS_BETTER&&status&STATUS_OLD)        return BOX_DRVITEM_BO;
-                if(status&STATUS_SAME  &&status&STATUS_OLD)        return BOX_DRVITEM_SO;
-                if(status&STATUS_WORSE &&status&STATUS_OLD)        return BOX_DRVITEM_WO;
-            }
-        }
-    }
-    else
-    if(devicematch)
-    {
-        if(devicematch->getStatus()&STATUS_NF_STANDARD)  return BOX_DRVITEM_NS;
-        if(devicematch->getStatus()&STATUS_NF_UNKNOWN)   return BOX_DRVITEM_NU;
-        if(devicematch->getStatus()&STATUS_NF_MISSING)   return BOX_DRVITEM_NM;
-    }
-        //if(status&STATUS_DUP)wcscat(buf,STR(STR_STATUS_DUP));
-    return BOX_DRVITEM;
 }
 
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
@@ -1025,16 +1236,7 @@ int Manager::countItems()
     return cnt;
 }
 
-void itembar_t::drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2)
-{
-    pos+=D(ITEM_TEXT_OFS_Y);
-    SetTextColor(hdc,D(boxindex[box_status()]+14));
-    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1);
-    SetTextColor(hdc,D(boxindex[box_status()]+15));
-    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2);
-}
-
-int  Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
+int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
 {
     itembar_t *itembar=&items_list[index];
 
@@ -1416,28 +1618,6 @@ void Manager::draw(HDC hdc,int ofsy)
     setscrollrange((maxpos>>16)+20);
 }
 
-int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
-{
-    if(a->hwidmatch&&b->hwidmatch)
-    {
-        if(a->hwidmatch->getHWID_index()==b->hwidmatch->getHWID_index())return 3;
-        return 0;
-    }
-    if(wcslen(ta+a->devicematch->device->getDriver())>0)
-    {
-        if(!wcscmp(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
-    }
-    else
-    {
-        if(wcslen(ta+a->devicematch->device->getDescr())>0)
-        {
-            if(!wcscmp(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
-        }
-    }
-
-    return 0;
-}
-
 void Manager::restorepos1(Manager *manager_prev)
 {
     int i;
@@ -1480,7 +1660,7 @@ void Manager::restorepos1(Manager *manager_prev)
             if(!panels[11].isChecked(3))selectall();
             if((flags&FLAG_EXTRACTONLY)==0)
             wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.get(matcher->getState()->getTemp()));
-            manager_install(INSTALLDRIVERS);
+            install(INSTALLDRIVERS);
         }
         else
         {
@@ -1615,72 +1795,7 @@ void Manager::restorepos(Manager *manager_old)
 }
 //}
 
-//{ Draw
-void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode)
-{
-    SIZE ss;
-    GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
-    if(ss.cx>*maxsz)*maxsz=ss.cx;
-
-    if(!mode)return;
-    SetTextColor(hdcMem,color);
-    TextOutH(hdcMem,x,y,str);
-    //SetTextColor(hdcMem,0);
-}
-
-void TextOutP(textdata_t *td,const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
-
-    TextOut_CM(td->hdcMem,td->x,td->y,buffer,td->col,&td->limits[td->i],td->mode);
-    td->x+=td->limits[td->i];
-    td->i++;
-    va_end(args);
-}
-
-void TextOutF(textdata_t *td,int col,const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
-
-    TextOut_CM(td->hdcMem,td->x,td->y,buffer,col,&td->maxsz,1);
-    td->y+=td->wy;
-    va_end(args);
-}
-
-void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf (buffer,BUFLEN,format,args);
-    TextOut_CM(td->hdcMem,td->x,td->y,str,td->col,&td->maxsz,1);
-    TextOut_CM(td->hdcMem,td->x+POPUP_SYSINFO_OFS,td->y,buffer,td->col,&td->maxsz,1);
-    td->y+=td->wy;
-    va_end(args);
-}
-//}
-
 //{ Popup
-void popup_resize(int x,int y)
-{
-    if(floating_x!=x||floating_y!=y)
-    {
-        POINT p1;
-
-        floating_x=x;
-        floating_y=y;
-        GetCursorPos(&p1);
-        SetCursorPos(p1.x+1,p1.y);
-        SetCursorPos(p1.x,p1.y);
-    }
-}
-
 void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
 {
     itembar_t *itembar;
@@ -1768,266 +1883,5 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
         td.y+=lne;
     }
     popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
-}
-
-int Hwidmatch::pickcat(State *state)
-{
-    if(state->getArchitecture()==1&&*getdrp_drvcat(CatalogFile_ntamd64))
-    {
-        return CatalogFile_ntamd64;
-    }
-    else if(*getdrp_drvcat(CatalogFile_ntx86))
-    {
-        return CatalogFile_ntx86;
-    }
-
-    if(*getdrp_drvcat(CatalogFile_nt))
-       return CatalogFile_nt;
-
-    if(*getdrp_drvcat(CatalogFile))
-       return CatalogFile;
-
-    return 0;
-}
-
-int Hwidmatch::isvalidcat(State *state)
-{
-    CHAR bufa[BUFLEN];
-    int n=pickcat(state);
-    const char *s=getdrp_drvcat(n);
-
-    int major,minor;
-    state->getWinVer(&major,&minor);
-    wsprintfA(bufa,"2:%d.%d",major,minor);
-    if(!*s)return 0;
-    return strstr(s,bufa)?1:0;
-}
-
-void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
-{
-    if(index1<RES_SLOTS)return;
-
-    //itembar_t *itembar=&manager->items_list[index];
-    Devicematch *devicematch_f=devicematch;
-    Hwidmatch *hwidmatch_f=hwidmatch;
-    State *state=manager->matcher->getState();
-
-    wchar_t bufw[BUFLEN];
-    wchar_t i_hwid[BUFLEN];
-    wchar_t a_hwid[BUFLEN];
-
-    char *t=state->textas.get(0);
-    int maxln=0;
-    int bolder=rect.right/2;
-    wchar_t *p;
-    Driver *cur_driver=nullptr;
-    textdata_t td;
-    Version *a_v=nullptr;
-    unsigned score=0;
-    int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
-    int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
-    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
-
-
-    td.y=D(POPUP_OFSY);
-    td.wy=D(POPUP_WY);
-    td.hdcMem=hdcMem;
-    td.maxsz=0;
-
-    if(devicematch_f->driver)
-    {
-        int i;
-        cur_driver=devicematch_f->driver;
-        wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
-        for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
-    }
-    if(hwidmatch_f)
-    {
-        a_v=hwidmatch_f->getdrp_drvversion();
-        wsprintf(a_hwid,L"%S",hwidmatch_f->getdrp_drvHWID());
-    }
-    if(cur_driver&&hwidmatch_f)
-    {
-        int r=cmpdate(&cur_driver->version,a_v);
-        if(r>0)cm_date=1;
-        if(r<0)cm_date=2;
-
-        score=cur_driver->calc_score_h(state);
-        if(score<hwidmatch_f->getScore())cm_score=1;
-        if(score>hwidmatch_f->getScore())cm_score=2;
-
-        r=cmpversion(&cur_driver->version,a_v);
-        if(r>0)cm_ver=1;
-        if(r<0)cm_ver=2;
-    }
-
-    // Device info (hwidmatch_f,devicematch_f)
-    td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_ANALYSIS));td.x=p1;
-    TextOutF(&td,c0,L"$%04d",index1);
-    if(hwidmatch_f)
-    {
-        TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
-                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->pickcat(state),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
-
-        td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
-        TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
-        TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
-                 ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
-    }
-
-    SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
-
-    td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
-    TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
-    TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
-    TextOutF(&td,c0,L"%s",bufw);
-    TextOutF(&td,c0,L"%s",t+devicematch_f->device->Driver);
-    wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
-    TextOutF(&td,c0,L"%s",bufw);
-
-    // HWID list (devicematch_f)
-    maxln=td.y;
-    td.y=D(POPUP_OFSY);
-    if(devicematch_f->device->HardwareID)
-    {
-        td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_HARDWAREID));td.x=p1+bolder;
-        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
-        while(*p)
-        {
-            int pp=0;
-            if(!StrCmpIW(i_hwid,p))pp|=1;
-            if(!StrCmpIW(a_hwid,p))pp|=2;
-            if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
-            p+=lstrlenW(p)+1;
-        }
-    }
-    if(devicematch_f->device->CompatibleIDs)
-    {
-        td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_COMPID));td.x=p1+bolder;
-        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
-        while(*p)
-        {
-            int pp=0;
-            if(!StrCmpIW(i_hwid,p))pp|=1;
-            if(!StrCmpIW(a_hwid,p))pp|=2;
-            if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
-            p+=lstrlenW(p)+1;
-        }
-    }
-    if(!cur_driver||!hwidmatch_f)cm_hwid=0;
-    if(td.y>maxln)maxln=td.y;
-    maxln+=td.wy;
-    td.y=maxln;
-
-    // Cur driver (cur_driver)
-    if(cur_driver||hwidmatch_f)
-    {
-        MoveToEx(hdcMem,0,td.y-td.wy/2,nullptr);
-        LineTo(hdcMem,rect.right,td.y-td.wy/2);
-    }
-    if(devicematch_f->device->HardwareID||hwidmatch_f)
-    {
-        MoveToEx(hdcMem,bolder,0,nullptr);
-        LineTo(hdcMem,bolder,rect.bottom);
-    }
-    if(cur_driver)
-    {
-        cur_driver->version.str_date(bufw);
-
-        td.x=p0;
-        TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
-        TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
-        TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
-        TextOutF(&td,cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
-        TextOutF(&td,cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
-        TextOutF(&td,cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
-        TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
-        TextOutF(&td,               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
-        TextOutF(&td,cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
-    }
-
-    // Available driver (hwidmatch_f)
-    if(hwidmatch_f)
-    {
-        td.y=maxln;
-        a_v->str_date(bufw);
-        hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
-
-        td.x=p0+bolder;
-        TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
-        TextOutF(&td,               c0,L"%s",bufw+1000);
-        TextOutF(&td,               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
-        TextOutF(&td,cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
-        TextOutF(&td,cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
-        TextOutF(&td,cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
-        TextOutF(&td,               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
-        TextOutF(&td,hwidmatch_f->getDecorscore()?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
-        TextOutF(&td,cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
-    }
-
-    if(!devicematch_f->device->HardwareID&&!hwidmatch_f)td.maxsz/=2;
-
-    popup_resize((td.maxsz+10+p0*2)*2,td.y+D(POPUP_OFSY));
-}
-
-void popup_about(HDC hdcMem)
-{
-    textdata_t td;
-    RECT rect;
-    int p0=D(POPUP_OFSX);
-
-    td.col=D(POPUP_TEXT_COLOR);
-    td.wy=D(POPUP_WY);
-    td.y=D(POPUP_OFSY);
-    td.hdcMem=hdcMem;
-    td.maxsz=0;
-
-    td.x=p0;
-    TextOutF(&td,td.col,L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
-    td.y+=td.wy;
-    rect.left=td.x;
-    rect.top=td.y;
-    rect.right=D(POPUP_WX)-p0*2;
-    rect.bottom=500;
-    DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
-    td.y+=td.wy*3;
-    TextOutF(&td,td.col,L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
-    TextOutF(&td,td.col,L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
-    td.y+=td.wy*(intptr_t)STR(STR_ABOUT_SIZE);
-
-    popup_resize(D(POPUP_WX),td.y+D(POPUP_OFSY));
-}
-
-void format_size(wchar_t *buf,long long val,int isspeed)
-{
-#ifdef USE_TORRENT
-    StrFormatByteSizeW(val,buf,BUFLEN);
-#else
-    buf[0]=0;
-    UNREFERENCED_PARAMETER(val)
-#endif
-    if(isspeed)wcscat(buf,STR(STR_UPD_SEC));
-}
-
-void format_time(wchar_t *buf,long long val)
-{
-    long long days,hours,mins,secs;
-
-    secs=val/1000;
-    mins=secs/60;
-    hours=mins/60;
-    days=hours/24;
-
-    secs%=60;
-    mins%=60;
-    hours%=24;
-
-    wcscpy(buf,L"\x221E");
-    if(secs) wsprintf(buf,L"%d %s",(int)secs,STR(STR_UPD_TSEC));
-    if(mins) wsprintf(buf,L"%d %s %d %s",(int)mins,STR(STR_UPD_TMIN),(int)secs,STR(STR_UPD_TSEC));
-    if(hours)wsprintf(buf,L"%d %s %d %s",(int)hours,STR(STR_UPD_THOUR),(int)mins,STR(STR_UPD_TMIN));
-    if(days) wsprintf(buf,L"%d %s %d %s",(int)days,STR(STR_UPD_TDAY),(int)hours,STR(STR_UPD_THOUR));
 }
 //}
