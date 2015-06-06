@@ -128,6 +128,30 @@ public:
     void click(int i);
 };
 
+// Text
+struct textdata_t
+{
+    HDC hdcMem;
+    int x;
+    int y;
+    int wy;
+    int maxsz;
+    int col;
+    int i;
+    int *limits;
+    int mode;
+};
+void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
+void TextOutP(textdata_t *td,const wchar_t *format,...);
+void TextOutF(textdata_t *td,int col,const wchar_t *format,...);
+void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...);
+
+// Popup
+void popup_resize(int x,int y);
+void popup_about(HDC hdcMem);
+void format_size(wchar_t *buf,long long val,int isspeed);
+void format_time(wchar_t *buf,long long val);
+
 // Misc functions
 int mirw(int x,int ofs,int w);
 void TextOutH(HDC hdc,int x,int y,LPCTSTR buf);

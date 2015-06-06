@@ -20,23 +20,29 @@ extern long long ar_total,ar_proceed;
 extern int instflag;
 extern int itembar_act;
 extern int needreboot;
+extern wchar_t extractdir[BUFLEN];
+
 extern long long totalinstalltime,totalextracttime;
 
-// Installer
-#define INSTALLDRIVERS      1
-#define OPENFOLDER          2
-#define RESTOREPOS          4
+class Autoclicker_t;
+extern Autoclicker_t Autoclicker;
 
-int showpercent(int a);
+// Installer
+enum INSTALLER
+{
+    INSTALLDRIVERS     = 1,
+    OPENFOLDER         = 2,
+    RESTOREPOS         = 4,
+};
+
+void _7z_total(long long i);
+int  _7z_setcomplited(long long i);
 void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb);
 void removeextrainfs(wchar_t *inf);
-void _7z_total(long long i);
-int _7z_setcomplited(long long i);
 
 // Autoclicker
-#define NUM_CLICKDATA 5
 #define AUTOCLICKER_CONFIRM
-
+#define NUM_CLICKDATA 5
 struct wnddata_t
 {
     // Main wnd
@@ -48,8 +54,18 @@ struct wnddata_t
     int btn_wx,btn_wy;
 };
 
-void calcwnddata(wnddata_t *w,HWND hwnd);
-int cmpclickdata(int *a,int *b);
-BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam);
-void wndclicker(int mode);
-unsigned int __stdcall thread_clicker(void *arg);
+class Autoclicker_t
+{
+    static const wnddata_t clicktbl[NUM_CLICKDATA];
+    static volatile int clicker_flag;
+
+private:
+    void calcwnddata(wnddata_t *w,HWND hwnd);
+    int cmpclickdata(int *a,int *b);
+    static BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam);
+
+public:
+    void setflag(int v){clicker_flag=v;}
+    void wndclicker(int mode);
+    static unsigned int __stdcall thread_clicker(void *arg);
+};

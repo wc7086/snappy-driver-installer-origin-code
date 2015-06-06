@@ -259,10 +259,10 @@ rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1 2>nul
 rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2 2>nul
 rd /S /Q "%GCC_PATH%\include\libtorrent" 2>nul
 rd /S /Q "%GCC64_PATH%\include\libtorrent" 2>nul
-rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul)
-rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul)
-del "%GCC_PATH%\lib\libtorrent.a" 2>nul)
-del "%GCC64_PATH%\lib\libtorrent.a" 2>nul)
+rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
+rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul
+del "%GCC_PATH%\lib\libtorrent.a" 2>nul
+del "%GCC64_PATH%\lib\libtorrent.a" 2>nul
 :skiprebuild
 
 rem Copy libtorrent headers

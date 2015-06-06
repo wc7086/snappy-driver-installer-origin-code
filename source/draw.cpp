@@ -666,6 +666,132 @@ void Panel::draw(HDC hdc)
 }
 //}
 
+//{ Text
+void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode)
+{
+    SIZE ss;
+    GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
+    if(ss.cx>*maxsz)*maxsz=ss.cx;
+
+    if(!mode)return;
+    SetTextColor(hdcMem,color);
+    TextOutH(hdcMem,x,y,str);
+    //SetTextColor(hdcMem,0);
+}
+
+void TextOutP(textdata_t *td,const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+
+    TextOut_CM(td->hdcMem,td->x,td->y,buffer,td->col,&td->limits[td->i],td->mode);
+    td->x+=td->limits[td->i];
+    td->i++;
+    va_end(args);
+}
+
+void TextOutF(textdata_t *td,int col,const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+
+    TextOut_CM(td->hdcMem,td->x,td->y,buffer,col,&td->maxsz,1);
+    td->y+=td->wy;
+    va_end(args);
+}
+
+void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf (buffer,BUFLEN,format,args);
+    TextOut_CM(td->hdcMem,td->x,td->y,str,td->col,&td->maxsz,1);
+    TextOut_CM(td->hdcMem,td->x+POPUP_SYSINFO_OFS,td->y,buffer,td->col,&td->maxsz,1);
+    td->y+=td->wy;
+    va_end(args);
+}
+//}
+
+//{Popup
+void popup_resize(int x,int y)
+{
+    if(floating_x!=x||floating_y!=y)
+    {
+        POINT p1;
+
+        floating_x=x;
+        floating_y=y;
+        GetCursorPos(&p1);
+        SetCursorPos(p1.x+1,p1.y);
+        SetCursorPos(p1.x,p1.y);
+    }
+}
+
+void popup_about(HDC hdcMem)
+{
+    textdata_t td;
+    RECT rect;
+    int p0=D(POPUP_OFSX);
+
+    td.col=D(POPUP_TEXT_COLOR);
+    td.wy=D(POPUP_WY);
+    td.y=D(POPUP_OFSY);
+    td.hdcMem=hdcMem;
+    td.maxsz=0;
+
+    td.x=p0;
+    TextOutF(&td,td.col,L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
+    td.y+=td.wy;
+    rect.left=td.x;
+    rect.top=td.y;
+    rect.right=D(POPUP_WX)-p0*2;
+    rect.bottom=500;
+    DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
+    td.y+=td.wy*3;
+    TextOutF(&td,td.col,L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
+    TextOutF(&td,td.col,L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
+    td.y+=td.wy*(intptr_t)STR(STR_ABOUT_SIZE);
+
+    popup_resize(D(POPUP_WX),td.y+D(POPUP_OFSY));
+}
+
+void format_size(wchar_t *buf,long long val,int isspeed)
+{
+#ifdef USE_TORRENT
+    StrFormatByteSizeW(val,buf,BUFLEN);
+#else
+    buf[0]=0;
+    UNREFERENCED_PARAMETER(val)
+#endif
+    if(isspeed)wcscat(buf,STR(STR_UPD_SEC));
+}
+
+void format_time(wchar_t *buf,long long val)
+{
+    long long days,hours,mins,secs;
+
+    secs=val/1000;
+    mins=secs/60;
+    hours=mins/60;
+    days=hours/24;
+
+    secs%=60;
+    mins%=60;
+    hours%=24;
+
+    wcscpy(buf,L"\x221E");
+    if(secs) wsprintf(buf,L"%d %s",(int)secs,STR(STR_UPD_TSEC));
+    if(mins) wsprintf(buf,L"%d %s %d %s",(int)mins,STR(STR_UPD_TMIN),(int)secs,STR(STR_UPD_TSEC));
+    if(hours)wsprintf(buf,L"%d %s %d %s",(int)hours,STR(STR_UPD_THOUR),(int)mins,STR(STR_UPD_TMIN));
+    if(days) wsprintf(buf,L"%d %s %d %s",(int)days,STR(STR_UPD_TDAY),(int)hours,STR(STR_UPD_THOUR));
+}
+//}
+
 //{ Draw
 int mirw(int x,int ofs,int w)
 {
