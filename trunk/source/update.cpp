@@ -493,7 +493,7 @@ int UpdateDialog_t::populate(int update)
             oldver=getcurver(filename);
 
             if(flags&FLAG_ONLYUPDATES)
-                {if(newver>oldver&&oldver)ret++;}
+                {if(newver>oldver&&oldver)ret++;else continue;}
             else
                 if(newver>oldver)ret++;
 
