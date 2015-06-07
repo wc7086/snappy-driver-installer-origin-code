@@ -484,7 +484,7 @@ wchar_t *State::getManuf()
 {
     wchar_t *s=textas.getw(manuf);
 
-    if(StrStrIW(s,L"Vendor"))return textas.getw(cs_manuf);
+    if(StrStrIW(s,L"Vendor")||StrStrIW(s,L"Quanta"))return textas.getw(cs_manuf);
     return s;
 }
 

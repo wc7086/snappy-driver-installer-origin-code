@@ -551,8 +551,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
                 fclose(f);
                 wsprintf(buf,L"%s\\",path+wcslen(driverpack_dir)+1);
 
-                len=lstrlenW(FindFileData.cFileName);
-                if(StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0)
+                if(StrCmpIW(FindFileData.cFileName+lstrlenW(FindFileData.cFileName)-4,L".inf")==0)
                     driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
                 else
                     driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);

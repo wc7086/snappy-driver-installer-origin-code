@@ -335,13 +335,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Runtime error handlers
     start_exception_hadnlers();
-    HMODULE backtrace=nullptr;
-    backtrace=LoadLibraryA("backtrace.dll");
-    #ifdef _DEBUG
+    HMODULE backtrace=LoadLibraryA("backtrace.dll");
     if(!backtrace)signal(SIGSEGV,SignalHandler);
-    #else
-    signal(SIGSEGV,SignalHandler);
-    #endif
 
     // Load settings
     init_CLIParam();
@@ -475,10 +470,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
 
     // Stop runtime error handlers
-    #ifdef NDEBUG
-    signal(SIGSEGV,SIG_DFL);
-    #endif
-    if(backtrace)FreeLibrary(backtrace);
+    if(backtrace)
+        FreeLibrary(backtrace);
+    else
+        signal(SIGSEGV,SIG_DFL);
 
     // Stop logging
     //time_total=GetTickCount()-time_total;
@@ -680,10 +675,6 @@ unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
 
     if(statemode==STATEMODE_REAL&&invaidate_set&INVALIDATE_SYSINFO)
         state->getsysinfo_slow();
-
-    state->isnotebook_a();
-    state->genmarker();
-
     return 0;
 }
 
@@ -789,6 +780,8 @@ void Bundle::bundle_load(Bundle *pbundle)
     {
         state=pbundle->state;time_devicescan=0;}*/
 
+    state.isnotebook_a();
+    state.genmarker();
     matcher.getState()->textas.shrink();
     matcher.populate();
     time_test=GetTickCount()-time_test;
