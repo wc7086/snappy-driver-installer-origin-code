@@ -336,8 +336,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Runtime error handlers
     start_exception_hadnlers();
     HMODULE backtrace=nullptr;
-    #ifdef _DEBUG
     backtrace=LoadLibraryA("backtrace.dll");
+    #ifdef _DEBUG
     if(!backtrace)signal(SIGSEGV,SignalHandler);
     #else
     signal(SIGSEGV,SignalHandler);
@@ -704,6 +704,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
 
         // Update bundle
         log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
+        bundle[bundle_shadow].bundle_init();
         bundle[bundle_shadow].bundle_prep();
         bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
@@ -722,7 +723,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             log_con("*** FINISH primary ***\n\n");
             invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
-            if((flags&FLAG_NOGUI||hMain==nullptr)&&(flags&FLAG_AUTOINSTALL)==0)
+            if((flags&FLAG_NOGUI)&&(flags&FLAG_AUTOINSTALL)==0)
             {
                 // NOGUI mode
                 manager_g->matcher=&bundle[bundle_shadow].matcher;
@@ -730,7 +731,10 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
                 manager_g->filter(filters);
             }
             else // GUI mode
+            {
+                while(hMain==nullptr);
                 SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
+            }
 
             // Save indexes, write info, etc
             bundle[bundle_shadow].bundle_lowprioirity();
@@ -739,7 +743,6 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             // Swap display and shadow bundle
             bundle_display^=1;
             bundle_shadow^=1;
-            bundle[bundle_shadow].bundle_init();
         }
     }while(!deviceupdate_exitflag);
 
