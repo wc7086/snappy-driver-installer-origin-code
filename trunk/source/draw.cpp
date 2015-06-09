@@ -925,6 +925,7 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
     if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar<0)type=FLOATING_NONE;
     if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
 
+    if(rtl)p.x+=floating_x;
     ClientToScreen(hwnd,&p);
     needupdate=floating_itembar!=itembar||floating_type!=type;
     floating_itembar=itembar;
