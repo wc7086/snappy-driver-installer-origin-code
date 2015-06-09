@@ -38,6 +38,7 @@ public:
     std::vector<char> *getVector(){return &text;}
     char *get(int offset){return &text[offset];}
     wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
+    wchar_t *getw2(int offset){return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
 
     int strcpy(const char *mem);
     int strcpyw(const wchar_t *mem);

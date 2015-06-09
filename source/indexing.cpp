@@ -723,13 +723,14 @@ void Collection::save()
     {
         if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
         {
-            if(StrStrIW(FindFileData.cFileName,L"\\_"))continue;
+            if(FindFileData.cFileName[0]==L'_')continue;
             wsprintf(filename,L"%s\\%s",index_bin_dir,FindFileData.cFileName);
             unsigned i;
             for(i=flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
             {
-                driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf);
-                if(!wcscmp(buf,filename))break;
+                wchar_t buf1[BUFLEN];
+                driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf1);
+                if(!wcscmpi(buf1,filename))break;
             }
             if(i==driverpack_list.size())
             {

@@ -694,8 +694,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             prmem=nvwa::total_mem_alloc;*/
 
         // Update bundle
-        log_con("*** START *** %d,%d\n",bundle_display,bundle_shadow);
-        bundle[bundle_shadow].bundle_init();
+        log_con("*** START *** %d,%d [%d]\n",bundle_display,bundle_shadow,invaidate_set);
         bundle[bundle_shadow].bundle_prep();
         bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
@@ -734,6 +733,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             // Swap display and shadow bundle
             bundle_display^=1;
             bundle_shadow^=1;
+            bundle[bundle_shadow].bundle_init();
         }
     }while(!deviceupdate_exitflag);
 

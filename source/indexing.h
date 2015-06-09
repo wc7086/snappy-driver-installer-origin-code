@@ -281,8 +281,8 @@ private:
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index);
 
 public:
-    wchar_t *getPath(){return text_ind.getw(drppath);}
-    wchar_t *getFilename(){return text_ind.getw(drpfilename);}
+    wchar_t *getPath(){return text_ind.getw2(drppath);}
+    wchar_t *getFilename(){return text_ind.getw2(drpfilename);}
     int getType(){return type;}
     int getSize(){return HWID_list.size();}
     int setType(int val){return type=val;}
