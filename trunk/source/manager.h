@@ -154,7 +154,7 @@ public:
     void contextmenu(int x,int y);
     void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
 };
-int  itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb);
+int  itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb);
 
 // Manager
 class Manager

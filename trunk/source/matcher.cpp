@@ -597,6 +597,7 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
         if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C31")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9C31")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_0F35")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9CB1")&&
 //           !isvalid_usb30hub(hwidmatch,state,L"pnp0a08")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8CB1"))return 0;
 

@@ -32,7 +32,6 @@ enum INSTALLER
 {
     INSTALLDRIVERS     = 1,
     OPENFOLDER         = 2,
-    RESTOREPOS         = 4,
 };
 
 void _7z_total(long long i);

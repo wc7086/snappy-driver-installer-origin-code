@@ -1430,7 +1430,7 @@ int Driverpack::checkindex()
     sz-=3+sizeof(int);
     fclose(f);
 
-    if(memcmp(buf,"SDW",3)||version!=VER_INDEX)return 0;
+    if(memcmp(buf,"SDW",3)||version!=VER_INDEX)if(version!=0x204)return 0;
 
     return 1;
 }
@@ -1456,7 +1456,7 @@ int Driverpack::loadindex()
     fread(&version,sizeof(int),1,f);
     sz-=3+sizeof(int);
 
-    if(memcmp(buf,"SDW",3)||version!=VER_INDEX)return 0;
+    if(memcmp(buf,"SDW",3)||version!=VER_INDEX)if(version!=0x204)return 0;
     if(*drpext_dir)return 0;
 
     p=mem=new char[sz];
@@ -1687,7 +1687,8 @@ void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_po
         if(!strcmpi(text_ind.get(HWID_list[HWID_index].getHWID()),hwid))
         {
             Hwidmatch hwidmatch(this,HWID_index);
-            if(!strcmpi(sect,hwidmatch.getdrp_drvinstallPicked()))
+            if(!strcmpi(sect,hwidmatch.getdrp_drvinstallPicked())||
+               StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
             {
                 *feature=hwidmatch.getdrp_drvfeature();
                 *catalogfile=hwidmatch.calc_catalogfile();

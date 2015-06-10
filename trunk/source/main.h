@@ -98,7 +98,7 @@ namespace nvwa {extern size_t total_mem_alloc;}
 #define APPTITLE            L"Snappy Driver Installer v0.3"
 #define VER_MARKER          "SDW"
 #define VER_STATE           0x102
-#define VER_INDEX           0x204
+#define VER_INDEX           0x205
 
 // Global flags
 enum FLAG
