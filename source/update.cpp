@@ -299,6 +299,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             }
 
             hUpdate=hwnd;
+            UpdateDialog.clearList();
             UpdateDialog.populate(0);
             UpdateDialog.updateTexts();
             UpdateDialog.setCheckboxes();
@@ -352,6 +353,13 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     hUpdate=nullptr;
                     EndDialog(hwnd,IDCANCEL);
                     return TRUE;
+
+                case IDONLYUPDATE:
+                    flags&=~FLAG_ONLYUPDATES;
+                    if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
+                    UpdateDialog.clearList();
+                    UpdateDialog.populate(0);
+                    break;
 
                 case IDCHECKALL:
                 case IDUNCHECKALL:

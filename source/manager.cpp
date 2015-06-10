@@ -499,22 +499,22 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     popup_resize((td.maxsz+10+p0*2)*2,td.y+D(POPUP_OFSY));
 }
 
-int itembar_cmp(itembar_t *a,itembar_t *b,wchar_t *ta,wchar_t *tb)
+int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
 {
     if(a->hwidmatch&&b->hwidmatch)
     {
         if(a->hwidmatch->getHWID_index()==b->hwidmatch->getHWID_index())return 3;
         return 0;
     }
-    if(wcslen(ta+a->devicematch->device->getDriver())>0)
+    if(wcslen(ta->getw(a->devicematch->device->getDriver()))>0)
     {
-        if(!wcscmp(ta+a->devicematch->device->getDriver(),tb+b->devicematch->device->getDriver()))return wcslen(ta+a->devicematch->device->getDriver())+10;
+        if(!wcscmp(ta->getw(a->devicematch->device->getDriver()),tb->getw(b->devicematch->device->getDriver())))return wcslen(ta->getw(a->devicematch->device->getDriver()))+10;
     }
     else
     {
-        if(wcslen(ta+a->devicematch->device->getDescr())>0)
+        if(wcslen(ta->getw(a->devicematch->device->getDescr()))>0)
         {
-            if(!wcscmp(ta+a->devicematch->device->getDescr(),tb+b->devicematch->device->getDescr()))return 100+wcslen(ta+a->devicematch->device->getDescr());
+            if(!wcscmp(ta->getw(a->devicematch->device->getDescr()),tb->getw(b->devicematch->device->getDescr())))return 100+wcslen(ta->getw(a->devicematch->device->getDescr()));
         }
     }
 
@@ -552,7 +552,7 @@ int  Manager::manager_drplive(wchar_t *s)
 
 void Manager::populate()
 {
-    int remap[1024];
+    int remap[1024*8];
     matcher->sorta(remap);
     items_list.resize(RES_SLOTS);
 
@@ -1692,7 +1692,7 @@ void Manager::restorepos1(Manager *manager_prev)
 void Manager::restorepos(Manager *manager_old)
 {
     itembar_t *itembar_new,*itembar_old;
-    wchar_t *t_new,*t_old;
+    Txt *t_new,*t_old;
     unsigned i,j;
     int show_changes=manager_old->items_list.size()>20;
 
@@ -1700,22 +1700,17 @@ void Manager::restorepos(Manager *manager_old)
     if((log_verbose&LOG_VERBOSE_DEVSYNC)==0)show_changes=0;
     //show_changes=1;
 
-    t_old=manager_old->matcher->getState()->textas.getw(0);
-    t_new=matcher->getState()->textas.getw(0);
+    t_old=&manager_old->matcher->getState()->textas;
+    t_new=&matcher->getState()->textas;
 
     if(manager_old->items_list[SLOT_EMPTY].curpos==1)
     {
         return;
     }
     if(invaidate_set&INVALIDATE_MANAGER)return;
-    if((instflag&RESTOREPOS)==0)
-    {
-        instflag^=RESTOREPOS;
-        return;
-    }
 
-    log_con("{Updated %d->%d\n",manager_old->items_list.size(),items_list.size());
-    log_console=0;
+    log_con("{Updated %d->%d %d\n",manager_old->items_list.size(),items_list.size(),t_new);
+    log_console=1;
     itembar_new=&items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<items_list.size();i++,itembar_new++)
     {
@@ -1755,8 +1750,8 @@ void Manager::restorepos(Manager *manager_old)
         if(show_changes)
         if(j==manager_old->items_list.size())
         {
-            log_con("\nAdded   $%04d|%S|%S|",i,t_new+itembar_new->devicematch->device->Driver,
-                    t_new+itembar_new->devicematch->device->Devicedesc);
+            log_con("\nAdded   $%04d|%S|%S|",i,t_new->getw(itembar_new->devicematch->device->Driver),
+                    t_new->getw(itembar_new->devicematch->device->Devicedesc));
 
             if(itembar_new->hwidmatch)
             {

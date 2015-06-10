@@ -727,13 +727,18 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             }
 
             // Save indexes, write info, etc
+            log_con("{2Sync\n");
+            EnterCriticalSection(&sync);
+
             bundle[bundle_shadow].bundle_lowprioirity();
             log_con("*** FINISH secondary ***\n\n");
 
             // Swap display and shadow bundle
             bundle_display^=1;
             bundle_shadow^=1;
+            log_con("}2Sync\n");
             bundle[bundle_shadow].bundle_init();
+            LeaveCriticalSection(&sync);
         }
     }while(!deviceupdate_exitflag);
 
@@ -1474,7 +1479,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 redrawmainwnd();
             }
             if(wParam==VK_F5&&ctrl_down)
-                invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);else
+                invalidate(INVALIDATE_DEVICES);else
             if(wParam==VK_F5)
                 invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             if(wParam==VK_F6&&ctrl_down)
@@ -1521,11 +1526,6 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_DEVICECHANGE:
             if(installmode==MODE_INSTALLING)break;
             log_con("WM_DEVICECHANGE(%x,%x)\n",wParam,lParam);
-            if(lParam<2)
-                instflag|=RESTOREPOS;
-            else
-                instflag&=~RESTOREPOS;
-
             invalidate(INVALIDATE_DEVICES);
             break;
 
