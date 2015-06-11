@@ -526,6 +526,19 @@ void gui(int nCmd)
         return;
     }
 
+    // Main windows
+    hMain=CreateWindowEx(WS_EX_LAYERED,
+                        classMain,
+                        APPTITLE,
+                        WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN,
+                        CW_USEDEFAULT,CW_USEDEFAULT,D(MAINWND_WX),D(MAINWND_WY),
+                        nullptr,nullptr,ghInst,nullptr);
+    if(!hMain)
+    {
+        log_err("ERROR in gui(): failed to create '%S' window\n",classMain);
+        return;
+    }
+
     // license dialog
     if(!license)
         DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)LicenseProcedure);
@@ -542,26 +555,14 @@ void gui(int nCmd)
         {
             flags|=FLAG_CHECKUPDATES;
             #ifdef USE_TORRENT
-            Updater.createThreads();
             Updater.checkUpdates();
             #endif
+            invalidate(INVALIDATE_MANAGER);
         }
     }
 
     if(license)
     {
-        hMain=CreateWindowEx(WS_EX_LAYERED,
-                            classMain,
-                            APPTITLE,
-                            WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN,
-                            CW_USEDEFAULT,CW_USEDEFAULT,D(MAINWND_WX),D(MAINWND_WY),
-                            nullptr,nullptr,ghInst,nullptr);
-        if(!hMain)
-        {
-            log_err("ERROR in gui(): failed to create '%S' window\n",classMain);
-            return;
-        }
-
         //time_test=GetTickCount()-time_total;log_times();
         ShowWindow(hMain,flags&FLAG_NOGUI?SW_HIDE:nCmd);
 
@@ -722,8 +723,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             }
             else // GUI mode
             {
-                while(hMain==nullptr);
-                SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
+                if(hMain)SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
             }
 
             // Save indexes, write info, etc
