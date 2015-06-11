@@ -36,7 +36,7 @@ void * my_Realloc(void *p, size_t newSize, size_t oldSize)
   return newBuf;
 }
 */
-
+/*
 void *
 #ifdef _MSC_VER
 __cdecl
@@ -59,7 +59,7 @@ operator delete(void *p) throw()
   // if (p == 0) return; ::HeapFree(::GetProcessHeap(), 0, p);
   ::free(p);
 }
-
+*/
 /*
 void *
 #ifdef _MSC_VER
