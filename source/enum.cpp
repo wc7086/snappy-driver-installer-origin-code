@@ -321,7 +321,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         cat=infdata->cat;
         catalogfile=infdata->catalogfile;
         start_index=infdata->start_index;
-        //log_file("Match_inf  '%S',%d\n",filename,cat,catalogfile);
+        //log_file("Match_inf  '%S',%d,%d\n",filename,cat,catalogfile);
     }
     else
     {
