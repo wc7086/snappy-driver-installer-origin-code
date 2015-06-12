@@ -186,7 +186,7 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
         }
     }
 
-    //init=1;
+    init=1;
 
     pSvc->Release();
     pLoc->Release();

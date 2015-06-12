@@ -1,13 +1,14 @@
 @echo off
 rd /q /s logs
+rd /q /s logs_matcher
 
-..\SDI_R169.exe -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_169 -output_dir:indexes_169\txt -nosnapshot -nostamp -nogui
-rename logs\log.txt log_169.txt
+bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_199 -output_dir:indexes_199\txt -nosnapshot -nostamp -nogui
+bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_199 -output_dir:indexes_199\txt -nosnapshot -nostamp -nogui
+rename logs\log.txt log_199.txt
 
-..\SDI_R233.exe -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_233 -output_dir:indexes_233\txt -nosnapshot -nostamp -nogui
-rename logs\log.txt log_233.txt
-
-..\SDI_R.exe    -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_R   -output_dir:indexes_R\txt   -nosnapshot -nostamp -nogui
+..\SDI_R.exe -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_R -output_dir:indexes_R\txt -nosnapshot -nostamp -nogui
+..\SDI_R.exe -license -preservecfg -drp_dir:..\drivers -index_dir:indexes_R -output_dir:indexes_R\txt -nosnapshot -nostamp -nogui
 rename logs\log.txt log_R.txt
 
-explorer logs
+rename logs logs_matcher
+explorer logs_matcher

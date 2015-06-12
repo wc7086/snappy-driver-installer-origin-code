@@ -730,7 +730,7 @@ void Collection::save()
             {
                 wchar_t buf1[BUFLEN];
                 driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf1);
-                if(!wcscmpi(buf1,filename))break;
+                if(!StrCmpIW(buf1,filename))break;
             }
             if(i==driverpack_list.size())
             {
@@ -1683,17 +1683,23 @@ void Driverpack::print_index_hr()
 void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature)
 {
     *inf_pos=-1;
+    //log_file("Search[%s,%s,%d]\n",sect,hwid,start_index);
     for(unsigned HWID_index=start_index;HWID_index<HWID_list.size();HWID_index++)
     {
         if(!strcmpi(text_ind.get(HWID_list[HWID_index].getHWID()),hwid))
         {
             Hwidmatch hwidmatch(this,HWID_index);
-            if(!strcmpi(sect,hwidmatch.getdrp_drvinstallPicked())||
-               StrStrIA(sect,hwidmatch.getdrp_drvinstall()))
+            if(!strcmpi(hwidmatch.getdrp_drvinstallPicked(),sect)||
+               StrStrIA(hwidmatch.getdrp_drvinstall(),sect))
             {
-                *feature=hwidmatch.getdrp_drvfeature();
-                *catalogfile=hwidmatch.calc_catalogfile();
-                if(*inf_pos<0||*inf_pos>hwidmatch.getdrp_drvinfpos())*inf_pos=hwidmatch.getdrp_drvinfpos();
+                if(*inf_pos<0)
+                {
+                    *feature=hwidmatch.getdrp_drvfeature();
+                    *catalogfile=hwidmatch.calc_catalogfile();
+                    *inf_pos=hwidmatch.getdrp_drvinfpos();
+                }
+                //log_file("Sect %s, %d, %d, %d (%d),%s\n",sect,*catalogfile,*feature,*inf_pos,HWID_index,hwidmatch.getdrp_drvinstallPicked());
+                break;
             }
         }
     }
