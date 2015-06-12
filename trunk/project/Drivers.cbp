@@ -172,7 +172,6 @@
 			<Add option="-DWINVER=0x0500" />
 			<Add directory="../resources" />
 			<Add directory="../external/SevenZ/build/C" />
-			<Add directory="../external/nvwa" />
 			<Add directory="C:/Boost/include" />
 		</Compiler>
 		<Linker>

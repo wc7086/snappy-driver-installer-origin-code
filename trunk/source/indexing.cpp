@@ -1536,6 +1536,7 @@ void Driverpack::saveindex()
 
     delete[] mem;
     fclose(f);
+    type=DRIVERPACK_TYPE_INDEXED;
 }
 
 void Driverpack::genhashes()
