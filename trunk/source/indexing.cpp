@@ -551,10 +551,13 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
                 fclose(f);
                 wsprintf(buf,L"%s\\",path+wcslen(driverpack_dir)+1);
 
-                if(StrCmpIW(FindFileData.cFileName+lstrlenW(FindFileData.cFileName)-4,L".inf")==0)
-                    driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
-                else
-                    driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
+                if(len)
+                {
+                    if(StrCmpIW(FindFileData.cFileName+lstrlenW(FindFileData.cFileName)-4,L".inf")==0)
+                        driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
+                    else
+                        driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
+                }
 
                 delete []buft;
             }
@@ -877,11 +880,14 @@ int Driverpack::genindex()
                 wsprintf(infpath,L"%ws\\",fullname);
 
                 cc++;
-                if(StrStrIW(infname,L".inf"))
-                    driverpack_indexinf_async(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
-                else
-                    parsecat(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
-                    //driverpack_parsecat_async(this,infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
+                if(outSizeProcessed)
+                {
+                    if(StrStrIW(infname,L".inf"))
+                        driverpack_indexinf_async(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
+                    else
+                        parsecat(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
+                        //driverpack_parsecat_async(this,infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
+                }
             }
         }
 

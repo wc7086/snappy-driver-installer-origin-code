@@ -34,7 +34,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "SRRestorePtAPI.h" // for RestorePoint
 
 typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
-#ifndef _WIN64
+#ifndef DISPLAY_DEVICE_ACTIVE
 #define DISPLAY_DEVICE_ACTIVE         1
 #define DISPLAY_DEVICE_ATTACHED       2
 #endif
@@ -52,6 +52,16 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <queue>
 #include <vector>
 #include <memory>
+
+// BOOST
+#define BOOST_ALL_NO_LIB
+#define BOOST_ASIO_ENABLE_CANCELIO
+#define BOOST_ASIO_HASH_MAP_BUCKETS 1021
+#define BOOST_ASIO_SEPARATE_COMPILATION
+#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+#define BOOST_SYSTEM_NO_DEPRECATED
+#define BOOST_SYSTEM_STATIC_LINK 1
+#define BOOST_NO_AUTO_PTR
 
 // webp
 #include <webp\decode.h>

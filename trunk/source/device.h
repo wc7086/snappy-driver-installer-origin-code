@@ -22,6 +22,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <cfgmgr32.h>
 #include <newdev.h>
 #else
-#include <ddk\cfgmgr32.h>
-#include <ddk\newdev.h>
+
+#ifdef __MINGW64_VERSION_MAJOR
+#include <cfgmgr32.h>
+#include <newdev.h>
+#else
+#include <ddk/cfgmgr32.h>
+#include <ddk/newdev.h>
+#endif
+
 #endif
