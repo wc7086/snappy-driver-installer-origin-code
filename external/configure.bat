@@ -2,20 +2,29 @@
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a")
 
 rem Detect GCC (32-bit)
+set GCC_VERSION=4.8.1
+set GCC_VERSION2=48
 set GCC_PATH=c:\MinGW
 if /I exist c:\MinGW_481 (set GCC_PATH=c:\MinGW_481& goto foundgcc)
 if /I exist c:\MinGW (set GCC_PATH=c:\MinGW& goto foundgcc)
 :foundgcc
+rem set GCC_PATH=c:\mingw_510\mingw32
+rem set GCC_VERSION=5.1.0
+rem set GCC_VERSION2=51
 
 rem Detect GCC (64-bit)
+set GCC64_VERSION=4.9.2
+set GCC64_VERSION2=49
 set GCC64_PATH=TDM-GCC-64
 if /I exist c:\TDM-GCC-64_492 (set GCC64_PATH=c:\TDM-GCC-64_492& goto foundgcc64)
 if /I exist c:\TDM-GCC-64 (set GCC64_PATH=c:\TDM-GCC-64& goto foundgcc64)
 :foundgcc64
+rem set GCC64_PATH=c:\mingw_510_64\mingw64
+rem set GCC64_VERSION=5.1.0
+rem set GCC64_VERSION2=51
 
 rem configure paths
 set BOOST_ROOT=%CD%\boost_1_58_0
-set GCC_VERSION=4.8.1
 set BOOST_INSTALL_PATH=C:\BOOST
 set BOOST64_INSTALL_PATH=C:\BOOST64
 set MSYS=%GCC_PATH%\msys\1.0\bin
@@ -252,11 +261,13 @@ set path=%oldpath%
 popd
 :skipinstallboost64
 
+rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION% 2>nul
+rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_PATH% 2>nul
 rem Rebuild libtorrent
 goto skiprebuild
 :installtorrent
-rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1 2>nul
-rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2 2>nul
+rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION% 2>nul
+rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_PATH% 2>nul
 rd /S /Q "%GCC_PATH%\include\libtorrent" 2>nul
 rd /S /Q "%GCC64_PATH%\include\libtorrent" 2>nul
 rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
@@ -281,7 +292,7 @@ bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelea
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%\lib /Y
 copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%\lib\libtorrent_dbg.a /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.8.1\myrls\libboost_system-mgw48-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system_tr.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system_tr.a /Y
 popd
 :skipbuildlibtorrent
 
@@ -294,9 +305,9 @@ set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-copy ..\bin\gcc-mngw-4.9.2\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib /Y
-copy ..\bin\gcc-mngw-4.9.2\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib\libtorrent_dbg.a /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-4.9.2\myrls\libboost_system-mgw49-mt-s-1_58.a %BOOST64_INSTALL_PATH%\lib\libboost_system_tr.a /Y
+copy ..\bin\gcc-mngw-%GCC64_VERSION%\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib /Y
+copy ..\bin\gcc-mngw-%GCC64_VERSION%\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib\libtorrent_dbg.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_VERSION%\myrls\libboost_system-mgw%GCC64_VERSION2%-mt-s-1_58.a %BOOST64_INSTALL_PATH%\lib\libboost_system_tr.a /Y
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64

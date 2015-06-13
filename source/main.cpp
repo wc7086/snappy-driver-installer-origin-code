@@ -441,7 +441,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     gui(nCmd);
 
     // Wait till the device scan thread is finished
-    deviceupdate_exitflag=1;
+    if(hMain)deviceupdate_exitflag=1;
     SetEvent(deviceupdate_event);
     WaitForSingleObject(thr,INFINITE);
     CloseHandle_log(thr,L"WinMain",L"thr");
@@ -684,7 +684,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
     Bundle *bundle=(Bundle *)arg;
 
     InitializeCriticalSection(&sync);
-    do
+    while(1)
     {
         // Wait for an update request
         WaitForSingleObject(deviceupdate_event,INFINITE);
@@ -720,6 +720,8 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
                 manager_g->matcher=&bundle[bundle_shadow].matcher;
                 manager_g->populate();
                 manager_g->filter(filters);
+                bundle[bundle_shadow].bundle_lowprioirity();
+                break;
             }
             else // GUI mode
             {
@@ -740,7 +742,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             bundle[bundle_shadow].bundle_init();
             LeaveCriticalSection(&sync);
         }
-    }while(!deviceupdate_exitflag);
+    }
 
     DeleteCriticalSection(&sync);
     return 0;
