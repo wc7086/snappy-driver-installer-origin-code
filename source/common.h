@@ -82,6 +82,7 @@ char *vector_load(std::vector<T> *v,char *p)
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma GCC diagnostic ignored "-Weffc++"
+#define BOOST_SYSTEM_NO_DEPRECATED
 #include <boost/thread/condition_variable.hpp>
 #pragma GCC diagnostic pop
 

@@ -8,9 +8,6 @@ set GCC_PATH=c:\MinGW
 if /I exist c:\MinGW_481 (set GCC_PATH=c:\MinGW_481& goto foundgcc)
 if /I exist c:\MinGW (set GCC_PATH=c:\MinGW& goto foundgcc)
 :foundgcc
-rem set GCC_PATH=c:\mingw_510\mingw32
-rem set GCC_VERSION=5.1.0
-rem set GCC_VERSION2=51
 
 rem Detect GCC (64-bit)
 set GCC64_VERSION=4.9.2
@@ -19,26 +16,45 @@ set GCC64_PATH=TDM-GCC-64
 if /I exist c:\TDM-GCC-64_492 (set GCC64_PATH=c:\TDM-GCC-64_492& goto foundgcc64)
 if /I exist c:\TDM-GCC-64 (set GCC64_PATH=c:\TDM-GCC-64& goto foundgcc64)
 :foundgcc64
-rem set GCC64_PATH=c:\mingw_510_64\mingw64
-rem set GCC64_VERSION=5.1.0
-rem set GCC64_VERSION2=51
 
 rem configure paths
 set BOOST_ROOT=%CD%\boost_1_58_0
-set BOOST_INSTALL_PATH=C:\BOOST
-set BOOST64_INSTALL_PATH=C:\BOOST64
-set MSYS=%GCC_PATH%\msys\1.0\bin
+set MSYS_PATH=%GCC_PATH%\msys\1.0
+set MSYS_BIN=%MSYS_PATH%\bin
 set BOOST_BUILD_PATH=%BOOST_ROOT%
 set LIBTORRENT_PATH=%CD%\libtorrent-rasterbar-1.0.5
 set WEBP_PATH=%CD%\webp
 
-set path=%GCC_PATH%\bin;%BOOST_ROOT%;%MSYS%;%path%
+rem GCC 5.1.0
+goto skip510
+set GCC_PATH=c:\mingw_510\mingw32
+set GCC_VERSION=5.1.0
+set GCC_VERSION2=51
+set GCC_PREFIX1=/i686-w64-mingw32
+set GCC_PREFIX=\i686-w64-mingw32
+set GCC64_PATH=c:\mingw_510\mingw64
+set GCC64_VERSION=5.1.0
+set GCC64_VERSION2=51
+set GCC64_PREFIX1=/x86_64-w64-mingw32
+set GCC64_PREFIX=\x86_64-w64-mingw32
+set MSYS_PATH=C:\msys32
+set MSYS_BIN=%MSYS_PATH%\usr\bin
+set ADR64=\adrs-mdl-64
+:skip510
+
+set BOOST_INSTALL_PATH=C:\BOOST32_%GCC_VERSION2%
+set BOOST64_INSTALL_PATH=C:\BOOST64_%GCC64_VERSION2%
+
+set path=%GCC_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 
 rem Check for MinGW
 if /I not exist "%GCC_PATH%\bin" (color 0C&echo ERROR: MinGW not found in %GCC_PATH% & goto fatalError)
 
 rem Check for MinGW64
 if /I not exist "%GCC64_PATH%\bin" (color 0C&echo ERROR: MinGW_64 not found in %GCC64_PATH% & goto fatalError)
+
+rem Check for MSYS
+if /I not exist "%MSYS_PATH%" (color 0C&echo ERROR: MSYS not found in %MSYS_PATH% & goto fatalError)
 
 :mainmenu
 cls
@@ -71,41 +87,55 @@ echo.
 echo|set /p=Deleteing...
 
 rem del libtorrent
-rd /S /Q "%GCC_PATH%\include\libtorrent" 2>nul
+rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" 2>nul
 echo|set /p=.
-rd /S /Q "%GCC64_PATH%\include\libtorrent" 2>nul
+rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\libtorrent" 2>nul
 echo|set /p=.
-del "%GCC_PATH%\lib\libtorrent.a" 2>nul
+del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" 2>nul
 echo|set /p=.
-del "%GCC64_PATH%\lib\libtorrent.a" 2>nul
+del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a" 2>nul
 echo|set /p=.
-rd /S /Q "%LIBTORRENT_PATH%" 2>nul
+del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" 2>nul
 echo|set /p=.
-rem del "libtorrent-rasterbar-1.0.5.tar.gz" 2>nul
-rem echo|set /p=.
+del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a" 2>nul
+echo|set /p=.
+del "%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a" 2>nul
+echo|set /p=.
+del "%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a" 2>nul
+echo|set /p=.
+rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
+echo|set /p=.
+rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul
+echo|set /p=.
 
 rem del webp
-rd /S /Q "%GCC_PATH%\include\webp" 2>nul
+rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\webp" 2>nul
 echo|set /p=.
-rd /S /Q "%GCC64_PATH%\include\webp" 2>nul
+rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\webp" 2>nul
 echo|set /p=.
-del "%GCC_PATH%\lib\libwebp.*" 2>nul
+del "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.*" 2>nul
 echo|set /p=.
-del "%GCC64_PATH%\lib\libwebp.*" 2>nul
+del "%GCC64_PATH%%GCC64_PREFIX%\lib\libwebp.*" 2>nul
 echo|set /p=.
-rd /S /Q "%GCC_PATH%\msys\1.0\home\libwebp-0.4.3" 2>nul
+rd /S /Q "%MSYS_PATH%\home\libwebp-0.4.3" 2>nul
 echo|set /p=.
-rem del "%WEBP_PATH%\mingw\msys\1.0\home\libwebp-0.4.3.tar.gz" 2>nul
-rem echo|set /p=.
+del "%MSYS_PATH%\makewebp.bat" 2>nul
+echo|set /p=.
+del "%MSYS_PATH%\home\makewebp.bat" 2>nul
+echo|set /p=.
+del "%MSYS_PATH%\home\libwebp-0.4.3.tar.gz" 2>nul
+echo|set /p=.
 
 rem del BOOST
-rd /S /Q "%BOOST_ROOT%\bin.v2"  2>nul
+rd /S /Q "%BOOST_ROOT%\bin.v2" 2>nul
+echo|set /p=.
+rd /S /Q "%BOOST_ROOT%\libs\config\checks\architecture\bin" 2>nul
+echo|set /p=.
+rd /S /Q "%BOOST_ROOT%\tools\build\src\engine\bin.ntx86" 2>nul
 echo|set /p=.
 del "%BOOST_ROOT%\bjam.exe" 2>nul
 echo|set /p=.
-del "%BOOST_INSTALL_PATH%\lib\libboost_system-mt.a" 2>nul
-echo|set /p=.
-del "%BOOST64_INSTALL_PATH%\lib\libboost_system-mt.a" 2>nul
+del "%BOOST_ROOT%\b2.exe" 2>nul
 echo|set /p=.
 
 call :ColorText 0A "DONE"
@@ -118,15 +148,24 @@ goto :eof
 echo.
 echo GCC (32 bit):  %GCC_PATH%
 echo GCC (64 bit):  %GCC64_PATH%
+echo MSYS:          %MSYS_PATH%
 echo WebP:          %WEBP_PATH%
 echo libtorrent:    %LIBTORRENT_PATH%
 echo BOOST_scr:     %BOOST_ROOT%
-echo BOOST_dest:    %BOOST_INSTALL_PATH%
-echo BOOST64_dest:  %BOOST64_INSTALL_PATH%
+rem echo BOOST_dest:    %BOOST_INSTALL_PATH%
+rem echo BOOST64_dest:  %BOOST64_INSTALL_PATH%
 echo.
 
 echo|set /p=Checking wget...................
-if /I exist "%MSYS%\wget.exe" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%MSYS_BIN%\wget.exe" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+echo.
+
+echo|set /p=Checking tar....................
+if /I exist "%MSYS_BIN%\tar.exe" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+echo.
+
+echo|set /p=Checking make...................
+if /I exist "%MSYS_BIN%\make.exe" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking libwebp-0.4.3.tar.gz...
@@ -141,6 +180,7 @@ echo|set /p=Checking libtorrent.tar.gz......
 if /I exist "%LIBTORRENT_PATH%\..\libtorrent-rasterbar-1.0.5.tar.gz" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
+if /I "%GCC_VERSION2%"=="51" goto skipheaders
 echo|set /p=Checking wspiapi.h..............
 if /I exist "%GCC_PATH%\include\wspiapi.h" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
@@ -148,17 +188,18 @@ echo.
 echo|set /p=Checking shobjidl.h.............
 if /I exist "%GCC_PATH%\include\shobjidl.h" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
+:skipheaders
 
 echo|set /p=Checking BOOST(source)..........
 if /I exist "%BOOST_ROOT%\boost.png" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking BOOST(binaries32)......
-if /I exist "%BOOST_INSTALL_PATH%\lib\libboost_system-mt.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking BOOST(binaries64)......
-if /I exist "%BOOST64_INSTALL_PATH%\lib\libboost_system-mt.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking BJAM...................
@@ -166,7 +207,7 @@ if /I exist "%BOOST_ROOT%\bjam.exe" (call :ColorText 0A "OK") else (call :ColorT
 echo.
 
 echo|set /p=Checking WebP...................
-if /I exist "%GCC_PATH%\lib\libwebp.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking libtorrent(source).....
@@ -174,11 +215,11 @@ if /I exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (call :ColorText 0A "OK
 echo.
 
 echo|set /p=Checking libtorrent(binaries32).
-if /I exist "%GCC_PATH%\lib\libtorrent.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo|set /p=Checking libtorrent(binaries64).
-if /I exist "%GCC64_PATH%\lib\libtorrent.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
+if /I exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" (call :ColorText 0A "OK") else (call :ColorText 0C "FAIL")
 echo.
 
 echo.
@@ -190,48 +231,64 @@ Color 7
 cls
 echo.
 rem download wget
-if /I exist "%MSYS%\wget.exe" (echo Skipping downloading wget & goto skipwget)
+if /I exist "%MSYS_BIN%\wget.exe" (echo Skipping downloading wget & goto skipwget)
 call :ColorText 9F "Downloading wget"&echo.
 mingw-get install msys-wget
+%MSYS_BIN%\pacman.exe -S wget --noconfirm
 :skipwget
+
+rem download tar
+if /I exist "%MSYS_BIN%\tar.exe" (echo Skipping downloading tar & goto skiptar)
+call :ColorText 9F "Downloading tar"&echo.
+%MSYS_BIN%\pacman.exe -S tar --noconfirm
+:skiptar
+
+rem download make
+if /I exist "%MSYS_BIN%\make.exe" (echo Skipping downloading make & goto skipmake)
+call :ColorText 9F "Downloading make"&echo.
+%MSYS_BIN%\pacman.exe -S make --noconfirm
+:skipmake
 
 rem download WebP
 if /I exist "%LIBTORRENT_PATH%\..\webp\mingw\msys\1.0\home\libwebp-0.4.3.tar.gz" (echo Skipping downloading WebP & goto skipdownloadwebp)
 call :ColorText 9F "Downloading WebP"&echo.
-%MSYS%\wget http://downloads.webmproject.org/releases/webp/libwebp-0.4.3.tar.gz -Owebp\mingw\msys\1.0\home\libwebp-0.4.3.tar.gz
+%MSYS_BIN%\wget http://downloads.webmproject.org/releases/webp/libwebp-0.4.3.tar.gz -Owebp\mingw\msys\1.0\home\libwebp-0.4.3.tar.gz
 :skipdownloadwebp
 
 rem download BOOST
 if /I exist "boost_1_58_0.tar.gz" (echo Skipping downloading BOOST & goto skipdownloadboost)
 call :ColorText 9F "Downloading BOOST"&echo.
-%MSYS%\wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz/download
+%MSYS_BIN%\wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz/download
 :skipdownloadboost
-if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS%\tar -xf "boost_1_58_0.tar.gz" -v)
+if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS_BIN%\tar -xf "boost_1_58_0.tar.gz" -v)
 
 rem download libtorrent
 if /I exist "libtorrent-rasterbar-1.0.5.tar.gz" (echo Skipping downloading libtorrent & goto skipdownloadlibtorrent)
 call :ColorText 9F "Downloading libtorrent"&echo.
-%MSYS%\wget http://sourceforge.net/projects/libtorrent/files/libtorrent/libtorrent-rasterbar-1.0.5.tar.gz/download
+%MSYS_BIN%\wget http://sourceforge.net/projects/libtorrent/files/libtorrent/libtorrent-rasterbar-1.0.5.tar.gz/download
 :skipdownloadlibtorrent
-if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS%\tar -xf "libtorrent-rasterbar-1.0.5.tar.gz" -v)
+if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS_BIN%\tar -xf "libtorrent-rasterbar-1.0.5.tar.gz" -v)
 
 rem Install webp
-if /I exist "%GCC_PATH%\lib\libwebp.a" (echo Skipping installing WebP & goto skipprepwebp)
+if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a" (echo Skipping installing WebP & goto skipprepwebp)
 :installwebp
 call :ColorText 9F "Installing WebP"&echo.
-xcopy webp\mingw %GCC_PATH% /E /I /Y
-echo %GCC_PATH% /mingw > %GCC_PATH%\msys\1.0\etc\fstab
-pushd %GCC_PATH%\msys\1.0
-call %GCC_PATH%\msys\1.0\makewebp.bat
+xcopy webp\mingw\msys\1.0 %MSYS_PATH% /E /I /Y
+echo %GCC_PATH% /mingw32> %MSYS_PATH%\etc\fstab
+echo %GCC64_PATH% /mingw64>> %MSYS_PATH%\etc\fstab
+pushd %MSYS_PATH%
+call makewebp.bat %MSYS_BIN% /mingw32%GCC_PREFIX1% /mingw64%GCC64_PREFIX1%
 popd
+if /I "%GCC_VERSION2%"=="51" goto skipprepwebp
 xcopy "%GCC_PATH%\include\webp" "%GCC64_PATH%\include\webp"  /E /I /Y
-rem if /I exist "%GCC_PATH%\lib\libwebp.a" (color 0A) else (color 0C)
 if /I "%menu%"=="W" (echo.&pause&goto mainmenu)
 :skipprepwebp
 
 rem Add missing headers to GCC
+if /I "%GCC_VERSION2%"=="51" goto skipcopyheaders
 if /I not exist "%GCC_PATH%\include\wspiapi.h" (copy "gcc_patch\wspiapi.h" "%GCC_PATH%\include\wspiapi.h" /Y)
 if /I not exist "%GCC_PATH%\include\shobjidl.h" (copy "gcc_patch\shobjidl.h" "%GCC_PATH%\include\shobjidl.h" /Y)
+:skipcopyheaders
 
 rem Build bjam.exe
 if /I exist "%BOOST_ROOT%\bjam.exe" (echo Skipping building bjam.exe & goto skipbuildbjam)
@@ -246,7 +303,7 @@ if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (echo Skipping inst
 copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 pushd %BOOST_ROOT%
 call :ColorText 9F "Installing BOOST32"&echo.
-bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH%
+rem bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH%
 popd
 :skipinstallboost32
 
@@ -254,60 +311,66 @@ rem Install BOOST (64-bit)
 if /I exist "%BOOST64_INSTALL_PATH%\include\boost\version.hpp" (echo Skipping installing BOOST64 & goto skipinstallboost64)
 pushd %BOOST_ROOT%
 set oldpath=%path%
-set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%path%
+set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 call :ColorText 9F "Installing BOOST64"&echo.
-bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64
+rem bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64
 set path=%oldpath%
 popd
 :skipinstallboost64
 
-rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION% 2>nul
-rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_PATH% 2>nul
 rem Rebuild libtorrent
 goto skiprebuild
 :installtorrent
 rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION% 2>nul
-rd /S /Q  %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_PATH% 2>nul
-rd /S /Q "%GCC_PATH%\include\libtorrent" 2>nul
-rd /S /Q "%GCC64_PATH%\include\libtorrent" 2>nul
+rd /S /Q %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_PATH% 2>nul
+rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" 2>nul
+rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\libtorrent" 2>nul
 rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
 rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul
-del "%GCC_PATH%\lib\libtorrent.a" 2>nul
-del "%GCC64_PATH%\lib\libtorrent.a" 2>nul
+del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" 2>nul
+del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" 2>nul
 :skiprebuild
 
 rem Copy libtorrent headers
-if /I exist "%GCC_PATH%\include\libtorrent" (echo Skipping copying headers for libtorrent & goto skipcopylibtorrentinc)
+if /I exist "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" (echo Skipping copying headers for libtorrent & goto skipcopylibtorrentinc)
 call :ColorText 9F "Copying libtorrent headers"&echo.
-xcopy %LIBTORRENT_PATH%\include %GCC_PATH%\include /E /I /Y > nul
-xcopy %LIBTORRENT_PATH%\include %GCC64_PATH%\include /E /I /Y >nul
+xcopy %LIBTORRENT_PATH%\include %GCC_PATH%%GCC_PREFIX%\include /E /I /Y > nul
+xcopy %LIBTORRENT_PATH%\include %GCC64_PATH%%GCC64_PREFIX%\include /E /I /Y >nul
 :skipcopylibtorrentinc
 
 rem Build libtorrent.a (32-bit)
-if /I exist "%GCC_PATH%\lib\libtorrent.a" (echo Skipping building libtorrent[32-bit] & goto skipbuildlibtorrent)
+if /I not exist "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" goto buildtorrent32
+if /I not exist "%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a" goto buildtorrent32
+echo Skipping building libtorrent[32-bit]
+goto skipbuildlibtorrent
+:buildtorrent32
 call :ColorText 9F "Building libtorrent32"&echo.
 copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 pushd "%LIBTORRENT_PATH%\examples"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%\lib /Y
-copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%\lib\libtorrent_dbg.a /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_58.a %BOOST_INSTALL_PATH%\lib\libboost_system_tr.a /Y
+rem bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib /Y
+copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_58.a %GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a /Y
 popd
 :skipbuildlibtorrent
 
 rem Build libtorrent.a (64-bit)
-if /I exist "%GCC64_PATH%\lib\libtorrent.a" (echo Skipping building libtorrent[64-bit] & goto skipbuildlibtorrent64)
+if /I not exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" goto buildtorrent64
+if /I not exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a" goto buildtorrent64
+echo Skipping building libtorrent[64-bit]
+goto skipbuildlibtorrent64
+:buildtorrent64
 call :ColorText 9F "Building libtorrent64"&echo.
 copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 set oldpath=%path%
-set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%path%
+set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-copy ..\bin\gcc-mngw-%GCC64_VERSION%\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib /Y
-copy ..\bin\gcc-mngw-%GCC64_VERSION%\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%\lib\libtorrent_dbg.a /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_VERSION%\myrls\libboost_system-mgw%GCC64_VERSION2%-mt-s-1_58.a %BOOST64_INSTALL_PATH%\lib\libboost_system_tr.a /Y
+rem bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+copy ..\bin\gcc-mngw-%GCC64_VERSION%\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib /Y
+copy ..\bin\gcc-mngw-%GCC64_VERSION%\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC64_VERSION2%-mt-s-1_58.a %GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a /Y
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64

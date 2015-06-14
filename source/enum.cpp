@@ -390,7 +390,7 @@ void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos
 unsigned Driver::calc_score_h(State *state)
 {
     return calc_score(catalogfile,feature,identifierscore, // TODO: check signature
-        state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")?1:0);
+        state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")||StrStrIW(state->textas.getw(InfSection),L".nt")?1:0);
 }
 
 void Driver::print(State *state)
