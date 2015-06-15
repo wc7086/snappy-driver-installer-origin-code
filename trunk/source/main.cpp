@@ -83,6 +83,7 @@ int flags=COLLECTION_USE_LZMA;
 int statemode=STATEMODE_REAL;
 int expertmode=0;
 int hintdelay=500;
+int wndwx=0,wndwy=0;
 int filters=
     (1<<ID_SHOW_MISSING)+
     (1<<ID_SHOW_NEWER)+
@@ -162,6 +163,8 @@ void settings_parse(const wchar_t *str,int ind)
         if(argstr(pr,L"-lang:",curlang))continue;
         if(argstr(pr,L"-theme:",curtheme))continue;
         if(argint(pr,L"-hintdelay:",&hintdelay))continue;
+        if(argint(pr,L"-wndwx:",&wndwx))continue;
+        if(argint(pr,L"-wndwy:",&wndwy))continue;
         if(argint(pr,L"-filters:",&filters))continue;
 
         if(argint(pr,L"-port:",&Updater.torrentport))continue;
@@ -272,12 +275,12 @@ void settings_save()
     fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
               "\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
               "\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n\"-finish_upd_cmd:%s\"\n\n"
-              "\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-filters:%d\n\n"
+              "\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-filters:%d\n\n"
               "-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
-            curlang,curtheme,hintdelay,filters,
+            curlang,curtheme,hintdelay,wndwx,wndwy,filters,
             Updater.torrentport,Updater.downlimit,Updater.uplimit,Updater.connections);
 
     if(license)fwprintf(f,L"-license ");
@@ -1315,6 +1318,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
 
         case WM_DESTROY:
+            GetWindowRect(hwnd,&rect);
+            wndwx=rect.right-rect.left;
+            wndwy=rect.bottom-rect.top;
+
             if(!DeleteObject(hFont))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
             if(mon_lang)mon_lang->stop();
@@ -1339,6 +1346,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)curtheme);
             if(f==CB_ERR)f=vTheme.pickTheme();
             theme_set(f);
+            if(wndwx)D(MAINWND_WX)=wndwx;
+            if(wndwy)D(MAINWND_WY)=wndwy;
             SendMessage(hTheme,CB_SETCURSEL,f,0);
             theme_refresh();
 
@@ -1409,10 +1418,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if(rect.right<D(MAINWND_WX)||rect.bottom<D(MAINWND_WY))
                   if(rect.right<wpos->cx||rect.bottom<wpos->cy)
                 {
-                    wpos->cx=rect.right-20;
-                    wpos->cy=rect.bottom-20;
-                    wpos->x=10;
-                    wpos->y=10;
+                    wpos->cx=rect.right;
+                    wpos->cy=rect.bottom;
+                    wpos->x=0;
+                    wpos->y=0;
                 }
             }
             break;
