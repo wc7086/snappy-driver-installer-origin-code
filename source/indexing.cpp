@@ -1698,14 +1698,13 @@ void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_po
             if(!strcmpi(hwidmatch.getdrp_drvinstallPicked(),sect)||
                StrStrIA(hwidmatch.getdrp_drvinstall(),sect))
             {
-                if(*inf_pos<0)
+                if(*inf_pos<0||*inf_pos>hwidmatch.getdrp_drvinfpos())
                 {
                     *feature=hwidmatch.getdrp_drvfeature();
                     *catalogfile=hwidmatch.calc_catalogfile();
                     *inf_pos=hwidmatch.getdrp_drvinfpos();
                 }
                 //log_file("Sect %s, %d, %d, %d (%d),%s\n",sect,*catalogfile,*feature,*inf_pos,HWID_index,hwidmatch.getdrp_drvinstallPicked());
-                break;
             }
         }
     }
