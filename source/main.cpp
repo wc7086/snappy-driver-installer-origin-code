@@ -181,7 +181,7 @@ void settings_parse(const wchar_t *str,int ind)
         if(argflg(pr,L"-oldstyle",FLAG_OLDSTYLE))continue;
 
         if(argflg(pr,L"-checkupdates",FLAG_CHECKUPDATES))continue;
-        if(argflg(pr,L"-onlyupdates",FLAG_NORESTOREPOINT))continue;
+        if(argflg(pr,L"-onlyupdates",FLAG_ONLYUPDATES))continue;
         if(!StrCmpIW(pr,L"-7z"))
         {
             wchar_t cmd[BUFLEN];
