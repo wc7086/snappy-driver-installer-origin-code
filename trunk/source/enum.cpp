@@ -403,7 +403,7 @@ void Driver::print(State *state)
     version.str_date(buf);
     log_file("  Date:     %S\n",buf);
     version.str_version(buf);
-    log_file("  Version:  %S\n");
+    log_file("  Version:  %S\n",buf);
     log_file("  HWID:     %S\n",s+MatchingDeviceId);
     log_file("  inf:      %S%S,%S%S\n",(s+state->getWindir()),s+InfPath,s+InfSection,s+InfSectionExt);
     log_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);

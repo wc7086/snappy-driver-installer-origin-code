@@ -1002,13 +1002,13 @@ void Manager::toggle(int index)
         if(itembar!=itembar1&&itembar->index==group)
             itembar->checked&=~1;
 
-    if(itembar1->checked&&itembar1->isactive&2)
-        expand(index);
+    if(itembar1->checked)
+        expand(index,EXPAND_MODE::COLLAPSE);
     else
         redrawmainwnd();
 }
 
-void Manager::expand(int index)
+void Manager::expand(int index,EXPAND_MODE f)
 {
     itembar_t *itembar,*itembar1;
     unsigned i;
@@ -1020,6 +1020,7 @@ void Manager::expand(int index)
     itembar=&items_list[0];
     if((itembar1->isactive&2)==0)// collapsed
     {
+        if(f==EXPAND_MODE::COLLAPSE)return;
         for(i=0;i<items_list.size();i++,itembar++)
             if(itembar->index==group&&itembar->hwidmatch&&(itembar->hwidmatch->getStatus()&STATUS_INVALID)==0&&(itembar->first&2)==0)
                 {
@@ -1028,6 +1029,7 @@ void Manager::expand(int index)
     }
     else
     {
+        if(f==EXPAND_MODE::EXPAND)return;
         for(i=0;i<items_list.size();i++,itembar++)
             if(itembar->index==group&&(itembar->first&2)==0)
             {
