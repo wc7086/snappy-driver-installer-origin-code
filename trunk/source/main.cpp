@@ -489,7 +489,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 void gui(int nCmd)
 {
-    if((flags&FLAG_NOGUI)||flags&FLAG_AUTOINSTALL)return;
+    if((flags&FLAG_NOGUI)&&(flags&FLAG_AUTOINSTALL)==0)return;
 
     // Register classMain
     WNDCLASSEX wcx;
@@ -1707,7 +1707,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_DIS_RESTPNT:
                     flags^=FLAG_NORESTOREPOINT;
-                    manager_g->set_rstpnt(flags&FLAG_NORESTOREPOINT?1:0);
+                    manager_g->itembar_setactive(SLOT_RESTORE_POINT,flags&FLAG_NORESTOREPOINT?0:1);
+                    manager_g->set_rstpnt(0);
                     break;
 
                 default:
