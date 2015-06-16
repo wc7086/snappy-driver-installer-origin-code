@@ -385,9 +385,7 @@ goaround:
                     itembar->install_status=needrb?STR_INST_REBOOT:STR_INST_OK;
                 else
                 {
-                    if((itembar->isactive&2)==0)// collapsed
-                        manager_g->expand(i);
-
+                    manager_g->expand(i,EXPAND_MODE::EXPAND);
                     itembar->install_status=STR_INST_FAILED;
                     itembar->val1=ret;
                     log_err("ERROR: installation failed\n");

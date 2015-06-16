@@ -614,6 +614,18 @@ void gui(int nCmd)
                     {
                         arrowsAdvance(msg.wParam==VK_LEFT?-1:1);
                     }
+                    if((msg.wParam==VK_LEFT)&&kbpanel==KB_FIELD)
+                    {
+                        int index,nop;
+                        manager_g->hitscan(nop,nop,&index,&nop);
+                        manager_g->expand(index,EXPAND_MODE::COLLAPSE);
+                    }
+                    if((msg.wParam==VK_RIGHT)&&kbpanel==KB_FIELD)
+                    {
+                        int index,nop;
+                        manager_g->hitscan(nop,nop,&index,&nop);
+                        manager_g->expand(index,EXPAND_MODE::EXPAND);
+                    }
                     if(msg.wParam==VK_UP)arrowsAdvance(-1);else
                     if(msg.wParam==VK_DOWN)arrowsAdvance(1);
 
@@ -1666,7 +1678,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     }
                     else
                     {
-                        manager_g->expand(floating_itembar);
+                        manager_g->expand(floating_itembar,EXPAND_MODE::TOGGLE);
                     }
                     break;
 
@@ -1938,7 +1950,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             }
             if(floating_itembar>=0&&i==2)
             {
-                manager_g->expand(floating_itembar);
+                manager_g->expand(floating_itembar,EXPAND_MODE::TOGGLE);
             }
             break;
 

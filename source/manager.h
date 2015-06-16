@@ -78,6 +78,7 @@ enum GUI_ID
     ID_HWID_WEB       =200,
 };
 
+// fileter_show
 enum fileter_show
 {
     FILTER_SHOW_MISSING    = (1<<ID_SHOW_MISSING),
@@ -94,6 +95,14 @@ enum fileter_show
     FILTER_SHOW_ONE        = (1<<ID_SHOW_ONE),
     FILTER_SHOW_DUP        = (1<<ID_SHOW_DUP),
     FILTER_SHOW_INVALID    = (1<<ID_SHOW_INVALID),
+};
+
+// EXPAND_MODE
+enum class EXPAND_MODE
+{
+    TOGGLE,
+    EXPAND,
+    COLLAPSE,
 };
 
 // Itembar slots
@@ -184,7 +193,7 @@ public:
     void install(int flags);
     void testitembars();
     void toggle(int index);
-    void expand(int index);
+    void expand(int index,EXPAND_MODE f);
     void selectnone();
     void selectall();
 
