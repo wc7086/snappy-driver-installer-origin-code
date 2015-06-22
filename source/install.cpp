@@ -166,7 +166,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
         if(!Updater.isTorrentReady())
         {
             log_con("Waiting for torrent");
-            for(j=0;j<100;j++)
+            for(j=0;j<200;j++)
             {
                 log_con("*");
                 if(Updater.isTorrentReady())

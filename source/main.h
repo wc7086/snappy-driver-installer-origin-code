@@ -48,6 +48,7 @@ typedef WINBOOL (__cdecl *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pResto
 #include <direct.h>     // for _wmkdir
 
 // C++
+#include <unordered_set>
 #include <unordered_map>
 #include <queue>
 #include <vector>

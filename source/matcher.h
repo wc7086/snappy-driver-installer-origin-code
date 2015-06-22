@@ -16,7 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #define NUM_DECS 12*4
-#define NUM_MARKERS 31
+#define NUM_MARKERS 39
 #define NUM_FILTERS 22
 
 enum DRIVER_STATUS

@@ -116,11 +116,11 @@ STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
 // About
-//STR_ABOUT_VER           = ""
+//STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE     = "Fejlesztõ: "
-//STR_ABOUT_DEV_LIST      = ""
+//STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Tesztelõk: "
-STR_ABOUT_TESTERS_LIST  = "QuarQ, SamLab, Sorc és WindR"
+//STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "GNU V.3 alapján engedélyezett alkalmazás\n\n\n\n\nSnappy Driver Telepítő a következő technológiákat használja:\n\n* WebP engedélyezve a BSD licenc feltételei szerint.\n* libtorrent engedélyezve a BSD licenc feltételei szerint.\n* Backtrace engedélyezve a BSD licenc feltételei szerint.\n* 7-Zip engedélyezve a GNU Library illetve a Lesser General Public Licenc verzió 2. feltételei szerint\nSnappy Driver telepítő a DriverPacks csapat által kidolgozott Driver-csomagok használatának lehetőségével rendelkezik.\n(Klikk ide a Weblap megtekintéséhez)\n\nMagyar nyelvre fordította : LaMoLa"
 STR_ABOUT_SIZE          = 12
 
