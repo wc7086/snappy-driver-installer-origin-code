@@ -116,11 +116,11 @@ STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
 // About
-STR_ABOUT_VER           = "v0.2"
+//STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE     = "Desenvolvedor: "
-STR_ABOUT_DEV_LIST      = "BadPointer"
+//STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Testadores: "
-STR_ABOUT_TESTERS_LIST  = "QuarQ, SamLab, Sorc, WindR"
+//STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Instalador Snappy Driver é licenciado sobre os termos da GNU General Public License version 3\n\n\n\n\nInstalador Snappy Driver Installer usa as seguintes tecnologias:\n* WebP é licenciada sobre os termos da licença BSD\n* libtorrent é licenciada sobre os termos da licença BSD\n* Backtrace é licenciada sobre os termos da licença BSD\n* 7-Zip é licenciada sobre os termos da biblioteca GNU Library ou Licença Geral Pública Lesser versão 2\n\nInstalador Snappy Driver desenvolvido pela equipe driverspack.\n\n(Clique agora para visitar o website)"
 STR_ABOUT_SIZE          = 13
 

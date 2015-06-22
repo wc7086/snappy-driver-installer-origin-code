@@ -877,7 +877,7 @@ void Updater_t::downloadTorrent()
 
     // Download torrent
     log_con("Waiting for torrent");
-    for(i=0;i<100;i++)
+    for(i=0;i<200;i++)
     {
         log_con(".");
         if(hTorrent.torrent_file())

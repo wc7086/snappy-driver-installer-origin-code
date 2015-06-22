@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+//#define MERGE_FINDER
 #include "main.h"
 
 //{ Global variables
@@ -798,6 +799,86 @@ wchar_t *Collection::finddrp(wchar_t *fnd)
 }
 //}
 
+#ifdef MERGE_FINDER
+class Filedata
+{
+public:
+    std::wstring str;
+    int size;
+    unsigned crc;
+
+public:
+    const wchar_t *getStr(){return str.c_str();}
+    const wchar_t *getPath(){return str.c_str();}
+    const wchar_t *getFilename(){return str.c_str();}
+    bool checksize(int _size){return size==_size;}
+    bool checkCRC(unsigned _CRC){return crc==_CRC;}
+    bool checkself(const wchar_t *_str){return wcscmp(str.c_str(),_str);}
+    Filedata(std::wstring&& _str,int _size,unsigned _crc):str(_str),size(_size),crc(_crc){}
+};
+
+int checkfolders(const std::wstring dir1,const std::wstring dir2,int sub,
+                    std::unordered_multimap<std::wstring,Filedata> *filename2path,
+                    std::unordered_multimap<std::wstring,Filedata> *path2filename,
+                    std::unordered_multimap<std::wstring,std::wstring> *dir2dir)
+{
+    int sizecom=0,sizedif=0,sizeuniq=0;
+    bool hasINF=false;
+
+    auto range1=path2filename->equal_range(dir1);
+    for(auto it1=range1.first;it1!=range1.second;it1++)
+    {
+        Filedata *d1=&it1->second;
+        //log_con("* %ws\n",d1->getStr());
+        if(StrStrIW(d1->getStr(),L".inf"))hasINF=true;
+
+        auto range2=filename2path->equal_range(d1->getStr());
+        for(auto it2=range2.first;it2!=range2.second;it2++)
+        {
+            Filedata *d2=&it2->second;
+        //log_con("* %ws,%ws\n",it2->second.getStr(),dir2);
+            if(d2->str==dir2)
+            {
+                if(d1->size==d2->size&&d1->crc==d2->crc)
+                    sizecom+=d1->size;
+                else
+                    sizedif+=d1->size;
+        //log_con("* %ws\n",d1->getStr());
+
+            }
+        }
+    }
+    if(sub==0&&hasINF==false)
+    {
+        if(dir1.find(L"/")&&dir2.find(L"/"))
+        {
+            std::wstring dir1new=dir1;
+            std::wstring dir2new=dir2;
+            dir1new.resize(dir1new.rfind(L"/"));
+            dir2new.resize(dir2new.rfind(L"/"));
+            return checkfolders(dir1new,dir2new,0,filename2path,path2filename,dir2dir);
+            //log_con("{%ws},{%ws}\n",dir1.c_str(),dir1new.c_str());
+        }
+        return -1;
+    }
+
+
+    auto range2=dir2dir->equal_range(dir1);
+    for(auto it2=range2.first;it2!=range2.second;it2++)
+    {
+        int sz=checkfolders(dir1+L'/'+it2->second,dir2+L'/'+it2->second,1,filename2path,path2filename,dir2dir);
+        if(sz<0)return -1;
+        sizecom+=sz;
+        //log_con("# %ws\n",it2->second.c_str());
+    }
+
+    if(sub==0&&sizecom)log_con("\n%d,%d,%d\n%ws\n%ws\n",sizecom,sizeuniq,sizedif,dir1.c_str(),dir2.c_str());
+
+    if(sizedif)return -1;
+    return sizecom;
+}
+#endif
+
 //{ Driverpack
 int Driverpack::genindex()
 {
@@ -807,6 +888,17 @@ int Driverpack::genindex()
     wchar_t fullname[BUFLEN];
     wchar_t infpath[BUFLEN];
     wchar_t *infname;
+
+#ifdef MERGE_FINDER
+    std::unordered_set<std::wstring> merged;
+    std::unordered_set<std::wstring> dirlist;
+    std::unordered_multimap<std::wstring,Filedata> filename2path;
+    std::unordered_multimap<std::wstring,Filedata> path2filename;
+    std::unordered_multimap<std::wstring,std::wstring> dir2dir;
+
+    getindexfilename(col->getIndex_linear_dir(),L"bat",fullname);
+    FILE *f=_wfopen(fullname,L"wt");
+#endif
 
     wchar_t name[BUFLEN];
     wsprintf(name,L"%ws\\%ws",getPath(),getFilename());
@@ -853,6 +945,51 @@ int Driverpack::genindex()
             }
             SzArEx_GetFileNameUtf16(&db,i,(UInt16 *)fullname);
 
+#ifdef MERGE_FINDER
+            {
+                unsigned CRC=db.CRCs.Vals[i];
+                int sz=SzArEx_GetFileSize(&db,i);
+                wchar_t buf[BUFLEN];
+                wchar_t filepath[BUFLEN];
+                wcscpy(buf,fullname);
+                wcscpy(filepath,fullname);
+                wchar_t *p=buf,*filename=nullptr,*subdir1=buf,*subdir2=nullptr;
+                while((p=wcschr(p,L'/'))!=nullptr)
+                {
+                    p++;
+                    subdir2=filename;
+                    filename=p;
+                }
+                if(subdir1&&subdir2)
+                {
+                    subdir2[-1]=0;
+                    subdir1[filename-buf-1]=0;
+                }
+                if(filename)
+                {
+                    filepath[filename-buf-1]=0;
+                }
+                //log_con("%8X,%10d,{%ws},{%ws},{%ws},{%ws}\n",CRC,sz,fullname,filename,subdir1,subdir2);
+
+                if(filename)
+                {
+                    //log_con("{%ws}\n",filepath);
+                    filename2path.insert({std::wstring(filename),{std::wstring(filepath),sz,CRC}});
+                    path2filename.insert({std::wstring(filepath),{std::wstring(filename),sz,CRC}});
+                }
+
+                if(subdir1&&subdir2)
+                {
+                    std::wstring tstr=std::wstring(subdir1)+std::wstring(subdir2);
+                    if(dirlist.find(tstr)==dirlist.end())
+                    {
+                        dir2dir.insert({std::wstring(subdir1),std::wstring(subdir2)});
+                        dirlist.insert(tstr);
+                    }
+                }
+            }
+#endif
+
             if(StrCmpIW(fullname+wcslen(fullname)-4,L".inf")==0||
                 StrCmpIW(fullname+wcslen(fullname)-4,L".cat")==0)
             {
@@ -890,7 +1027,48 @@ int Driverpack::genindex()
                 }
             }
         }
+#ifdef MERGE_FINDER
+        for(unsigned i=0;i<db.NumFiles;i++)
+        {
+            SzArEx_GetFileNameUtf16(&db,i,(UInt16 *)fullname);
 
+            unsigned CRC=db.CRCs.Vals[i];
+            int sz=SzArEx_GetFileSize(&db,i);
+            wchar_t buf[BUFLEN];
+            wchar_t filepath[BUFLEN];
+            wcscpy(buf,fullname);
+            wcscpy(filepath,fullname);
+            wchar_t *p=buf,*filename=nullptr,*subdir1=nullptr,*subdir2=nullptr;
+            while((p=wcschr(p,L'/'))!=nullptr)
+            {
+                *p++=0;
+                subdir1=subdir2;
+                subdir2=filename;
+                filename=p;
+            }
+            if(filename)filepath[filename-buf-1]=0;
+            if(!filename)continue;
+
+            if(merged.find(filepath)!=merged.end())continue;
+
+            auto range=filename2path.equal_range(filename);
+            for(auto it=range.first;it!=range.second;it++)
+            {
+                Filedata *d=&it->second;
+                if(d->checkCRC(CRC)&&d->checksize(sz)&&d->checkself(filepath))
+                if(merged.find(d->getStr())==merged.end())
+                {
+                    if(checkfolders(filepath,d->str,0,&filename2path,&path2filename,&dir2dir)>0)
+                    {
+                        fprintf(f,"%S\n%S\n\n",filepath,d->getStr());
+                        merged.insert(filepath);
+                        merged.insert(d->getStr());
+                    }
+                }
+            }
+        }
+        fclose(f);
+#endif
         IAlloc_Free(&allocImp,outBuffer);
     }
     else

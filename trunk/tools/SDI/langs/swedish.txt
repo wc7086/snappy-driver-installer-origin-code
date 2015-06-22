@@ -116,11 +116,11 @@ STR_SYSINF_32BIT 	= "32-bit"
 STR_SYSINF_64BIT 	= "64-bitars" 
 
 // Om 
-STR_ABOUT_VER 		= "v0.2" 
+//STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE 	= "Utvecklare:" 
-STR_ABOUT_DEV_LIST	= "BadPointer" 
+//STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Provare:" 
-STR_ABOUT_TESTERS_LIST 	= "QuarQ, SamLab, Sorc, WindR" 
+//STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE 	= "Kvick Driver Installer licensieras under villkoren i GNU General Public License version 3\n\n\n\n\nSvensk översättning Star\n\nSnappy Driver Installer använder följande tekniker:\n* WebP licensieras under villkoren i BSD-licensen\n* libtorrent licensieras under villkoren i BSD-licensen\n* Backtrace licensieras under villkoren i BSD-licensen\n* 7-Zip licensieras under villkoren i GNU Library eller Lesser General Public License version 2\n\nSnappy Driver Installer drivs av DriverPacks som utvecklats av DriverPacks Team.\n\n(Klicka nu för att besöka en webbplats) "
 STR_ABOUT_SIZE 		= 12 
 

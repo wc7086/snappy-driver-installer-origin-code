@@ -116,11 +116,11 @@ STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
 // About
-STR_ABOUT_VER           = "v0.2"
+//STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE     = "開発者: "
-STR_ABOUT_DEV_LIST      = "BadPointer"
+//STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "テスター: "
-STR_ABOUT_TESTERS_LIST  = "QuarQ, SamLab, Sorc, WindR"
+//STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer は、 GNU 一般公衆利用許諾書 バージョン 3 の条件の下でライセンスされています。\n\n\n\n\nSnappy Driver Installer には次のテクノロジが使用されています:\n(* WebP は BSD ライセンス条件下でライセンスされています)\n(* libtorrent は BSD ライセンス条件下でライセンスされています)\n(* Backtrace は BSD ライセンス条件下でライセンスされています)\n(* 7-Zip は GNU ライブラリ、または Lesser 一般公衆利用許諾契約書 バージョン 2 の下でライセンスされています)\n\nSnappy Driver Installer は、各 DriverPacks チームにより開発/提供されている Driverpacks を元に機能するツールです。\n\n(クリックでウェブサイトへ)"
 STR_ABOUT_SIZE          = 12
 
