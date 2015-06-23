@@ -37,7 +37,6 @@ enum DRIVER_STATUS
     STATUS_DUP         = 0x800,
 };
 
-extern const char *nts[NUM_DECS];
 class Devicematch;
 class Hwidmatch;
 
@@ -46,6 +45,8 @@ struct markers_t
     const char *name;
     int major,minor,arch;
 };
+extern const char *nts[NUM_DECS];
+extern const markers_t markers[NUM_MARKERS];
 
 // Calc
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);

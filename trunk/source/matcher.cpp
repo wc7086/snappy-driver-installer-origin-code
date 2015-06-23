@@ -96,7 +96,7 @@ const int nts_score[NUM_DECS]=
 const markers_t markers[NUM_MARKERS]=
 {
     // Exact x86
-    {"5x86",    5, 1, 0},
+    {"5x86",    5, 2, 0},
     {"6x86",    6, 0, 0},
     {"7x86",    6, 1, 0},
     {"8x86",    6, 2, 0},
@@ -125,7 +125,7 @@ const markers_t markers[NUM_MARKERS]=
 
     // Each OS, ignore arch
     {"allnt",   4, 0,-1},
-    {"allxp",   5, 0,-1},
+    {"allxp",   5, 2,-1},
     {"all6",    6, 0,-1},
     {"all7",    6, 1,-1},
     {"all8\\",  6, 2,-1},
@@ -143,7 +143,7 @@ const markers_t markers[NUM_MARKERS]=
     {"x86\\",  -1,-1, 0},
     {"x64\\",  -1,-1, 1},
 
-    {"winall",  0, 0, 0},
+    {"winall", -1,-1,-1},
 };
 
 char marker[BUFLEN];
