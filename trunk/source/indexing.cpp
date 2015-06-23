@@ -834,7 +834,7 @@ public:
     void makerecords(int i);
     int checkfolders(const std::wstring dir1,const std::wstring dir2,int sub);
     void find_dups();
-    void combine(std::wstring dir1,std::wstring dir2,int sz);
+    int combine(std::wstring dir1,std::wstring dir2,int sz);
     void process_file(int i,unsigned *CRC,int *size,
                   std::wstring &_filename,std::wstring &_filepath,
                   std::wstring &_subdir1,std::wstring &_subdir2);
@@ -861,6 +861,11 @@ void Merger::process_file(int i,unsigned *CRC,int *size,
     wchar_t fullname[BUFLEN];
     SzArEx_GetFileNameUtf16(db,i,(UInt16 *)fullname);
 
+    _filename.clear();
+    _filepath.clear();
+    _subdir1.clear();
+    _subdir2.clear();
+
     wchar_t buf[BUFLEN];
     wchar_t filepath[BUFLEN];
     wcscpy(buf,fullname);
@@ -886,6 +891,10 @@ void Merger::process_file(int i,unsigned *CRC,int *size,
         _filename=filename;
         _filepath=filepath;
     }
+    std::transform(_filename.begin(),_filename.end(),_filename.begin(),::tolower);
+    std::transform(_filepath.begin(),_filepath.end(),_filepath.begin(),::tolower);
+    std::transform(_subdir1.begin(),_subdir1.end(),_subdir1.begin(),::tolower);
+    std::transform(_subdir2.begin(),_subdir2.end(),_subdir2.begin(),::tolower);
 }
 
 void Merger::makerecords(int i)
@@ -919,11 +928,13 @@ int Merger::checkfolders(const std::wstring dir1,const std::wstring dir2,int sub
     int sizecom=0,sizedif=0;
     bool hasINF=false;
 
+    if(merged.find(dir1)!=merged.end())return -1;
+    if(merged.find(dir2)!=merged.end())return -1;
+
     auto range1=path2filename.equal_range(dir1);
     for(auto it1=range1.first;it1!=range1.second;it1++)
     {
         Filedata *d1=&it1->second;
-        //log_con("* %ws\n",d1->getStr());
         if(StrStrIW(d1->getStr(),L".inf"))hasINF=true;
 
         auto range2=filename2path.equal_range(d1->getStr());
@@ -950,7 +961,7 @@ int Merger::checkfolders(const std::wstring dir1,const std::wstring dir2,int sub
             std::wstring dir2new=dir2;
             dir1new.resize(dir1new.rfind(L"/"));
             dir2new.resize(dir2new.rfind(L"/"));
-            //return checkfolders(dir1new,dir2new,0);
+            checkfolders(dir1new,dir2new,0);
             //log_con("{%ws},{%ws}\n",dir1.c_str(),dir1new.c_str());
         }
         return -1;
@@ -969,6 +980,15 @@ int Merger::checkfolders(const std::wstring dir1,const std::wstring dir2,int sub
     if(sizedif)return -1;
     //if(sub==0&&sizecom)log_con("\n%d,%d\n%ws\n%ws\n",sizecom,sizedif,dir1.c_str(),dir2.c_str());
 
+    if(sub==0&&sizecom>0)
+    {
+        if(combine(dir1,dir2,sizecom))
+        {
+            merged.insert(dir1);
+            merged.insert(dir2);
+        }
+    }
+
     return sizecom;
 }
 
@@ -986,11 +1006,13 @@ void detectmarker(std::wstring str,int *i)
     *i=-1;
 }
 
-void Merger::combine(std::wstring dir1,std::wstring dir2,int sz)
+int Merger::combine(std::wstring dir1,std::wstring dir2,int sz)
 {
     int m1,m2;
     std::wstring dest(dir1);
 
+    if(dir1.find(dir2)!=std::string::npos)return 0;
+    if(dir2.find(dir1)!=std::string::npos)return 0;
     std::transform(dest.begin(),dest.end(),dest.begin(),::tolower);
 
     detectmarker(dir1,&m1);
@@ -1041,8 +1063,13 @@ void Merger::combine(std::wstring dir1,std::wstring dir2,int sz)
             dest+=buf2;*/
         }
     }
+    fprintf(f,"rem %d\n",sz);
+    std::replace(dir1.begin(),dir1.end(),'/','\\');
+    std::replace(dir2.begin(),dir2.end(),'/','\\');
+    std::replace(dest.begin(),dest.end(),'/','\\');
     fprintf(f,"movefiles %S %S\n",dir1.c_str(),dest.c_str());
     fprintf(f,"movefiles %S %S\n\n",dir2.c_str(),dest.c_str());
+    return 1;
 }
 
 void Merger::find_dups()
@@ -1068,13 +1095,13 @@ void Merger::find_dups()
             {
                 //log_con(".");
                 int szcom=checkfolders(filepath,d->str,0);
-                if(szcom>0)
+/*                if(szcom>1024*1024)
                 {
                     combine(filepath,d->str,szcom);
                     //fprintf(f,"%S\n%S\n\n",filepath.c_str(),d->getStr());
                     merged.insert(filepath);
                     merged.insert(d->getStr());
-                }
+                }*/
             }
         }
     }
