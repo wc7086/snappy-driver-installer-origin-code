@@ -22,6 +22,7 @@ void movefile(char *file1,char *file2)
         {
             printf("Conflict in %s AND %s\n",file1,file2);
             error=1;
+            break;
         }
     }
     if(feof(f1)!=feof(f2))
@@ -47,7 +48,7 @@ int movefolder(char *dir1,char *dir2,char *subdir)
     hFind=FindFirstFile(szDir,&ffd);
     if(INVALID_HANDLE_VALUE==hFind)
     {
-        printf("Error 1\n");
+        printf("Error 1(%s)\n",szDir);
         return dwError;
     }
 
@@ -92,8 +93,12 @@ int main(int argc,TCHAR *argv[])
     if(!error)
     {
         char buf[MAX_PATH];
-        sprintf(buf,"xcopy %s %s",argv[1],argv[2]);
+        sprintf(buf,"xcopy /E /Y /I %s %s",argv[1],argv[2]);
         printf("%s\n",buf);
+        sprintf(buf,"xcopy /E /Y /I %s %s&rd /S /Q %s",argv[1],argv[2],argv[1]);
+        system(buf);
+
+        //sprintf(buf,"rd /S /Q %s",argv[1]);
         //system(buf);
     }
     return 0;
