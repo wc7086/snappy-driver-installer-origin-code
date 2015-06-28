@@ -1114,7 +1114,9 @@ HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,D
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
 {
     GetWindowRect(hWnd,rc);
-    MapWindowPoints(nullptr,hWnd,(LPPOINT)&rc,2);
+    ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[0]);
+    ScreenToClient(GetParent(hWnd),(LPPOINT)&((LPPOINT)rc)[1]);
+    //MapWindowPoints(nullptr,hWnd,(LPPOINT)&rc,2);
     rc->right-=rc->left;
     rc->bottom-=rc->top;
 }

@@ -1002,10 +1002,8 @@ void Manager::toggle(int index)
         if(itembar!=itembar1&&itembar->index==group)
             itembar->checked&=~1;
 
-    if(itembar1->checked)
-        expand(index,EXPAND_MODE::COLLAPSE);
-    else
-        redrawmainwnd();
+    if(itembar1->checked)expand(index,EXPAND_MODE::COLLAPSE);
+    redrawmainwnd();
 }
 
 void Manager::expand(int index,EXPAND_MODE f)
