@@ -300,10 +300,11 @@ int calc_markerscore(State *state,const char *path)
     +8  if OS version matches
     +16 if arch matches
 */
-    if(curmaj>=0&&curmin>=0&&majver>=curmaj&&minver>=curmin)score+=2+8;
-    if(curmaj<0&&score)score+=2;
-    if(curarch>=0&&curarch==arch)score+=4+16;
-    if(curarch<0&&score)score+=4;
+    if(curmaj>=0&&curmin>=0&&majver==curmaj&&minver==curmin)score|=8;
+    if(curmaj>=0&&curmin>=0&&majver>=curmaj&&minver>=curmin)score|=2;
+    if(curmaj<0&&score)score|=2;
+    if(curarch>=0&&curarch==arch)score|=4+16;
+    if(curarch<0&&score)score|=4;
     return score;
 }
 //}

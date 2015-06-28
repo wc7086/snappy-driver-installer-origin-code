@@ -872,7 +872,7 @@ void Updater_t::downloadTorrent()
     hSession->pause();
     hTorrent.set_download_limit(downlimit*1024);
     hTorrent.set_upload_limit(uplimit*1024);
-    hTorrent.set_max_connections(connections);
+    if(connections)hTorrent.set_max_connections(connections);
     hTorrent.resume();
 
     // Download torrent
