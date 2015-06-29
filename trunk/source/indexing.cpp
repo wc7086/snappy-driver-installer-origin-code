@@ -1181,7 +1181,7 @@ int Driverpack::genindex()
                     &offset,&outSizeProcessed,
                     &allocImp,&allocTempImp);
                 //log_con("}");
-                if(res!=SZ_ERROR_MEM)
+                if(res==SZ_ERROR_MEM)
                 {
                     log_err("ERROR with %S:%d\n",getFilename(),res);
                     Sleep(100);
