@@ -304,6 +304,36 @@ void SignalHandler(int signum)
     log_save();
     log_stop();
 }
+
+#undef new
+void* operator new(size_t size, const char* file, int line)
+{
+    try
+    {
+        //log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        return new char[size];
+    }
+    catch(...)
+    {
+        log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        throw;
+    }
+}
+void* operator new[](size_t size, const char* file, int line)
+{
+    try
+    {
+        //log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        return new char[size];
+    }
+    catch(...)
+    {
+        log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        throw;
+    }
+}
+#define new DEBUG_NEW
+
 //}
 
 //{ Virus detection

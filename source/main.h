@@ -100,6 +100,10 @@ extern "C"
 #include "update.h"
 
 //#include "debug_new.h"
+void* operator new(size_t size, const char* file, int line);
+void* operator new[](size_t size, const char* file, int line);
+#define DEBUG_NEW new(__FILE__, __LINE__)
+#define new DEBUG_NEW
 namespace nvwa {extern size_t total_mem_alloc;}
 //}
 

@@ -906,7 +906,7 @@ void Manager::updateoverall()
         items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
         items_list[SLOT_EXTRACTING].val1=_processeditems;
         items_list[SLOT_EXTRACTING].val2=_totalitems;
-        if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING)
+        if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater.isPaused())
             ShowProgressInTaskbar(hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }

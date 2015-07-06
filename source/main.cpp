@@ -1328,7 +1328,10 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(installmode==MODE_NONE||(flags&FLAG_AUTOCLOSE))
                 DestroyWindow(hwnd);
             else if(MessageBox(hMain,STR(STR_INST_QUIT_MSG),STR(STR_INST_QUIT_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
+            {
                 installmode=MODE_STOPPING;
+                Updater.destroyThreads();
+            }
             break;
 
         case WM_DESTROY:

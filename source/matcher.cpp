@@ -518,10 +518,15 @@ Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher
     }
 }
 
+const GUID nonPnP={0x8ecc055d,0x047f,0x11d1,{0xa5,0x37,0x00,0x00,0xf8,0x75,0x3e,0xd1}};
 int Devicematch::isMissing(State *state)
 {
     if(device->getProblem()==CM_PROB_DISABLED)return 0;
     if(device->getProblem()&&device->getHardwareID())return 1;
+    if(!driver)
+    {
+        //if(memcmp(device->getGUID(),&nonPnP,sizeof(GUID)))return 1;
+    }
     if(driver&&!StrCmpIW(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
     return 0;
 }

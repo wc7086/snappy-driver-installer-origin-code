@@ -191,6 +191,12 @@ unsigned int __stdcall Manager::thread_install(void *arg)
         }
         log_con("{}}}}}}}}}\n");
     }
+    if(installmode==MODE_STOPPING)
+    {
+        itembar->install_status=STR_INST_STOPPING;
+        manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
+        manager_g->selectnone();
+    }
 #endif
 
     // Restore point
