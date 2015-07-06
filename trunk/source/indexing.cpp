@@ -502,6 +502,7 @@ int Collection::scanfolder_count(const wchar_t *path)
             for(i=0;i<6;i++)
             if(StrStrIW(FindFileData.cFileName,olddrps[i]))
             {
+                if(flags&(FLAG_AUTOINSTALL|FLAG_NOGUI))break;
                 wsprintf(buf,L" /c del \"%s\\%s*.7z\" /Q /F",driverpack_dir,olddrps[i]);
                 run_command(L"cmd",buf,SW_HIDE,1);
                 break;
@@ -633,7 +634,7 @@ void Collection::populate()
     int num_thr=num_cores;
     int num_thr_1=num_cores;
     #ifndef _WIN64
-    if(drp_count&&num_thr>3)num_thr=3;
+    if(drp_count&&num_thr>2)num_thr=2;
     #endif
 
     HANDLE thr[16],cons[16];

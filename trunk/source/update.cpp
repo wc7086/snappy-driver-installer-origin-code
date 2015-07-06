@@ -806,6 +806,7 @@ void Updater_t::destroyThreads()
         CloseHandle_log(thandle_download,L"thandle_download",L"thr");
         CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
         log_con("DONE\n");
+        thandle_download=nullptr;
     }
 
     if(hSession)
@@ -813,6 +814,7 @@ void Updater_t::destroyThreads()
         log_con("Closing torrent session...");
         delete hSession;
         log_con("DONE\n");
+        hSession=nullptr;
     }
 }
 

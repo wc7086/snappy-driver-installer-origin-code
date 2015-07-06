@@ -85,6 +85,7 @@ public:
     ofst getDescr()const{return Devicedesc;}
     ofst getRet()const{return ret;}
     ofst getProblem()const{return problem;}
+    GUID *getGUID(){return &DeviceInfoData.ClassGuid;}
 
     int  print_status();
     void print(State *state);
