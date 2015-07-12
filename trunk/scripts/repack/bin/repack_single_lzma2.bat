@@ -1,4 +1,4 @@
-1@echo off
+@echo off
 Set dict=%2
 if "%2"=="" Set dict=32
 if not "%1"=="" goto continue

@@ -188,7 +188,7 @@ void settings_parse(const wchar_t *str,int ind)
         if(!StrCmpIW(pr,L"-7z"))
         {
             wchar_t cmd[BUFLEN];
-            wsprintf(cmd,L"7za.exe %s",StrCmpIW(GetCommandLineW(),L"-7z")+4);
+            wsprintf(cmd,L"7za.exe %s",StrStrIW(str,L"-7z")+4);
             log_con("Executing '%S'\n",cmd);
             registerall();
             ret_global=Extract7z(cmd);
