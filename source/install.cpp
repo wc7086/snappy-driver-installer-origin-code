@@ -39,6 +39,7 @@ int _7z_setcomplited(long long i)
 {
     if(statemode==STATEMODE_EXIT)return S_OK;
     if(installmode==MODE_STOPPING)return E_ABORT;
+    if(manager_g->items_list.empty())return S_OK;
     if(!manager_g->items_list[itembar_act].checked)return E_ABORT;
 
     ar_proceed=i;

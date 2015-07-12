@@ -26,7 +26,7 @@ set LIBTORRENT_PATH=%CD%\libtorrent-rasterbar-1.0.5
 set WEBP_PATH=%CD%\webp
 
 rem GCC 5.1.0
-goto skip510
+rem goto skip510
 set GCC_PATH=c:\mingw_510\mingw32
 set GCC_VERSION=5.1.0
 set GCC_VERSION2=51

@@ -1523,17 +1523,28 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 }
             }
             // Device icon
-            if(itembar->devicematch&&SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr))
+            if(itembar->devicematch)
             {
-                if(rtl)
+                bool ret=false;
+                if(itembar->hwidmatch)
                 {
-                    HICON miricon;
-                    miricon=CreateMirroredIcon(hIcon);
-                    DestroyIcon(hIcon);
-                    hIcon=miricon;
+                    GUID gd;
+                    loadGUID(&gd,itembar->hwidmatch->getdrp_drvfield(ClassGuid_));
+                    ret=SetupDiLoadClassIcon(&gd,&hIcon,nullptr);
                 }
-                DrawIconEx(hdc,x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
-                DestroyIcon(hIcon);
+                //if(!ret)ret=SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr);
+                if(ret)
+                {
+                    if(rtl)
+                    {
+                        HICON miricon;
+                        miricon=CreateMirroredIcon(hIcon);
+                        DestroyIcon(hIcon);
+                        hIcon=miricon;
+                    }
+                    DrawIconEx(hdc,x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
+                    DestroyIcon(hIcon);
+                }
             }
 
             // Expand icon

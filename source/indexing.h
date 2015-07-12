@@ -60,6 +60,7 @@ enum DRIVERPACK_TYPE
 
 // Misc functions
 void findosattr(char *bufa,char *adr,int len);
+void loadGUID(GUID *g,const char *s);
 void *mySzAlloc(void *p,size_t size);
 void mySzFree(void *p,void *address);
 
