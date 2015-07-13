@@ -1,3 +1,12 @@
+1. Download and run http://sourceforge.net/projects/mingw-w64/files/latest/download
+2. Click "Next".
+3. Leave settings as is and click "Next".
+4. Set destantation path to "c:\mingw_510\mingw-w64" and click "Next".
+
+1. Download and run http://sourceforge.net/projects/msys2/files/latest/download
+1. Download and run http://sourceforge.net/projects/msys2/files/Base/i686/msys2-i686-20150512.exe/download
+2.
+
 driverquery /si>1
 
 ^ themes(none?)
