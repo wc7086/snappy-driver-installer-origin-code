@@ -1532,7 +1532,7 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                     loadGUID(&gd,itembar->hwidmatch->getdrp_drvfield(ClassGuid_));
                     ret=SetupDiLoadClassIcon(&gd,&hIcon,nullptr);
                 }
-                //if(!ret)ret=SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr);
+                if(!ret)ret=SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr);
                 if(ret)
                 {
                     if(rtl)
