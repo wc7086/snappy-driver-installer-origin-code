@@ -526,6 +526,7 @@ int Devicematch::isMissing(State *state)
     if(!driver)
     {
         if(StrStrIW(device->getHWIDby(0,state),L"USBPRINT"))return 1;
+        if(StrStrIW(device->getHWIDby(0,state),L"BTHENUM"))return 1;
         //if(memcmp(device->getGUID(),&nonPnP,sizeof(GUID)))return 1;
     }
     if(driver&&!StrCmpIW(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
