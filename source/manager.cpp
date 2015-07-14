@@ -402,12 +402,13 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
     }
 
+    bufw[0]=0;
     SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
 
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
     TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
-    TextOutF(&td,c0,L"%s",bufw);
+    if(bufw[0])TextOutF(&td,c0,L"%s",bufw);
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->Driver);
     wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
     TextOutF(&td,c0,L"%s",bufw);
