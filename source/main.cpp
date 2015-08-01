@@ -246,10 +246,10 @@ void settings_parse(const wchar_t *str,int ind)
         if(!StrCmpIW(pr,L"-a:64"))         virtual_arch_type=64;else
         if( StrStrIW(pr,L"-v:"))           virtual_os_version=_wtoi_my(pr+3);else
 
-        if( StrCmpIW(pr,SAVE_INSTALLED_ID_DEF)==0)Parse_save_installed_id_swith(pr);else
-        if( StrStrIW(pr,L"-?"))            CLIParam.ShowHelp=TRUE;else
-        if( StrCmpIW(pr,HWIDINSTALLED_DEF)==0)Parse_HWID_installed_swith(pr); else
-        if( StrCmpIW(pr,GFG_DEF)==0)      continue;
+        if( StrStrIW(pr,SAVE_INSTALLED_ID_DEF))Parse_save_installed_id_swith(pr);else
+        if(!StrCmpIW(pr,L"-?"))                CLIParam.ShowHelp=TRUE;else
+        if( StrStrIW(pr,HWIDINSTALLED_DEF))    Parse_HWID_installed_swith(pr); else
+        if( StrStrIW(pr,GFG_DEF))              continue;
         else
             log_err("Unknown argument '%S'\n",pr);
         if(statemode==STATEMODE_EXIT)break;
@@ -462,7 +462,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Save settings
     #ifndef CONSOLE_MODE
-    settings_save();
+    if(!*CLIParam.SaveInstalledFileName)settings_save();
     #endif
 
     // Stop folder monitors

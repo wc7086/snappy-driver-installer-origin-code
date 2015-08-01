@@ -223,7 +223,7 @@ bool isCfgSwithExist(const wchar_t *cmdParams,wchar_t *cfgPath)
     {
         wchar_t *pr=argv[i];
         if(pr[0]=='/')pr[0]='-';
-        if(StrCmpIW(pr,GFG_DEF)==0)
+        if(StrStrIW(pr,GFG_DEF))
         {
             wcscpy(cfgPath,pr+wcslen(GFG_DEF));
             return true;
@@ -240,6 +240,7 @@ bool loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
     *DestStr=0;
 
     ExpandEnvironmentStringsW(FileName,Buff,BUFLEN);
+    log_con("Opening '%S'\n",Buff);
     f=_wfopen(Buff,L"rt");
     if(!f)
     {
