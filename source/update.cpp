@@ -287,8 +287,8 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
     switch(Message)
     {
         case WM_INITDIALOG:
+            setMirroring(hwnd);
             ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
-
             lvc.mask=LVCF_FMT|LVCF_WIDTH|LVCF_SUBITEM|LVCF_TEXT;
             lvc.pszText=const_cast<wchar_t *>(L"");
             for(i=0;i<6;i++)
