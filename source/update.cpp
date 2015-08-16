@@ -788,7 +788,7 @@ void Updater_t::createThreads()
 
     TorrentStatus.sessionpaused=1;
     downloadmangar_exitflag=0;
-    if(flags&FLAG_CHECKUPDATES)
+    //if(flags&FLAG_CHECKUPDATES)
     {
         downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
         thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
@@ -926,7 +926,11 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     // Wait till is allowed to download the torrent
     log_con("{thread_download\n");
     WaitForSingleObject(downloadmangar_event,INFINITE);
-    if(downloadmangar_exitflag)return 0;
+    if(downloadmangar_exitflag)
+    {
+        log_con("}thread_download(idle)\n");
+        return 0;
+    }
 
     // Download torrent
     Updater.downloadTorrent();
