@@ -250,4 +250,4 @@ int iswide(int x,int y);
 
 //  Misc (in baseboard.cpp)
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
-void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
+void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total);

@@ -1,4 +1,7 @@
-﻿// Translated by «Latino»
+﻿// Translated by «Latino» and September
+// Übersezt von September
+// Date 29.07.2015
+// Datuum 29.07.2015
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -8,12 +11,12 @@ STR_LANG_CODE           = 0x07
 STR_RTL                 = 0
 
 // left panel
-STR_SHOW_SYSINFO        = "Systeminformation"
+STR_SHOW_SYSINFO        = "Systeminformationen"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Installieren"
 STR_INSTALL_H           = "Die ausgewählten Treiber installieren (Strg+I).\n\nHinweis: Die Installation wird sofort ausgeführt, wenn die Umschalttaste beim Klick auf einen Treiber gedrück wird."
-STR_SELECT_ALL          = "Alle auswählen"
+STR_SELECT_ALL          = "Alles auswählen"
 STR_SELECT_ALL_H        = "Strg+A"
 STR_SELECT_NONE         = "Keine auswählen"
 STR_SELECT_NONE_H       = "Strg+N"
@@ -29,34 +32,34 @@ STR_OPENLOGS            = "Protokolle öffnen"
 STR_OPENLOGS_H          = "Öffnet den Ordner mit den Protokolldateien und Schnappschüssen.\n\nDiese Dateien können eingereicht werden, um Hilfe anzufordern."
 STR_SNAPSHOT            = "Schnappschuss laden..."
 STR_SNAPSHOT_H          = "Schnappschuss eines anderen Systems laden.\n\nSchnappschüsse werden automatisch im Protokollordner erstellt und enthalten Details über Geräte, Treiber, Windows-Version, Batterie und Monitoren.\n\nSchnappschüsse enthalten keine Informationen über die Treiber auf einem Fernsystem.\n\nEin geladener Schnappschuss emuliert also einen Fernsystemzustand, während die Treiber auf lokale Treiberpäcke gesucht werden."
-STR_EXTRACT             = "Extrahieren nach..."
-STR_EXTRACT_H           = "Die ausgewählten Treiber werden extrahiert\n\nNach der Wahl der aktuellen Treiber lässt sich ein Backup der aktuellen Treiber erstellen."
+STR_EXTRACT             = "Entpacken nach..."
+STR_EXTRACT_H           = "Die ausgewählten Treiber werden entpackt\n\nNach der Wahl der aktuellen Treiber lässt sich ein Backup der aktuellen Treiber erstellen."
 STR_DRVDIR              = "Treiberordner wählen..."
-STR_DRVDIR_H            = "Gestattet die Wahl eines anderen Ordners (z. B. auf einer CD/DVD) mit Driverpäcken oder ugepackten Treibern, um dort nach Treibern zu suchen."
+STR_DRVDIR_H            = "Gestattet die Wahl eines anderen Ordners (z. B. auf einer CD/DVD) mit Teiberpacketen oder ugepackten Treibern, um dort nach Treibern zu suchen."
 
-STR_SHOW_FOUND          = "Funde in Treiberpäcken"
-STR_SHOW_FOUND_H        = "Es wurden installierbare Treiber gefunden.\n\nWir empfehlen, die Treiber aus folgenden Kategorien zu installieren: Nicht installiert, Neuer, Am besten zusammenpassend."
+STR_SHOW_FOUND          = "Funde in Treiberpackten"
+STR_SHOW_FOUND_H        = "Es wurden installierbare Treiber gefunden.\n\nWir empfehlen, die Treiber aus folgenden Kategorien zu installieren: Nicht installiert, Neuer, Besser geeignet."
 STR_SHOW_MISSING        = "Nicht installiert"
-STR_SHOW_MISSING_H      = "Zeigt die Treiber von Treiberpäcken für Geräte, für welche noch kein Treiber installiert ist.\n\nDie Installation dieser Treiber ist dringend ratsam."
+STR_SHOW_MISSING_H      = "Zeigt die Treiber von Treiberpackten für Geräte, für welche noch kein Treiber installiert ist.\n\nDie Installation dieser Treiber ist dringend ratsam."
 STR_SHOW_NEWER          = "Neuer"
-STR_SHOW_NEWER_H        = "Zeigt die Treiber von Treiberpäcken, die neuer sind, als die aktuell installierten Treiber.\n\nDie Installation dieser Treiber ist dringend ratsam."
+STR_SHOW_NEWER_H        = "Zeigt die Treiber von Treiberpackten, die neuer sind, als die aktuell installierten Treiber.\n\nDie Installation dieser Treiber ist dringend ratsam."
 STR_SHOW_CURRENT        = "Aktuell"
-STR_SHOW_CURRENT_H      = "Zeigt die Treiber von Treiberpäcken, die mit den aktuell installierten Treibern übereinstimmen.\n\nDiese Treiber sollten NICHT installiert werden, außer die bestehenden Treiber beschädigt sind."
+STR_SHOW_CURRENT_H      = "Zeigt die Treiber von Treiberpackten, die mit den aktuell installierten Treibern übereinstimmen.\n\nDiese Treiber sollten NICHT installiert werden, außer die bestehenden Treiber beschädigt sind."
 STR_SHOW_OLD            = "Älter"
-STR_SHOW_OLD_H          = "Zeigt die Treiber von Treiberpäcken, die älter sind, als die aktuell installierten Treiber.\n\nDiese Treiber sollten NICHT installiert werden, außer neuere Treiber Probleme bereiten."
+STR_SHOW_OLD_H          = "Zeigt die Treiber von Treiberpackten, die älter sind, als die aktuell installierten Treiber.\n\nDiese Treiber sollten NICHT installiert werden, außer neuere Treiber Probleme bereiten."
 STR_SHOW_BETTER         = "Besser geeignet"
-STR_SHOW_BETTER_H       = "Zeigt die Treiber von Treiberpäcken, die zum Gerät besser passen als die installierten Treiber.\n\nDiese Treiber sollten unbedingt installiert werden."
+STR_SHOW_BETTER_H       = "Zeigt die Treiber von Treiberpackten, die zum Gerät besser passen als die installierten Treiber.\n\nDiese Treiber sollten unbedingt installiert werden."
 STR_SHOW_WORSE_RANK     = "Schlechter geeignet"
-STR_SHOW_WORSE_RANK_H   = "Zeigt die Treiber von Treiberpäcken, die zum Gerät schlechter passen als die installierten Treiber.\n\nDiese Treiber sollten NICHT installiert werden, außer ausschlaggebende Gründe dafür sprechen."
+STR_SHOW_WORSE_RANK_H   = "Zeigt die Treiber von Treiberpackten, die zum Gerät schlechter passen als die installierten Treiber.\n\nDiese Treiber sollten NICHT installiert werden, außer ausschlaggebende wen Gründe dafür sprechen."
 
-STR_SHOW_NOTFOUND       = "Fehlt in den Triberpäcken"
-STR_SHOW_NOTFOUND_H     = "Zeigt erforderliche Treiber, die in den Treiberpäcken fehlen und deshalb nicht installiert werden können."
+STR_SHOW_NOTFOUND       = "Fehlt in den Triberpackten"
+STR_SHOW_NOTFOUND_H     = "Zeigt erforderliche Treiber, die in den Treiberpackten fehlen und deshalb nicht installiert werden können."
 STR_SHOW_NF_MISSING     = "Nicht installiert"
-STR_SHOW_NF_MISSING_H   = "Zeigt Geräte, die einen Treiber erfordern, aber keiner installiert ist und in den Treiberpäcken fehlt."
+STR_SHOW_NF_MISSING_H   = "Zeigt Geräte, die einen Treiber erfordern, aber keiner installiert ist und in den Treiberpackten fehlt."
 STR_SHOW_NF_UNKNOWN     = "Unbekannt"
-STR_SHOW_NF_UNKNOWN_H   = "Zeigt installierte, unbekannte Treiber, die in den Treiberpäcken nicht vorhanden sind."
+STR_SHOW_NF_UNKNOWN_H   = "Zeigt installierte, unbekannte Treiber, die in den Treiberpackten nicht vorhanden sind."
 STR_SHOW_NF_STANDARD    = "Standard"
-STR_SHOW_NF_STANDARD_H  = "Zeigt installierte Standard-Treiber, die in den Treiberpäcken nicht vorhanden sind."
+STR_SHOW_NF_STANDARD_H  = "Zeigt installierte Standard-Treiber, die in den Treiberpackten nicht vorhanden sind."
 
 STR_SHOW_DISPLAY        = "Anzeigen"
 STR_SHOW_DISPLAY_H      = ""
@@ -65,11 +68,11 @@ STR_SHOW_ONE_H          = "Nur die besten Treiber pro Gerät anzeigen."
 STR_SHOW_DUP            = "Doppelte anzeigen"
 STR_SHOW_DUP_H          = "Doppelte Treiber anzeigen."
 STR_SHOW_INVALID        = "Ungültige anzeigen"
-STR_SHOW_INVALID_H      = "Zeigt die mit dem aktuellen System inkompatiblen Treiber.\n\nWeil diese Treiber mit der Windows-Version inkompatibel sind, sollten sie NICHT installiert werden."
+STR_SHOW_INVALID_H      = "Zeigt die mit dem aktuellen System inkompatiblen Treiber an.\n\nWeil diese Treiber mit der Windows-Version inkompatibel sind, sollten sie NICHT installiert werden."
 
 STR_OPTIONS             = "Optionen"
 STR_OPTIONS_H           = ""
-STR_REBOOT              = "PC-Neu starten nach der Treiberinstallation"
+STR_REBOOT              = "PC Neu starten nach der Treiberinstallation"
 STR_REBOOT_H            = "Falls erforderlich, wird der PC nach der Treiberinstallation neu gestartet (Strg+R).\n\nHinweis: Der Neustart kann jederzeit durch Entfernen des Hakens unterbunden werden."
 
 // Sysinfo
@@ -109,10 +112,10 @@ STR_SYSINF_INCH         = "in"
 STR_SYSINF_WIDE         = "Breitbildschirm"
 STR_SYSINF_MISC         = "Hinweis: Ein Klick aufs Feld öffnet den Gerätemanager"
 STR_SYSINF_TYPE         = "HW-Art"
-STR_SYSINF_LAPTOP       = "Transportabel"
-STR_SYSINF_DESKTOP      = "Kasten"
+STR_SYSINF_LAPTOP       = "LapTop PC"
+STR_SYSINF_DESKTOP      = "Desktop PC"
 STR_SYSINF_LOCALE       = "Sprache"
-STR_SYSINF_CPU_ARCH     = "CPU-Architektur"
+STR_SYSINF_CPU_ARCH     = "CPU Architektur"
 STR_SYSINF_32BIT        = "32 Bit"
 STR_SYSINF_64BIT        = "64 Bit"
 
@@ -156,7 +159,7 @@ STR_CONT_HWID_CLIP      = "Hardware-ID in den Zwischenspeicher kopieren"
 
 // Misc
 STR_OPENSNAPSHOT        = "Schnappschussdateien (*.snp)\0*.snp\0All files\0*.*\0\0"
-STR_EXTRACTFOLDER       = "Zielordner bitte angeben."
+STR_EXTRACTFOLDER       = "Bitte geben sie einen Zielordner an."
 
 // Device status
 STR_STATUS_NOTPRESENT   = "Das Gerät ist nicht vorhanden"
@@ -185,8 +188,8 @@ STR_STATUS_WORSE_OLD    = "Alter, weniger optimaler Treiber"
 
 STR_STATUS_DUP          = " (Doppel)"
 
-STR_STATUS_NF_MISSING   = "Das Gerät erfordert einen Treiber, der in den Treiberpäcken fehlt"
-STR_STATUS_NF_UNKNOWN   = "Das Gerät funktioniert einwandfrei aber es gibt keinen Treiber in den Treiberpäcken"
+STR_STATUS_NF_MISSING   = "Das Gerät erfordert einen Treiber, der in den Treiberpackten fehlt"
+STR_STATUS_NF_UNKNOWN   = "Das Gerät funktioniert einwandfrei aber es gibt keinen Treiber in den Treiberpackten"
 STR_STATUS_NF_STANDARD  = "Standard-Treiber"
 
 // Virus
@@ -200,7 +203,7 @@ STR_VIRUS_HIDDEN_H      = "Schadsoftware kann versteckte Ordner erstellen, um ih
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Emulation mit einem Klick hier anhalten)"
-STR_EMPTYDRP            = "Treiberpäcke oder ungepackte Treiber in den folgenden Ordner hinstellen"
+STR_EMPTYDRP            = "Treiberpackte oder ungepackte Treiber in den folgenden Ordner hinstellen"
 STR_CLOSE_DRPEXT        = "(Zum Standardordner zurückkehren mit einem Klick hier)"
 STR_NOUPDATES           = "Die Treiber sind aktuell"
 STR_INITIALIZING        = "Initialisierungsvorgang..."
@@ -226,19 +229,19 @@ STR_INDEXING            = "Indexierungsvorgang..."
 STR_INDEXLZMA           = "Indexe werden gepackt..."
 STR_OF                  = " von "
 
-STR_RESTOREPOINT        = "Einen Wiederherstellungspunkt erzeugen"
+STR_RESTOREPOINT        = "Einen Wiederherstellungspunkt erstellen"
 STR_RESTOREPOINT_H      = "Einen Wiederherstellungspunkt wird erstellt, um das System auf einen früheren Zeitpunkt zurückzustellen, falls etwas schief geht (Strg+P).\n\nHinweis: Ein Rechtsklick auf diese Schaltfläche zeigt das Kontextmenü."
 STR_REST_SCHEDULE       = "Wiederherstellungspunkterstellung planen"
-STR_REST_ROLLBACK       = "Auf einen bestehenden Wiederherstellungspunkt zurückstellen..."
-STR_REST_CREATING       = "Wiederherstellungspunkt wird erzeugt..."
+STR_REST_ROLLBACK       = "Auf einen bestehenden Wiederherstellungspunkt zurücksetzen..."
+STR_REST_CREATING       = "Wiederherstellungspunkt wird erstellt..."
 STR_REST_CREATED        = "Wiederherstellungspunkt erfolgreich erstellt"
 STR_REST_FAILED         = "Wiederherstellungspunkt konnte nicht erstellt werden"
 
 STR_INST_QUIT_TITLE     = "Abbrechen"
 STR_INST_QUIT_MSG       = "Soll die Installation wirklich abgebrochen werden?"
 STR_HINT_STOPINST       = "Hier klicken, um die Installation abzubrechen."
-STR_HINT_STOPEXTR       = "Hier klicken um den Extraktionsvorgang abzubrechen."
-STR_HINT_DRIVER         = "Strg-Taste drücken, um den installierten mit dem verfügbaren Treiber zu vergleichen.\nLeertaste drücken, um die Angaben der alternativen Treiber anzuzeigen."
+STR_HINT_STOPEXTR       = "Hier klicken um den Entpackvorgang abzubrechen."
+STR_HINT_DRIVER         = "Strg-Taste drücken, um den installierten mit den verfügbaren Treiber zu vergleichen.\nLeertaste drücken, um die Angaben der alternativen Treiber anzuzeigen."
 
 STR_SYS_WINVER          = "Windows-Version"
 STR_SYS_32              = "32 Bit"
@@ -249,15 +252,15 @@ STR_SYS_DISRESTPNT      = "Wiederherstellungspunkterstellung deaktivieren"
 
 // Update
 STR_UPD_DIALOG_TITLE    = "Aktualisierungsprüfung"
-STR_UPD_DIALOG_MSG      = "Soll die automatisierte Online-Prüfung auf neue Versionen der Treiberpäcke und auf aktualisierte Versionen der Anwendung aktiviert werden?"
-STR_UPD_DIALOG_INDEX    = "Sollen die neusten Indexe heruntergeladen werden, damit festglegt werden kann, welche Treiberpäcke heruntergeladen werden müssen?"
+STR_UPD_DIALOG_MSG      = "Soll die automatisierte Online-Prüfung auf neue Versionen der Treiberpackte und auf aktualisierte Versionen der Anwendung aktiviert werden?"
+STR_UPD_DIALOG_INDEX    = "Sollen die neusten Indexe heruntergeladen werden, damit festglegt werden kann, welche Treiberpackte heruntergeladen werden müssen?"
 
 STR_UPD_TITLE           = "Aktualisierung"
 STR_UPD_BTN_ALL         = "Alle auswählen"
 STR_UPD_BTN_NONE        = "Alle abwählen"
 STR_UPD_BTN_THISPC      = "Nur Treiber für diesen PC auswählen"
-STR_UPD_BTN_THISPC_H    = "Für die Bestimmung der erforderlichen Treiberpäcke, müssen die Idexe vorab heruntergeladen werden."
-STR_UPD_ONLYUPDATES     = "Fehlende Treiberpäcke nicht melden"
+STR_UPD_BTN_THISPC_H    = "Für die Bestimmung der erforderlichen Treiberpackte, müssen die Idexe vorab heruntergeladen werden."
+STR_UPD_ONLYUPDATES     = "Fehlende Treiberpackte nicht melden"
 STR_UPD_TOTALSIZE       = "Gesamte Herunterladegröße: %d MB"
 STR_UPD_BTN_OK          = "OK"
 STR_UPD_BTN_CANCEL      = "Abbrechen"
@@ -290,8 +293,8 @@ STR_UPD_UPDATEHINT2     = "Die Basis muss aktualisiert werden, bevor diese Funkt
 
 // Update hint
 STR_UPD_AVAIL1          = "Aktualisierung ist verfügbar: SDI R%d"
-STR_UPD_AVAIL2          = "Aktualisierungen sind verfügbar: %d Treiberpäcke"
-STR_UPD_AVAIL3          = "Aktualisierungen sind verfügbar: SDI R%d und %d Treiberpäcke"
+STR_UPD_AVAIL2          = "Aktualisierungen sind verfügbar: %d Treiberpackte"
+STR_UPD_AVAIL3          = "Aktualisierungen sind verfügbar: SDI R%d und %d Treiberpackte"
 STR_UPD_START           = "(Hier klicken, um Herunterladen auszulösen)"
 STR_UPD_PROGRES         = "Heruntergeladen %s von %s (%d%%)"
 STR_UPD_MODIFY          = "(Hier klicken, um Aktualisierungen auszuwählen)"
@@ -304,8 +307,8 @@ STR_DWN_REMAINING       = "Restzeit"
 
 STR_DWN_STATUS          = "Status"
 STR_DWN_ERROR           = "Fehler"
-STR_DWN_DOWNLOADSPEED   = "Herunterladerate"
-STR_DWN_UPLOADSPEED     = "Hochladerate"
+STR_DWN_DOWNLOADSPEED   = "Downloadrate"
+STR_DWN_UPLOADSPEED     = "Uploadrate"
 
 STR_DWN_SEEDS_F         = "%d von %d verbunden"
 STR_DWN_SEEDS           = "Seeds"

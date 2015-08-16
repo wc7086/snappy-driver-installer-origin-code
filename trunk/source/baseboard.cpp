@@ -11,7 +11,7 @@ const IID IID_ITaskbarList3 = {0xea1afb91, 0x9e28, 0x4b86, {0x90, 0xe9, 0x9e, 0x
 const IID my_CLSID_TaskbarList = { 0x56fdf344, 0xfd6d, 0x11d0, { 0x95, 0x8a, 0x00, 0x60, 0x97, 0xc9, 0xa0, 0x90 } };
 
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
-void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total);
+void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total);
 
 int init=0;
 int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type)
@@ -195,7 +195,7 @@ int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR 
     return 1;
 }
 
-void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,int complited,int total)
+void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total)
 {
     int hres;
     ITaskbarList3 *pTL;
