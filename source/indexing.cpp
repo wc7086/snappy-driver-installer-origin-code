@@ -353,12 +353,13 @@ int Parser::parseItem()
                 strEnd=p;
                 trimtoken();
                 subStr();
+                if(strBeg>strEnd)return 0;
                 return 1;
 
             case '\n':case '\r':    // No item found
                 blockBeg=p++;
                 parseWhitespace(true);
-                strBeg=blockBeg;
+                p=strBeg=blockBeg;
 #ifdef DEBUG_EXTRACHECKS
                 log_con("ERROR: no item '%s' found in %S(%S){%s}\n\n",std::string(blockBeg,30).c_str(),pack->getFilename(),inffile,std::string(blockEnd,30).c_str());
 #endif
@@ -400,6 +401,7 @@ int Parser::parseField()
                     strEnd=p;
                     blockBeg=strEnd+1;
                     subStr();
+                    if(strBeg>strEnd)return 0;
                     return 1;
 
                 default:
@@ -420,6 +422,7 @@ int Parser::parseField()
                     blockBeg=p;
                     trimtoken();
                     subStr();
+                    if(strBeg>strEnd)return 0;
                     return strEnd!=strBeg||*p==',';
 
                 default:
@@ -1403,10 +1406,13 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
-            parse_info.parseField();
-            parse_info.readStr(&s2b,&s2e);
-            strtolower(s1b,s1e-s1b);
-            string_list.insert({std::string(s1b,s1e-s1b),std::string(s2b,s2e-s2b)});
+            if(parse_info.parseField())
+            {
+                parse_info.readStr(&s2b,&s2e);
+                strtolower(s1b,s1e-s1b);
+                //log_con("%s,%d,%d: tolower '%.10s'\n",line,s2b,s2e-s2b,s2b);
+                string_list.insert({std::string(s1b,s1e-s1b),std::string(s2b,s2e-s2b)});
+            }
         }
     }
 
@@ -1426,8 +1432,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         while(parse_info.parseItem())
         {
             parse_info.readStr(&s1b,&s1e);
+            //log_con("%s,%d,%d: tolower '%.10s'\n",line,s1b,s1e,s1b);
             strtolower(s1b,s1e-s1b);
-            //log_con("tolower '%.10s'\n",s1b);
 
             int i,sz=s1e-s1b;
             for(i=0;i<NUM_VER_NAMES;i++)
@@ -1436,10 +1442,12 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 if(i==DriverVer)
                 {
                         // date
-                        parse_info.parseField();
-                        i=parse_info.readDate(cur_ver);
-                        /*if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S\n",
+                        if(parse_info.parseField())
+                        {
+                            i=parse_info.readDate(cur_ver);
+                            /*if(i)log_index("ERROR: invalid date(%d.%d.%d)[%d] in %S\n",
                                  cur_ver->d,cur_ver->m,cur_ver->y,i,inffull);*/
+                        }
 
                         // version
                         if(parse_info.parseField())
@@ -1449,9 +1457,11 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
                 }else
                 {
-                    parse_info.parseField();
-                    parse_info.readStr(&s1b,&s1e);
-                    cur_inffile->fields[i]=text_ind.t_memcpyz(s1b,s1e-s1b);
+                    if(parse_info.parseField())
+                    {
+                        parse_info.readStr(&s1b,&s1e);
+                        cur_inffile->fields[i]=text_ind.t_memcpyz(s1b,s1e-s1b);
+                    }
                 }
                 break;
             }
