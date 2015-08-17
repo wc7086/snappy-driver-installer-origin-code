@@ -20,18 +20,14 @@
 
 #define PACKAGE "your-program-name"
 #define PACKAGE_VERSION "1.2.3"
+#define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
 #include <time.h>
-#include <excpt.h>
 #include <imagehlp.h>
 #include <bfd.h>
-#include <psapi.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
 #define BUFFER_MAX (16*1024)
 
@@ -347,6 +343,7 @@ backtrace_register(void)
         if (g_output == NULL) {
                 g_output = malloc(BUFFER_MAX);
                 g_prev = SetUnhandledExceptionFilter(exception_filter);
+                printf("Backtrace started\n");
         }
 }
 
@@ -356,6 +353,7 @@ backtrace_unregister(void)
         if (g_output) {
                 free(g_output);
                 SetUnhandledExceptionFilter(g_prev);
+                printf("Backtrace stopped\n");
                 g_prev = NULL;
                 g_output = NULL;
         }

@@ -154,6 +154,7 @@
 			<Add option="-finput-charset=CP1251" />
 			<Add option="-Wunused" />
 			<Add option="-mthreads" />
+			<Add option="-flto" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
 			<Add option="-DEXCLUDE_COM" />
@@ -171,6 +172,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
+			<Add option="-flto" />
 			<Add library="msimg32" />
 			<Add library="baseboard" />
 			<Add library="7z" />

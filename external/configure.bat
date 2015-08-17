@@ -230,6 +230,7 @@ goto :eof
 Color 7
 cls
 echo.
+
 rem download wget
 if /I exist "%MSYS_BIN%\wget.exe" (echo Skipping downloading wget & goto skipwget)
 call :ColorText 9F "Downloading wget"&echo.
@@ -249,6 +250,10 @@ call :ColorText 9F "Downloading make"&echo.
 %MSYS_BIN%\pacman.exe -S make --noconfirm
 :skipmake
 
+rem update toolchain
+call :ColorText 9F "Updating toolchain"&echo.
+%MSYS_BIN%\pacman.exe -Syu --noconfirm
+
 rem download WebP
 if /I exist "%LIBTORRENT_PATH%\..\webp\mingw\msys\1.0\home\libwebp-0.4.3.tar.gz" (echo Skipping downloading WebP & goto skipdownloadwebp)
 call :ColorText 9F "Downloading WebP"&echo.
@@ -258,14 +263,14 @@ call :ColorText 9F "Downloading WebP"&echo.
 rem download BOOST
 if /I exist "boost_1_58_0.tar.gz" (echo Skipping downloading BOOST & goto skipdownloadboost)
 call :ColorText 9F "Downloading BOOST"&echo.
-%MSYS_BIN%\wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz/download
+%MSYS_BIN%\wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz/download -Oboost_1_58_0.tar.gz
 :skipdownloadboost
 if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS_BIN%\tar -xf "boost_1_58_0.tar.gz" -v)
 
 rem download libtorrent
 if /I exist "libtorrent-rasterbar-1.0.5.tar.gz" (echo Skipping downloading libtorrent & goto skipdownloadlibtorrent)
 call :ColorText 9F "Downloading libtorrent"&echo.
-%MSYS_BIN%\wget http://sourceforge.net/projects/libtorrent/files/libtorrent/libtorrent-rasterbar-1.0.5.tar.gz/download
+%MSYS_BIN%\wget http://sourceforge.net/projects/libtorrent/files/libtorrent/libtorrent-rasterbar-1.0.5.tar.gz/download -Olibtorrent-rasterbar-1.0.5.tar.gz
 :skipdownloadlibtorrent
 if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS_BIN%\tar -xf "libtorrent-rasterbar-1.0.5.tar.gz" -v)
 
