@@ -96,9 +96,11 @@
 			<Add option="-Wall" />
 			<Add option="-m64" />
 			<Add option="-fno-exceptions" />
+			<Add option="-flto" />
 			<Add option="-DUNICODE" />
 		</Compiler>
 		<Linker>
+			<Add option="-flto" />
 			<Add library="user32" />
 			<Add library="kernel32" />
 			<Add library="newdev" />

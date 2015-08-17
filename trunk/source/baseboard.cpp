@@ -10,13 +10,12 @@ const GUID CLSID_WbemLocator={0x4590F811,0x1D3A,0x11D0,{ 0x89,0x1F,0x00,0xAA,0x0
 const IID IID_ITaskbarList3 = {0xea1afb91, 0x9e28, 0x4b86, {0x90, 0xe9, 0x9e, 0x9f, 0x8a, 0x5e, 0xef, 0xaf}};
 const IID my_CLSID_TaskbarList = { 0x56fdf344, 0xfd6d, 0x11d0, { 0x95, 0x8a, 0x00, 0x60, 0x97, 0xc9, 0xa0, 0x90 } };
 
-int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type);
+int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total);
 
 int init=0;
-int getbaseboard(WCHAR *manuf,WCHAR *model,WCHAR *product,WCHAR *cs_manuf,WCHAR *cs_model,int *type)
+int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type)
 {
-
     *manuf=*model=*product=*cs_model=*type=0;
 
     int hres=CoInitializeEx(0,COINIT_MULTITHREADED);
