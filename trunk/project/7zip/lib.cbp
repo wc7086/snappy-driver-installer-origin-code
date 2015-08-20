@@ -96,7 +96,6 @@
 		<Compiler>
 			<Add option="-W" />
 			<Add option="-fexceptions" />
-			<Add option="-flto" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />
 			<Add option="-DEXCLUDE_COM" />
@@ -109,9 +108,6 @@
 			<Add option="-DPROG_VARIANT_R" />
 			<Add directory="../../../" />
 		</Compiler>
-		<Linker>
-			<Add option="-flto" />
-		</Linker>
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zCompressionMode.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zCompressionMode.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zDecode.cpp" />
