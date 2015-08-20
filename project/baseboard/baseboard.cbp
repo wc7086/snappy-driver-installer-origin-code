@@ -96,11 +96,9 @@
 			<Add option="-Wall" />
 			<Add option="-fno-exceptions" />
 			<Add option="-fno-rtti" />
-			<Add option="-flto" />
 		</Compiler>
 		<Linker>
 			<Add option="-m32" />
-			<Add option="-flto" />
 			<Add library="ole32" />
 			<Add library="oleaut32" />
 			<Add library="wbemuuid" />
