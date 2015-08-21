@@ -393,6 +393,19 @@ unsigned Driver::calc_score_h(State *state)
         state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")||StrStrIW(state->textas.getw(InfSection),L".nt")?1:0);
 }
 
+int Driver::isvalidcat(State *state)
+{
+    CHAR bufa[BUFLEN];
+    if(!cat)return 0;
+    const char *s=state->textas.get(cat);
+
+    int major,minor;
+    state->getWinVer(&major,&minor);
+    wsprintfA(bufa,"2:%d.%d",major,minor);
+    if(!*s)return 0;
+    return strstr(s,bufa)?1:0;
+}
+
 void Driver::print(State *state)
 {
     char *s=state->textas.get(0);
@@ -419,6 +432,7 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
     int dev_pos,ishw,inf_pos=-1;
     DriverDate=0;
     DriverVersion=0;
+    cat=0;
 
     read_reg_val(hkey,state,L"DriverDesc",         &DriverDesc);
     read_reg_val(hkey,state,L"ProviderName",       &ProviderName);

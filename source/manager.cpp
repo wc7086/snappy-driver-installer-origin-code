@@ -393,9 +393,6 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     TextOutF(&td,c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
-        TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
-                 L"%s(%d)%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->pickcat(state),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
-
         td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
         TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
         TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
@@ -467,6 +464,7 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         td.x=p0;
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
         TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
+        TextOutF(&td,               cur_driver->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
         TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
         TextOutF(&td,cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
         TextOutF(&td,cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
@@ -486,6 +484,8 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         td.x=p0+bolder;
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
         TextOutF(&td,               c0,L"%s",bufw+1000);
+        TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
+                 L"%s%S",STR(STR_HINT_SIGNATURE),/*hwidmatch_f->pickcat(state),*/hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
         TextOutF(&td,               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
         TextOutF(&td,cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
         TextOutF(&td,cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
