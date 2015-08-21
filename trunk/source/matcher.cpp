@@ -655,6 +655,8 @@ int Hwidmatch::calc_status(State *state)
 
         int scorev=cur_driver->calc_score_h(state);
         int res=cmpunsigned(scorev,score);
+        if(r&STATUS_CURRENT&&StrStrIA(getdrp_infpath(),"feature_"))
+            res=cmpunsigned(scorev&0xFF00FFFF,score&0xFF00FFFF);
         if(res>0)r+=STATUS_BETTER;else
         if(res<0)r+=STATUS_WORSE;else
             r+=STATUS_SAME;

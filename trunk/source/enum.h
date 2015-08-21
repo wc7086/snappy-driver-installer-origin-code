@@ -134,6 +134,7 @@ public:
     Version *getVersion(){return &version;}
 
     unsigned calc_score_h(State *state);
+    int  isvalidcat(State *state);
     void print(State *state);
 
 
