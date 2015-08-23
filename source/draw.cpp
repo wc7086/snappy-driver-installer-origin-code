@@ -614,7 +614,8 @@ void Panel::draw(HDC hdc)
                 if(i==1&&index==8) // Install button
                 {
                     wsprintf(buf,L"%s (%d)",STR(items[i].str_id),manager_g->countItems());
-                    TextOutH(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf);
+                    int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
+                    TextOutH(hdc,mirw(x,ofsx+nwy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf);
                 }
                 else
                     TextOutH(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id));
