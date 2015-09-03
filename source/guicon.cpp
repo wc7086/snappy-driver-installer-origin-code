@@ -281,7 +281,7 @@ static void myterminate()
     log_err("ERROR: %S\n",buf);
     log_save();
     wcscat(buf,L"\n\nThe program will self terminate now.");
-    MessageBox(hMain,buf,L"Exception",MB_ICONERROR);
+    MessageBox(MainWindow.hMain,buf,L"Exception",MB_ICONERROR);
 
     abort();
 }
@@ -401,7 +401,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
     if(update)
     {
         manager_g->setpos();
-        SetTimer(hMain,1,1000/60,nullptr);
+        SetTimer(MainWindow.hMain,1,1000/60,nullptr);
     }
 }
 

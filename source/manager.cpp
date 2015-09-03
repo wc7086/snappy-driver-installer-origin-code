@@ -261,20 +261,20 @@ void itembar_t::contextmenu(int x,int y)
 
     int flags1=checked?MF_CHECKED:0;
     if(!hwidmatch&&index!=SLOT_RESTORE_POINT)flags1|=MF_GRAYED;
-    if(rtl)x=mainx_c-x;
+    if(rtl)x=MainWindow.mainx_c-x;
 
-    if(floating_itembar==SLOT_RESTORE_POINT)
+    if(Popup.floating_itembar==SLOT_RESTORE_POINT)
     {
         InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
         InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
 
         RECT rect;
-        SetForegroundWindow(hMain);
-        GetWindowRect(hField,&rect);
-        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
+        SetForegroundWindow(MainWindow.hMain);
+        GetWindowRect(MainWindow.hField,&rect);
+        TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
         return;
     }
-    if(floating_itembar<RES_SLOTS)return;
+    if(Popup.floating_itembar<RES_SLOTS)return;
 
     Driver *cur_driver=nullptr;
 
@@ -325,9 +325,9 @@ void itembar_t::contextmenu(int x,int y)
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|flags3,ID_LOCATEINF,STR(STR_CONT_LOCATEINF));
 
     RECT rect;
-    SetForegroundWindow(hMain);
-    GetWindowRect(hField,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
+    SetForegroundWindow(MainWindow.hMain);
+    GetWindowRect(MainWindow.hField,&rect);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
 }
 
 void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
@@ -389,15 +389,15 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     }
 
     // Device info (hwidmatch_f,devicematch_f)
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_ANALYSIS));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
     TextOutF(&td,c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
-        SelectObject(hdcMem,hFontBold);
+        SelectObject(hdcMem,Popup.hFontBold);
         td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
-        SelectObject(hdcMem,hFontP);
+        SelectObject(hdcMem,Popup.hFontP);
         TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
         TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
@@ -406,9 +406,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     bufw[0]=0;
     SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
 
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
     TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
     if(bufw[0])TextOutF(&td,c0,L"%s",bufw);
@@ -421,9 +421,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     td.y=D(POPUP_OFSY);
     if(devicematch_f->device->HardwareID)
     {
-        SelectObject(hdcMem,hFontBold);
+        SelectObject(hdcMem,Popup.hFontBold);
         td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_HARDWAREID));td.x=p1+bolder;
-        SelectObject(hdcMem,hFontP);
+        SelectObject(hdcMem,Popup.hFontP);
         p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
         {
@@ -437,9 +437,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     }
     if(devicematch_f->device->CompatibleIDs)
     {
-        SelectObject(hdcMem,hFontBold);
+        SelectObject(hdcMem,Popup.hFontBold);
         td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_COMPID));td.x=p1+bolder;
-        SelectObject(hdcMem,hFontP);
+        SelectObject(hdcMem,Popup.hFontP);
         p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
         {
@@ -472,9 +472,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         cur_driver->version.str_date(bufw);
 
         td.x=p0;
-        SelectObject(hdcMem,hFontBold);
+        SelectObject(hdcMem,Popup.hFontBold);
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
-        SelectObject(hdcMem,hFontP);
+        SelectObject(hdcMem,Popup.hFontP);
         TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
         TextOutF(&td,               cur_driver->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
         TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
@@ -494,9 +494,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
         td.x=p0+bolder;
-        SelectObject(hdcMem,hFontBold);
+        SelectObject(hdcMem,Popup.hFontBold);
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
-        SelectObject(hdcMem,hFontP);
+        SelectObject(hdcMem,Popup.hFontP);
         TextOutF(&td,               c0,L"%s",bufw+1000);
         TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
                  L"%s%S",STR(STR_HINT_SIGNATURE),/*hwidmatch_f->pickcat(state),*/hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
@@ -814,7 +814,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
     itembar_t *itembar;
     unsigned i;
     int pos;
-    int ofsy=getscrollpos();
+    int ofsy=MainWindow.getscrollpos();
     int cutoff=calc_cutoff()+D(DRVITEM_DIST_Y0);
     int ofs=0;
     int wx=XG(D(DRVITEM_WX),Xg(D(DRVITEM_OFSX),D(DRVITEM_WX)));
@@ -823,35 +823,35 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
     *zone=0;
     int cnt=0;
 
-    if(kbpanel==KB_FIELD)
+    if(MainWindow.kbpanel==KB_FIELD)
     {
         int max_cnt=0;
         itembar=&items_list[0];
         for(i=0;i<items_list.size();i++,itembar++)
         if(itembar->isactive&&(itembar->first&2)==0)max_cnt++;
 
-        if(kbitem[kbpanel]<0)kbitem[kbpanel]=max_cnt-1;
-        if(kbitem[kbpanel]>=max_cnt)kbitem[kbpanel]=0;
+        if(MainWindow.kbitem[MainWindow.kbpanel]<0)MainWindow.kbitem[MainWindow.kbpanel]=max_cnt-1;
+        if(MainWindow.kbitem[MainWindow.kbpanel]>=max_cnt)MainWindow.kbitem[MainWindow.kbpanel]=0;
     }
 
     y-=-D(DRVITEM_DIST_Y0);
     x-=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
-    if(kbpanel==KB_NONE)if(x<0||x>wx)return;
+    if(MainWindow.kbpanel==KB_NONE)if(x<0||x>wx)return;
     itembar=&items_list[0];
     for(i=0;i<items_list.size();i++,itembar++)
     if(itembar->isactive&&(itembar->first&2)==0)
     {
 
-        if(kbpanel==KB_FIELD)
+        if(MainWindow.kbpanel==KB_FIELD)
         {
             *r=i;
-            if(kbitem[kbpanel]==cnt)
+            if(MainWindow.kbitem[MainWindow.kbpanel]==cnt)
             {
                 if(setaa)
                 {
                     animstart=GetTickCount();
-                    offset_target=(itembar->curpos>>16);
-                    SetTimer(hMain,1,1000/60,nullptr);
+                    MainWindow.offset_target=(itembar->curpos>>16);
+                    SetTimer(MainWindow.hMain,1,1000/60,nullptr);
                     setaa=0;
                 }
                 return;
@@ -872,7 +872,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             if(x>wx-50&&!ofs)*zone=Settings.expertmode?2:2;
             if(!*zone&&(x-ofs<D(ITEM_CHECKBOX_SIZE)))*zone=3;
             if(!*zone&&(x>240+190))*zone=3;
-            if(kbpanel==KB_NONE)return;
+            if(MainWindow.kbpanel==KB_NONE)return;
         }
     }
     *r=-1;
@@ -922,7 +922,7 @@ void Manager::updateoverall()
         items_list[SLOT_EXTRACTING].val1=_processeditems;
         items_list[SLOT_EXTRACTING].val2=_totalitems;
         if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater.isPaused())
-            ShowProgressInTaskbar(hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
+            ShowProgressInTaskbar(MainWindow.hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }
 void Manager::install(int flagsv)
@@ -1018,7 +1018,7 @@ void Manager::toggle(int index)
             itembar->checked&=~1;
 
     if(itembar1->checked)expand(index,EXPAND_MODE::COLLAPSE);
-    redrawmainwnd();
+    MainWindow.redrawmainwnd();
 }
 
 void Manager::expand(int index,EXPAND_MODE f)
@@ -1104,7 +1104,7 @@ void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
     wcscpy(itembar->txt1,txt1);
     itembar->percent=percent;
     itembar->isactive=1;
-    redrawfield();
+    MainWindow.redrawfield();
 }
 
 void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v,int percent)
@@ -1117,7 +1117,7 @@ void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int va
     itembar->percent=(percent>=0)?percent:val1v*1000/val2v;
     itembar->isactive=act;
     setpos();
-    redrawfield();
+    MainWindow.redrawfield();
 }
 
 void Manager::set_rstpnt(int checked)
@@ -1125,13 +1125,13 @@ void Manager::set_rstpnt(int checked)
     panels[11].setChecked(2,items_list[SLOT_RESTORE_POINT].checked=checked);
     //if(D(PANEL12_WY))manager_g->items_list[SLOT_RESTORE_POINT].isactive=checked;
     setpos();
-    redrawfield();
+    MainWindow.redrawfield();
 }
 
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
-void Manager::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index){items_list[floating_itembar].popup_drivercmp(manager,hdcMem,rect,index);}
-void Manager::contextmenu(int x,int y){items_list[floating_itembar].contextmenu(x,y);}
-const wchar_t *Manager::getHWIDby(int id){return items_list[floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
+void Manager::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,hdcMem,rect,index);}
+void Manager::contextmenu(int x,int y){items_list[Popup.floating_itembar].contextmenu(x,y);}
+const wchar_t *Manager::getHWIDby(int id){return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
 void Manager::getINFpath(int wp)
 {
@@ -1139,7 +1139,7 @@ void Manager::getINFpath(int wp)
     wsprintf(buf,L"%s%s%s",
             (wp==ID_LOCATEINF)?L"/select,":L"",
             matcher->getState()->textas.get(matcher->getState()->getWindir()),
-            matcher->getState()->textas.get(items_list[floating_itembar].devicematch->driver->getInfPath()));
+            matcher->getState()->textas.get(items_list[Popup.floating_itembar].devicematch->driver->getInfPath()));
 
     if(wp==ID_OPENINF)
         run_command(buf,L"",SW_SHOW,0);
@@ -1180,7 +1180,7 @@ void Manager::setpos()
             if(devicematch)lastmatch=devicematch->num_matches;
         }
     }
-    SetTimer(hMain,1,1000/60,nullptr);
+    SetTimer(MainWindow.hMain,1,1000/60,nullptr);
     animstart=GetTickCount();
 }
 
@@ -1201,26 +1201,26 @@ int Manager::animate()
     }
 
     // Animate scrolling
-    int i=getscrollpos();
-    if(offset_target)
+    int i=MainWindow.getscrollpos();
+    if(MainWindow.offset_target)
     {
-        int v=offset_target-D(DRVITEM_DIST_Y0)*2;
+        int v=MainWindow.offset_target-D(DRVITEM_DIST_Y0)*2;
         if(i>v)
         {
             i--;
             i-=(i-v)/10;
             if(i<v)i=v;
-            setscrollpos(i);
+            MainWindow.setscrollpos(i);
             chg=1;
         }
 
-        v=offset_target+D(DRVITEM_DIST_Y0)-mainy_c;
+        v=MainWindow.offset_target+D(DRVITEM_DIST_Y0)-MainWindow.mainy_c;
         if(i<v)
         {
             i++;
             i-=(i-v)/10;
             if(i>v)i=v;
-            setscrollpos(i);
+            MainWindow.setscrollpos(i);
             chg=1;
         }
     }
@@ -1281,13 +1281,13 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         wx-=D(DRVITEM_LINE_INTEND);
     }
     if(pos<=-D(DRVITEM_DIST_Y0))return 0;
-    if(pos>mainy_c)return 0;
+    if(pos>MainWindow.mainy_c)return 0;
     if(wx<0)return 0;
 
-    SelectObject(hdc,hFont);
+    SelectObject(hdc,MainWindow.hFont);
 
     if(index<SLOT_RESTORE_POINT)cutoff=D(DRVITEM_OFSY);
-    hrgn2=CreateRectRgn(0,cutoff,x+wx,mainy_c);
+    hrgn2=CreateRectRgn(0,cutoff,x+wx,MainWindow.mainy_c);
     hrgn=CreateRoundRectRgn(x,(pos<cutoff)?cutoff:pos,x+wx,pos+D(DRVITEM_WY),r,r);
     int cl=((zone>=0)?1:0);
     if(index==SLOT_EXTRACTING&&itembar->install_status&&installmode==MODE_NONE)
@@ -1584,7 +1584,7 @@ int Manager::isbehind(int pos,int ofsy,int j)
 
     if(j<SLOT_RESTORE_POINT)return 0;
     if(pos-ofsy<=-D(DRVITEM_DIST_Y0))return 1;
-    if(pos-ofsy>mainy_c)return 1;
+    if(pos-ofsy>MainWindow.mainy_c)return 1;
 
     itembar=&items_list[j-1];
     if((itembar->curpos>>16)==pos)return 1;
@@ -1614,10 +1614,10 @@ void Manager::draw(HDC hdc,int ofsy)
     RECT rect;
 
     GetCursorPos(&p);
-    ScreenToClient(hField,&p);
+    ScreenToClient(MainWindow.hField,&p);
     hitscan(p.x,p.y,&cur_i,&zone);
 
-    GetClientRect(hField,&rect);
+    GetClientRect(MainWindow.hField,&rect);
     drawbox(hdc,0,0,rect.right,rect.bottom,BOX_DRVLIST);
 
     cutoff=calc_cutoff();
@@ -1641,7 +1641,7 @@ void Manager::draw(HDC hdc,int ofsy)
 
     }
     //printf("nm:%3d, ofs:%d\n",nm,ofsy);
-    setscrollrange((maxpos>>16)+20);
+    MainWindow.setscrollrange((maxpos>>16)+20);
 }
 
 void Manager::restorepos1(Manager *manager_prev)
@@ -1701,7 +1701,7 @@ void Manager::restorepos1(Manager *manager_prev)
             if(*(needreboot?Settings.finish_rb:Settings.finish)||panels[11].isChecked(3))
                 run_command(L"cmd",buf,SW_HIDE,0);
 
-            if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
+            if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
         }
     }
     else
@@ -1835,7 +1835,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     td.hdcMem=hdcMem;
     td.i=0;
     td.limits=limits;
-    td.x=D(POPUP_OFSX)+horiz_sh;
+    td.x=D(POPUP_OFSX)+Popup.horiz_sh;
     td.y=D(POPUP_OFSY);
     td.col=0;
     td.mode=1;
@@ -1852,9 +1852,9 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
             itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,0,k);
 
 
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_INSTDRV),c0,&maxsz,1);td.y+=lne;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
 
     if(cur_driver)
     {
@@ -1876,9 +1876,9 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
         td.y+=lne;
     }
     td.y+=lne;
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_AVAILDRVS),c0,&maxsz,1);td.y+=lne;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
 
     itembar=&items_list[0];
     for(k=0;k<items_list.size();k++,itembar++)
@@ -1889,7 +1889,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
             SelectObject(hdcMem,GetStockObject(DC_BRUSH));
             SelectObject(hdcMem,GetStockObject(DC_PEN));
             SetDCBrushColor(hdcMem,D(POPUP_LST_SELECTED_COLOR));
-            Rectangle(hdcMem,D(POPUP_OFSX)+horiz_sh,td.y,rect.right+horiz_sh-D(POPUP_OFSX),td.y+lne);
+            Rectangle(hdcMem,D(POPUP_OFSX)+Popup.horiz_sh,td.y,rect.right+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne);
         }
         itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,1,k);
         td.y+=lne;
@@ -1897,7 +1897,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
 
     GetWindowRect(GetDesktopWindow(),&rect);
     p.y=0;p.x=0;
-    ClientToScreen(hPopup,&p);
+    ClientToScreen(Popup.hPopup,&p);
 
     maxsz=0;
     for(k=0;k<30;k++)maxsz+=limits[k];

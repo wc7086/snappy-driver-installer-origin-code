@@ -430,19 +430,19 @@ int Panel::hitscan(int hx,int hy)
 {
     int wy=D(PANEL_WY+indofs);
 
-    if(kbpanel&&items[0].str_id==kbpanel)
+    if(MainWindow.kbpanel&&items[0].str_id==MainWindow.kbpanel)
     {
-        if(kbpanel==KB_INSTALL)
+        if(MainWindow.kbpanel==KB_INSTALL)
         {
-            if(kbitem[kbpanel]>2)kbitem[kbpanel]=0;
-            if(index-8!=kbitem[kbpanel])return -1;
-            return index-8==kbitem[kbpanel];
+            if(MainWindow.kbitem[MainWindow.kbpanel]>2)MainWindow.kbitem[MainWindow.kbpanel]=0;
+            if(index-8!=MainWindow.kbitem[MainWindow.kbpanel])return -1;
+            return index-8==MainWindow.kbitem[MainWindow.kbpanel];
         }
-        if(kbitem[kbpanel]>items[0].action_id)kbitem[kbpanel]=0;
-        while(items[kbitem[kbpanel]].type!=TYPE_CHECKBOX&&
-              items[kbitem[kbpanel]].type!=TYPE_BUTTON)kbitem[kbpanel]++;
+        if(MainWindow.kbitem[MainWindow.kbpanel]>items[0].action_id)MainWindow.kbitem[MainWindow.kbpanel]=0;
+        while(items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_CHECKBOX&&
+              items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_BUTTON)MainWindow.kbitem[MainWindow.kbpanel]++;
 
-        return kbitem[kbpanel];
+        return MainWindow.kbitem[MainWindow.kbpanel];
     }
 
     if(!wy)return -1;
@@ -459,17 +459,17 @@ int Panel::hitscan(int hx,int hy)
 
 void Panel::keybAdvance(int v)
 {
-    if(kbpanel&&items[0].str_id==kbpanel)
+    if(MainWindow.kbpanel&&items[0].str_id==MainWindow.kbpanel)
     {
-        kbitem[kbpanel]+=v;
+        MainWindow.kbitem[MainWindow.kbpanel]+=v;
 
-        while(kbitem[kbpanel]>=0&&kbitem[kbpanel]<=items[0].action_id&&
-              items[kbitem[kbpanel]].type!=TYPE_CHECKBOX&&
-              items[kbitem[kbpanel]].type!=TYPE_BUTTON)
-              kbitem[kbpanel]+=v;
+        while(MainWindow.kbitem[MainWindow.kbpanel]>=0&&MainWindow.kbitem[MainWindow.kbpanel]<=items[0].action_id&&
+              items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_CHECKBOX&&
+              items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_BUTTON)
+              MainWindow.kbitem[MainWindow.kbpanel]+=v;
 
-        if(kbitem[kbpanel]>items[0].action_id)kbitem[kbpanel]=0;
-        if(kbitem[kbpanel]<0)kbitem[kbpanel]=items[0].action_id;
+        if(MainWindow.kbitem[MainWindow.kbpanel]>items[0].action_id)MainWindow.kbitem[MainWindow.kbpanel]=0;
+        if(MainWindow.kbitem[MainWindow.kbpanel]<0)MainWindow.kbitem[MainWindow.kbpanel]=items[0].action_id;
     }
 
 }
@@ -487,9 +487,9 @@ void Panel::draw_inv()
     rect.bottom=y+(wy+1)*items[0].action_id+ofsy*2;
 
     if(rtl)
-        InvalidateRect(hMain,nullptr,0);
+        InvalidateRect(MainWindow.hMain,nullptr,0);
     else
-        InvalidateRect(hMain,&rect,0);
+        InvalidateRect(MainWindow.hMain,&rect,0);
 }
 
 int Panel::calcFilters()
@@ -524,12 +524,12 @@ void Panel::click(int i)
         if(items[i].action_id==ID_EXPERT_MODE)
         {
             Settings.expertmode=isChecked(i);
-            ShowWindow(GetConsoleWindow(),Settings.expertmode&&ctrl_down?SW_SHOWNOACTIVATE:hideconsole);
+            ShowWindow(GetConsoleWindow(),Settings.expertmode&&MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
         }
         else
-            PostMessage(hMain,WM_COMMAND,items[i].action_id+(BN_CLICKED<<16),0);
+            PostMessage(MainWindow.hMain,WM_COMMAND,items[i].action_id+(BN_CLICKED<<16),0);
 
-        InvalidateRect(hMain,nullptr,0);
+        InvalidateRect(MainWindow.hMain,nullptr,0);
     }
 }
 
@@ -548,7 +548,7 @@ void Panel::draw(HDC hdc)
     if(!D(PANEL_WY+indofs))return;
 
     GetCursorPos(&p);
-    ScreenToClient(hMain,&p);
+    ScreenToClient(MainWindow.hMain,&p);
     cur_i=hitscan(p.x,p.y);
 
     State *state=manager_g->matcher->getState();
@@ -590,7 +590,7 @@ void Panel::draw(HDC hdc)
         switch(items[i].type)
         {
             case TYPE_CHECKBOX:
-                if(isSelected&&kbpanel)
+                if(isSelected&&MainWindow.kbpanel)
                 {
                     drawbox(hdc,x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
                     isSelected=false;
@@ -721,12 +721,12 @@ void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...)
 //{Popup
 void popup_resize(int x,int y)
 {
-    if(floating_x!=x||floating_y!=y)
+    if(Popup.floating_x!=x||Popup.floating_y!=y)
     {
         POINT p1;
 
-        floating_x=x;
-        floating_y=y;
+        Popup.floating_x=x;
+        Popup.floating_y=y;
         GetCursorPos(&p1);
         SetCursorPos(p1.x+1,p1.y);
         SetCursorPos(p1.x,p1.y);
@@ -806,20 +806,20 @@ void TextOutH(HDC hdc,int x,int y,LPCTSTR buf)
 int Xm(int x,int o)
 {
     UNREFERENCED_PARAMETER(o)
-    return x>=0?x:(main1x_c+x);
+    return x>=0?x:(MainWindow.main1x_c+x);
 }
-int Ym(int y){return y>=0?y:(main1y_c+y);}
-int XM(int w,int x){return w>=0?w:(w+main1x_c-x);}
-int YM(int y,int o){return y>=0?y:(main1y_c+y-o);}
+int Ym(int y){return y>=0?y:(MainWindow.main1y_c+y);}
+int XM(int w,int x){return w>=0?w:(w+MainWindow.main1x_c-x);}
+int YM(int y,int o){return y>=0?y:(MainWindow.main1y_c+y-o);}
 
 int Xg(int x,int o)
 {
     UNREFERENCED_PARAMETER(o)
-    return x>=0?x:(mainx_c+x);
+    return x>=0?x:(MainWindow.mainx_c+x);
 }
-int Yg(int y){return y>=0?y:(mainy_c+y);}
-int XG(int x,int o){return x>=0?x:(mainx_c+x-o);}
-int YG(int y,int o){return y>=0?y:(mainy_c+y-o);}
+int Yg(int y){return y>=0?y:(MainWindow.mainy_c+y);}
+int XG(int x,int o){return x>=0?x:(MainWindow.mainx_c+x-o);}
+int YG(int y,int o){return y>=0?y:(MainWindow.mainy_c+y-o);}
 
 int panels_hitscan(int hx,int hy,int *ii)
 {
@@ -926,11 +926,11 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
     if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar<0)type=FLOATING_NONE;
     if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
 
-    if(rtl)p.x+=floating_x;
+    if(rtl)p.x+=Popup.floating_x;
     ClientToScreen(hwnd,&p);
-    needupdate=floating_itembar!=itembar||floating_type!=type;
-    floating_itembar=itembar;
-    floating_type=type;
+    needupdate=Popup.floating_itembar!=itembar||Popup.floating_type!=type;
+    Popup.floating_itembar=itembar;
+    Popup.floating_type=type;
 
     if(type!=FLOATING_NONE)
     {
@@ -942,23 +942,23 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
             GetMonitorInfo(hMonitor,&mi);
 
             mi.rcWork.right-=15;
-            if(p.x+floating_x>mi.rcWork.right)p.x=mi.rcWork.right-floating_x;
+            if(p.x+Popup.floating_x>mi.rcWork.right)p.x=mi.rcWork.right-Popup.floating_x;
             if(p.x<5)p.x=5;
-            if(p.y+floating_y>mi.rcWork.bottom-20)p.y=p.y-floating_y-30;
+            if(p.y+Popup.floating_y>mi.rcWork.bottom-20)p.y=p.y-Popup.floating_y-30;
             if(p.y<5)p.y=5;
         }
 
-        MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
-        if(needupdate)InvalidateRect(hPopup,nullptr,0);
+        MoveWindow(Popup.hPopup,p.x+10,p.y+20,Popup.floating_x,Popup.floating_y,1);
+        if(needupdate)InvalidateRect(Popup.hPopup,nullptr,0);
 
         TRACKMOUSEEVENT tme;
         tme.cbSize=sizeof(tme);
         tme.hwndTrack=hwnd;
         tme.dwFlags=TME_LEAVE|TME_HOVER;
-        tme.dwHoverTime=(ctrl_down||space_down)?1:Settings.hintdelay;
+        tme.dwHoverTime=(MainWindow.ctrl_down||MainWindow.space_down)?1:Settings.hintdelay;
         TrackMouseEvent(&tme);
     }
-    if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
+    if(type==FLOATING_NONE)ShowWindow(Popup.hPopup,SW_HIDE);
 }
 
 HICON CreateMirroredIcon(HICON hiconOrg)

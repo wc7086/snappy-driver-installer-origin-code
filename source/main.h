@@ -234,29 +234,89 @@ enum install_mode
 // Manager
 extern Manager *manager_g;
 extern int volatile installmode;
-extern int ctrl_down;
-extern int space_down;
-extern int shift_down;
 extern int invaidate_set;
 extern int num_cores;
+extern HINSTANCE ghInst;
+extern CRITICAL_SECTION sync;
+extern int ret_global;
 
 // Window
-extern HINSTANCE ghInst;
-extern int main1x_c,main1y_c;
-extern int mainx_c,mainy_c;
-extern CRITICAL_SECTION sync;
-extern HFONT hFont,hFontP,hFontBold;
-extern HWND hPopup,hMain,hField,hLang,hTheme;
+class Popup_t
+{
+public:
+    HWND hPopup;
+    HFONT hFontP,hFontBold;
+    Canvas *canvasPopup;
 
-// Window helpers
-extern int floating_type;
-extern int floating_itembar;
-extern int floating_x,floating_y;
-extern int horiz_sh;
-extern int hideconsole;
-extern int offset_target;
-extern int kbpanel,kbitem[KB_PANEL_CHK+1];
-extern int ret_global;
+    int floating_type;
+    int floating_itembar;
+    int floating_x,floating_y;
+    int horiz_sh;
+
+    int PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
+};
+LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
+extern class Popup_t Popup;
+
+// Window
+class MainWindow_t
+{
+public:
+    int main1x_c,main1y_c;
+    int mainx_c,mainy_c;
+    HFONT hFont;
+    HWND hMain,hField,hLang,hTheme;
+    int ctrl_down;
+    int space_down;
+    int shift_down;
+
+    int hideconsole;
+    int offset_target;
+    int kbpanel,kbitem[KB_PANEL_CHK+1];
+
+    int panel_lasti=0;
+    int field_lasti,field_lastz;
+
+    Canvas *canvasMain;
+    Canvas *canvasField;
+    static const wchar_t classMain[];
+    static const wchar_t classField[];
+    static const wchar_t classPopup[];
+
+    int mousex=-1,mousey=-1,mousedown=MOUSE_NONE,mouseclick=0;
+    int scrollvisible=0;
+
+public:
+    void gui(int nCmd);
+    void lang_refresh();
+    void theme_refresh();
+    void redrawfield();
+    void redrawmainwnd();
+
+    void tabadvance(int v);
+    void arrowsAdvance(int v);
+
+    // Commands
+    void snapshot();
+    void extractto();
+    void selectDrpDir();
+
+    // Scrollbar
+    void setscrollrange(int y);
+    int  getscrollpos();
+    void setscrollpos(int pos);
+
+    static LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    static LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
+    static LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
+
+    int WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    int WndProc2(HWND,UINT,WPARAM,LPARAM);
+    int WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
+
+    MainWindow_t();
+};
+extern MainWindow_t MainWindow;
 
 // Settings
 class Settings_t
@@ -309,10 +369,6 @@ extern const wchar_t *windows_name[NUM_OS];
 extern int windows_ver[NUM_OS];
 //}
 
-// Main
-//int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);
-void gui(int nCmd);
-
 //Bundle
 class Bundle
 {
@@ -338,17 +394,7 @@ public:
 
 // Subroutes
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
-void lang_refresh();
-void theme_refresh();
-void snapshot();
-void extractto();
-void selectDrpDir();
 void invalidate(int v);
-
-// Scrollbar
-void setscrollrange(int y);
-int  getscrollpos();
-void setscrollpos(int pos);
 
 // Misc
 void get_resource(int id,void **data,int *size);
@@ -362,14 +408,6 @@ HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,D
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 void setMirroring(HWND hwnd);
 void checktimer(const wchar_t *str,long long t,int uMsg);
-void redrawfield();
-void redrawmainwnd();
-void tabadvance(int v);
-void arrowsAdvance(int v);
 
 // GUI
-LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
-LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
-LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);

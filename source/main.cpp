@@ -23,58 +23,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 int volatile installmode=MODE_NONE;
-int ctrl_down=0;
-int space_down=0;
-int shift_down=0;
 int invaidate_set;
 int num_cores;
-
-// Window
-HINSTANCE ghInst;
-int main1x_c,main1y_c;
-int mainx_c,mainy_c;
-CRITICAL_SECTION sync;
-HFONT hFont=nullptr,hFontBold=nullptr,hFontP=nullptr;
-HWND hMain=nullptr,hField=nullptr,hPopup=nullptr,hLang=nullptr,hTheme=nullptr;
-
-// Window helpers
-int floating_type=0;
-int floating_itembar=-1;
-int floating_x=1,floating_y=1;
-int horiz_sh=0;
-int hideconsole=SW_HIDE;
-int offset_target=0;
-int kbpanel=KB_NONE,kbitem[]={0,0,0,0,0,0,0,0,0,0,0};
 int ret_global=0;
 
-// Window helpers (local)
-int panel_lasti=0;
-int field_lasti,field_lastz;
-
-Canvas *canvasMain;
-Canvas *canvasField;
-Canvas *canvasPopup;
-const wchar_t classMain[]= L"classSDIMain";
-const wchar_t classField[]=L"classSDIField";
-const wchar_t classPopup[]=L"classSDIPopup";
-
-int mousex=-1,mousey=-1,mousedown=MOUSE_NONE,mouseclick=0;
 volatile int deviceupdate_exitflag=0;
 HANDLE deviceupdate_event;
-int scrollvisible=0;
-
+HINSTANCE ghInst;
+CRITICAL_SECTION sync;
 int manager_active=0;
 int bundle_display=1;
 int bundle_shadow=0;
-
-// Settings
-Settings_t Settings;
-
-// Settings (local)
-/*wchar_t curlang [BUFLEN]=L"";
-wchar_t curtheme[BUFLEN]=L"(default)";
-wchar_t logO_dir  [BUFLEN]=L"logs";
-int license=0;*/
 
 // Windows name
 const wchar_t *windows_name[NUM_OS]=
@@ -89,6 +48,12 @@ const wchar_t *windows_name[NUM_OS]=
     L"Unknown OS"
 };
 int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
+//}
+
+//{ Objects
+Popup_t Popup;
+MainWindow_t MainWindow;
+Settings_t Settings;
 //}
 
 //{ Settings
@@ -361,8 +326,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #ifndef CONSOLE_MODE
     DWORD dwProcessId;
     GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
-    if(GetCurrentProcessId()!=dwProcessId)hideconsole=SW_SHOWNOACTIVATE;
-    ShowWindow(GetConsoleWindow(),hideconsole);
+    if(GetCurrentProcessId()!=dwProcessId)MainWindow.hideconsole=SW_SHOWNOACTIVATE;
+    ShowWindow(GetConsoleWindow(),MainWindow.hideconsole);
     #endif
 
     // Determine number of CPU cores
@@ -374,7 +339,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     registerall();
 
     // Check if the mouse present
-    if(!GetSystemMetrics(SM_MOUSEPRESENT))kbpanel=KB_FIELD;
+    if(!GetSystemMetrics(SM_MOUSEPRESENT))MainWindow.kbpanel=KB_FIELD;
 
     // Runtime error handlers
     start_exception_hadnlers();
@@ -410,7 +375,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Bring back the console window
     #ifndef CONSOLE_MODE
-    ShowWindow(GetConsoleWindow(),(Settings.expertmode&&Settings.flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:hideconsole);
+    ShowWindow(GetConsoleWindow(),(Settings.expertmode&&Settings.flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
     #endif
 
     // Start logging
@@ -456,10 +421,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     viruscheck(L"",0,0);
 
     // MAIN GUI LOOP
-    gui(nCmd);
+    MainWindow.gui(nCmd);
 
     // Wait till the device scan thread is finished
-    if(hMain)deviceupdate_exitflag=1;
+    if(MainWindow.hMain)deviceupdate_exitflag=1;
     SetEvent(deviceupdate_event);
     WaitForSingleObject(thr,INFINITE);
     CloseHandle_log(thr,L"WinMain",L"thr");
@@ -502,7 +467,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     return ret_global;
 }
 
-void gui(int nCmd)
+void MainWindow_t::gui(int nCmd)
 {
     if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)return;
 
@@ -755,7 +720,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             }
             else // GUI mode
             {
-                if(hMain)SendMessage(hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
+                if(MainWindow.hMain)SendMessage(MainWindow.hMain,WM_BUNDLEREADY,(WPARAM)&bundle[bundle_shadow],(LPARAM)&bundle[bundle_display]);
             }
 
             // Save indexes, write info, etc
@@ -830,7 +795,7 @@ void Bundle::bundle_lowprioirity()
     if(!time_startup)time_startup=GetTickCount()-time_total;
     log_times();
 
-    redrawmainwnd();
+    MainWindow.redrawmainwnd();
 
     collection.printstats();
     state.print();
@@ -865,7 +830,23 @@ void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
     if(StrStrIW(szFile,L".7z")&&Updater.isPaused())invalidate(INVALIDATE_INDEXES);
 }
 
-void lang_refresh()
+const wchar_t MainWindow_t::classMain[]= L"classSDIMain";
+const wchar_t MainWindow_t::classField[]=L"classSDIField";
+const wchar_t MainWindow_t::classPopup[]=L"classSDIPopup";
+MainWindow_t::MainWindow_t()
+{
+    Popup.floating_itembar=-1;
+    Popup.floating_x=1;
+    Popup.floating_y=1;
+    hideconsole=SW_HIDE;
+
+    mousex=-1;
+    mousey=-1;
+    mousedown=MOUSE_NONE;
+    kbpanel=KB_NONE;
+}
+
+void MainWindow_t::lang_refresh()
 {
     if(!hMain||!hField)
     {
@@ -878,16 +859,16 @@ void lang_refresh()
     setMirroring(hLang);
     setMirroring(hTheme);
     setMirroring(hField);
-    setMirroring(hPopup);
+    setMirroring(Popup.hPopup);
 
     RECT rect;
     GetWindowRect(hMain,&rect);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
-    InvalidateRect(hPopup,nullptr,0);
+    InvalidateRect(Popup.hPopup,nullptr,0);
 }
 
-void theme_refresh()
+void MainWindow_t::theme_refresh()
 {
     // Set font
     if(hFont&&!DeleteObject(hFont))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
@@ -895,15 +876,15 @@ void theme_refresh()
                 CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
     if(!hFont)log_err("ERROR in manager_setfont(): failed CreateFont\n");
 
-    if(hFontP&&!DeleteObject(hFontP))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
-    hFontP=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+    if(Popup.hFontP&&!DeleteObject(Popup.hFontP))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
+    Popup.hFontP=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                 CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!hFontP)log_err("ERROR in manager_setfont(): failed CreateFont\n");
+    if(!Popup.hFontP)log_err("ERROR in manager_setfont(): failed CreateFont\n");
 
-    if(hFontBold&&!DeleteObject(hFontBold))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
-    hFontBold=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+    if(Popup.hFontBold&&!DeleteObject(Popup.hFontBold))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
+    Popup.hFontBold=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                 CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!hFontBold)log_err("ERROR in manager_setfont(): failed CreateFont\n");
+    if(!Popup.hFontBold)log_err("ERROR in manager_setfont(): failed CreateFont\n");
 
     SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
     SendMessage(hLang,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
@@ -921,7 +902,7 @@ void theme_refresh()
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
 }
 
-void snapshot()
+void MainWindow_t::snapshot()
 {
     OPENFILENAME ofn;
     memset(&ofn,0,sizeof(OPENFILENAME));
@@ -940,7 +921,7 @@ void snapshot()
     }
 }
 
-void extractto()
+void MainWindow_t::extractto()
 {
     wchar_t dir[BUFLEN];
 
@@ -970,7 +951,7 @@ void extractto()
     }
 }
 
-void selectDrpDir()
+void MainWindow_t::selectDrpDir()
 {
     BROWSEINFO lpbi;
     memset(&lpbi,0,sizeof(BROWSEINFO));
@@ -997,7 +978,7 @@ void invalidate(int v)
 //}
 
 //{ Scrollbar
-void setscrollrange(int y)
+void MainWindow_t::setscrollrange(int y)
 {
     if(!hField)
     {
@@ -1018,7 +999,7 @@ void setscrollrange(int y)
     SetScrollInfo(hField,SB_VERT,&si,TRUE);
 }
 
-int getscrollpos()
+int MainWindow_t::getscrollpos()
 {
     if(!hField)
     {
@@ -1034,7 +1015,7 @@ int getscrollpos()
     return si.nPos;
 }
 
-void setscrollpos(int pos)
+void MainWindow_t::setscrollpos(int pos)
 {
     if(!hField)
     {
@@ -1157,7 +1138,7 @@ void checktimer(const wchar_t *str,long long t,int uMsg)
         log_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
 }
 
-void redrawfield()
+void MainWindow_t::redrawfield()
 {
     if(Settings.flags&FLAG_NOGUI)return;
     if(!hField)
@@ -1168,7 +1149,7 @@ void redrawfield()
     InvalidateRect(hField,nullptr,0);
 }
 
-void redrawmainwnd()
+void MainWindow_t::redrawmainwnd()
 {
     if(Settings.flags&FLAG_NOGUI)return;
     if(!hMain)
@@ -1179,7 +1160,7 @@ void redrawmainwnd()
     InvalidateRect(hMain,nullptr,0);
 }
 
-void tabadvance(int v)
+void MainWindow_t::tabadvance(int v)
 {
     while(1)
     {
@@ -1204,7 +1185,7 @@ void tabadvance(int v)
 }
 
 extern int setaa;
-void arrowsAdvance(int v)
+void MainWindow_t::arrowsAdvance(int v)
 {
     if(!kbpanel)return;
 
@@ -1229,7 +1210,12 @@ void arrowsAdvance(int v)
 //}
 
 //{ GUI
-LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindow_t::WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+{
+    return MainWindow.WndProcCommon2(hwnd,uMsg,wParam,lParam);
+}
+
+int MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(wParam);
 
@@ -1241,13 +1227,13 @@ LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     switch(uMsg)
     {
         case WM_MOUSELEAVE:
-            ShowWindow(hPopup,SW_HIDE);
+            ShowWindow(Popup.hPopup,SW_HIDE);
             InvalidateRect(hwnd,nullptr,0);
             break;
 
         case WM_MOUSEHOVER:
-            InvalidateRect(hPopup,nullptr,0);
-            ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
+            InvalidateRect(Popup.hPopup,nullptr,0);
+            ShowWindow(Popup.hPopup,Popup.floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
             break;
 
         case WM_ACTIVATE:
@@ -1301,7 +1287,12 @@ LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     return 0;
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindow_t::WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+{
+    return MainWindow.WndProc2(hwnd,uMsg,wParam,lParam);
+}
+
+int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     RECT rect;
     short x,y;
@@ -1314,7 +1305,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     x=LOWORD(lParam);
     y=HIWORD(lParam);
 
-    if(WndProcCommon(hwnd,uMsg,wParam,lParam))
+    if(WndProcCommon2(hwnd,uMsg,wParam,lParam))
     switch(uMsg)
     {
         case WM_CREATE:
@@ -1326,7 +1317,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             hField=CreateWindowMF(classField,nullptr,hwnd,nullptr,WS_VSCROLL);
 
             // Popup
-            hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
+            Popup.hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
                 classPopup,L"",WS_POPUP,
                 0,0,0,0,hwnd,(HMENU)nullptr,ghInst,nullptr);
 
@@ -1366,9 +1357,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
             if(!DeleteObject(hFont))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
-            if(!DeleteObject(hFontP))
+            if(!DeleteObject(Popup.hFontP))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
-            if(!DeleteObject(hFontBold))
+            if(!DeleteObject(Popup.hFontBold))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
             if(mon_lang)mon_lang->stop();
             if(mon_theme)mon_theme->stop();
@@ -1588,7 +1579,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_SIZE:
             SetLayeredWindowAttributes(hMain,0,D(MAINWND_TRANSPARENCY),LWA_ALPHA);
-            SetLayeredWindowAttributes(hPopup,0,D(POPUP_TRANSPARENCY),LWA_ALPHA);
+            SetLayeredWindowAttributes(Popup.hPopup,0,D(POPUP_TRANSPARENCY),LWA_ALPHA);
 
             GetWindowRect(hwnd,&rect);
             main1x_c=x;
@@ -1673,7 +1664,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(i<0)break;
             if(i==2&&j==11)
             {
-                floating_itembar=SLOT_RESTORE_POINT;
+                Popup.floating_itembar=SLOT_RESTORE_POINT;
                 manager_g->contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
             }
             break;
@@ -1687,9 +1678,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             i=GET_WHEEL_DELTA_WPARAM(wParam);
             if(space_down)
             {
-                horiz_sh-=i/5;
-                if(horiz_sh>0)horiz_sh=0;
-                InvalidateRect(hPopup,nullptr,0);
+                Popup.horiz_sh-=i/5;
+                if(Popup.horiz_sh>0)Popup.horiz_sh=0;
+                InvalidateRect(Popup.hPopup,nullptr,0);
             }
             else
                 SendMessage(hField,WM_VSCROLL,MAKELONG(i>0?SB_LINEUP:SB_LINEDOWN,0),0);
@@ -1700,19 +1691,19 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             switch(wp)
             {
                 case ID_SCHEDULE:
-                    manager_g->toggle(floating_itembar);
+                    manager_g->toggle(Popup.floating_itembar);
                     redrawfield();
                     break;
 
                 case ID_SHOWALT:
-                    if(floating_itembar==SLOT_RESTORE_POINT)
+                    if(Popup.floating_itembar==SLOT_RESTORE_POINT)
                     {
                         run_command(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
                         run_command(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
                     }
                     else
                     {
-                        manager_g->expand(floating_itembar,EXPAND_MODE::TOGGLE);
+                        manager_g->expand(Popup.floating_itembar,EXPAND_MODE::TOGGLE);
                     }
                     break;
 
@@ -1883,7 +1874,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     return 0;
 }
 
-LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindow_t::WindowGraphProcedure(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+{
+    return MainWindow.WindowGraphProcedure2(hwnd,uMsg,wParam,lParam);
+}
+
+int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
     SCROLLINFO si;
     RECT rect;
@@ -1893,7 +1889,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
 
     x=LOWORD(lParam);
     y=HIWORD(lParam);
-    if(WndProcCommon(hwnd,message,wParam,lParam))
+    if(WndProcCommon2(hwnd,message,wParam,lParam))
     switch(message)
     {
         case WM_CREATE:
@@ -1946,25 +1942,25 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
 
         case WM_LBUTTONUP:
             if(!mouseclick)break;
-            manager_g->hitscan(x,y,&floating_itembar,&i);
-            if(floating_itembar==SLOT_SNAPSHOT)
+            manager_g->hitscan(x,y,&Popup.floating_itembar,&i);
+            if(Popup.floating_itembar==SLOT_SNAPSHOT)
             {
                 Settings.statemode=STATEMODE_REAL;
                 invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
-            if(floating_itembar==SLOT_DPRDIR)
+            if(Popup.floating_itembar==SLOT_DPRDIR)
             {
                 *Settings.drpext_dir=0;
                 invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             }
-            if(floating_itembar==SLOT_EXTRACTING)
+            if(Popup.floating_itembar==SLOT_EXTRACTING)
             {
                 if(installmode==MODE_INSTALLING)
                     installmode=MODE_STOPPING;
                 else if(installmode==MODE_NONE)
                     manager_g->clear();
             }
-            if(floating_itembar==SLOT_DOWNLOAD)
+            if(Popup.floating_itembar==SLOT_DOWNLOAD)
             {
                 #ifdef USE_TORRENT
                 UpdateDialog.openDialog();
@@ -1972,9 +1968,9 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 break;
             }
 
-            if(floating_itembar>=0&&(i==1||i==0||i==3))
+            if(Popup.floating_itembar>=0&&(i==1||i==0||i==3))
             {
-                manager_g->toggle(floating_itembar);
+                manager_g->toggle(Popup.floating_itembar);
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((Settings.flags&FLAG_EXTRACTONLY)==0)
@@ -1983,15 +1979,15 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 }
                 redrawfield();
             }
-            if(floating_itembar>=0&&i==2)
+            if(Popup.floating_itembar>=0&&i==2)
             {
-                manager_g->expand(floating_itembar,EXPAND_MODE::TOGGLE);
+                manager_g->expand(Popup.floating_itembar,EXPAND_MODE::TOGGLE);
             }
             break;
 
         case WM_RBUTTONDOWN:
-            manager_g->hitscan(x,y,&floating_itembar,&i);
-            if(floating_itembar>=0&&(i==0||i==3))
+            manager_g->hitscan(x,y,&Popup.floating_itembar,&i);
+            if(Popup.floating_itembar>=0&&(i==0||i==3))
                 manager_g->contextmenu(x,y);
             break;
 
@@ -2064,6 +2060,11 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
 
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
+    return Popup.PopupProcedure2(hwnd,message,wParam,lParam);
+}
+
+int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
+{
     HDC hdcMem;
     RECT rect;
     WINDOWPOS *wp;
@@ -2079,7 +2080,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             rect.right=D(POPUP_WX);
             rect.bottom=floating_y;
 
-            SelectObject(hdcMem,hFontP);
+            SelectObject(hdcMem,Popup.hFontP);
             DrawText(hdcMem,STR(floating_itembar),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
@@ -2105,7 +2106,7 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
-                    SelectObject(canvasPopup->getDC(),hFontP);
+                    SelectObject(canvasPopup->getDC(),Popup.hFontP);
                     manager_g->matcher->getState()->popup_sysinfo(canvasPopup->getDC());
                     break;
 

@@ -632,9 +632,9 @@ void State::popup_sysinfo(HDC hdcMem)
     td.maxsz=0;
 
     td.x=p0;
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOutF(&td,td.col,STR(STR_SYSINF_WINDOWS));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
 
     TextOutSF(&td,STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
     TextOutSF(&td,STR(STR_SYSINF_UPDATE),L"%s",platform.szCSDVersion);
@@ -648,25 +648,25 @@ void State::popup_sysinfo(HDC hdcMem)
         TextOutSF(&td,STR(STR_SYSINF_PRODUCTTYPE),L"%d",platform.wProductType);
     }*/
     td.x=p0;
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOutF(&td,td.col,STR(STR_SYSINF_ENVIRONMENT));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
     TextOutSF(&td,STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
     TextOutSF(&td,STR(STR_SYSINF_TEMP),L"%s",textas.get(temp));
 
     td.x=p0;
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOutF(&td,td.col,STR(STR_SYSINF_MOTHERBOARD));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
     TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
     TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",getModel());
     TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",getManuf());
     TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
 
     td.x=p0;
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOutF(&td,td.col,STR(STR_SYSINF_BATTERY));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
     SYSTEM_POWER_STATUS *battery_loc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
     switch(battery_loc->ACLineStatus)
     {
@@ -696,9 +696,9 @@ void State::popup_sysinfo(HDC hdcMem)
 
     wchar_t *buf=(wchar_t *)(textas.get(monitors));
     td.x=p0;
-    SelectObject(hdcMem,hFontBold);
+    SelectObject(hdcMem,Popup.hFontBold);
     TextOutF(&td,td.col,STR(STR_SYSINF_MONITORS));td.x=p1;
-    SelectObject(hdcMem,hFontP);
+    SelectObject(hdcMem,Popup.hFontP);
     for(i=0;i<buf[0];i++)
     {
         x=buf[1+i*2];
@@ -745,10 +745,10 @@ void State::contextmenu2(int x,int y)
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(Settings.flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
 
     RECT rect;
-    SetForegroundWindow(hMain);
-    if(rtl)x=main1x_c-x;
-    GetWindowRect(hMain,&rect);
-    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,hMain,nullptr);
+    SetForegroundWindow(MainWindow.hMain);
+    if(rtl)x=MainWindow.main1x_c-x;
+    GetWindowRect(MainWindow.hMain,&rect);
+    TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
 }
 
 void State::save(const wchar_t *filename)

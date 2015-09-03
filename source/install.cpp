@@ -45,7 +45,7 @@ int _7z_setcomplited(long long i)
     ar_proceed=i;
     manager_g->items_list[itembar_act].updatecur();
     manager_g->updateoverall();
-    redrawfield();
+    MainWindow.redrawfield();
     return S_OK;
 }
 
@@ -81,7 +81,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
         if(Settings.flags&FLAG_DISABLEINSTALL)
             Sleep(2000);
         else
-            *ret=UpdateDriverForPlugAndPlayDevices(hMain,hwid,inf,INSTALLFLAG_FORCE,needrb);
+            *ret=UpdateDriverForPlugAndPlayDevices(MainWindow.hMain,hwid,inf,INSTALLFLAG_FORCE,needrb);
     }
 
     if(!*ret)*ret=GetLastError();
@@ -211,7 +211,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             manager_g->items_list[SLOT_RESTORE_POINT].percent=500;
             manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_REST_CREATING;
             itembar_act=SLOT_RESTORE_POINT;
-            redrawfield();
+            MainWindow.redrawfield();
 
             memset(&pRestorePtSpec,0,sizeof(RESTOREPOINTINFOW));
             pRestorePtSpec.dwEventType=BEGIN_SYSTEM_CHANGE;
@@ -242,7 +242,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_REST_FAILED;
             log_err("ERROR in thread_install: Failed to create restore point %d\n",hinstLib);
         }
-        redrawfield();
+        MainWindow.redrawfield();
         if(hinstLib)FreeLibrary(hinstLib);
         manager_g->set_rstpnt(0);
         manager_g->items_list[SLOT_RESTORE_POINT].percent=0;
@@ -267,8 +267,8 @@ goaround:
         wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
         manager_g->animstart=GetTickCount();
-        offset_target=(itembar->curpos>>16);
-        SetTimer(hMain,1,1000/60,nullptr);
+        MainWindow.offset_target=(itembar->curpos>>16);
+        SetTimer(MainWindow.hMain,1,1000/60,nullptr);
 
         // Extract
         extracttime=GetTickCount();
@@ -281,7 +281,7 @@ goaround:
             log_con("Already unpacked(%S)\n",inf);
             _7z_total(100);
             _7z_setcomplited(100);
-            redrawfield();
+            MainWindow.redrawfield();
         }
         else
         if(wcsstr(hwidmatch->getdrp_packname(),L"unpacked.7z"))
@@ -290,7 +290,7 @@ goaround:
             unpacked=1;
             _7z_total(100);
             _7z_setcomplited(100);
-            redrawfield();
+            MainWindow.redrawfield();
         }
         else
         {
@@ -309,7 +309,7 @@ goaround:
             }
             log_con("Extracting via '%S'\n",cmd);
             itembar->install_status=instflag&INSTALLDRIVERS?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
-            redrawfield();
+            MainWindow.redrawfield();
             int tries=0;
             do
             {
@@ -366,7 +366,7 @@ goaround:
             wsprintf(hwid,L"%S",hwidmatch->getdrp_drvHWID());
             log_con("Install32 '%S','%S'\n",hwid,inf);
             itembar->install_status=STR_INST_INSTALL;
-            redrawfield();
+            MainWindow.redrawfield();
 
             installtime=GetTickCount();
             LeaveCriticalSection(&sync);
@@ -404,7 +404,7 @@ goaround:
         if(!unpacked&&(Settings.flags&FLAG_DELEXTRAINFS))removeextrainfs(inf);
         if(instflag&INSTALLDRIVERS)itembar->percent=0;
         itembar->checked=0;
-        redrawmainwnd();
+        MainWindow.redrawmainwnd();
     }
     if(installmode==MODE_INSTALLING)
     {
@@ -447,10 +447,10 @@ goaround:
             needreboot?STR_INST_COMPLITED_RB:STR_INST_COMPLITED;
         installmode=MODE_SCANNING;
 
-        ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
+        ShowProgressInTaskbar(MainWindow.hMain,TBPF_NOPROGRESS,0,0);
         FLASHWINFO fi;
         fi.cbSize=sizeof(FLASHWINFO);
-        fi.hwnd=hMain;
+        fi.hwnd=MainWindow.hMain;
         fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
         fi.uCount=1;
         fi.dwTimeout=0;
@@ -462,9 +462,9 @@ goaround:
     ret_global=installed+(failed<<16);
     if(needreboot)ret_global|=0x40<<24;
     LeaveCriticalSection(&sync);
-    ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
+    ShowProgressInTaskbar(MainWindow.hMain,TBPF_NOPROGRESS,0,0);
     invalidate(INVALIDATE_DEVICES);
-    redrawmainwnd();
+    MainWindow.redrawmainwnd();
 
     return 0;
 }
