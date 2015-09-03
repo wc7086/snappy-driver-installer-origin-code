@@ -27,6 +27,7 @@ wchar_t extractdir[BUFLEN];
 
 long long totalinstalltime,totalextracttime;
 long long installtime,extracttime;
+//}
 
 //{ Installer
 void _7z_total(long long i)

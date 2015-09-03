@@ -255,7 +255,7 @@ int calc_secttype(const char *s)
     return -1;
 }
 
-int calc_decorscore(int id,State *state)
+int Hwidmatch::calc_decorscore(int id,State *state)
 {
     int major,
         minor,
@@ -268,7 +268,7 @@ int calc_decorscore(int id,State *state)
     return nts_score[id];
 }
 
-int calc_markerscore(State *state,const char *path)
+int Hwidmatch::calc_markerscore(State *state,const char *path)
 {
     char buf[BUFLEN];
     int majver,
@@ -276,7 +276,7 @@ int calc_markerscore(State *state,const char *path)
         arch=state->getArchitecture(),
         curmaj=-1,curmin=-1,curarch=-1;
     int i;
-    int score=0;
+    int score_l=0;
     state->getWinVer(&majver,&minver);
 
     strcpy(buf,path);
@@ -286,7 +286,7 @@ int calc_markerscore(State *state,const char *path)
     {
         if(StrStrIA(buf,markers[i].name))
         {
-            score=1;
+            score_l=1;
             if(markers[i].major==0){continue;}
             if(markers[i].major>curmaj)curmaj=markers[i].major;
             if(markers[i].minor>curmin)curmin=markers[i].minor;
@@ -300,12 +300,12 @@ int calc_markerscore(State *state,const char *path)
     +8  if OS version matches
     +16 if arch matches
 */
-    if(curmaj>=0&&curmin>=0&&majver==curmaj&&minver==curmin)score|=8;
-    if(curmaj>=0&&curmin>=0&&majver>=curmaj&&minver>=curmin)score|=2;
-    if(curmaj<0&&score)score|=2;
-    if(curarch>=0&&curarch==arch)score|=4+16;
-    if(curarch<0&&score)score|=4;
-    return score;
+    if(curmaj>=0&&curmin>=0&&majver==curmaj&&minver==curmin)score_l|=8;
+    if(curmaj>=0&&curmin>=0&&majver>=curmaj&&minver>=curmin)score_l|=2;
+    if(curmaj<0&&score_l)score_l|=2;
+    if(curarch>=0&&curarch==arch)score_l|=4+16;
+    if(curarch<0&&score_l)score_l|=4;
+    return score_l;
 }
 //}
 

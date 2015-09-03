@@ -50,11 +50,9 @@ extern const markers_t markers[NUM_MARKERS];
 
 // Calc
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
-int calc_signature(int catalogfile,State *state,int isnt);
 unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
 int calc_secttype(const char *s);
-int calc_decorscore(int id,State *state);
-int calc_markerscore(State *state,const char *path);
+int calc_signature(int catalogfile,State *state,int isnt);
 
 // Misc
 int cmpunsigned(unsigned a,unsigned b);
@@ -124,6 +122,8 @@ private:
     int isvalid_ver(State *state);
     int calc_altsectscore(State *state,int curscore);
     int calc_status(State *state);
+    int calc_decorscore(int id,State *state);
+    int calc_markerscore(State *state,const char *path);
 
 public:
     void setHWID_index(int index){HWID_index=index;}

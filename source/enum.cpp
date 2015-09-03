@@ -19,15 +19,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "device.h"
 
 //{ Global variables
-static const char *deviceststus_str[]=
-{
-    "Device is not present",
-    "Device is disabled",
-    "The device has the following problem: %d",
-    "The driver reported a problem with the device",
-    "Driver is running",
-    "Device is currently stopped"
-};
 
 #ifdef STORE_PROPS
 const dev devtbl[NUM_PROPS]=
@@ -155,6 +146,16 @@ int Device::print_status()
 
 void Device::print(State *state)
 {
+    static const char *deviceststus_str[]=
+    {
+        "Device is not present",
+        "Device is disabled",
+        "The device has the following problem: %d",
+        "The driver reported a problem with the device",
+        "Driver is running",
+        "Device is currently stopped"
+    };
+
     char *s=state->textas.get(0);
     Log.print_file("DeviceInfo\n");
     Log.print_file("  Name:         %S\n",s+Devicedesc);
@@ -730,8 +731,8 @@ void State::contextmenu2(int x,int y)
 
     for(int i=0;i<NUM_OS-1;i++)
     {
-        InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING|(ver==windows_ver[i]?MF_CHECKED:0),
-                   ID_WIN_2000+i,windows_name[i]);
+        InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING|(ver==getWindowsVer(i)?MF_CHECKED:0),
+                   ID_WIN_2000+i,getWindowsName(i));
     }
 
     int i=0;
@@ -1027,8 +1028,8 @@ const wchar_t *State::get_winverstr()
         else
             return L"Windows Server 2003";
     }
-    for(i=0;i<NUM_OS;i++)if(windows_ver[i]==ver)return windows_name[i];
-    return windows_name[NUM_OS-1];
+    for(i=0;i<NUM_OS;i++)if(getWindowsVer(i)==ver)return getWindowsName(i);
+    return getWindowsName(NUM_OS-1);
 }
 
 int State::opencatfile(Driver *cur_driver)
