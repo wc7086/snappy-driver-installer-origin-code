@@ -249,7 +249,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
     {
         case WM_MOUSEMOVE:
             drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
-            ShowWindow(hPopup,SW_SHOWNOACTIVATE);
+            ShowWindow(Popup.hPopup,SW_SHOWNOACTIVATE);
             if(!bMouseInWindow)
             {
                 bMouseInWindow=1;
@@ -556,7 +556,7 @@ void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
 
 void UpdateDialog_t::openDialog()
 {
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),hMain,(DLGPROC)UpdateProcedure);
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),MainWindow.hMain,(DLGPROC)UpdateProcedure);
 }
 
 void UpdateDialog_t::clearList()
@@ -620,7 +620,7 @@ void Updater_t::updateTorrentStatus()
 
     if(TorrentStatus.downloadsize)
         manager_g->itembar_settext(SLOT_DOWNLOAD,1,nullptr,-1,-1,TorrentStatus.downloaded*1000/TorrentStatus.downloadsize);
-    redrawfield();
+    MainWindow.redrawfield();
 }
 
 void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
@@ -954,8 +954,8 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
 
             // Show progress
             Updater.updateTorrentStatus();
-            ShowProgressInTaskbar(hMain,TBPF_NORMAL,TorrentStatus.downloaded,TorrentStatus.downloadsize);
-            InvalidateRect(hPopup,nullptr,0);
+            ShowProgressInTaskbar(MainWindow.hMain,TBPF_NORMAL,TorrentStatus.downloaded,TorrentStatus.downloadsize);
+            InvalidateRect(Popup.hPopup,nullptr,0);
 
             // Send libtorrent messages to log
             std::unique_ptr<alert> holder;
@@ -1005,13 +1005,13 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                     wsprintf(buf,L" /c %s",Settings.finish_upd);
                     run_command(L"cmd",buf,SW_HIDE,0);
                 }
-                if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
+                if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
 
                 // Flash in taskbar
-                ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);
+                ShowProgressInTaskbar(MainWindow.hMain,TBPF_NOPROGRESS,0,0);
                 FLASHWINFO fi;
                 fi.cbSize=sizeof(FLASHWINFO);
-                fi.hwnd=hMain;
+                fi.hwnd=MainWindow.hMain;
                 fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
                 fi.uCount=1;
                 fi.dwTimeout=0;

@@ -790,7 +790,7 @@ void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index
     td.hdcMem=hdcMem;
     td.i=0;
     td.limits=limits;
-    td.x=D(POPUP_OFSX)+horiz_sh;
+    td.x=D(POPUP_OFSX)+Popup.horiz_sh;
     td.y=y;
     td.col=0;
     td.mode=mode;
