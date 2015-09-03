@@ -54,8 +54,6 @@ torrent_handle hTorrent;
 session_settings settings;
 dht_settings dht;
 
-int numfiles;
-
 UpdateDialog_t UpdateDialog;
 Updater_t Updater;
 TorrentStatus_t TorrentStatus;
@@ -78,7 +76,6 @@ int Updater_t::finisheddownloading;
 HANDLE Updater_t::downloadmangar_event=nullptr;
 HANDLE Updater_t::thandle_download=nullptr;
 //}
-
 
 //{ UpdateDialog
 int UpdateDialog_t::getnewver(const char *s)
@@ -184,7 +181,7 @@ void UpdateDialog_t::setCheckboxes()
 
     // The app and indexes
     int baseChecked=0,indexesChecked=0;
-    for(int i=0;i<numfiles;i++)
+    for(int i=0;i<Updater.numfiles;i++)
     if(hTorrent.file_priority(i)==2)
     {
         if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))
@@ -213,7 +210,7 @@ void UpdateDialog_t::setCheckboxes()
 void UpdateDialog_t::setPriorities()
 {
     // Clear priorities for driverpacks
-    for(int i=0;i<numfiles;i++)
+    for(int i=0;i<Updater.numfiles;i++)
     if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
         hTorrent.file_priority(i,0);
 
@@ -233,7 +230,7 @@ void UpdateDialog_t::setPriorities()
     }
 
     // Set priorities for the app and indexes
-    for(int i=0;i<numfiles;i++)
+    for(int i=0;i<Updater.numfiles;i++)
     if(!StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
         hTorrent.file_priority(i,StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\")?indexes_pri:base_pri);
 }
@@ -401,17 +398,17 @@ int UpdateDialog_t::populate(int update)
     boost::intrusive_ptr<torrent_info const> ti;
     std::vector<size_type> file_progress;
     ti=hTorrent.torrent_file();
-    numfiles=0;
+    Updater.numfiles=0;
     if(!ti)return 0;
     hTorrent.file_progress(file_progress);
-    numfiles=ti->num_files();
+    Updater.numfiles=ti->num_files();
 
     // Calculate size and progress for the app and indexes
     int missingindexes=0;
     int newver=0;
     int basesize=0,basedownloaded=0;
     int indexsize=0,indexdownloaded=0;
-    for(int i=0;i<numfiles;i++)
+    for(int i=0;i<Updater.numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
         const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
@@ -482,7 +479,7 @@ int UpdateDialog_t::populate(int update)
     }
 
     // Add driverpacks to the list
-    for(int i=0;i<numfiles;i++)
+    for(int i=0;i<Updater.numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
         const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
@@ -546,7 +543,7 @@ void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
     char buf[BUFLEN];
     wsprintfA(buf,"%S",name);
 
-    for(int i=0;i<numfiles;i++)
+    for(int i=0;i<Updater.numfiles;i++)
     if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),buf))
     {
         hTorrent.file_priority(i,pri);

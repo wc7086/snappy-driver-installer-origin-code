@@ -19,7 +19,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global variables
 
-// Manager
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 int volatile installmode=MODE_NONE;
@@ -36,18 +35,29 @@ int bundle_display=1;
 int bundle_shadow=0;
 
 // Windows name
-const wchar_t *windows_name[NUM_OS]=
+const wchar_t *getWindowsName(int a)
 {
-    L"Windows 2000",
-    L"Windows XP",
-    L"Windows Vista",
-    L"Windows 7",
-    L"Windows 8",
-    L"Windows 8.1",
-    L"Windows 10",
-    L"Unknown OS"
-};
-int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
+    static const wchar_t *windows_name[NUM_OS]=
+    {
+        L"Windows 2000",
+        L"Windows XP",
+        L"Windows Vista",
+        L"Windows 7",
+        L"Windows 8",
+        L"Windows 8.1",
+        L"Windows 10",
+        L"Unknown OS"
+    };
+
+    return windows_name[a];
+}
+
+int getWindowsVer(int a)
+{
+    static int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
+
+    return windows_ver[a];
+}
 //}
 
 //{ Objects
@@ -1742,7 +1752,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
             if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
             {
-                Settings.virtual_os_version=windows_ver[wp-ID_WIN_2000];
+                Settings.virtual_os_version=getWindowsVer(wp-ID_WIN_2000);
                 invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)

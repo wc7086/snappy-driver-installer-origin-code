@@ -93,6 +93,7 @@ private:
     void moveNewFiles();
 
 public:
+    int numfiles;
     static int torrentport,downlimit,uplimit,connections;
 
     void checkUpdates();

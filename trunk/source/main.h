@@ -201,16 +201,6 @@ enum MOUSE_STATE
     MOUSE_SCROLL       = 3,
 };
 
-// Left panel types
-enum panel_type
-{
-    TYPE_GROUP         = 1,
-    TYPE_TEXT          = 2,
-    TYPE_CHECKBOX      = 3,
-    TYPE_BUTTON        = 4,
-    TYPE_GROUP_BREAK   = 5,
-};
-
 // Messages
 enum MessagesWND
 {
@@ -365,8 +355,8 @@ extern Settings_t Settings;
 
 // Windows version
 #define NUM_OS 8
-extern const wchar_t *windows_name[NUM_OS];
-extern int windows_ver[NUM_OS];
+const wchar_t *getWindowsName(int a);
+int getWindowsVer(int a);
 //}
 
 //Bundle

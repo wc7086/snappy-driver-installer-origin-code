@@ -94,6 +94,15 @@ public:
 };
 
 // Panel
+enum panel_type
+{
+    TYPE_GROUP         = 1,
+    TYPE_TEXT          = 2,
+    TYPE_CHECKBOX      = 3,
+    TYPE_BUTTON        = 4,
+    TYPE_GROUP_BREAK   = 5,
+};
+
 struct Panelitem
 {
     int type;
