@@ -621,7 +621,7 @@ void Manager::filter(int options)
                 j--;
                 continue;
             }
-            if(flags&FLAG_FILTERSP&&j)continue;
+            if(Settings.flags&FLAG_FILTERSP&&j)continue;
 
             if(itembar->checked||itembar->install_status)itembar->isactive=1;
 
@@ -655,7 +655,7 @@ void Manager::filter(int options)
                     cnt[NUM_STATUS]++;
             }
 
-            if(flags&FLAG_FILTERSP&&itembar->hwidmatch->getAltsectscore()==2&&!itembar->hwidmatch->isvalidcat(matcher->getState()))
+            if(Settings.flags&FLAG_FILTERSP&&itembar->hwidmatch->getAltsectscore()==2&&!itembar->hwidmatch->isvalidcat(matcher->getState()))
                 itembar->hwidmatch->setAltsectscore(1);
 
             for(k=0;k<NUM_STATUS;k++)
@@ -685,7 +685,7 @@ void Manager::filter(int options)
             }
 
 
-            if(itembar->isactive&&flags&FLAG_SHOWDRPNAMES2)
+            if(itembar->isactive&&Settings.flags&FLAG_SHOWDRPNAMES2)
             {
                 if(itembar_drp)
                 {
@@ -722,10 +722,10 @@ void Manager::filter(int options)
 
     items_list[SLOT_NOUPDATES].isactive=
         items_list.size()==RES_SLOTS||
-        (i==0&&statemode==0&&matcher->getCol()->size()>1)?1:0;
+        (i==0&&Settings.statemode==0&&matcher->getCol()->size()>1)?1:0;
 
-    items_list[SLOT_RESTORE_POINT].isactive=statemode==
-        STATEMODE_EMUL||i==0||(flags&FLAG_NORESTOREPOINT)?0:1;
+    items_list[SLOT_RESTORE_POINT].isactive=Settings.statemode==
+        STATEMODE_EMUL||i==0||(Settings.flags&FLAG_NORESTOREPOINT)?0:1;
     //set_rstpnt(0);
 
     if(!items_list[SLOT_RESTORE_POINT].install_status)
@@ -772,7 +772,7 @@ void Manager::print_hr()
     for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
-            if(flags&FLAG_FILTERSP&&!itembar->hwidmatch->isvalidcat(matcher->getState()))continue;
+            if(Settings.flags&FLAG_FILTERSP&&!itembar->hwidmatch->isvalidcat(matcher->getState()))continue;
             wchar_t buf[BUFLEN];
             itembar->str_status(buf);
             log_file("\n$%04d, %S\n",k,buf);
@@ -869,7 +869,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             ofs=(itembar->first&1)?0:D(DRVITEM_LINE_INTEND);
             if(x-ofs>0)*r=i;
             if(x-ofs>0&&x-ofs<D(ITEM_CHECKBOX_SIZE)&&y>0&&y<D(ITEM_CHECKBOX_SIZE))*zone=1;
-            if(x>wx-50&&!ofs)*zone=expertmode?2:2;
+            if(x>wx-50&&!ofs)*zone=Settings.expertmode?2:2;
             if(!*zone&&(x-ofs<D(ITEM_CHECKBOX_SIZE)))*zone=3;
             if(!*zone&&(x>240+190))*zone=3;
             if(kbpanel==KB_NONE)return;
@@ -891,7 +891,7 @@ void Manager::clear()
     }
     items_list[SLOT_EXTRACTING].isactive=0;
     items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
-    filter(filters);
+    filter(Settings.filters);
     setpos();
     invalidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
 }
@@ -940,7 +940,7 @@ void Manager::testitembars()
     itembar=&items_list[0];
 
     filter(FILTER_SHOW_CURRENT|FILTER_SHOW_NEWER);
-    wcscpy(drpext_dir,L"drpext");
+    wcscpy(Settings.drpext_dir,L"drpext");
     items_list[SLOT_EMPTY].curpos=1;
 
     for(i=0;i<items_list.size();i++,itembar++)
@@ -1262,7 +1262,7 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
     int wx=XG(D(DRVITEM_WX),x);
     int r=D(boxindex[itembar->box_status()]+3);
     int intend=0;
-    int oldstyle=flags&FLAG_SHOWDRPNAMES1||flags&FLAG_OLDSTYLE;
+    int oldstyle=Settings.flags&FLAG_SHOWDRPNAMES1||Settings.flags&FLAG_OLDSTYLE;
 
     int pos=(itembar->curpos>>16)-D(DRVITEM_DIST_Y0);
     if(index>=SLOT_RESTORE_POINT)pos-=ofsy;
@@ -1405,11 +1405,11 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_SNAPSHOT:
-            itembar->drawbutton(hdc,x,pos,state_file,STR(STR_CLOSE_SNAPSHOT));
+            itembar->drawbutton(hdc,x,pos,Settings.state_file,STR(STR_CLOSE_SNAPSHOT));
             break;
 
         case SLOT_DPRDIR:
-            itembar->drawbutton(hdc,x,pos,drpext_dir,STR(STR_CLOSE_DRPEXT));
+            itembar->drawbutton(hdc,x,pos,Settings.drpext_dir,STR(STR_CLOSE_DRPEXT));
             break;
 
         case SLOT_VIRUS_AUTORUN:
@@ -1494,7 +1494,7 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
                 else
                     DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
 
-                if(flags&FLAG_SHOWDRPNAMES1)
+                if(Settings.flags&FLAG_SHOWDRPNAMES1)
                 {
                     int len=wcslen(matcher->getCol()->getDriverpack_dir());
                     int lnn=len-wcslen(itembar->hwidmatch->getdrp_packpath());
@@ -1650,9 +1650,9 @@ void Manager::restorepos1(Manager *manager_prev)
 
     memcpy(&items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
     populate();
-    filter(filters);
-    items_list[SLOT_SNAPSHOT].isactive=statemode==STATEMODE_EMUL?1:0;
-    items_list[SLOT_DPRDIR].isactive=*drpext_dir?1:0;
+    filter(Settings.filters);
+    items_list[SLOT_SNAPSHOT].isactive=Settings.statemode==STATEMODE_EMUL?1:0;
+    items_list[SLOT_DPRDIR].isactive=*Settings.drpext_dir?1:0;
     restorepos(manager_prev);
     //viruscheck(L"",0,0);
     setpos();
@@ -1664,7 +1664,7 @@ void Manager::restorepos1(Manager *manager_prev)
     UpdateDialog.populate(0);
     #endif
     //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
-    if(flags&FLAG_AUTOINSTALL)
+    if(Settings.flags&FLAG_AUTOINSTALL)
     {
         int cnt=0;
         if(installmode==MODE_SCANNING)
@@ -1677,14 +1677,14 @@ void Manager::restorepos1(Manager *manager_prev)
                 cnt++;
             }
 
-            if(!cnt)flags&=~FLAG_AUTOINSTALL;
+            if(!cnt)Settings.flags&=~FLAG_AUTOINSTALL;
             log_con("Autoinstall rescan: %d found\n",cnt);
         }
 
         if(installmode==MODE_NONE||(installmode==MODE_SCANNING&&cnt))
         {
             if(!panels[11].isChecked(3))selectall();
-            if((flags&FLAG_EXTRACTONLY)==0)
+            if((Settings.flags&FLAG_EXTRACTONLY)==0)
             wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.get(matcher->getState()->getTemp()));
             install(INSTALLDRIVERS);
         }
@@ -1696,12 +1696,12 @@ void Manager::restorepos1(Manager *manager_prev)
             if(panels[11].isChecked(3))
                 wcscpy(buf,L" /c Shutdown.exe -r -t 3");
             else
-                wsprintf(buf,L" /c %s",needreboot?finish_rb:finish);
+                wsprintf(buf,L" /c %s",needreboot?Settings.finish_rb:Settings.finish);
 
-            if(*(needreboot?finish_rb:finish)||panels[11].isChecked(3))
+            if(*(needreboot?Settings.finish_rb:Settings.finish)||panels[11].isChecked(3))
                 run_command(L"cmd",buf,SW_HIDE,0);
 
-            if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
+            if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
         }
     }
     else

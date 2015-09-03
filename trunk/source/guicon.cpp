@@ -78,7 +78,7 @@ void gen_timestamp()
     GetComputerName(pcname,&sz);
     time(&rawtime);
     ti=localtime(&rawtime);
-    if(flags&FLAG_NOSTAMP)
+    if(Settings.flags&FLAG_NOSTAMP)
         *timestamp=0;
     else
         wsprintf(timestamp,L"%4d_%02d_%02d__%02d_%02d_%02d__%s_",
@@ -90,7 +90,7 @@ void log_start(wchar_t *logdir)
 {
     wchar_t filename[BUFLEN];
 
-    if(flags&FLAG_NOLOGFILE)return;
+    if(Settings.flags&FLAG_NOLOGFILE)return;
     setlocale(LC_ALL,"");
     //system("chcp 1251");
 
@@ -348,7 +348,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
     int type;
     int update=0;
 
-    if(flags&FLAG_NOVIRUSALERTS)return;
+    if(Settings.flags&FLAG_NOVIRUSALERTS)return;
     type=GetDriveType(nullptr);
 
     // autorun.inf

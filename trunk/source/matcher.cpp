@@ -629,7 +629,7 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
     if(StrStrIA(getdrp_infpath(),"matchmarker\\"))
         if((calc_markerscore(state,getdrp_infpath())&7)!=7)return 0;
 
-    if(flags&FLAG_FILTERSP)return 2;
+    if(Settings.flags&FLAG_FILTERSP)return 2;
 
     if(StrStrIA(getdrp_infpath(),"tweak"))return 1;
     if(StrStrIA(getdrp_infname(),"tweak"))return 1;

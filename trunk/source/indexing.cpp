@@ -200,7 +200,7 @@ int cmpdate(Version *t1,Version *t2)
 {
     int res;
 
-    if(flags&FLAG_FILTERSP&&t2->y<1000)return 0;
+    if(Settings.flags&FLAG_FILTERSP&&t2->y<1000)return 0;
 
     res=t1->y-t2->y;
     if(res)return res;
@@ -218,7 +218,7 @@ int cmpversion(Version *t1,Version *t2)
 {
     int res;
 
-    if(flags&FLAG_FILTERSP&&t2->v1<0)return 0;
+    if(Settings.flags&FLAG_FILTERSP&&t2->v1<0)return 0;
 
     res=t1->v1-t2->v1;
     if(res)return res;
@@ -528,7 +528,7 @@ int Collection::scanfolder_count(const wchar_t *path)
             for(i=0;i<6;i++)
             if(StrStrIW(FindFileData.cFileName,olddrps[i]))
             {
-                if(flags&(FLAG_AUTOINSTALL|FLAG_NOGUI))break;
+                if(Settings.flags&(FLAG_AUTOINSTALL|FLAG_NOGUI))break;
                 wsprintf(buf,L" /c del \"%s\\%s*.7z\" /Q /F",driverpack_dir,olddrps[i]);
                 run_command(L"cmd",buf,SW_HIDE,1);
                 break;
@@ -536,7 +536,7 @@ int Collection::scanfolder_count(const wchar_t *path)
             if(i==6&&StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 Driverpack drp{path,FindFileData.cFileName,this};
-                if(flags&COLLECTION_FORCE_REINDEXING||!drp.checkindex())cnt++;
+                if(Settings.flags&COLLECTION_FORCE_REINDEXING||!drp.checkindex())cnt++;
             }
         }
     }
@@ -638,7 +638,7 @@ Collection::Collection(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,c
 
 void Collection::updatedir()
 {
-    driverpack_dir=*drpext_dir?drpext_dir:drp_dir;
+    driverpack_dir=*Settings.drpext_dir?Settings.drpext_dir:Settings.drp_dir;
     populate();
 }
 
@@ -672,7 +672,7 @@ void Collection::populate()
         cons[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::loaddrp_thread,&queuedriverpack,0,nullptr);
 //}thread
 
-    if(flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
+    if(Settings.flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
     drp_cur=1;
 
     scanfolder(driverpack_dir,&queuedriverpack);
@@ -687,7 +687,7 @@ void Collection::populate()
     loadOnlineIndexes();
 
     manager_g->itembar_setactive(SLOT_INDEXING,0);
-    if(driverpack_list.size()<=1&&(flags&FLAG_DPINSTMODE)==0)
+    if(driverpack_list.size()<=1&&(Settings.flags&FLAG_DPINSTMODE)==0)
         manager_g->itembar_settext(SLOT_NODRIVERS,L"",0);
     driverpack_list[0].genhashes();
 
@@ -700,7 +700,7 @@ void Collection::populate()
         CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
     }
 //}thread
-    flags&=~COLLECTION_FORCE_REINDEXING;
+    Settings.flags&=~COLLECTION_FORCE_REINDEXING;
     driverpack_list.shrink_to_fit();
     time_indexes=GetTickCount()-time_indexes;
 }
@@ -710,7 +710,7 @@ void Collection::save()
     #ifdef CONSOLE_MODE
     return;
     #endif
-    if(*drpext_dir)return;
+    if(*Settings.drpext_dir)return;
     if(!canWrite(index_bin_dir))
     {
         log_err("ERROR in collection_save(): Write-protected,'%S'\n",index_bin_dir);
@@ -721,7 +721,7 @@ void Collection::save()
     // Save indexes
     count_=0;
     cur_=1;
-    if((flags&FLAG_KEEPUNPACKINDEX)==0)
+    if((Settings.flags&FLAG_KEEPUNPACKINDEX)==0)
         driverpack_list[0].setType(DRIVERPACK_TYPE_INDEXED);
     for(auto &driverpack:driverpack_list)
         if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
@@ -757,7 +757,7 @@ void Collection::save()
             if(FindFileData.cFileName[0]==L'_')continue;
             wsprintf(filename,L"%s\\%s",index_bin_dir,FindFileData.cFileName);
             unsigned i;
-            for(i=flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
+            for(i=Settings.flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
             {
                 wchar_t buf1[BUFLEN];
                 driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf1);
@@ -1687,7 +1687,7 @@ unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
         if(data.drp==nullptr)break;
 
         Driverpack *drp=data.drp;
-        if(flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
+        if(Settings.flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
         {
             drp->objs_new=new concurrent_queue<inffile_task>;
             queuedriverpack_p->push(driverpack_task{drp});
@@ -1759,7 +1759,7 @@ unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
         wchar_t bufw2[BUFLEN];
         wsprintf(bufw2,L"%ws\\%ws",data.drp->getPath(),data.drp->getFilename());
         log_con("Saving indexes for '%S'\n",bufw2);
-        if(flags&COLLECTION_USE_LZMA)manager_g->itembar_settext(SLOT_INDEXING,2,bufw2,cur_,count_);
+        if(Settings.flags&COLLECTION_USE_LZMA)manager_g->itembar_settext(SLOT_INDEXING,2,bufw2,cur_,count_);
         cur_++;
         data.drp->saveindex();
     }
@@ -1768,7 +1768,7 @@ unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
 
 int Driverpack::checkindex()
 {
-    if(*drpext_dir)return 0;
+    if(*Settings.drpext_dir)return 0;
 
     wchar_t filename[BUFLEN];
     getindexfilename(col->getIndex_bin_dir(),L"bin",filename);
@@ -1813,13 +1813,13 @@ int Driverpack::loadindex()
     sz-=3+sizeof(int);
 
     if(memcmp(buf,"SDW",3)||version!=VER_INDEX)if(version!=0x204)return 0;
-    if(*drpext_dir)return 0;
+    if(*Settings.drpext_dir)return 0;
 
     p=mem=new char[sz];
     log_con("");// A fix for a compiler bug
     fread(mem,sz,1,f);
 
-    if(flags&COLLECTION_USE_LZMA)
+    if(Settings.flags&COLLECTION_USE_LZMA)
     {
         UInt64 sz_unpack;
 
@@ -1881,7 +1881,7 @@ void Driverpack::saveindex()
     p=vector_save(text_ind.getVector(),p);
     p=indexes.save(p);
 
-    if(flags&COLLECTION_USE_LZMA)
+    if(Settings.flags&COLLECTION_USE_LZMA)
     {
         mem_pack=new char[sz];
         sz=encode(mem_pack,sz,mem,sz);
