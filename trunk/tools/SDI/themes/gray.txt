@@ -6,14 +6,15 @@ FONT_SIZE                = 14
 
 // Main window
 MAINWND_WX               = 1094
-MAINWND_WY               = 875 //855
+MAINWND_WY               = 856
 MAINWND_MINX             = 480
 MAINWND_MINY             = 369
 MAINWND_INSIDE_COLOR     = 0x2D2D2D
 
 // Popup
+POPUP_FONT_SIZE          = 11
 POPUP_WX                 = 450
-POPUP_WY                 = 16
+POPUP_WY                 = 13
 POPUP_INSIDE_COLOR       = 0xEFFFFF
 
 // Popup, driver comparsion
@@ -38,7 +39,7 @@ KBHLT_INSIDE_COLOR       = 0x009999
 PANEL_OFSX               = 14
 PANEL_OFSY               = 10
 PANEL_WX                 = 188
-PANEL_WY                 = 22
+PANEL_WY                 = 21
 PANEL_INSIDE_COLOR       = MAINWND_INSIDE_COLOR
 PANEL_OUTLINE_COLOR      = 0x777777
 PANEL_OUTLINE_ROUND      = 0
@@ -53,38 +54,42 @@ PANEL2_WY                = 27
 PANEL2_OUTLINE_WIDTH     = 0
 
 // Panel, lang_theme
-PANEL3_OFSY              = 101
+PANEL3_OFSY              = 98
 
 // Panel, actions
 PANEL4_OFSX              = 10
-PANEL4_OFSY              = 345
+PANEL4_OFSY              = 337
 PANEL4_WX                = 196
 PANEL4_WY                = 21
 PANEL4_OUTLINE_WIDTH     = 0
 
 // Panel, filters (found)
-PANEL5_OFSY              = 449
+PANEL5_OFSY              = 441
+PANEL5_WY                = 22
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 624
+PANEL6_OFSY              = 616
 
 // Panel, filters (special)
-PANEL7_OFSY              = 733
+PANEL7_OFSY              = 721
+
+// Panel, revision
+PANEL8_OFSX              = 10
 
 // Panel, install button
 PANEL9_OFSX              = 10
-PANEL9_OFSY              = 229
+PANEL9_OFSY              = 221
 PANEL9_WX                = 196
 PANEL9_WY                = 48
 PANEL9_OUTLINE_WIDTH     = 1
 
 // Panel, selectall button
 PANEL10_WY               = 26
-PANEL10_OFSY             = 278
+PANEL10_OFSY             = 270
 
 // Panel, selectnone button
 PANEL11_WY               = PANEL10_WY
-PANEL11_OFSY             = 305
+PANEL11_OFSY             = 297
 
 // Items on left panel
 PNLITEM_WY               = 22
