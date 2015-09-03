@@ -117,7 +117,7 @@ bool Settings_t::argflg(const wchar_t *s,const wchar_t *cmp,int f)
 
 void Settings_t::parse(const wchar_t *str,int ind)
 {
-    log_con("Args:[%S]\n",str);
+    Log.print_con("Args:[%S]\n",str);
     int argc;
     wchar_t **argv=CommandLineToArgvW(str,&argc);
     for(int i=ind;i<argc;i++)
@@ -164,10 +164,10 @@ void Settings_t::parse(const wchar_t *str,int ind)
         {
             wchar_t cmd[BUFLEN];
             wsprintf(cmd,L"7za.exe %s",StrStrIW(str,L"-7z")+4);
-            log_con("Executing '%S'\n",cmd);
+            Log.print_con("Executing '%S'\n",cmd);
             registerall();
             ret_global=Extract7z(cmd);
-            log_con("Ret: %d\n",ret_global);
+            Log.print_con("Ret: %d\n",ret_global);
             statemode=STATEMODE_EXIT;
             break;
         }
@@ -183,12 +183,12 @@ void Settings_t::parse(const wchar_t *str,int ind)
         if(!wcscmp(pr,L"-install")&&argc-i==3)
         {
             wchar_t buf[BUFLEN];
-            log_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
+            Log.print_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
             GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
             wsprintf(extractdir,L"%s\\SDI",buf);
             installmode=MODE_INSTALLING;
             driver_install(argv[i+1],argv[i+2],&ret_global,&needreboot);
-            log_con("Ret: %X,%d\n",ret_global,needreboot);
+            Log.print_con("Ret: %X,%d\n",ret_global,needreboot);
             if(needreboot)ret_global|=0x80000000;
             wsprintf(buf,L" /c rd /s /q \"%s\"",extractdir);
             run_command(L"cmd",buf,SW_HIDE,1);
@@ -212,7 +212,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
         if(!StrCmpIW(pr,L"-delextrainfs")) flags|=FLAG_DELEXTRAINFS;else
 
         if( StrStrIW(pr,L"-ls:"))          {wcscpy(state_file,pr+4);statemode=STATEMODE_EMUL;}else
-        if( StrStrIW(pr,L"-verbose:"))     log_verbose=_wtoi_my(pr+9);else
+        if( StrStrIW(pr,L"-verbose:"))     Log.set_verbose(_wtoi_my(pr+9));else
         if(!StrCmpIW(pr,L"-nologfile"))    flags|=FLAG_NOLOGFILE;else
         if(!StrCmpIW(pr,L"-nosnapshot"))   flags|=FLAG_NOSNAPSHOT;else
         if(!StrCmpIW(pr,L"-nostamp"))      flags|=FLAG_NOSTAMP;else
@@ -226,7 +226,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
         if( StrStrIW(pr,HWIDINSTALLED_DEF))    Parse_HWID_installed_swith(pr); else
         if( StrStrIW(pr,GFG_DEF))              continue;
         else
-            log_err("Unknown argument '%S'\n",pr);
+            Log.print_err("Unknown argument '%S'\n",pr);
         if(statemode==STATEMODE_EXIT)break;
     }
     ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
@@ -242,7 +242,7 @@ void Settings_t::save()
     if(flags&FLAG_PRESERVECFG)return;
     if(!canWrite(L"sdi.cfg"))
     {
-        log_err("ERROR in settings_save(): Write-protected,'sdi.cfg'\n");
+        Log.print_err("ERROR in settings_save(): Write-protected,'sdi.cfg'\n");
         return;
     }
     FILE *f=_wfopen(L"sdi.cfg",L"wt");
@@ -275,31 +275,31 @@ void Settings_t::save()
 
 void Settings_t::loginfo()
 {
-    if(log_verbose&LOG_VERBOSE_ARGS)
+    if(Log.isAllowed(LOG_VERBOSE_ARGS))
     {
-        log_con("Settings\n");
-        log_con("  drp_dir='%S'\n",drp_dir);
-        log_con("  index_dir='%S'\n",index_dir);
-        log_con("  output_dir='%S'\n",output_dir);
-        log_con("  data_dir='%S'\n",data_dir);
-        log_con("  log_dir='%S'\n",log_dir);
-        log_con("  extractdir='%S'\n",extractdir);
-        log_con("  lang=%S\n",curlang);
-        log_con("  theme=%S\n",curtheme);
-        log_con("  expertmode=%d\n",expertmode);
-        log_con("  filters=%d\n",filters);
-        log_con("  autoinstall=%d\n",flags&FLAG_AUTOINSTALL?1:0);
-        log_con("  autoclose=%d\n",flags&FLAG_AUTOCLOSE?1:0);
-        log_con("  failsafe=%d\n",flags&FLAG_FAILSAFE?1:0);
-        log_con("  delextrainfs=%d\n",flags&FLAG_DELEXTRAINFS?1:0);
-        log_con("  checkupdates=%d\n",flags&FLAG_CHECKUPDATES?1:0);
-        log_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
-        log_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
-        log_con("\n");
-        if(statemode==STATEMODE_EMUL)log_con("Virtual system system config '%S'\n",state_file);
-        if(virtual_arch_type)log_con("Virtual Windows version: %d-bit\n",virtual_arch_type);
-        if(virtual_os_version)log_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
-        log_con("\n");
+        Log.print_con("Settings\n");
+        Log.print_con("  drp_dir='%S'\n",drp_dir);
+        Log.print_con("  index_dir='%S'\n",index_dir);
+        Log.print_con("  output_dir='%S'\n",output_dir);
+        Log.print_con("  data_dir='%S'\n",data_dir);
+        Log.print_con("  log_dir='%S'\n",log_dir);
+        Log.print_con("  extractdir='%S'\n",extractdir);
+        Log.print_con("  lang=%S\n",curlang);
+        Log.print_con("  theme=%S\n",curtheme);
+        Log.print_con("  expertmode=%d\n",expertmode);
+        Log.print_con("  filters=%d\n",filters);
+        Log.print_con("  autoinstall=%d\n",flags&FLAG_AUTOINSTALL?1:0);
+        Log.print_con("  autoclose=%d\n",flags&FLAG_AUTOCLOSE?1:0);
+        Log.print_con("  failsafe=%d\n",flags&FLAG_FAILSAFE?1:0);
+        Log.print_con("  delextrainfs=%d\n",flags&FLAG_DELEXTRAINFS?1:0);
+        Log.print_con("  checkupdates=%d\n",flags&FLAG_CHECKUPDATES?1:0);
+        Log.print_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
+        Log.print_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
+        Log.print_con("\n");
+        if(statemode==STATEMODE_EMUL)Log.print_con("Virtual system system config '%S'\n",state_file);
+        if(virtual_arch_type)Log.print_con("Virtual Windows version: %d-bit\n",virtual_arch_type);
+        if(virtual_os_version)Log.print_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
+        Log.print_con("\n");
     }
 }
 
@@ -320,7 +320,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     UNREFERENCED_PARAMETER(pStr);
     ghInst=hInst;
 
-    time_total=GetTickCount();
+    Timers.start(time_total);
 
     // Hide the console window as soon as possible
     #ifndef CONSOLE_MODE
@@ -380,7 +380,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Start logging
     ExpandEnvironmentStrings(Settings.logO_dir,Settings.log_dir,BUFLEN);
-    log_start(Settings.log_dir);
+    Log.start(Settings.log_dir);
     Settings.loginfo();
 
     #ifdef BENCH_MODE
@@ -460,8 +460,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Stop logging
     //time_total=GetTickCount()-time_total;
-    log_times();
-    log_stop();
+    Timers.print();
+    Log.stop();
 
     // Exit
     return ret_global;
@@ -483,7 +483,7 @@ void MainWindow_t::gui(int nCmd)
     wcx.hbrBackground=  (HBRUSH)(COLOR_WINDOW+1);
     if(!RegisterClassEx(&wcx))
     {
-        log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
+        Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
         return;
     }
 
@@ -493,7 +493,7 @@ void MainWindow_t::gui(int nCmd)
     wcx.hIcon=nullptr;
     if(!RegisterClassEx(&wcx))
     {
-        log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
+        Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
         UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
         return;
     }
@@ -503,7 +503,7 @@ void MainWindow_t::gui(int nCmd)
     wcx.lpszClassName=classField;
     if(!RegisterClassEx(&wcx))
     {
-        log_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
+        Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
         UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
         UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
         return;
@@ -518,7 +518,7 @@ void MainWindow_t::gui(int nCmd)
                         nullptr,nullptr,ghInst,nullptr);
     if(!hMain)
     {
-        log_err("ERROR in gui(): failed to create '%S' window\n",classMain);
+        Log.print_err("ERROR in gui(): failed to create '%S' window\n",classMain);
         return;
     }
 
@@ -531,7 +531,7 @@ void MainWindow_t::gui(int nCmd)
     {
         /*int f;
         f=lang_enum(hLang,L"langs",manager_g->matcher->state->locale);
-        log_con("lang %d\n",f);
+        Log.print_con("lang %d\n",f);
         lang_set(f);*/
 
         //if(MessageBox(0,STR(STR_UPD_DIALOG_MSG),STR(STR_UPD_DIALOG_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
@@ -686,11 +686,11 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
         if(deviceupdate_exitflag)break;
         bundle[bundle_shadow].bundle_init();
             /*static long long prmem;
-            log_con("Total mem:%ld KB(%ld)\n",nvwa::total_mem_alloc/1024,nvwa::total_mem_alloc-prmem);
+            Log.print_con("Total mem:%ld KB(%ld)\n",nvwa::total_mem_alloc/1024,nvwa::total_mem_alloc-prmem);
             prmem=nvwa::total_mem_alloc;*/
 
         // Update bundle
-        log_con("*** START *** %d,%d [%d]\n",bundle_display,bundle_shadow,invaidate_set);
+        Log.print_con("*** START *** %d,%d [%d]\n",bundle_display,bundle_shadow,invaidate_set);
         bundle[bundle_shadow].bundle_prep();
         bundle[bundle_shadow].bundle_load(&bundle[bundle_display]);
 
@@ -701,12 +701,12 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
 
         if(cancel_update)
         {
-            log_con("*** CANCEL ***\n\n");
+            Log.print_con("*** CANCEL ***\n\n");
             SetEvent(deviceupdate_event);
         }
         else
         {
-            log_con("*** FINISH primary ***\n\n");
+            Log.print_con("*** FINISH primary ***\n\n");
             invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
             if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)
@@ -724,16 +724,16 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             }
 
             // Save indexes, write info, etc
-            log_con("{2Sync\n");
+            Log.print_con("{2Sync\n");
             EnterCriticalSection(&sync);
 
             bundle[bundle_shadow].bundle_lowprioirity();
-            log_con("*** FINISH secondary ***\n\n");
+            Log.print_con("*** FINISH secondary ***\n\n");
 
             // Swap display and shadow bundle
             bundle_display^=1;
             bundle_shadow^=1;
-            log_con("}2Sync\n");
+            Log.print_con("}2Sync\n");
             bundle[bundle_shadow].bundle_init();
             LeaveCriticalSection(&sync);
         }
@@ -758,16 +758,17 @@ void Bundle::bundle_load(Bundle *pbundle)
 {
     HANDLE thandle[3];
 
-    time_test=GetTickCount();
+    Timers.start(time_test);
 
     // Copy data from shadow if it's not updated
     if((invaidate_set&INVALIDATE_DEVICES)==0)
     {
-        state=pbundle->state;time_devicescan=0;
+        state=pbundle->state;
+        Timers.reset(time_devicescan);
         if(invaidate_set&INVALIDATE_SYSINFO)state.getsysinfo_fast();
     }
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
-    if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;time_indexes=0;}
+    if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;Timers.reset(time_indexes);}
 
 
     thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,&state,0,nullptr);
@@ -786,14 +787,14 @@ void Bundle::bundle_load(Bundle *pbundle)
     state.genmarker();
     matcher.getState()->textas.shrink();
     matcher.populate();
-    time_test=GetTickCount()-time_test;
+    Timers.stop(time_test);
 }
 
 void Bundle::bundle_lowprioirity()
 {
     wchar_t filename[BUFLEN];
-    if(!time_startup)time_startup=GetTickCount()-time_total;
-    log_times();
+    Timers.stoponce(time_startup,time_total);
+    Timers.print();
 
     MainWindow.redrawmainwnd();
 
@@ -807,16 +808,16 @@ void Bundle::bundle_lowprioirity()
     #endif
 
     collection.save();
-    gen_timestamp();
-    wsprintf(filename,L"%s\\%sstate.snp",Settings.log_dir,timestamp);
+    Log.gen_timestamp();
+    wsprintf(filename,L"%s\\%sstate.snp",Settings.log_dir,Log.getTimestamp());
     state.save(filename);
 
     if(Settings.flags&COLLECTION_PRINT_INDEX)
     {
-        log_con("Saving humanreadable indexes...");
+        Log.print_con("Saving humanreadable indexes...");
         collection.print_index_hr();
         Settings.flags&=~COLLECTION_PRINT_INDEX;
-        log_con("DONE\n");
+        Log.print_con("DONE\n");
     }
 }
 //}
@@ -850,7 +851,7 @@ void MainWindow_t::lang_refresh()
 {
     if(!hMain||!hField)
     {
-        log_err("ERROR in lang_refresh(): hMain is %d, hField is %d\n",hMain,hField);
+        Log.print_err("ERROR in lang_refresh(): hMain is %d, hField is %d\n",hMain,hField);
         return;
     }
 
@@ -871,27 +872,27 @@ void MainWindow_t::lang_refresh()
 void MainWindow_t::theme_refresh()
 {
     // Set font
-    if(hFont&&!DeleteObject(hFont))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
+    if(hFont&&!DeleteObject(hFont))Log.print_err("ERROR in manager_setfont(): failed DeleteObject\n");
     hFont=CreateFont(-D(FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                 CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!hFont)log_err("ERROR in manager_setfont(): failed CreateFont\n");
+    if(!hFont)Log.print_err("ERROR in manager_setfont(): failed CreateFont\n");
 
-    if(Popup.hFontP&&!DeleteObject(Popup.hFontP))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
+    if(Popup.hFontP&&!DeleteObject(Popup.hFontP))Log.print_err("ERROR in manager_setfont(): failed DeleteObject\n");
     Popup.hFontP=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                 CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!Popup.hFontP)log_err("ERROR in manager_setfont(): failed CreateFont\n");
+    if(!Popup.hFontP)Log.print_err("ERROR in manager_setfont(): failed CreateFont\n");
 
-    if(Popup.hFontBold&&!DeleteObject(Popup.hFontBold))log_err("ERROR in manager_setfont(): failed DeleteObject\n");
+    if(Popup.hFontBold&&!DeleteObject(Popup.hFontBold))Log.print_err("ERROR in manager_setfont(): failed DeleteObject\n");
     Popup.hFontBold=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                 CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!Popup.hFontBold)log_err("ERROR in manager_setfont(): failed CreateFont\n");
+    if(!Popup.hFontBold)Log.print_err("ERROR in manager_setfont(): failed CreateFont\n");
 
     SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
     SendMessage(hLang,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
 
     if(!hMain||!hField)
     {
-        log_err("ERROR in theme_refresh(): hMain is %d, hField is %d\n",hMain,hField);
+        Log.print_err("ERROR in theme_refresh(): hMain is %d, hField is %d\n",hMain,hField);
         return;
     }
 
@@ -942,7 +943,7 @@ void MainWindow_t::extractto()
         wchar_t **argv=CommandLineToArgvW(GetCommandLineW(),&argc);
         wsprintf(buf,L"%s\\drv.exe",dir);
         if(!CopyFile(argv[0],buf,0))
-            log_err("ERROR in extractto(): failed CopyFile(%S,%S)\n",argv[0],buf);
+            Log.print_err("ERROR in extractto(): failed CopyFile(%S,%S)\n",argv[0],buf);
         LocalFree(argv);
 
         wcscat(dir,L"\\drivers");
@@ -982,7 +983,7 @@ void MainWindow_t::setscrollrange(int y)
 {
     if(!hField)
     {
-        log_err("ERROR in setscrollrange(): hField is 0\n");
+        Log.print_err("ERROR in setscrollrange(): hField is 0\n");
         return;
     }
 
@@ -1003,7 +1004,7 @@ int MainWindow_t::getscrollpos()
 {
     if(!hField)
     {
-        log_err("ERROR in getscrollpos(): hField is 0\n");
+        Log.print_err("ERROR in getscrollpos(): hField is 0\n");
         return 0;
     }
 
@@ -1019,7 +1020,7 @@ void MainWindow_t::setscrollpos(int pos)
 {
     if(!hField)
     {
-        log_err("ERROR in setscrollpos(): hField is 0\n");
+        Log.print_err("ERROR in setscrollpos(): hField is 0\n");
         return;
     }
 
@@ -1037,7 +1038,7 @@ void get_resource(int id,void **data,int *size)
     HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
     if(!myResource)
     {
-        log_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
+        Log.print_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
         *size=0;
         *data=nullptr;
         return;
@@ -1051,7 +1052,7 @@ void mkdir_r(const wchar_t *path)
     if(path[1]==L':'&&path[2]==0)return;
     if(!canWrite(path))
     {
-        log_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
+        Log.print_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
         return;
     }
 
@@ -1062,12 +1063,12 @@ void mkdir_r(const wchar_t *path)
     {
         *p=0;
         if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
-            log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+            Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
         *p=L'\\';
         p++;
     }
     if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
-        log_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+        Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 
 void escapeAmpUrl(wchar_t *buf,const wchar_t *source)
@@ -1134,8 +1135,8 @@ void setMirroring(HWND hwnd)
 
 void checktimer(const wchar_t *str,long long t,int uMsg)
 {
-    if(GetTickCount()-t>20&&log_verbose&LOG_VERBOSE_LAGCOUNTER)
-        log_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
+    if(GetTickCount()-t>20&&Log.isAllowed(LOG_VERBOSE_LAGCOUNTER))
+        Log.print_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
 }
 
 void MainWindow_t::redrawfield()
@@ -1143,7 +1144,7 @@ void MainWindow_t::redrawfield()
     if(Settings.flags&FLAG_NOGUI)return;
     if(!hField)
     {
-        log_err("ERROR in redrawfield(): hField is 0\n");
+        Log.print_err("ERROR in redrawfield(): hField is 0\n");
         return;
     }
     InvalidateRect(hField,nullptr,0);
@@ -1154,7 +1155,7 @@ void MainWindow_t::redrawmainwnd()
     if(Settings.flags&FLAG_NOGUI)return;
     if(!hMain)
     {
-        log_err("ERROR in redrawmainwnd(): hMain is 0\n");
+        Log.print_err("ERROR in redrawmainwnd(): hMain is 0\n");
         return;
     }
     InvalidateRect(hMain,nullptr,0);
@@ -1356,11 +1357,11 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             Settings.wndwy=rect.bottom-rect.top;
 
             if(!DeleteObject(hFont))
-                log_err("ERROR in manager_free(): failed DeleteObject\n");
+                Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
             if(!DeleteObject(Popup.hFontP))
-                log_err("ERROR in manager_free(): failed DeleteObject\n");
+                Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
             if(!DeleteObject(Popup.hFontBold))
-                log_err("ERROR in manager_free(): failed DeleteObject\n");
+                Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
             if(mon_lang)mon_lang->stop();
             if(mon_theme)mon_theme->stop();
             delete canvasMain;
@@ -1400,9 +1401,9 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             {
                 Bundle *bb=(Bundle *)wParam;
                 Manager *manager_prev=manager_g;
-                log_con("{Sync");
+                Log.print_con("{Sync");
                 EnterCriticalSection(&sync);
-                log_con("...\n");
+                Log.print_con("...\n");
                 manager_active++;
                 manager_active&=1;
                 manager_g=&manager_v[manager_active];
@@ -1573,7 +1574,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_DEVICECHANGE:
             if(installmode==MODE_INSTALLING)break;
-            log_con("WM_DEVICECHANGE(%x,%x)\n",wParam,lParam);
+            Log.print_con("WM_DEVICECHANGE(%x,%x)\n",wParam,lParam);
             invalidate(INVALIDATE_DEVICES);
             break;
 

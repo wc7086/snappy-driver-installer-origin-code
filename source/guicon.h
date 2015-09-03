@@ -14,6 +14,36 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+// Timer
+enum TIMER
+{
+    time_total,
+    time_startup,
+    time_indexes,
+    time_devicescan,
+    time_chkupdate,
+    time_indexsave,
+    time_indexprint,
+    time_sysinfo,
+    time_matcher,
+    time_test,
+    time_NUM,
+};
+
+class Timers_t
+{
+    long timers[time_NUM];
+public:
+    void start(int a){timers[a]=GetTickCount();}
+    void stop(int a){if(timers[a])timers[a]=GetTickCount()-timers[a];}
+    void reset(int a){timers[a]=0;}
+    void print();
+    void stoponce(int a,int b){if(!timers[a])timers[a]=GetTickCount()-timers[b];}
+};
+extern Timers_t Timers;
+
+// Logging
 enum LOG_VERBOSE
 {
     LOG_VERBOSE_ARGS      = 0x0001,
@@ -30,42 +60,52 @@ enum LOG_VERBOSE
     LOG_VERBOSE_BATCH     = 0x0800,
 };
 
-// Global variables
-extern int log_verbose;
-extern int log_console;
-extern int error_count;
-extern wchar_t timestamp[BUFLEN];
-extern long
-    time_total,
-    time_startup,
-    time_indexes,
-    time_devicescan,
-    time_chkupdate,
-    time_indexsave,
-    time_indexprint,
-    time_sysinfo,
-    time_matcher,
-    time_test;
+#define print_index print_nul
 
-//#define log_index log
-#ifndef log_index
-#define log_index log_nul
-#endif
+class Log_t
+{
+private:
+    wchar_t timestamp[BUFLEN];
+    FILE *logfile=nullptr;
+    int error_count=0;
+    int log_console=0;
+    int log_verbose=
+        LOG_VERBOSE_ARGS|
+        LOG_VERBOSE_SYSINFO|
+        LOG_VERBOSE_DEVICES|
+        LOG_VERBOSE_MATCHER|
+        LOG_VERBOSE_MANAGER|
+        LOG_VERBOSE_DRP|
+        LOG_VERBOSE_TIMES|
+        LOG_VERBOSE_LOG_ERR|
+        LOG_VERBOSE_LOG_CON|
+        //LOG_VERBOSE_LAGCOUNTER|
+        //LOG_VERBOSE_DEVSYNC|
+        0;
 
-// Logging
-void log_times();
-void gen_timestamp();
-void log_start(wchar_t *log_dir);
-void log_save();
-void log_stop();
-void log_file(CHAR const *format,...);
-void log_err(CHAR const *format,...);
-void log_con(CHAR const *format,...);
-void log_nul(CHAR const *format,...);
+public:
+    void print_con(CHAR const *format,...);
+    void print_file(CHAR const *format,...);
+    void print_err(CHAR const *format,...);
+    void print_syserr(int r,const wchar_t *s);
+    void print_nul(CHAR const *format,...);
+
+    void gen_timestamp();
+    void start(wchar_t *log_dir);
+    void save();
+    void stop();
+
+    bool isAllowed(int a){return (log_verbose&a)==a;}
+    bool isHidden(int a){return !(log_verbose&a);}
+    void set_verbose(int a){log_verbose=a;}
+    void set_mode(int a){log_console=a;}
+    int getErrorCount(){return error_count;}
+    wchar_t *getTimestamp(){return timestamp;}
+};
+extern Log_t Log;
 
 // Error handling
 const wchar_t *errno_str();
-void print_error(int r,const wchar_t *s);
 void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
 void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
 void start_exception_hadnlers();

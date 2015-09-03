@@ -108,7 +108,7 @@ void SaveHWID(wchar_t *hwid)
     {
         FILE *f=_wfopen(CLIParam.SaveInstalledFileName,L"a+");
         if(!f)
-          log_err("Failed to create '%S'\n",CLIParam.SaveInstalledFileName);
+          Log.print_err("Failed to create '%S'\n",CLIParam.SaveInstalledFileName);
         fwprintf(f,L"%s",hwid);
         fwprintf(f,L"\n");
         fclose(f);
@@ -136,7 +136,7 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
     unsigned tmpLen=wcslen(HWIDINSTALLED_DEF);
     if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
     {
-        log_err("invalid parameter %S\n",ParamStr);
+        Log.print_err("invalid parameter %S\n",ParamStr);
         ret_global=ERROR_BAD_LENGTH;
         Settings.statemode=STATEMODE_EXIT;
         return;
@@ -194,12 +194,12 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
         ExpandPath(CLIParam.SaveInstalledFileName);
         FILE *f;
         f=_wfopen(CLIParam.SaveInstalledFileName,L"rt");
-        if(!f)log_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
+        if(!f)Log.print_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
         else
         {
             while(fgetws(buf,sizeof(buf),f))
             {
-                //log_con("'%S'\n", buf);
+                //Log.print_con("'%S'\n", buf);
                 if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)
                 {
                     ret_global=1;
@@ -240,11 +240,11 @@ bool loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
     *DestStr=0;
 
     ExpandEnvironmentStringsW(FileName,Buff,BUFLEN);
-    log_con("Opening '%S'\n",Buff);
+    Log.print_con("Opening '%S'\n",Buff);
     f=_wfopen(Buff,L"rt");
     if(!f)
     {
-        log_err("Failed to open '%S'\n",Buff);
+        Log.print_err("Failed to open '%S'\n",Buff);
         return false;
     }
 

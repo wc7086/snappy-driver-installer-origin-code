@@ -91,7 +91,7 @@ void Vault::parse()
         int r=findvar(lhs);
         if(r<0)
         {
-            log_err("ERROR: unknown var '%S'\n",lhs);
+            Log.print_err("ERROR: unknown var '%S'\n",lhs);
         }else
         {
             wchar_t *r1;
@@ -153,7 +153,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
     FILE *f=_wfopen(filename,L"rb");
     if(!f)
     {
-        log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
+        Log.print_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
         return false;
     }
 
@@ -162,13 +162,13 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
     fseek(f,0,SEEK_SET);
     if(sz<10)
     {
-        log_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
+        Log.print_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
         fclose(f);
         return false;
     }
     datav_ptr.reset(new wchar_t[sz+1]);
     wchar_t *datav=datav_ptr.get();
-    //log_con("Read '%S':%d\n",filename,sz);
+    //Log.print_con("Read '%S':%d\n",filename,sz);
 
     fread(datav,2,1,f);
     if(!memcmp(datav,"\xEF\xBB",2))// UTF-8
@@ -207,7 +207,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
         f=_wfopen(filename,L"rt");
         if(!f)
         {
-            log_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
+            Log.print_err("ERROR in loadfile(): failed _wfopen(%S)\n",filename);
             return false;
         }
         wchar_t *p=datav;(sz)--;
@@ -227,7 +227,7 @@ void Vault::loadFromFile(wchar_t *filename)
     if(!filename[0])return;
     if(!loadFromEncodedFile(filename))
     {
-        log_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
+        Log.print_err("ERROR in vault_loadfromfile(): failed to load '%S'\n",filename);
         return;
     }
     parse();
@@ -252,7 +252,7 @@ void Vault::loadFromRes(int id)
     datav[sz]=0;
     parse();
     for(int i=0;i<num;i++)
-        if(entry[i].init<1)log_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
+        if(entry[i].init<1)Log.print_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
 Vault::Vault(){}
@@ -269,7 +269,7 @@ void Vault::init1(entry_t *entryv,int numv,int resv)
 
 void Vault::load(int i)
 {
-    //log_con("vault %d,'%S'\n",i,namelist[i]);
+    //Log.print_con("vault %d,'%S'\n",i,namelist[i]);
     loadFromRes(res);
     if(i<0)return;
     loadFromFile(namelist[i]);
@@ -308,13 +308,13 @@ void theme_set(int i)
             if(!wcscmp(str,D_STR(boxindex[j]+4)))
         {
             box[i].makecopy(box[j]);
-            //log_con("%d Copy %S %d\n",i,str,j);
+            //Log.print_con("%d Copy %S %d\n",i,str,j);
             break;
         }
         if(i==j)
         {
             box[i].load(boxindex[i]+4);
-            //log_con("%d New  %S\n",i,str);
+            //Log.print_con("%d New  %S\n",i,str);
         }
     }
     for(i=0;i<ICON_NUM;i++)
@@ -325,13 +325,13 @@ void theme_set(int i)
             if(!wcscmp(str,D_STR(iconindex[j])))
         {
             icon[i].makecopy(icon[j]);
-            //log_con("%d Copy %S %d\n",i,str,j);
+            //Log.print_con("%d Copy %S %d\n",i,str,j);
             break;
         }
         if(i==j)
         {
             icon[i].load(iconindex[i]);
-            //log_con("%d New  %S\n",i,str);
+            //Log.print_con("%d New  %S\n",i,str);
         }
     }
 }

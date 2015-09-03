@@ -19,11 +19,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 Test::Test()
 {
-    log_con("Test(%s) created\n",s.c_str());
+    Log.print_con("Test(%s) created\n",s.c_str());
 }
 Test::~Test()
 {
-    log_con("Test destroyed\n");
+    Log.print_con("Test destroyed\n");
 }
 
 //{ Txt
@@ -97,7 +97,7 @@ void Txt::reset(int sz)
 
 void Txt::shrink()
 {
-    //log_con("Text_usage %d/%d\n",text.size(),text.capacity());
+    //Log.print_con("Text_usage %d/%d\n",text.size(),text.capacity());
     text.shrink_to_fit();
 }
 //}
@@ -279,11 +279,11 @@ int unicode2ansi(char *s,char *out,int size)
 {
     int ret,flag;
     size/=2;
-    /*if(!out)log_err("Error out:\n");
-    if(!s)log_err("Error in:\n");
-    if(size<0)log_err("Error size:\n");*/
+    /*if(!out)Log.log_err("Error out:\n");
+    if(!s)Log.log_err("Error in:\n");
+    if(size<0)Log.log_err("Error size:\n");*/
     ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),out,size,nullptr,&flag);
-    if(!ret)print_error(GetLastError(),L"unicode2ansi()");
+    if(!ret)Log.print_syserr(GetLastError(),L"unicode2ansi()");
     out[size]=0;
     return ret;
 }

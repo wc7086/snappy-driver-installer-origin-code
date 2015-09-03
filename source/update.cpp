@@ -328,7 +328,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 
         case WM_TIMER:
             if(hSession&&hSession->is_paused()==0)UpdateDialog.populate(1);
-            //log_con(".");
+            //Log.print_con(".");
             break;
 
         case WM_COMMAND:
@@ -550,7 +550,7 @@ void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
     if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),buf))
     {
         hTorrent.file_priority(i,pri);
-        log_con("Req(%S,%d)\n",name,pri);
+        Log.print_con("Req(%S,%d)\n",name,pri);
     }
 }
 
@@ -638,7 +638,7 @@ void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
             if(!s)return;
             wchar_t buf[BUFLEN];
             wsprintf(buf,L"%ws\\%s",Settings.drp_dir,s);
-            log_con("Old file: %S\n",buf);
+            Log.print_con("Old file: %S\n",buf);
             _wremove(buf);
             return;
         }
@@ -704,9 +704,9 @@ void Updater_t::moveNewFiles()
         }
 
         // Move file
-        log_con("New file: %S\n",filenamefull_dst);
+        Log.print_con("New file: %S\n",filenamefull_dst);
         if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
-            print_error(GetLastError(),L"MoveFileEx()");
+            Log.print_syserr(GetLastError(),L"MoveFileEx()");
     }
     run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
@@ -799,21 +799,21 @@ void Updater_t::destroyThreads()
 {
     if(thandle_download)
     {
-        log_con("Stopping torrent thread...");
+        Log.print_con("Stopping torrent thread...");
         downloadmangar_exitflag=1;
         SetEvent(downloadmangar_event);
         WaitForSingleObject(thandle_download,INFINITE);
         CloseHandle_log(thandle_download,L"thandle_download",L"thr");
         CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
-        log_con("DONE\n");
+        Log.print_con("DONE\n");
         thandle_download=nullptr;
     }
 
     if(hSession)
     {
-        log_con("Closing torrent session...");
+        Log.print_con("Closing torrent session...");
         delete hSession;
-        log_con("DONE\n");
+        Log.print_con("DONE\n");
         hSession=nullptr;
     }
 }
@@ -824,7 +824,7 @@ void Updater_t::downloadTorrent()
     int i;
     add_torrent_params params;
 
-    time_chkupdate=GetTickCount();
+    Timers.start(time_chkupdate);
     hSession=new session();
 
     hSession->start_lsd();
@@ -833,8 +833,8 @@ void Updater_t::downloadTorrent()
 
     // Connecting
     hSession->listen_on(std::make_pair(torrentport,torrentport),ec);
-    if(ec)log_err("ERROR: failed to open listen socket: %s\n",ec.message().c_str());
-    log_con("Listen port: %d (%s)\nDownload limit: %dKb\nUpload limit: %dKb\n",
+    if(ec)Log.print_err("ERROR: failed to open listen socket: %s\n",ec.message().c_str());
+    Log.print_con("Listen port: %d (%s)\nDownload limit: %dKb\nUpload limit: %dKb\n",
             hSession->listen_port(),hSession->is_listening()?"connected":"disconnected",
             downlimit,uplimit);
 
@@ -868,7 +868,7 @@ void Updater_t::downloadTorrent()
     params.url=TORRENT_URL;
     params.flags=add_torrent_params::flag_paused;
     hTorrent=hSession->add_torrent(params,ec);
-    if(ec)log_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
+    if(ec)Log.print_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
 
     // Pause and set speed limits
     hSession->pause();
@@ -878,25 +878,25 @@ void Updater_t::downloadTorrent()
     hTorrent.resume();
 
     // Download torrent
-    log_con("Waiting for torrent");
+    Log.print_con("Waiting for torrent");
     for(i=0;i<200;i++)
     {
-        log_con(".");
+        Log.print_con(".");
         if(hTorrent.torrent_file())
         {
-            log_con("DONE\n");
+            Log.print_con("DONE\n");
             break;
         }
         if(downloadmangar_exitflag)break;
         Sleep(100);
     }
-    log_con(hTorrent.torrent_file()?"":"FAILED\n");
+    Log.print_con(hTorrent.torrent_file()?"":"FAILED\n");
 
     // Pupulate list
     i=UpdateDialog.populate(0);
-    log_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
+    Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
     for(i=0;i<numfiles;i++)hTorrent.file_priority(i,0);
-    time_chkupdate=GetTickCount()-time_chkupdate;
+    Timers.stop(time_chkupdate);
 }
 
 void Updater_t::resumeDownloading()
@@ -910,7 +910,7 @@ void Updater_t::resumeDownloading()
     if(hSession->is_paused())
     {
         hTorrent.force_recheck();
-        log_con("torrent_resume\n");
+        Log.print_con("torrent_resume\n");
         SetEvent(downloadmangar_event);
     }
     hSession->resume();
@@ -924,11 +924,11 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     UNREFERENCED_PARAMETER(arg)
 
     // Wait till is allowed to download the torrent
-    log_con("{thread_download\n");
+    Log.print_con("{thread_download\n");
     WaitForSingleObject(downloadmangar_event,INFINITE);
     if(downloadmangar_exitflag)
     {
-        log_con("}thread_download(idle)\n");
+        Log.print_con("}thread_download(idle)\n");
         return 0;
     }
 
@@ -947,7 +947,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         if(downloadmangar_exitflag)break;
 
         // Downloading loop
-        log_con("{torrent_start\n");
+        Log.print_con("{torrent_start\n");
         while(!downloadmangar_exitflag&&hSession)
         {
             Sleep(500);
@@ -962,30 +962,30 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
             holder=hSession->pop_alert();
             while(holder.get())
             {
-                log_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
+                Log.print_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
                 holder=hSession->pop_alert();
             }
 
             if(finisheddownloading)
             {
-                log_con("Torrent: finished\n");
+                Log.print_con("Torrent: finished\n");
                 hSession->pause();
 
                 // Flash cache
-                log_con("Torrent: flushing cache...");
+                Log.print_con("Torrent: flushing cache...");
                 hTorrent.flush_cache();
                 while(1)
                 {
                     alert const* a=hSession->wait_for_alert(seconds(60*2));
                     if(!a)
                     {
-                        log_con("time out\n");
+                        Log.print_con("time out\n");
                         break;
                     }
                     std::unique_ptr<alert> holder2=hSession->pop_alert();
                     if(alert_cast<cache_flushed_alert>(a))
                     {
-                        log_con("done\n");
+                        Log.print_con("done\n");
                         break;
                     }
                 }
@@ -1025,10 +1025,10 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         Updater.updateTorrentStatus();
         monitor_pause=0;
         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
-        log_con("}torrent_stop\n");
+        Log.print_con("}torrent_stop\n");
         ResetEvent(downloadmangar_event);
     }
-    log_con("}thread_download\n");
+    Log.print_con("}thread_download\n");
     return 0;
 }
 

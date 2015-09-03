@@ -18,57 +18,30 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 //{ Global variables
-FILE *logfile=nullptr;
-int error_count=0;
-int log_console=0;
-wchar_t timestamp[BUFLEN];
 Filemon *mon_vir;
-
-int log_verbose=
-    LOG_VERBOSE_ARGS|
-    LOG_VERBOSE_SYSINFO|
-    LOG_VERBOSE_DEVICES|
-    LOG_VERBOSE_MATCHER|
-    LOG_VERBOSE_MANAGER|
-    LOG_VERBOSE_DRP|
-    LOG_VERBOSE_TIMES|
-    LOG_VERBOSE_LOG_ERR|
-    LOG_VERBOSE_LOG_CON|
-    //LOG_VERBOSE_LAGCOUNTER|
-    //LOG_VERBOSE_DEVSYNC|
-    0;
-
-long
-    time_total=0,
-    time_startup=0,
-    time_indexes=0,
-    time_devicescan=0,
-    time_chkupdate=0,
-    time_indexsave=0,
-    time_indexprint=0,
-    time_sysinfo=0,
-    time_matcher=0,
-    time_test=0;
+Log_t Log;
+Timers_t Timers;
 //}
 
 //{ Logging
-void log_times()
+
+void Timers_t::print()
 {
-    if((log_verbose&LOG_VERBOSE_TIMES)==0)return;
-    log_con("Times\n");
-    log_con("  devicescan: %7ld (%d errors)\n",time_devicescan,error_count);
-    log_con("  indexes:    %7ld\n",time_indexes);
-    log_con("  sysinfo:    %7ld\n",time_sysinfo);
-    log_con("  matcher:    %7ld\n",time_matcher);
-    log_con("  chkupdate:  %7ld\n",time_chkupdate);
-    log_con("  startup:    %7ld (%ld)\n",time_startup,time_startup-time_devicescan-time_indexes-time_matcher-time_sysinfo);
-    log_con("  indexsave:  %7ld\n",time_indexsave);
-    log_con("  indexprint: %7ld\n",time_indexprint);
-    log_con("  total:      %7ld\n",GetTickCount()-time_total);
-    log_con("  test:       %7ld\n",time_test);
+    if(Log.isHidden(LOG_VERBOSE_TIMES))return;
+    Log.print_con("Times\n");
+    Log.print_con("  devicescan: %7ld (%d errors)\n",timers[time_devicescan],Log.getErrorCount());
+    Log.print_con("  indexes:    %7ld\n",timers[time_indexes]);
+    Log.print_con("  sysinfo:    %7ld\n",timers[time_sysinfo]);
+    Log.print_con("  matcher:    %7ld\n",timers[time_matcher]);
+    Log.print_con("  chkupdate:  %7ld\n",timers[time_chkupdate]);
+    Log.print_con("  startup:    %7ld (%ld)\n",timers[time_startup],timers[time_startup]-timers[time_devicescan]-timers[time_indexes]-timers[time_matcher]-timers[time_sysinfo]);
+    Log.print_con("  indexsave:  %7ld\n",timers[time_indexsave]);
+    Log.print_con("  indexprint: %7ld\n",timers[time_indexprint]);
+    Log.print_con("  total:      %7ld\n",GetTickCount()-timers[time_total]);
+    Log.print_con("  test:       %7ld\n",timers[time_test]);
 }
 
-void gen_timestamp()
+void Log_t::gen_timestamp()
 {
     wchar_t pcname[BUFLEN];
     time_t rawtime;
@@ -86,7 +59,7 @@ void gen_timestamp()
              ti->tm_hour,ti->tm_min,ti->tm_sec,pcname);
 }
 
-void log_start(wchar_t *logdir)
+void Log_t::start(wchar_t *logdir)
 {
     wchar_t filename[BUFLEN];
 
@@ -99,7 +72,7 @@ void log_start(wchar_t *logdir)
     wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
     if(!canWrite(filename))
     {
-        log_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
+        Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
         wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
@@ -109,7 +82,7 @@ void log_start(wchar_t *logdir)
     logfile=_wfopen(filename,L"wt");
     if(!logfile)
     {
-        log_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
+        Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
         wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
@@ -117,24 +90,24 @@ void log_start(wchar_t *logdir)
         logfile=_wfopen(filename,L"wb");
     }
     if((log_verbose&LOG_VERBOSE_BATCH)==0)
-        log_file("{start logging\n%s\n\n",SVN_REV_STR);
+        Log.print_file("{start logging\n%s\n\n",SVN_REV_STR);
 }
 
-void log_save()
+void Log_t::save()
 {
     if(!logfile)return;
     fflush(logfile);
 }
 
-void log_stop()
+void Log_t::stop()
 {
     if(!logfile)return;
     if((log_verbose&LOG_VERBOSE_BATCH)==0)
-        log_file("}stop logging");
+        Log.print_file("}stop logging");
     fclose(logfile);
 }
 
-void log_file(CHAR const *format,...)
+void Log_t::print_file(CHAR const *format,...)
 {
     CHAR buffer[1024*16];
 
@@ -147,7 +120,7 @@ void log_file(CHAR const *format,...)
     va_end(args);
 }
 
-void log_err(CHAR const *format,...)
+void Log_t::print_err(CHAR const *format,...)
 {
     CHAR buffer[1024*16];
 
@@ -160,7 +133,7 @@ void log_err(CHAR const *format,...)
     va_end(args);
 }
 
-void log_con(CHAR const *format,...)
+void Log_t::print_con(CHAR const *format,...)
 {
     CHAR buffer[1024*16];
 
@@ -173,7 +146,7 @@ void log_con(CHAR const *format,...)
     va_end(args);
 }
 
-void log_nul(CHAR const *format,...)
+void Log_t::print_nul(CHAR const *format,...)
 {
     UNREFERENCED_PARAMETER(format);
 }
@@ -226,25 +199,25 @@ const wchar_t *errno_str()
     }
 }
 
-void print_error(int r,const wchar_t *s)
+void Log_t::print_syserr(int r,const wchar_t *s)
 {
     wchar_t buf[BUFLEN];
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
                     nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPWSTR)&buf,BUFLEN,nullptr);
-    log_err("ERROR with %S:[%d]'%S'\n",s,r,buf);
+    Log.print_err("ERROR with %S:[%d]'%S'\n",s,r,buf);
     error_count++;
 }
 
 void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj)
 {
     if(!CloseHandle(h))
-        log_err("ERROR in %S(): failed CloseHandle(%S)\n",func,obj);
+        Log.print_err("ERROR in %S(): failed CloseHandle(%S)\n",func,obj);
 }
 
 void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj)
 {
     if(!UnregisterClass(lpClassName,hInstance))
-        log_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
+        Log.print_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
 }
 
 static void myterminate()
@@ -278,8 +251,9 @@ static void myterminate()
     {
         wsprintf(buf,L"Exception: unknown");
     }
-    log_err("ERROR: %S\n",buf);
-    log_save();
+    Log.print_err("ERROR: %S\n",buf);
+    Log.save();
+    Log.stop();
     wcscat(buf,L"\n\nThe program will self terminate now.");
     MessageBox(MainWindow.hMain,buf,L"Exception",MB_ICONERROR);
 
@@ -288,7 +262,7 @@ static void myterminate()
 
 static void myunexpected()
 {
-    log_err("ERROR: myunexpected()\n");
+    Log.print_err("ERROR: myunexpected()\n");
     myterminate();
 }
 
@@ -300,9 +274,9 @@ void start_exception_hadnlers()
 
 void SignalHandler(int signum)
 {
-    log_err("!!! Crashed %d!!!\n",signum);
-    log_save();
-    log_stop();
+    Log.print_err("!!! Crashed %d!!!\n",signum);
+    Log.save();
+    Log.stop();
 }
 
 #undef new
@@ -310,12 +284,12 @@ void* operator new(size_t size, const char* file, int line)
 {
     try
     {
-        //log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        //Log.print_con("File '%s',Line %d,Size %d\n",file,line,size);
         return new char[size];
     }
     catch(...)
     {
-        log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        Log.print_con("File '%s',Line %d,Size %d\n",file,line,size);
         throw;
     }
 }
@@ -323,12 +297,12 @@ void* operator new[](size_t size, const char* file, int line)
 {
     try
     {
-        //log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        //Log.print_con("File '%s',Line %d,Size %d\n",file,line,size);
         return new char[size];
     }
     catch(...)
     {
-        log_con("File '%s',Line %d,Size %d\n",file,line,size);
+        Log.print_con("File '%s',Line %d,Size %d\n",file,line,size);
         throw;
     }
 }
@@ -368,7 +342,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
                     manager_g->itembar_setactive(SLOT_VIRUS_AUTORUN,update=1);
             }
             else
-                log_con("NOTE: cannot open autorun.inf [error: %d]\n",errno);
+                Log.print_con("NOTE: cannot open autorun.inf [error: %d]\n",errno);
         }
     }
 
@@ -392,7 +366,7 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
                 wchar_t bufw[BUFLEN];
                 wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
                 if(PathFileExists(bufw))continue;
-                log_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
+                Log.print_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
                 manager_g->itembar_setactive(SLOT_VIRUS_HIDDEN,update=1);
             }
         }
@@ -478,7 +452,7 @@ void CALLBACK Filemon::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesT
 
                 errno=0;
                 wsprintf(buf,L"%ws\\%ws",pMonitor->dir,szFile);
-                log_con("{\n  changed'%S'\n",buf);
+                Log.print_con("{\n  changed'%S'\n",buf);
                 f=_wfsopen(buf,L"rb",0x10); //deny read/write mode
                 if(f)m=2;
                 if(!f)
@@ -523,10 +497,10 @@ void CALLBACK Filemon::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesT
                         flag=0;
                 }
 
-                log_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
+                Log.print_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
 
                 if(flag)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
-                log_con("}\n\n");
+                Log.print_con("}\n\n");
 			}
 		}while(pNotify->NextEntryOffset!=0);
 	}
@@ -575,7 +549,7 @@ DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait)
     ShExecInfo.lpParameters=cmd;
     ShExecInfo.nShow=show;
 
-    log_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
+    Log.print_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
     if(!wcscmp(file,L"open"))
         ShellExecute(nullptr,L"open",cmd,nullptr,nullptr,SW_SHOWNORMAL);
     else
@@ -602,8 +576,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024;i++)sprintf(buf,"Test str %ws",L"wchar str");
     tm2=GetTickCount()-tm2;
-    log_con("%c wsprintfA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c sprintf   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c wsprintfA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c sprintf   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024;i++)wsprintfW(bufw,L"Test str %s",L"wchar str");
@@ -611,8 +585,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024;i++)swprintf(bufw,L"Test str %s",L"wchar str");
     tm2=GetTickCount()-tm2;
-    log_con("%c wsprintfW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c swprintf  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c wsprintfW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c swprintf  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)strcasecmp("Test str %ws","wchar str");
@@ -620,8 +594,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
     tm2=GetTickCount()-tm2;
-    log_con("%c strcasecmp \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c strcasecmp \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrCmpIW(L"Test str %ws",L"wchar str");
@@ -629,8 +603,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)wcsicmp(L"Test str %ws",L"wchar str");
     tm2=GetTickCount()-tm2;
-    log_con("%c StrCmpIW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c wcsicmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrCmpIW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c wcsicmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrCmpIA("Test str %ws","wchar str");
@@ -638,8 +612,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
     tm2=GetTickCount()-tm2;
-    log_con("%c StrCmpIA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrCmpIA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrCmpW(L"Test str %ws",bufw); // StrCmpW == lstrcmp
@@ -647,8 +621,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)wcscmp(L"Test str %ws",bufw);
     tm2=GetTickCount()-tm2;
-    log_con("%c StrCmpW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c wcscmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrCmpW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c wcscmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)a=StrCmpA("Test str %ws",buf);
@@ -656,8 +630,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)a=strcmp("Test str %ws",buf);
     tm2=GetTickCount()-tm2;
-    log_con("%c StrCmpA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c strcmp \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrCmpA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strcmp \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrStrA("Test str %ws",buf);
@@ -665,8 +639,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)strstr("Test str %ws","Test str %ws");
     tm2=GetTickCount()-tm2;
-    log_con("%c StrStrA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c strstr \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrStrA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strstr \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrStrW(L"Test str %ws",bufw);
@@ -674,8 +648,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)wcsstr(L"Test str %ws",bufw);
     tm2=GetTickCount()-tm2;
-    log_con("%c StrStrW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c wcsstr  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrStrW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c wcsstr  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5*2;i++)lstrlenA(buf);
@@ -683,8 +657,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5*2;i++)strlen(buf);
     tm2=GetTickCount()-tm2;
-    log_con("%c lstrlenA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c strlen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c lstrlenA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strlen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5*2;i++)lstrlenW(bufw);
@@ -692,8 +666,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5*2;i++)wcslen(bufw);
     tm2=GetTickCount()-tm2;
-    log_con("%c lstrlenW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c wcslen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c lstrlenW \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c wcslen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)StrCpyA(buf,"Test str %ws");
@@ -701,8 +675,8 @@ void benchmark()
     tm2=GetTickCount();
     for(i=0;i<1024*1024*5;i++)strcpy(buf,"Test str %ws");
     tm2=GetTickCount()-tm2;
-    log_con("%c StrCpyA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    log_con("%c strcpy \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+    Log.print_con("%c StrCpyA \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strcpy \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 }
 #endif
 //}
