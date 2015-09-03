@@ -389,11 +389,15 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     }
 
     // Device info (hwidmatch_f,devicematch_f)
+    SelectObject(hdcMem,hFontBold);
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_ANALYSIS));td.x=p1;
+    SelectObject(hdcMem,hFontP);
     TextOutF(&td,c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
+        SelectObject(hdcMem,hFontBold);
         td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
+        SelectObject(hdcMem,hFontP);
         TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
         TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
@@ -402,7 +406,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     bufw[0]=0;
     SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
 
+    SelectObject(hdcMem,hFontBold);
     td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
+    SelectObject(hdcMem,hFontP);
     TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
     TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
     if(bufw[0])TextOutF(&td,c0,L"%s",bufw);
@@ -415,7 +421,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     td.y=D(POPUP_OFSY);
     if(devicematch_f->device->HardwareID)
     {
+        SelectObject(hdcMem,hFontBold);
         td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_HARDWAREID));td.x=p1+bolder;
+        SelectObject(hdcMem,hFontP);
         p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
         {
@@ -429,7 +437,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     }
     if(devicematch_f->device->CompatibleIDs)
     {
+        SelectObject(hdcMem,hFontBold);
         td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_COMPID));td.x=p1+bolder;
+        SelectObject(hdcMem,hFontP);
         p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
         {
@@ -462,7 +472,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         cur_driver->version.str_date(bufw);
 
         td.x=p0;
+        SelectObject(hdcMem,hFontBold);
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
+        SelectObject(hdcMem,hFontP);
         TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
         TextOutF(&td,               cur_driver->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
         TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
@@ -482,7 +494,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
         td.x=p0+bolder;
+        SelectObject(hdcMem,hFontBold);
         TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
+        SelectObject(hdcMem,hFontP);
         TextOutF(&td,               c0,L"%s",bufw+1000);
         TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
                  L"%s%S",STR(STR_HINT_SIGNATURE),/*hwidmatch_f->pickcat(state),*/hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
@@ -1838,7 +1852,9 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
             itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,0,k);
 
 
+    SelectObject(hdcMem,hFontBold);
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_INSTDRV),c0,&maxsz,1);td.y+=lne;
+    SelectObject(hdcMem,hFontP);
 
     if(cur_driver)
     {
@@ -1860,7 +1876,9 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
         td.y+=lne;
     }
     td.y+=lne;
+    SelectObject(hdcMem,hFontBold);
     TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_AVAILDRVS),c0,&maxsz,1);td.y+=lne;
+    SelectObject(hdcMem,hFontP);
 
     itembar=&items_list[0];
     for(k=0;k<items_list.size();k++,itembar++)

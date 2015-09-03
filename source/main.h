@@ -245,7 +245,7 @@ extern HINSTANCE ghInst;
 extern int main1x_c,main1y_c;
 extern int mainx_c,mainy_c;
 extern CRITICAL_SECTION sync;
-extern HFONT hFont;
+extern HFONT hFont,hFontP,hFontBold;
 extern HWND hPopup,hMain,hField,hLang,hTheme;
 
 // Window helpers
