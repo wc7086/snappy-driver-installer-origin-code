@@ -182,9 +182,9 @@ void Image::release()
     {
         SelectObject(ldc,oldbitmap);
         int r=DeleteDC(ldc);
-            if(!r)log_err("ERROR in box_init(): failed DeleteDC\n");
+            if(!r)Log.print_err("ERROR in box_init(): failed DeleteDC\n");
         r=DeleteObject(bitmap);
-            if(!r)log_err("ERROR in box_init(): failed DeleteObject\n");
+            if(!r)Log.print_err("ERROR in box_init(): failed DeleteObject\n");
     }
     bitmap=nullptr;
     ldc=nullptr;
@@ -202,7 +202,7 @@ void Image::loadFromFile(wchar_t *filename)
     f=_wfopen(buf,L"rb");
     if(!f)
     {
-        log_err("ERROR in image_loadFile(): file '%S' not found\n",buf);
+        Log.print_err("ERROR in image_loadFile(): file '%S' not found\n",buf);
         return;
     }
     fseek(f,0,SEEK_END);
@@ -213,7 +213,7 @@ void Image::loadFromFile(wchar_t *filename)
     sz=fread(imgbuf.get(),1,sz,f);
     if(!sz)
     {
-        log_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",buf);
+        Log.print_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",buf);
         return;
     }
     fclose(f);
@@ -228,7 +228,7 @@ void Image::loadFromRes(int id)
     get_resource(id,&myResourceData,&sz);
     if(!sz)
     {
-        log_err("ERROR in image_loadRes(): failed get_resource\n");
+        Log.print_err("ERROR in image_loadRes(): failed get_resource\n");
         return;
     }
     createBitmap((BYTE *)myResourceData,sz);
@@ -247,13 +247,13 @@ void Image::createBitmap(BYTE *data,int sz)
     int ret=WebPGetInfo(data,sz,&sx,&sy);
     if(!ret)
     {
-        log_err("ERROR in image_load(): failed WebPGetInfo(%d)\n",ret);
+        Log.print_err("ERROR in image_load(): failed WebPGetInfo(%d)\n",ret);
         return;
     }
     big=WebPDecodeBGRA(data,sz,&sx,&sy);
     if(!big)
     {
-        log_err("ERROR in image_load(): failed WebPDecodeBGRA\n");
+        Log.print_err("ERROR in image_load(): failed WebPDecodeBGRA\n");
         return;
     }
 #endif
@@ -289,7 +289,7 @@ void Image::createBitmap(BYTE *data,int sz)
     }
     SelectObject(ldc,bitmap);
     free(big);
-//    log_con("%dx%d:%d,%d\n",sx,sy,hasalpha,index);
+//    Log.print_con("%dx%d:%d,%d\n",sx,sy,hasalpha,index);
 }
 
 void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
@@ -343,9 +343,9 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 Canvas::Canvas()
 {
     hdcMem=CreateCompatibleDC(nullptr);
-    if(!hdcMem)log_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
+    if(!hdcMem)Log.print_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
     int r=SetBkMode(hdcMem,TRANSPARENT);
-    if(!r)log_err("ERROR in canvas_init(): failed SetBkMode\n");
+    if(!r)Log.print_err("ERROR in canvas_init(): failed SetBkMode\n");
     bitmap=nullptr;
     x=0;
     y=0;
@@ -356,16 +356,16 @@ Canvas::~Canvas()
     if(hdcMem)
     {
         int r=DeleteDC(hdcMem);
-        if(!r)log_err("ERROR in canvas_free(): failed DeleteDC\n");
+        if(!r)Log.print_err("ERROR in canvas_free(): failed DeleteDC\n");
         hdcMem=nullptr;
     }
 
     if(bitmap)
     {
         //r=(int)SelectObject(hdcMem,oldbitmap);
-        //if(!r)log_err("ERROR in canvas_free(): failed SelectObject\n");
+        //if(!r)Log.log_err("ERROR in canvas_free(): failed SelectObject\n");
         int r=DeleteObject(bitmap);
-        if(!r)log_err("ERROR in canvas_free(): failed DeleteObject\n");
+        if(!r)Log.print_err("ERROR in canvas_free(): failed DeleteObject\n");
         bitmap=nullptr;
     }
 }
@@ -377,7 +377,7 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
 
     hwnd=nhwnd;
     localDC=BeginPaint(hwnd,&ps);
-    if(!localDC)log_err("ERROR in canvas_begin(): failed BeginPaint\n");
+    if(!localDC)Log.print_err("ERROR in canvas_begin(): failed BeginPaint\n");
 
     if(x!=nx||y!=ny)
     {
@@ -386,20 +386,20 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
         if(bitmap)
         {
             r=SelectObject(hdcMem,oldbitmap);
-            if(!r)log_err("ERROR in canvas_begin(): failed SelectObject(oldbitmap)\n");
+            if(!r)Log.print_err("ERROR in canvas_begin(): failed SelectObject(oldbitmap)\n");
             r32=DeleteObject(bitmap);
-            if(!r32)log_err("ERROR in canvas_begin(): failed DeleteObject\n");
+            if(!r32)Log.print_err("ERROR in canvas_begin(): failed DeleteObject\n");
         }
         bitmap=CreateCompatibleBitmap(localDC,x,y);
-        if(!bitmap)log_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
+        if(!bitmap)Log.print_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
         oldbitmap=(HBITMAP)SelectObject(hdcMem,bitmap);
-        if(!oldbitmap)log_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
+        if(!oldbitmap)Log.print_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
     }
     clipping=CreateRectRgnIndirect(&ps.rcPaint);
-    if(!clipping)log_err("ERROR in canvas_begin(): failed BeginPaint\n");
+    if(!clipping)Log.print_err("ERROR in canvas_begin(): failed BeginPaint\n");
     SetStretchBltMode(hdcMem,HALFTONE);
     r32=SelectClipRgn(hdcMem,clipping);
-    if(!r32)log_err("ERROR in canvas_begin(): failed SelectClipRgn\n");
+    if(!r32)Log.print_err("ERROR in canvas_begin(): failed SelectClipRgn\n");
     SetLayout(hdcMem,rtl?LAYOUT_RTL:0);
 }
 
@@ -413,9 +413,9 @@ void Canvas::end()
             ps.rcPaint.left,ps.rcPaint.top,
             SRCCOPY);
     SelectClipRgn(hdcMem,nullptr);
-    if(!r)log_err("ERROR in canvas_end(): failed BitBlt\n");
+    if(!r)Log.print_err("ERROR in canvas_end(): failed BitBlt\n");
     r=DeleteObject(clipping);
-    if(!r)log_err("ERROR in canvas_end(): failed DeleteObject\n");
+    if(!r)Log.print_err("ERROR in canvas_end(): failed DeleteObject\n");
     EndPaint(hwnd,&ps);
 }
 //}
@@ -859,14 +859,14 @@ void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,in
     oldbrush=(HBRUSH)SelectObject(hdc,newbrush);
     if(color1&0xFF000000)(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
 
-    if(!oldbrush)log_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
+    if(!oldbrush)Log.print_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
     r32=SetDCBrushColor(hdc,color1);
-    if(r32==CLR_INVALID)log_err("ERROR in drawrect(): failed SetDCBrushColor\n");
+    if(r32==CLR_INVALID)Log.print_err("ERROR in drawrect(): failed SetDCBrushColor\n");
 
     newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
-    if(!newpen)log_err("ERROR in drawrect(): failed CreatePen\n");
+    if(!newpen)Log.print_err("ERROR in drawrect(): failed CreatePen\n");
     oldpen=(HPEN)SelectObject(hdc,newpen);
-    if(!oldpen)log_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
+    if(!oldpen)Log.print_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
 
     if(rn)
         RoundRect(hdc,x1,y1,x2,y2,rn,rn);
@@ -874,26 +874,26 @@ void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,in
         Rectangle(hdc,x1,y1,x2,y2);
 
     r=SelectObject(hdc,oldpen);
-    if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
+    if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
     r=SelectObject(hdc,oldbrush);
-    if(!r)log_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
+    if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
     r32=DeleteObject(newpen);
-    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
+    if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
     r32=DeleteObject(newbrush);
-    if(!r32)log_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
+    if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
 }
 
 void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int id)
 {
     if(id<0||id>=BOX_NUM)
     {
-        log_err("ERROR in box_draw(): invalid id=%d\n",id);
+        Log.print_err("ERROR in box_draw(): invalid id=%d\n",id);
         return;
     }
     int i=boxindex[id];
     if(i<0||i>=THEME_NM)
     {
-        log_err("ERROR in box_draw(): invalid index=%d\n",i);
+        Log.print_err("ERROR in box_draw(): invalid index=%d\n",i);
         return;
     }
     drawrect(hdc,x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));

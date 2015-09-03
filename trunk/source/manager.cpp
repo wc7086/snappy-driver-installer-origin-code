@@ -608,9 +608,9 @@ void Manager::filter(int options)
         if(!devicematch){itembar++;i++;continue;}
         for(j=0;j<devicematch->num_matches;j++,itembar++,i++)
         {
-            if(!itembar)log_err("ERROR a%d\n",j);
+            if(!itembar)Log.print_err("ERROR a%d\n",j);
             itembar->isactive=0;
-            //if(!itembar->hwidmatch)log_con("ERROR %d,%d\n",itembar->index,j);
+            //if(!itembar->hwidmatch)Log.print_con("ERROR %d,%d\n",itembar->index,j);
             if(!itembar->hwidmatch)continue;
 
 
@@ -736,8 +736,8 @@ void Manager::print_tbl()
 {
     int limits[7];
 
-    if((log_verbose&LOG_VERBOSE_MANAGER)==0)return;
-    log_file("{manager_print\n");
+    if(Log.isHidden(LOG_VERBOSE_MANAGER))return;
+    Log.print_file("{manager_print\n");
     memset(limits,0,sizeof(limits));
 
     for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar)
@@ -749,24 +749,24 @@ void Manager::print_tbl()
     for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
         if(itembar->isactive&&(itembar->first&2)==0)
         {
-            log_file("$%04d|",k);
+            Log.print_file("$%04d|",k);
             if(itembar->hwidmatch)
                 itembar->hwidmatch->print_tbl(limits);
             else
-                log_file("'%S'\n",matcher->getState()->textas.get(itembar->devicematch->device->Devicedesc));
+                Log.print_file("'%S'\n",matcher->getState()->textas.get(itembar->devicematch->device->Devicedesc));
             act++;
         }else
         {
 //            log_file("$%04d|^^ %d,%d\n",k,itembar->devicematch->num_matches,(itembar->hwidmatch)?itembar->hwidmatch->status:-1);
         }
 
-    log_file("}manager_print[%d]\n\n",act);
+    Log.print_file("}manager_print[%d]\n\n",act);
 }
 
 void Manager::print_hr()
 {
-    if((log_verbose&LOG_VERBOSE_MANAGER)==0)return;
-    log_file("{manager_print\n");
+    if(Log.isHidden(LOG_VERBOSE_MANAGER))return;
+    Log.print_file("{manager_print\n");
 
     unsigned k=0,act=0;
     for(auto itembar=items_list.begin()+RES_SLOTS;itembar!=items_list.end();++itembar,k++)
@@ -775,7 +775,7 @@ void Manager::print_hr()
             if(Settings.flags&FLAG_FILTERSP&&!itembar->hwidmatch->isvalidcat(matcher->getState()))continue;
             wchar_t buf[BUFLEN];
             itembar->str_status(buf);
-            log_file("\n$%04d, %S\n",k,buf);
+            Log.print_file("\n$%04d, %S\n",k,buf);
             if(itembar->devicematch->device)
             {
                 itembar->devicematch->device->print(matcher->getState());
@@ -783,13 +783,13 @@ void Manager::print_hr()
             }
             if(itembar->devicematch->driver)
             {
-                log_file("Installed driver\n");
+                Log.print_file("Installed driver\n");
                 itembar->devicematch->driver->print(matcher->getState());
             }
 
             if(itembar->hwidmatch)
             {
-                log_file("Available driver\n");
+                Log.print_file("Available driver\n");
                 itembar->hwidmatch->print_hr();
             }
 
@@ -799,7 +799,7 @@ void Manager::print_hr()
 //            log_file("$%04d|^^ %d,%d\n",k,itembar->devicematch->num_matches,(itembar->hwidmatch)?itembar->hwidmatch->status:-1);
         }
 
-    log_file("}manager_print[%d]\n\n",act);
+    Log.print_file("}manager_print[%d]\n\n",act);
 }
 
 //{ User interaction
@@ -1656,14 +1656,14 @@ void Manager::restorepos1(Manager *manager_prev)
     restorepos(manager_prev);
     //viruscheck(L"",0,0);
     setpos();
-    log_con("}Sync\n");
+    Log.print_con("}Sync\n");
     invaidate_set=0;
     LeaveCriticalSection(&sync);
 
     #ifdef USE_TORRENT
     UpdateDialog.populate(0);
     #endif
-    //log_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
+    //Log.print_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
     if(Settings.flags&FLAG_AUTOINSTALL)
     {
         int cnt=0;
@@ -1678,7 +1678,7 @@ void Manager::restorepos1(Manager *manager_prev)
             }
 
             if(!cnt)Settings.flags&=~FLAG_AUTOINSTALL;
-            log_con("Autoinstall rescan: %d found\n",cnt);
+            Log.print_con("Autoinstall rescan: %d found\n",cnt);
         }
 
         if(installmode==MODE_NONE||(installmode==MODE_SCANNING&&cnt))
@@ -1723,7 +1723,7 @@ void Manager::restorepos(Manager *manager_old)
     int show_changes=manager_old->items_list.size()>20;
 
     //if(statemode==STATEMODE_LOAD)show_changes=0;
-    if((log_verbose&LOG_VERBOSE_DEVSYNC)==0)show_changes=0;
+    if(Log.isHidden(LOG_VERBOSE_DEVSYNC))show_changes=0;
     //show_changes=1;
 
     t_old=&manager_old->matcher->getState()->textas;
@@ -1735,8 +1735,8 @@ void Manager::restorepos(Manager *manager_old)
     }
     if(invaidate_set&INVALIDATE_MANAGER)return;
 
-    log_con("{Updated %d->%d %d\n",manager_old->items_list.size(),items_list.size(),t_new);
-    log_console=1;
+    Log.print_con("{Updated %d->%d %d\n",manager_old->items_list.size(),items_list.size(),t_new);
+    Log.set_mode(1);
     itembar_new=&items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<items_list.size();i++,itembar_new++)
     {
@@ -1744,7 +1744,7 @@ void Manager::restorepos(Manager *manager_old)
 
         if(itembar_act&&itembar_cmp(itembar_new,&manager_old->items_list[itembar_act],t_new,t_old))
         {
-            log_con("Act %d -> %d\n",itembar_act,i);
+            Log.print_con("Act %d -> %d\n",itembar_act,i);
             itembar_act=i;
         }
 
@@ -1776,14 +1776,14 @@ void Manager::restorepos(Manager *manager_old)
         if(show_changes)
         if(j==manager_old->items_list.size())
         {
-            log_con("\nAdded   $%04d|%S|%S|",i,t_new->getw(itembar_new->devicematch->device->Driver),
+            Log.print_con("\nAdded   $%04d|%S|%S|",i,t_new->getw(itembar_new->devicematch->device->Driver),
                     t_new->getw(itembar_new->devicematch->device->Devicedesc));
 
             if(itembar_new->hwidmatch)
             {
                 int limits[7];
                 memset(limits,0,sizeof(limits));
-                log_con("%d|\n",itembar_new->hwidmatch->getHWID_index());
+                Log.print_con("%d|\n",itembar_new->hwidmatch->getHWID_index());
                 itembar_new->hwidmatch->print_tbl(limits);
             }
             else
@@ -1797,13 +1797,13 @@ void Manager::restorepos(Manager *manager_old)
     {
         if(itembar_old->isactive!=9)
         {
-            log_con("\nDeleted $%04d|%S|%S|",j,t_old+itembar_old->devicematch->device->Driver,
+            Log.print_con("\nDeleted $%04d|%S|%S|",j,t_old+itembar_old->devicematch->device->Driver,
                     t_old+itembar_old->devicematch->device->getDescr());
             if(itembar_old->hwidmatch)
             {
                 int limits[7];
                 memset(limits,0,sizeof(limits));
-                log_con("%d|\n",itembar_old->hwidmatch->getHWID_index());
+                Log.print_con("%d|\n",itembar_old->hwidmatch->getHWID_index());
                 itembar_old->hwidmatch->print_tbl(limits);
             }
             else
@@ -1811,8 +1811,8 @@ void Manager::restorepos(Manager *manager_old)
 
         }
     }
-    log_console=0;
-    log_con("}Updated\n");
+    Log.set_mode(0);
+    Log.print_con("}Updated\n");
 }
 //}
 

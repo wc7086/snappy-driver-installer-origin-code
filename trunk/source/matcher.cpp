@@ -148,42 +148,42 @@ const markers_t markers[NUM_MARKERS]=
 
 char marker[BUFLEN];
 int isLaptop;
-
-const wchar_t *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",nullptr};
-const wchar_t *Filter_2[]={L"Apple",L"apple",nullptr};
-const wchar_t *Filter_3[]={L"Asus",L"asus",nullptr};
-const wchar_t *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",nullptr};
-const wchar_t *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",nullptr};
-const wchar_t *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",nullptr};
-const wchar_t *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",nullptr};
-const wchar_t *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",nullptr};
-const wchar_t *Filter_9[]={L"OEM",L"intel",L"wistron",nullptr};
-const wchar_t *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",nullptr};
-const wchar_t *Filter_11[]={L"LG",L"lg",nullptr};
-const wchar_t *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",nullptr};
-const wchar_t *Filter_13[]={L"MSI",L"msi",L"micro-star",nullptr};
-const wchar_t *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",nullptr};
-const wchar_t *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",nullptr};
-const wchar_t *Filter_16[]={L"OEM",L"pegatron",L"medion",nullptr};
-const wchar_t *Filter_17[]={L"Samsung",L"samsung",nullptr};
-const wchar_t *Filter_18[]={L"Gigabyte",L"gigabyte",nullptr};
-const wchar_t *Filter_19[]={L"Sony",L"sony",L"vaio",nullptr};
-const wchar_t *Filter_20[]={L"Toshiba",L"toshiba",nullptr};
-const wchar_t *Filter_21[]={L"OEM",L"twinhead",L"durabook",nullptr};
-const wchar_t *Filter_22[]={L"NEC",L"Nec_brand",L"nec",nullptr};
-
-const wchar_t **filter_list[NUM_FILTERS]=
-{
-    Filter_1, Filter_2, Filter_3, Filter_4, Filter_5, Filter_6, Filter_7,
-    Filter_8, Filter_9, Filter_10,Filter_11,Filter_12,Filter_13,Filter_14,
-    Filter_15,Filter_16,Filter_17,Filter_18,Filter_19,Filter_20,Filter_21,
-    Filter_22,
-};
 //}
 
 //{ Calc
 void State::genmarker()
 {
+    static const wchar_t *Filter_1[]={L"Acer",L"acer",L"emachines",L"packard",L"bell",L"gateway",L"aspire",nullptr};
+    static const wchar_t *Filter_2[]={L"Apple",L"apple",nullptr};
+    static const wchar_t *Filter_3[]={L"Asus",L"asus",nullptr};
+    static const wchar_t *Filter_4[]={L"OEM",L"clevo",L"eurocom",L"sager",L"iru",L"viewsonic",L"viewbook",nullptr};
+    static const wchar_t *Filter_5[]={L"Dell",L"dell",L"alienware",L"arima",L"jetway",L"gericom",nullptr};
+    static const wchar_t *Filter_6[]={L"Fujitsu",L"fujitsu",L"sieme",nullptr};
+    static const wchar_t *Filter_7[]={L"OEM",L"ecs",L"elitegroup",L"roverbook",L"rover",L"shuttle",nullptr};
+    static const wchar_t *Filter_8[]={L"HP",L"hp",L"hewle",L"compaq",nullptr};
+    static const wchar_t *Filter_9[]={L"OEM",L"intel",L"wistron",nullptr};
+    static const wchar_t *Filter_10[]={L"Lenovo",L"lenovo",L"compal",L"ibm",nullptr};
+    static const wchar_t *Filter_11[]={L"LG",L"lg",nullptr};
+    static const wchar_t *Filter_12[]={L"OEM",L"mitac",L"mtc",L"depo",L"getac",nullptr};
+    static const wchar_t *Filter_13[]={L"MSI",L"msi",L"micro-star",nullptr};
+    static const wchar_t *Filter_14[]={L"Panasonic",L"panasonic",L"matsushita",nullptr};
+    static const wchar_t *Filter_15[]={L"OEM",L"quanta",L"prolink",L"nec",L"k-systems",L"benq",L"vizio",nullptr};
+    static const wchar_t *Filter_16[]={L"OEM",L"pegatron",L"medion",nullptr};
+    static const wchar_t *Filter_17[]={L"Samsung",L"samsung",nullptr};
+    static const wchar_t *Filter_18[]={L"Gigabyte",L"gigabyte",nullptr};
+    static const wchar_t *Filter_19[]={L"Sony",L"sony",L"vaio",nullptr};
+    static const wchar_t *Filter_20[]={L"Toshiba",L"toshiba",nullptr};
+    static const wchar_t *Filter_21[]={L"OEM",L"twinhead",L"durabook",nullptr};
+    static const wchar_t *Filter_22[]={L"NEC",L"Nec_brand",L"nec",nullptr};
+
+    static const wchar_t **filter_list[NUM_FILTERS]=
+    {
+        Filter_1, Filter_2, Filter_3, Filter_4, Filter_5, Filter_6, Filter_7,
+        Filter_8, Filter_9, Filter_10,Filter_11,Filter_12,Filter_13,Filter_14,
+        Filter_15,Filter_16,Filter_17,Filter_18,Filter_19,Filter_20,Filter_21,
+        Filter_22,
+    };
+
     wsprintfA(marker,"OEM_nb");
     wchar_t *str=getManuf();
     if(!str)return;
@@ -193,7 +193,7 @@ void State::genmarker()
         if(StrStrI(str,filter_list[i][j]))
             wsprintfA(marker,"%S_nb",filter_list[i][0]);
 
-    log_con("Marker: '%s'\n",marker);
+    Log.print_con("Marker: '%s'\n",marker);
 }
 
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
@@ -381,7 +381,7 @@ void Matcher::sort()
 
 void Matcher::populate()
 {
-    time_matcher=GetTickCount();
+    Timers.start(time_matcher);
 
     isLaptop=state->isLaptop;
     //wcscpy(marker,state->marker);
@@ -395,23 +395,23 @@ void Matcher::populate()
     devicematch_list.shrink_to_fit();
     hwidmatch_list.shrink_to_fit();
 
-    time_matcher=GetTickCount()-time_matcher;
+    Timers.stop(time_matcher);
 }
 
 void Matcher::print()
 {
     int limits[7];
 
-    if((log_verbose&LOG_VERBOSE_MATCHER)==0)return;
-    log_file("\n{matcher_print[devices=%d,hwids=%d]\n",devicematch_list.size(),hwidmatch_list.size());
+    if(Log.isHidden(LOG_VERBOSE_MATCHER))return;
+    Log.print_file("\n{matcher_print[devices=%d,hwids=%d]\n",devicematch_list.size(),hwidmatch_list.size());
     for(auto &devicematch:devicematch_list)
     {
         devicematch.device->print(state);
-        log_file("DriverInfo\n");
+        Log.print_file("DriverInfo\n");
         if(devicematch.driver)
             devicematch.driver->print(state);
         else
-            log_file("  NoDriver\n");
+            Log.print_file("  NoDriver\n");
 
         memset(limits,0,sizeof(limits));
         Hwidmatch *hwidmatch;
@@ -422,9 +422,9 @@ void Matcher::print()
         hwidmatch=&hwidmatch_list[devicematch.start_matches];
         for(unsigned j=0;j<devicematch.num_matches;j++,hwidmatch++)
             hwidmatch->print_tbl(limits);
-        log_file("\n");
+        Log.print_file("\n");
     }
-    log_file("}matcher_print\n\n");
+    Log.print_file("}matcher_print\n\n");
 }
 
 void Matcher::sorta(int *v)
@@ -734,26 +734,26 @@ void Hwidmatch::print_tbl(int *limits)
     Version *v;
 
     v=getdrp_drvversion();
-    log_file("  %d |",               altsectscore);
-    log_file(" %08X |",              score);
-    log_file(" %2d.%02d.%4d |",      v->d,v->m,v->y);
-    log_file(" %3d |",               decorscore);
-    log_file(" %d |",                markerscore);
-    log_file(" %3X |",               status);
+    Log.print_file("  %d |",               altsectscore);
+    Log.print_file(" %08X |",              score);
+    Log.print_file(" %2d.%02d.%4d |",      v->d,v->m,v->y);
+    Log.print_file(" %3d |",               decorscore);
+    Log.print_file(" %d |",                markerscore);
+    Log.print_file(" %3X |",               status);
                                 getdrp_drvsection(buf);
-    log_file(" %-*s |",limits[0],buf);
+    Log.print_file(" %-*s |",limits[0],buf);
 
     wsprintfA(buf,"%ws\\%ws",       getdrp_packpath(),getdrp_packname());
-    log_file(" %-*s |",limits[1],buf);
-    log_file(" %8X|",              getdrp_infcrc());
+    Log.print_file(" %-*s |",limits[1],buf);
+    Log.print_file(" %8X|",              getdrp_infcrc());
     wsprintfA(buf,"%s%s",         getdrp_infpath(),getdrp_infname());
-    log_file(" %-*s |",limits[2],buf);
-    log_file(" %-*s |",limits[3],    getdrp_drvmanufacturer());
+    Log.print_file(" %-*s |",limits[2],buf);
+    Log.print_file(" %-*s |",limits[3],    getdrp_drvmanufacturer());
     wsprintfA(buf,"%d.%d.%d.%d",  v->v1,v->v2,v->v3,v->v4);
-    log_file(" %*s |",limits[4],buf);
-    log_file(" %-*s |",limits[5],    getdrp_drvHWID());
-    log_file(" %-*s",limits[6],      getdrp_drvdesc());
-    log_file("\n");
+    Log.print_file(" %*s |",limits[4],buf);
+    Log.print_file(" %-*s |",limits[5],    getdrp_drvHWID());
+    Log.print_file(" %-*s",limits[6],      getdrp_drvdesc());
+    Log.print_file("\n");
 }
 
 void Hwidmatch::print_hr()
@@ -767,17 +767,17 @@ void Hwidmatch::print_hr()
     log_file("  CRC:  %8X%\n",              getdrp_infcrc(this));
     log_file("  Marker %d\n",                markerscore);
     log_file("  Status %3X\n",               status);*/
-    log_file("  Pack:     %S\\%S\n",       getdrp_packpath(),getdrp_packname());
+    Log.print_file("  Pack:     %S\\%S\n",       getdrp_packpath(),getdrp_packname());
 
-    log_file("  Name:     %s\n",getdrp_drvdesc());
-    log_file("  Provider: %s\n",    getdrp_drvmanufacturer());
-    log_file("  Date:     %2d.%02d.%4d\n",      v->d,v->m,v->y);
-    log_file("  Version:  %d.%d.%d.%d\n",  v->v1,v->v2,v->v3,v->v4);
-    log_file("  HWID:     %s\n",getdrp_drvHWID());
+    Log.print_file("  Name:     %s\n",getdrp_drvdesc());
+    Log.print_file("  Provider: %s\n",    getdrp_drvmanufacturer());
+    Log.print_file("  Date:     %2d.%02d.%4d\n",      v->d,v->m,v->y);
+    Log.print_file("  Version:  %d.%d.%d.%d\n",  v->v1,v->v2,v->v3,v->v4);
+    Log.print_file("  HWID:     %s\n",getdrp_drvHWID());
     getdrp_drvsection(buf);
-    log_file("  inf:      %s%s,%s\n",         getdrp_infpath(),getdrp_infname(),buf);
-    log_file("  Score:    %08X\n",              score);
-    log_file("\n");
+    Log.print_file("  inf:      %s%s,%s\n",         getdrp_infpath(),getdrp_infname(),buf);
+    Log.print_file("  Score:    %08X\n",              score);
+    Log.print_file("\n");
 }
 
 void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index)
