@@ -37,7 +37,7 @@ void _7z_total(long long i)
 
 int _7z_setcomplited(long long i)
 {
-    if(statemode==STATEMODE_EXIT)return S_OK;
+    if(Settings.statemode==STATEMODE_EXIT)return S_OK;
     if(installmode==MODE_STOPPING)return E_ABORT;
     if(manager_g->items_list.empty())return S_OK;
     if(!manager_g->items_list[itembar_act].checked)return E_ABORT;
@@ -78,14 +78,14 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     log_save();
     thr=(HANDLE)_beginthreadex(nullptr,0,&Autoclicker_t::thread_clicker,nullptr,0,nullptr);
     {
-        if(flags&FLAG_DISABLEINSTALL)
+        if(Settings.flags&FLAG_DISABLEINSTALL)
             Sleep(2000);
         else
             *ret=UpdateDriverForPlugAndPlayDevices(hMain,hwid,inf,INSTALLFLAG_FORCE,needrb);
     }
 
     if(!*ret)*ret=GetLastError();
-    if((flags&FLAG_DISABLEINSTALL)==0)
+    if((Settings.flags&FLAG_DISABLEINSTALL)==0)
     if((unsigned)*ret==0xE0000235||manager_g->matcher->getState()->getArchitecture())//ERROR_IN_WOW64
     {
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
@@ -155,7 +155,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
         instflag&INSTALLDRIVERS?STR_INST_INSTALLING:STR_EXTR_EXTRACTING;
     manager_g->items_list[SLOT_EXTRACTING].isactive=1;
     manager_g->setpos();
-    if(panels[11].isChecked(3))flags|=FLAG_AUTOINSTALL;
+    if(panels[11].isChecked(3))Settings.flags|=FLAG_AUTOINSTALL;
 
     // Download driverpacks
 #ifdef USE_TORRENT
@@ -219,7 +219,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             wcscpy(pRestorePtSpec.szDescription,L"Installed drivers");
             r=1;
             LeaveCriticalSection(&sync);
-            if(flags&FLAG_DISABLEINSTALL)
+            if(Settings.flags&FLAG_DISABLEINSTALL)
                 Sleep(2000);
             else
                 r=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
@@ -401,7 +401,7 @@ goaround:
                 if(needrb)needreboot=1;
             }
         }
-        if(!unpacked&&(flags&FLAG_DELEXTRAINFS))removeextrainfs(inf);
+        if(!unpacked&&(Settings.flags&FLAG_DELEXTRAINFS))removeextrainfs(inf);
         if(instflag&INSTALLDRIVERS)itembar->percent=0;
         itembar->checked=0;
         redrawmainwnd();
@@ -415,8 +415,8 @@ goaround:
     }
     // Instalation competed by this point
     wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()));
-    wsprintf(cmd,L"%s\\%ssetupAPI.log",log_dir,timestamp);
-    if(!(flags&FLAG_NOLOGFILE))CopyFile(buf,cmd,0);
+    wsprintf(cmd,L"%s\\%ssetupAPI.log",Settings.log_dir,timestamp);
+    if(!(Settings.flags&FLAG_NOLOGFILE))CopyFile(buf,cmd,0);
 
     if(instflag&OPENFOLDER)
     {
@@ -429,7 +429,7 @@ goaround:
         manager_g->clear();
         manager_g->setpos();
     }
-    if(instflag&INSTALLDRIVERS&&(flags&FLAG_KEEPTEMPFILES)==0)
+    if(instflag&INSTALLDRIVERS&&(Settings.flags&FLAG_KEEPTEMPFILES)==0)
     {
         wsprintf(buf,L" /c rd /s /q \"%s\"",extractdir);
         run_command(L"cmd",buf,SW_HIDE,1);
@@ -438,7 +438,7 @@ goaround:
     manager_g->items_list[SLOT_EXTRACTING].percent=0;
     if(installmode==MODE_STOPPING)
     {
-        flags&=~FLAG_AUTOINSTALL;
+        Settings.flags&=~FLAG_AUTOINSTALL;
         installmode=MODE_NONE;
     }
     if(installmode==MODE_INSTALLING)

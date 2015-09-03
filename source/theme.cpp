@@ -291,13 +291,13 @@ int Vault::pickTheme()
 //{ Lang/theme
 void lang_set(int i)
 {
-    if(flags&FLAG_NOGUI)return;
+    if(Settings.flags&FLAG_NOGUI)return;
     vLang.load(i);
 }
 
 void theme_set(int i)
 {
-    if(flags&FLAG_NOGUI)return;
+    if(Settings.flags&FLAG_NOGUI)return;
     vTheme.load(i);
 
     for(i=0;i<BOX_NUM;i++)
@@ -343,19 +343,19 @@ void lang_enum(HWND hwnd,const wchar_t *path,int locale)
     WIN32_FIND_DATA FindFileData;
     int i=0;
 
-    if(flags&FLAG_NOGUI)return;
+    if(Settings.flags&FLAG_NOGUI)return;
 
     int lang_auto=-1;
     wchar_t lang_auto_str[BUFLEN];
     wcscpy(lang_auto_str,L"Auto (English)");
 
-    wsprintf(buf,L"%s\\%s\\*.txt",data_dir,path);
+    wsprintf(buf,L"%s\\%s\\*.txt",Settings.data_dir,path);
     hFind=FindFirstFile(buf,&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
     do
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
-        wsprintf(buf,L"%s\\%s\\%s",data_dir,path,FindFileData.cFileName);
+        wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
         vLang.loadFromFile(buf);
         if(language[STR_LANG_CODE].val==(locale&0xFF))
         {
@@ -387,14 +387,14 @@ void theme_enum(HWND hwnd,const wchar_t *path)
     WIN32_FIND_DATA FindFileData;
     int i=0;
 
-    if(flags&FLAG_NOGUI)return;
-    wsprintf(buf,L"%s\\%s\\*.txt",data_dir,path);
+    if(Settings.flags&FLAG_NOGUI)return;
+    wsprintf(buf,L"%s\\%s\\*.txt",Settings.data_dir,path);
     hFind=FindFirstFile(buf,&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
     do
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
-        wsprintf(buf,L"%s\\%s\\%s",data_dir,path,FindFileData.cFileName);
+        wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
         vTheme.loadFromFile(buf);
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)D(THEME_NAME));
         wcscpy(vTheme.namelist[i],buf);
@@ -415,9 +415,9 @@ void vault_startmonitors()
 {
     wchar_t buf[BUFLEN];
 
-    wsprintf(buf,L"%s\\langs",data_dir);
+    wsprintf(buf,L"%s\\langs",Settings.data_dir);
     mon_lang=Filemon::start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
-    wsprintf(buf,L"%s\\themes",data_dir);
+    wsprintf(buf,L"%s\\themes",Settings.data_dir);
     mon_theme=Filemon::start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
 }
 

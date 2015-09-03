@@ -259,35 +259,55 @@ extern int kbpanel,kbitem[KB_PANEL_CHK+1];
 extern int ret_global;
 
 // Settings
-extern wchar_t drp_dir   [BUFLEN];
-extern wchar_t drpext_dir[BUFLEN];
-extern wchar_t index_dir [BUFLEN];
-extern wchar_t data_dir  [BUFLEN];
-extern wchar_t log_dir   [BUFLEN];
+class Settings_t
+{
+public:
+    wchar_t curlang   [BUFLEN];
+    wchar_t curtheme  [BUFLEN];
+    wchar_t logO_dir  [BUFLEN];
+    int license;
 
-extern wchar_t state_file[BUFLEN];
-extern wchar_t finish    [BUFLEN];
-extern wchar_t finish_upd[BUFLEN];
-extern wchar_t finish_rb [BUFLEN];
+    wchar_t drp_dir   [BUFLEN];
+    wchar_t output_dir[BUFLEN];
+    wchar_t drpext_dir[BUFLEN];
+    wchar_t index_dir [BUFLEN];
+    wchar_t data_dir  [BUFLEN];
+    wchar_t log_dir   [BUFLEN];
 
-extern int flags;
-extern int statemode;
-extern int expertmode;
-extern int hintdelay;
-extern int filters;
-extern int virtual_os_version;
-extern int virtual_arch_type;
+    wchar_t state_file[BUFLEN];
+    wchar_t finish    [BUFLEN];
+    wchar_t finish_upd[BUFLEN];
+    wchar_t finish_rb [BUFLEN];
+
+    int flags;
+    int statemode;
+    int expertmode;
+    int hintdelay;
+    int wndwx,wndwy;
+    int filters;
+    int virtual_os_version;
+    int virtual_arch_type;
+
+public:
+    Settings_t();
+    void parse(const wchar_t *str,int ind);
+    int load(const wchar_t *filename);
+    void save();
+    void loginfo();
+
+private:
+    bool argstr(const wchar_t *s,const wchar_t *cmp,wchar_t *d);
+    bool argint(const wchar_t *s,const wchar_t *cmp,int *d);
+    bool argopt(const wchar_t *s,const wchar_t *cmp,int *d);
+    bool argflg(const wchar_t *s,const wchar_t *cmp,int f);
+};
+extern Settings_t Settings;
 
 // Windows version
 #define NUM_OS 8
 extern const wchar_t *windows_name[NUM_OS];
 extern int windows_ver[NUM_OS];
 //}
-
-// Settings
-void settings_parse(const wchar_t *str,int ind);
-void settings_save();
-int  settings_load(const wchar_t *filename);
 
 // Main
 //int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd);

@@ -291,7 +291,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     auto inf_list=&state->inf_list_new;
     unsigned start_index=0;
 
-    if(flags&FLAG_FAILSAFE)
+    if(Settings.flags&FLAG_FAILSAFE)
     {
         inf_pos=0;
         return;
@@ -471,12 +471,12 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
 //{ State
 void State::fakeOSversion()
 {
-    if(virtual_arch_type==32)architecture=0;
-    if(virtual_arch_type==64)architecture=1;
-    if(virtual_os_version)
+    if(Settings.virtual_arch_type==32)architecture=0;
+    if(Settings.virtual_arch_type==64)architecture=1;
+    if(Settings.virtual_os_version)
     {
-        platform.dwMajorVersion=virtual_os_version/10;
-        platform.dwMinorVersion=virtual_os_version%10;
+        platform.dwMajorVersion=Settings.virtual_os_version/10;
+        platform.dwMinorVersion=Settings.virtual_os_version%10;
     }
 }
 
@@ -741,8 +741,8 @@ void State::contextmenu2(int x,int y)
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,ID_DEVICEMNG,STR(STR_SYS_DEVICEMNG));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_DISABLEINSTALL?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(Settings.flags&FLAG_DISABLEINSTALL?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(Settings.flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
 
     RECT rect;
     SetForegroundWindow(hMain);
@@ -757,7 +757,7 @@ void State::save(const wchar_t *filename)
     int sz;
     int version=VER_STATE;
 
-    if(flags&FLAG_NOSNAPSHOT)return;
+    if(Settings.flags&FLAG_NOSNAPSHOT)return;
     log_con("Saving state in '%S'...",filename);
     if(!canWrite(filename))
     {

@@ -138,7 +138,7 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
     {
         log_err("invalid parameter %S\n",ParamStr);
         ret_global=ERROR_BAD_LENGTH;
-        statemode=STATEMODE_EXIT;
+        Settings.statemode=STATEMODE_EXIT;
         return;
     }
     else
@@ -176,8 +176,8 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
     if(ACLIParam.ShowHelp)
     {
         ShowHelp(ghInst);
-        flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
-        statemode=STATEMODE_EXIT;
+        Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
+        Settings.statemode=STATEMODE_EXIT;
         return;
     } else
     if(CLIParam.SaveInstalledHWD)
@@ -208,8 +208,8 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
             }
             fclose(f);
         }
-        flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
-        statemode=STATEMODE_EXIT;
+        Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
+        Settings.statemode=STATEMODE_EXIT;
     }
 }
 

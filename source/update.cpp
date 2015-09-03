@@ -304,12 +304,12 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             UpdateDialog.populate(0);
             UpdateDialog.updateTexts();
             UpdateDialog.setCheckboxes();
-            if(flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
+            if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
             SetTimer(hwnd,1,2000,nullptr);
 
-            if(flags&FLAG_AUTOUPDATE)SendMessage(hwnd,WM_COMMAND,IDCHECKALL,0);
+            if(Settings.flags&FLAG_AUTOUPDATE)SendMessage(hwnd,WM_COMMAND,IDCHECKALL,0);
             return TRUE;
 
         case WM_NOTIFY:
@@ -337,16 +337,16 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                 case IDOK:
                     hUpdate=nullptr;
                     UpdateDialog.setPriorities();
-                    flags&=~FLAG_ONLYUPDATES;
-                    if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
+                    Settings.flags&=~FLAG_ONLYUPDATES;
+                    if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
                     Updater.resumeDownloading();
                     EndDialog(hwnd,IDOK);
                     return TRUE;
 
                 case IDACCEPT:
                     UpdateDialog.setPriorities();
-                    flags&=~FLAG_ONLYUPDATES;
-                    if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
+                    Settings.flags&=~FLAG_ONLYUPDATES;
+                    if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
                     Updater.resumeDownloading();
                     return TRUE;
 
@@ -356,8 +356,8 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     return TRUE;
 
                 case IDONLYUPDATE:
-                    flags&=~FLAG_ONLYUPDATES;
-                    if(SendMessage(chk,BM_GETCHECK,0,0))flags|=FLAG_ONLYUPDATES;
+                    Settings.flags&=~FLAG_ONLYUPDATES;
+                    if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
                     UpdateDialog.clearList();
                     UpdateDialog.populate(0);
                     break;
@@ -366,9 +366,9 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                 case IDUNCHECKALL:
                     for(i=0;i<ListView_GetItemCount(hListg);i++)
                         ListView_SetCheckState(hListg,i,LOWORD(wParam)==IDCHECKALL?1:0);
-                    if(flags&FLAG_AUTOUPDATE)
+                    if(Settings.flags&FLAG_AUTOUPDATE)
                     {
-                        flags&=~FLAG_AUTOUPDATE;
+                        Settings.flags&=~FLAG_AUTOUPDATE;
                         SendMessage(hwnd,WM_COMMAND,IDOK,0);
                     }
                     return TRUE;
@@ -422,7 +422,7 @@ int UpdateDialog_t::populate(int update)
             indexdownloaded+=file_progress[i];
             wsprintf(buf,L"%S",filenamefull);
             *wcsstr(buf,L"DP_")=L'_';
-            strsub(buf,L"indexes\\SDI",index_dir);
+            strsub(buf,L"indexes\\SDI",Settings.index_dir);
             if(!PathFileExists(buf))
                 missingindexes=1;
         }
@@ -501,7 +501,7 @@ int UpdateDialog_t::populate(int update)
             newver=getnewver(filenamefull);
             oldver=getcurver(filename);
 
-            if(flags&FLAG_ONLYUPDATES)
+            if(Settings.flags&FLAG_ONLYUPDATES)
                 {if(newver>oldver&&oldver)ret++;else continue;}
             else
                 if(newver>oldver)ret++;
@@ -637,7 +637,7 @@ void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
             s=manager_g->matcher->finddrp(bffw);
             if(!s)return;
             wchar_t buf[BUFLEN];
-            wsprintf(buf,L"%ws\\%s",drp_dir,s);
+            wsprintf(buf,L"%ws\\%s",Settings.drp_dir,s);
             log_con("Old file: %S\n",buf);
             _wremove(buf);
             return;
@@ -662,7 +662,7 @@ void Updater_t::moveNewFiles()
     if(i!=numfiles)
     {
         wchar_t buf [BUFLEN];
-        wsprintf(buf,L"/c del %ws\\_*.bin",index_dir);
+        wsprintf(buf,L"/c del %ws\\_*.bin",Settings.index_dir);
         run_command(L"cmd",buf,SW_HIDE,1);
     }
 
@@ -680,9 +680,9 @@ void Updater_t::moveNewFiles()
         wchar_t filenamefull_dst[BUFLEN];
         wsprintf(filenamefull_src,L"update\\%S",fe.path.c_str());
         wsprintf(filenamefull_dst,L"%S",filenamefull);
-        strsub(filenamefull_dst,L"indexes\\SDI",index_dir);
-        strsub(filenamefull_dst,L"drivers",drp_dir);
-        strsub(filenamefull_dst,L"tools\\SDI",data_dir);
+        strsub(filenamefull_dst,L"indexes\\SDI",Settings.index_dir);
+        strsub(filenamefull_dst,L"drivers",Settings.drp_dir);
+        strsub(filenamefull_dst,L"tools\\SDI",Settings.data_dir);
 
         // Delete old driverpacks
         if(StrStrIA(filenamefull,"drivers\\"))removeOldDriverpacks(filenamefull_dst+8);
@@ -940,7 +940,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     while(!downloadmangar_exitflag)
     {
         // Wait till is allowed to download driverpacks
-        if(flags&FLAG_AUTOUPDATE&&canWrite(L"update"))
+        if(Settings.flags&FLAG_AUTOUPDATE&&canWrite(L"update"))
             UpdateDialog.openDialog();
         else
             WaitForSingleObject(downloadmangar_event,INFINITE);
@@ -999,13 +999,13 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                 UpdateDialog.populate(0);
 
                 // Execute user cmd
-                if(*finish_upd)
+                if(*Settings.finish_upd)
                 {
                     wchar_t buf[BUFLEN];
-                    wsprintf(buf,L" /c %s",finish_upd);
+                    wsprintf(buf,L" /c %s",Settings.finish_upd);
                     run_command(L"cmd",buf,SW_HIDE,0);
                 }
-                if(flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
+                if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(hMain,WM_CLOSE,0,0);
 
                 // Flash in taskbar
                 ShowProgressInTaskbar(hMain,TBPF_NOPROGRESS,0,0);

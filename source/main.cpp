@@ -68,37 +68,13 @@ int bundle_display=1;
 int bundle_shadow=0;
 
 // Settings
-wchar_t drp_dir   [BUFLEN]=L"drivers";
-wchar_t drpext_dir[BUFLEN]=L"";
-wchar_t index_dir [BUFLEN]=L"indexes\\SDI";
-wchar_t data_dir  [BUFLEN]=L"tools\\SDI";
-wchar_t log_dir   [BUFLEN];
-
-wchar_t state_file[BUFLEN]=L"untitled.snp";
-wchar_t finish    [BUFLEN]=L"";
-wchar_t finish_upd[BUFLEN]=L"";
-wchar_t finish_rb [BUFLEN]=L"";
-
-int flags=COLLECTION_USE_LZMA;
-int statemode=STATEMODE_REAL;
-int expertmode=0;
-int hintdelay=500;
-int wndwx=0,wndwy=0;
-int filters=
-    (1<<ID_SHOW_MISSING)+
-    (1<<ID_SHOW_NEWER)+
-    (1<<ID_SHOW_BETTER)+
-    (1<<ID_SHOW_NF_MISSING)+
-    (1<<ID_SHOW_ONE);
-int virtual_os_version=0;
-int virtual_arch_type=0;
+Settings_t Settings;
 
 // Settings (local)
-wchar_t curlang [BUFLEN]=L"";
+/*wchar_t curlang [BUFLEN]=L"";
 wchar_t curtheme[BUFLEN]=L"(default)";
-wchar_t output_dir[BUFLEN]=L"indexes\\SDI\\txt";
 wchar_t logO_dir  [BUFLEN]=L"logs";
-int license=0;
+int license=0;*/
 
 // Windows name
 const wchar_t *windows_name[NUM_OS]=
@@ -116,31 +92,65 @@ int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
 //}
 
 //{ Settings
-static bool argstr(const wchar_t *s,const wchar_t *cmp,wchar_t *d)
+Settings_t::Settings_t()
+{
+    *curlang=0;
+    StrCpyW(curtheme,  L"(default)");
+    StrCpyW(logO_dir,  L"logs");
+    license=0;
+
+    StrCpyW(drp_dir,   L"drivers");
+    StrCpyW(output_dir,L"indexes\\SDI\\txt");
+    *drpext_dir=0;
+    StrCpyW(index_dir, L"indexes\\SDI");
+    StrCpyW(data_dir,  L"tools\\SDI");
+    *log_dir=0;
+
+    StrCpyW(state_file,L"untitled.snp");
+    *finish=0;
+    *finish_upd=0;
+    *finish_rb=0;
+
+    flags=COLLECTION_USE_LZMA;
+    statemode=STATEMODE_REAL;
+    expertmode=0;
+    hintdelay=500;
+    wndwx=0,wndwy=0;
+    filters=
+        (1<<ID_SHOW_MISSING)+
+        (1<<ID_SHOW_NEWER)+
+        (1<<ID_SHOW_BETTER)+
+        (1<<ID_SHOW_NF_MISSING)+
+        (1<<ID_SHOW_ONE);
+    virtual_os_version=0;
+    virtual_arch_type=0;
+}
+
+bool Settings_t::argstr(const wchar_t *s,const wchar_t *cmp,wchar_t *d)
 {
     if(StrStrIW(s,cmp)){wcscpy(d,s+wcslen(cmp));return true;}
     return false;
 }
 
-static bool argint(const wchar_t *s,const wchar_t *cmp,int *d)
+bool Settings_t::argint(const wchar_t *s,const wchar_t *cmp,int *d)
 {
     if(StrStrIW(s,cmp)){*d=_wtoi_my(s+wcslen(cmp));return true;}
     return false;
 }
 
-static bool argopt(const wchar_t *s,const wchar_t *cmp,int *d)
+bool Settings_t::argopt(const wchar_t *s,const wchar_t *cmp,int *d)
 {
     if(StrStrIW(s,cmp)){*d=1;return true;}
     return false;
 }
 
-static bool argflg(const wchar_t *s,const wchar_t *cmp,int f)
+bool Settings_t::argflg(const wchar_t *s,const wchar_t *cmp,int f)
 {
     if(!StrCmpIW(s,cmp)){flags|=f;return true;}
     return false;
 }
 
-void settings_parse(const wchar_t *str,int ind)
+void Settings_t::parse(const wchar_t *str,int ind)
 {
     log_con("Args:[%S]\n",str);
     int argc;
@@ -262,7 +272,7 @@ void settings_parse(const wchar_t *str,int ind)
     panel_loadsettings(panels,filters);
 }
 
-void settings_save()
+void Settings_t::save()
 {
     if(flags&FLAG_PRESERVECFG)return;
     if(!canWrite(L"sdi.cfg"))
@@ -298,12 +308,42 @@ void settings_save()
     fclose(f);
 }
 
-int settings_load(const wchar_t *filename)
+void Settings_t::loginfo()
+{
+    if(log_verbose&LOG_VERBOSE_ARGS)
+    {
+        log_con("Settings\n");
+        log_con("  drp_dir='%S'\n",drp_dir);
+        log_con("  index_dir='%S'\n",index_dir);
+        log_con("  output_dir='%S'\n",output_dir);
+        log_con("  data_dir='%S'\n",data_dir);
+        log_con("  log_dir='%S'\n",log_dir);
+        log_con("  extractdir='%S'\n",extractdir);
+        log_con("  lang=%S\n",curlang);
+        log_con("  theme=%S\n",curtheme);
+        log_con("  expertmode=%d\n",expertmode);
+        log_con("  filters=%d\n",filters);
+        log_con("  autoinstall=%d\n",flags&FLAG_AUTOINSTALL?1:0);
+        log_con("  autoclose=%d\n",flags&FLAG_AUTOCLOSE?1:0);
+        log_con("  failsafe=%d\n",flags&FLAG_FAILSAFE?1:0);
+        log_con("  delextrainfs=%d\n",flags&FLAG_DELEXTRAINFS?1:0);
+        log_con("  checkupdates=%d\n",flags&FLAG_CHECKUPDATES?1:0);
+        log_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
+        log_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
+        log_con("\n");
+        if(statemode==STATEMODE_EMUL)log_con("Virtual system system config '%S'\n",state_file);
+        if(virtual_arch_type)log_con("Virtual Windows version: %d-bit\n",virtual_arch_type);
+        if(virtual_os_version)log_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
+        log_con("\n");
+    }
+}
+
+int Settings_t::load(const wchar_t *filename)
 {
     wchar_t buf[BUFLEN];
 
     if(!loadCFGFile(filename,buf))return 0;
-    settings_parse(buf,0);
+    parse(buf,0);
     return 1;
 }
 //}
@@ -344,11 +384,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Load settings
     init_CLIParam();
     if(isCfgSwithExist(GetCommandLineW(),CLIParam.SaveInstalledFileName))
-        settings_load(CLIParam.SaveInstalledFileName);
+        Settings.load(CLIParam.SaveInstalledFileName);
     else
-    if(!settings_load(L"sdi.cfg"))
-        settings_load(L"tools\\SDI\\settings.cfg");
-    settings_parse(GetCommandLineW(),1);
+    if(!Settings.load(L"sdi.cfg"))
+        Settings.load(L"tools\\SDI\\settings.cfg");
+    Settings.parse(GetCommandLineW(),1);
     RUN_CLI(CLIParam);
 
     // Reset paths for GUI-less version of the app
@@ -361,7 +401,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Close the app if the work is done
-    if(statemode==STATEMODE_EXIT)
+    if(Settings.statemode==STATEMODE_EXIT)
     {
         if(backtrace)FreeLibrary(backtrace);
         ShowWindow(GetConsoleWindow(),SW_SHOW);
@@ -370,47 +410,22 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Bring back the console window
     #ifndef CONSOLE_MODE
-    ShowWindow(GetConsoleWindow(),(expertmode&&flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:hideconsole);
+    ShowWindow(GetConsoleWindow(),(Settings.expertmode&&Settings.flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:hideconsole);
     #endif
 
     // Start logging
-    ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
-    log_start(log_dir);
-    if(log_verbose&LOG_VERBOSE_ARGS)
-    {
-        log_con("Settings\n");
-        log_con("  drp_dir='%S'\n",drp_dir);
-        log_con("  index_dir='%S'\n",index_dir);
-        log_con("  output_dir='%S'\n",output_dir);
-        log_con("  data_dir='%S'\n",data_dir);
-        log_con("  log_dir='%S'\n",log_dir);
-        log_con("  extractdir='%S'\n",extractdir);
-        log_con("  lang=%S\n",curlang);
-        log_con("  theme=%S\n",curtheme);
-        log_con("  expertmode=%d\n",expertmode);
-        log_con("  filters=%d\n",filters);
-        log_con("  autoinstall=%d\n",flags&FLAG_AUTOINSTALL?1:0);
-        log_con("  autoclose=%d\n",flags&FLAG_AUTOCLOSE?1:0);
-        log_con("  failsafe=%d\n",flags&FLAG_FAILSAFE?1:0);
-        log_con("  delextrainfs=%d\n",flags&FLAG_DELEXTRAINFS?1:0);
-        log_con("  checkupdates=%d\n",flags&FLAG_CHECKUPDATES?1:0);
-        log_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
-        log_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
-        log_con("\n");
-        if(statemode==STATEMODE_EMUL)log_con("Virtual system system config '%S'\n",state_file);
-        if(virtual_arch_type)log_con("Virtual Windows version: %d-bit\n",virtual_arch_type);
-        if(virtual_os_version)log_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
-        log_con("\n");
-    }
+    ExpandEnvironmentStrings(Settings.logO_dir,Settings.log_dir,BUFLEN);
+    log_start(Settings.log_dir);
+    Settings.loginfo();
 
     #ifdef BENCH_MODE
     benchmark();
     #endif
 
     // Make dirs
-    mkdir_r(drp_dir);
-    mkdir_r(index_dir);
-    mkdir_r(output_dir);
+    mkdir_r(Settings.drp_dir);
+    mkdir_r(Settings.index_dir);
+    mkdir_r(Settings.output_dir);
 
     // Load text
     vLang.init1(language,STR_NM,IDR_LANG);
@@ -436,7 +451,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Start folder monitors
-    Filemon *mon_drp=Filemon::start(drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
+    Filemon *mon_drp=Filemon::start(Settings.drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
     virusmonitor_start();
     viruscheck(L"",0,0);
 
@@ -462,7 +477,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Save settings
     #ifndef CONSOLE_MODE
-    if(!*CLIParam.SaveInstalledFileName)settings_save();
+    if(!*CLIParam.SaveInstalledFileName)Settings.save();
     #endif
 
     // Stop folder monitors
@@ -489,7 +504,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
 void gui(int nCmd)
 {
-    if((flags&FLAG_NOGUI)&&(flags&FLAG_AUTOINSTALL)==0)return;
+    if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)return;
 
     // Register classMain
     WNDCLASSEX wcx;
@@ -543,11 +558,11 @@ void gui(int nCmd)
     }
 
     // license dialog
-    if(!license)
+    if(!Settings.license)
         DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)LicenseProcedure);
 
     // Enable updates notifications
-    if(license==2)
+    if(Settings.license==2)
     {
         /*int f;
         f=lang_enum(hLang,L"langs",manager_g->matcher->state->locale);
@@ -556,7 +571,7 @@ void gui(int nCmd)
 
         //if(MessageBox(0,STR(STR_UPD_DIALOG_MSG),STR(STR_UPD_DIALOG_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
         {
-            flags|=FLAG_CHECKUPDATES;
+            Settings.flags|=FLAG_CHECKUPDATES;
             #ifdef USE_TORRENT
             Updater.checkUpdates();
             #endif
@@ -564,10 +579,10 @@ void gui(int nCmd)
         }
     }
 
-    if(license)
+    if(Settings.license)
     {
         //time_test=GetTickCount()-time_total;log_times();
-        ShowWindow(hMain,flags&FLAG_NOGUI?SW_HIDE:nCmd);
+        ShowWindow(hMain,Settings.flags&FLAG_NOGUI?SW_HIDE:nCmd);
 
         int done=0;
         while(!done)
@@ -671,8 +686,8 @@ unsigned int __stdcall Bundle::thread_scandevices(void *arg)
 
     if((invaidate_set&INVALIDATE_DEVICES)==0)return 0;
 
-    if(statemode==STATEMODE_REAL)state->scanDevices();
-    if(statemode==STATEMODE_EMUL)state->load(state_file);
+    if(Settings.statemode==STATEMODE_REAL)state->scanDevices();
+    if(Settings.statemode==STATEMODE_EMUL)state->load(Settings.state_file);
 
     return 0;
 }
@@ -689,7 +704,7 @@ unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
 {
     State *state=(State *)arg;
 
-    if(statemode==STATEMODE_REAL&&invaidate_set&INVALIDATE_SYSINFO)
+    if(Settings.statemode==STATEMODE_REAL&&invaidate_set&INVALIDATE_SYSINFO)
         state->getsysinfo_slow();
     return 0;
 }
@@ -716,7 +731,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
 
         // Check if the state has been udated during scanning
         int cancel_update=0;
-        if(!(flags&FLAG_NOGUI))
+        if(!(Settings.flags&FLAG_NOGUI))
         if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
 
         if(cancel_update)
@@ -729,12 +744,12 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             log_con("*** FINISH primary ***\n\n");
             invaidate_set&=~(INVALIDATE_DEVICES|INVALIDATE_INDEXES|INVALIDATE_SYSINFO);
 
-            if((flags&FLAG_NOGUI)&&(flags&FLAG_AUTOINSTALL)==0)
+            if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)
             {
                 // NOGUI mode
                 manager_g->matcher=&bundle[bundle_shadow].matcher;
                 manager_g->populate();
-                manager_g->filter(filters);
+                manager_g->filter(Settings.filters);
                 bundle[bundle_shadow].bundle_lowprioirity();
                 break;
             }
@@ -766,7 +781,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
 void Bundle::bundle_init()
 {
     state.init();
-    collection.init(drp_dir,index_dir,output_dir);
+    collection.init(Settings.drp_dir,Settings.index_dir,Settings.output_dir);
     matcher.init(&state,&collection);
 }
 
@@ -823,19 +838,19 @@ void Bundle::bundle_lowprioirity()
     manager_g->print_hr();
 
     #ifdef USE_TORRENT
-    if(flags&FLAG_CHECKUPDATES&&!time_chkupdate)Updater.checkUpdates();
+    if(Settings.flags&FLAG_CHECKUPDATES&&!time_chkupdate)Updater.checkUpdates();
     #endif
 
     collection.save();
     gen_timestamp();
-    wsprintf(filename,L"%s\\%sstate.snp",log_dir,timestamp);
+    wsprintf(filename,L"%s\\%sstate.snp",Settings.log_dir,timestamp);
     state.save(filename);
 
-    if(flags&COLLECTION_PRINT_INDEX)
+    if(Settings.flags&COLLECTION_PRINT_INDEX)
     {
         log_con("Saving humanreadable indexes...");
         collection.print_index_hr();
-        flags&=~COLLECTION_PRINT_INDEX;
+        Settings.flags&=~COLLECTION_PRINT_INDEX;
         log_con("DONE\n");
     }
 }
@@ -915,12 +930,12 @@ void snapshot()
     ofn.lpstrFilter=STR(STR_OPENSNAPSHOT);
     ofn.nMaxFile   =BUFLEN;
     ofn.lpstrDefExt=L"snp";
-    ofn.lpstrFile  =state_file;
+    ofn.lpstrFile  =Settings.state_file;
     ofn.Flags      =OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR;
 
     if(GetOpenFileName(&ofn))
     {
-        statemode=STATEMODE_EMUL;
+        Settings.statemode=STATEMODE_EMUL;
         invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
     }
 }
@@ -960,14 +975,14 @@ void selectDrpDir()
     BROWSEINFO lpbi;
     memset(&lpbi,0,sizeof(BROWSEINFO));
     lpbi.hwndOwner=hMain;
-    lpbi.pszDisplayName=drpext_dir;
+    lpbi.pszDisplayName=Settings.drpext_dir;
     lpbi.lpszTitle=STR(STR_EXTRACTFOLDER);
     lpbi.ulFlags=BIF_NEWDIALOGSTYLE|BIF_EDITBOX;
 
     LPITEMIDLIST list=SHBrowseForFolder(&lpbi);
     if(list)
     {
-        SHGetPathFromIDList(list,drpext_dir);
+        SHGetPathFromIDList(list,Settings.drpext_dir);
         //int len=wcslen(drpext_dir);
         //drpext_dir[len]=0;
         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
@@ -1144,7 +1159,7 @@ void checktimer(const wchar_t *str,long long t,int uMsg)
 
 void redrawfield()
 {
-    if(flags&FLAG_NOGUI)return;
+    if(Settings.flags&FLAG_NOGUI)return;
     if(!hField)
     {
         log_err("ERROR in redrawfield(): hField is 0\n");
@@ -1155,7 +1170,7 @@ void redrawfield()
 
 void redrawmainwnd()
 {
-    if(flags&FLAG_NOGUI)return;
+    if(Settings.flags&FLAG_NOGUI)return;
     if(!hMain)
     {
         log_err("ERROR in redrawmainwnd(): hMain is 0\n");
@@ -1173,7 +1188,7 @@ void tabadvance(int v)
         if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
 
         if(kbpanel==KB_PANEL_CHK&&!D(PANEL12_WY))continue;
-        if(!expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
+        if(!Settings.expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
         break;
     }
 
@@ -1328,12 +1343,12 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             DragAcceptFiles(hwnd,1);
 
             manager_g->populate();
-            manager_g->filter(filters);
+            manager_g->filter(Settings.filters);
             manager_g->setpos();
             break;
 
         case WM_CLOSE:
-            if(installmode==MODE_NONE||(flags&FLAG_AUTOCLOSE))
+            if(installmode==MODE_NONE||(Settings.flags&FLAG_AUTOCLOSE))
                 DestroyWindow(hwnd);
             else if(MessageBox(hMain,STR(STR_INST_QUIT_MSG),STR(STR_INST_QUIT_TITLE),MB_YESNO|MB_ICONQUESTION)==IDYES)
             {
@@ -1346,8 +1361,8 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_DESTROY:
             GetWindowRect(hwnd,&rect);
-            wndwx=rect.right-rect.left;
-            wndwy=rect.bottom-rect.top;
+            Settings.wndwx=rect.right-rect.left;
+            Settings.wndwy=rect.bottom-rect.top;
 
             if(!DeleteObject(hFont))
                 log_err("ERROR in manager_free(): failed DeleteObject\n");
@@ -1364,7 +1379,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_UPDATELANG:
             SendMessage(hLang,CB_RESETCONTENT,0,0);
             lang_enum(hLang,L"langs",manager_g->matcher->getState()->getLocale());
-            f=SendMessage(hLang,CB_FINDSTRINGEXACT,-1,(LPARAM)curlang);
+            f=SendMessage(hLang,CB_FINDSTRINGEXACT,-1,(LPARAM)Settings.curlang);
             if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
             lang_set(f);
             SendMessage(hLang,CB_SETCURSEL,f,0);
@@ -1374,11 +1389,11 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_UPDATETHEME:
             SendMessage(hTheme,CB_RESETCONTENT,0,0);
             theme_enum(hTheme,L"themes");
-            f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)curtheme);
+            f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)Settings.curtheme);
             if(f==CB_ERR)f=vTheme.pickTheme();
             theme_set(f);
-            if(wndwx)D(MAINWND_WX)=wndwx;
-            if(wndwy)D(MAINWND_WY)=wndwy;
+            if(Settings.wndwx)D(MAINWND_WX)=Settings.wndwx;
+            if(Settings.wndwy)D(MAINWND_WY)=Settings.wndwy;
             SendMessage(hTheme,CB_SETCURSEL,f,0);
             theme_refresh();
 
@@ -1425,13 +1440,13 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     uFile=GetFileAttributes(lpszFile);
                     if(uFile!=INVALID_FILE_ATTRIBUTES&&uFile&FILE_ATTRIBUTE_DIRECTORY)
                     {
-                        wcscpy(drpext_dir,lpszFile);
+                        wcscpy(Settings.drpext_dir,lpszFile);
                         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
                     }
                     else if(StrStrI(lpszFile,L".snp"))
                     {
-                        wcscpy(state_file,lpszFile);
-                        statemode=STATEMODE_EMUL;
+                        wcscpy(Settings.state_file,lpszFile);
+                        Settings.statemode=STATEMODE_EMUL;
                         invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     }
                     //else
@@ -1537,25 +1552,25 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
             if(wParam==VK_F8)
             {
-                switch(flags&(FLAG_SHOWDRPNAMES1|FLAG_SHOWDRPNAMES2))
+                switch(Settings.flags&(FLAG_SHOWDRPNAMES1|FLAG_SHOWDRPNAMES2))
                 {
                     case FLAG_SHOWDRPNAMES1:
-                        flags^=FLAG_SHOWDRPNAMES1;
-                        flags^=FLAG_SHOWDRPNAMES2;
+                        Settings.flags^=FLAG_SHOWDRPNAMES1;
+                        Settings.flags^=FLAG_SHOWDRPNAMES2;
                         break;
 
                     case FLAG_SHOWDRPNAMES2:
-                        flags^=FLAG_SHOWDRPNAMES2;
+                        Settings.flags^=FLAG_SHOWDRPNAMES2;
                         break;
 
                     case 0:
-                        flags^=FLAG_SHOWDRPNAMES1;
+                        Settings.flags^=FLAG_SHOWDRPNAMES1;
                         break;
 
                     default:
                         break;
                 }
-                manager_g->filter(filters);
+                manager_g->filter(Settings.filters);
                 manager_g->setpos();
                 redrawfield();
             }
@@ -1711,22 +1726,22 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_EMU_32:
-                    virtual_arch_type=32;
+                    Settings.virtual_arch_type=32;
                     invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     break;
 
                 case ID_EMU_64:
-                    virtual_arch_type=64;
+                    Settings.virtual_arch_type=64;
                     invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
                     break;
 
                 case ID_DIS_INSTALL:
-                    flags^=FLAG_DISABLEINSTALL;
+                    Settings.flags^=FLAG_DISABLEINSTALL;
                     break;
 
                 case ID_DIS_RESTPNT:
-                    flags^=FLAG_NORESTOREPOINT;
-                    manager_g->itembar_setactive(SLOT_RESTORE_POINT,flags&FLAG_NORESTOREPOINT?0:1);
+                    Settings.flags^=FLAG_NORESTOREPOINT;
+                    manager_g->itembar_setactive(SLOT_RESTORE_POINT,Settings.flags&FLAG_NORESTOREPOINT?0:1);
                     manager_g->set_rstpnt(0);
                     break;
 
@@ -1735,7 +1750,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
             if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
             {
-                virtual_os_version=windows_ver[wp-ID_WIN_2000];
+                Settings.virtual_os_version=windows_ver[wp-ID_WIN_2000];
                 invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
@@ -1771,7 +1786,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if(wp==ID_LANG)
                 {
                     i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
-                    SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)curlang);
+                    SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curlang);
                     lang_set(i);
                     lang_refresh();
                 }
@@ -1779,7 +1794,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 if(wp==ID_THEME)
                 {
                     i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
-                    SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)curtheme);
+                    SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curtheme);
                     theme_set(i);
                     theme_refresh();
                 }
@@ -1791,7 +1806,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_INSTALL:
                     if(installmode==MODE_NONE)
                     {
-                        if((flags&FLAG_EXTRACTONLY)==0)
+                        if((Settings.flags&FLAG_EXTRACTONLY)==0)
                         wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
                         manager_g->install(INSTALLDRIVERS);
                     }
@@ -1810,7 +1825,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_OPENLOGS:
-                    ShellExecute(hwnd,L"explore",log_dir,nullptr,nullptr,SW_SHOW);
+                    ShellExecute(hwnd,L"explore",Settings.log_dir,nullptr,nullptr,SW_SHOW);
                     break;
 
                 case ID_SNAPSHOT:
@@ -1837,9 +1852,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_SHOW_ONE:
                 case ID_SHOW_DUP:
                 case ID_SHOW_INVALID:
-                    filters=0;
-                    for(i=0;i<NUM_PANELS;i++)filters+=panels[i].calcFilters();
-                    manager_g->filter(filters);
+                    Settings.filters=0;
+                    for(i=0;i<NUM_PANELS;i++)Settings.filters+=panels[i].calcFilters();
+                    manager_g->filter(Settings.filters);
                     manager_g->setpos();
                     break;
 
@@ -1849,9 +1864,9 @@ LRESULT CALLBACK WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_REBOOT:
                     if(panels[11].isChecked(3))
-                        flags|=FLAG_AUTOINSTALL;
+                        Settings.flags|=FLAG_AUTOINSTALL;
                     else
-                        flags&=~FLAG_AUTOINSTALL;
+                        Settings.flags&=~FLAG_AUTOINSTALL;
                     break;
 
                 default:
@@ -1934,12 +1949,12 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
             manager_g->hitscan(x,y,&floating_itembar,&i);
             if(floating_itembar==SLOT_SNAPSHOT)
             {
-                statemode=STATEMODE_REAL;
+                Settings.statemode=STATEMODE_REAL;
                 invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(floating_itembar==SLOT_DPRDIR)
             {
-                *drpext_dir=0;
+                *Settings.drpext_dir=0;
                 invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             }
             if(floating_itembar==SLOT_EXTRACTING)
@@ -1962,7 +1977,7 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 manager_g->toggle(floating_itembar);
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
-                    if((flags&FLAG_EXTRACTONLY)==0)
+                    if((Settings.flags&FLAG_EXTRACTONLY)==0)
                     wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
                     manager_g->install(INSTALLDRIVERS);
                 }
@@ -2010,10 +2025,10 @@ LRESULT CALLBACK WindowGraphProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARA
                 if(space_down&&kbpanel)break;
 
                 if(space_down)type=FLOATING_DRIVERLST;else
-                if(ctrl_down||expertmode)type=FLOATING_CMPDRIVER;
+                if(ctrl_down||Settings.expertmode)type=FLOATING_CMPDRIVER;
 
                 manager_g->hitscan(x,y,&itembar_i,&i);
-                if(i==0&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||expertmode))
+                if(i==0&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||Settings.expertmode))
                     drawpopup(itembar_i,type,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_AUTORUN)
                     drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
@@ -2163,12 +2178,12 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
             switch(LOWORD(wParam))
             {
                 case IDOK:
-                    license=2;
+                    Settings.license=2;
                     EndDialog(hwnd,IDOK);
                     return TRUE;
 
                 case IDCANCEL:
-                    license=0;
+                    Settings.license=0;
                     EndDialog(hwnd,IDCANCEL);
                     return TRUE;
 

@@ -198,7 +198,7 @@ void Image::loadFromFile(wchar_t *filename)
     int sz;
 
     if(!filename||!*filename)return;
-    wsprintf(buf,L"%s\\themes\\%s",data_dir,filename);
+    wsprintf(buf,L"%s\\themes\\%s",Settings.data_dir,filename);
     f=_wfopen(buf,L"rb");
     if(!f)
     {
@@ -449,7 +449,7 @@ int Panel::hitscan(int hx,int hy)
     hx-=Xp()+D(PNLITEM_OFSX);
     hy-=Yp()+D(PNLITEM_OFSY);
 
-    if(!expertmode&&items[0].type==TYPE_GROUP_BREAK)return -2;
+    if(!Settings.expertmode&&items[0].type==TYPE_GROUP_BREAK)return -2;
     if(hx<0||hy<0||hx>XP()-D(PNLITEM_OFSX)*2)return -3;
     if(hy/wy>=items[0].action_id)return -4;
     int r=hy/wy+1;
@@ -523,8 +523,8 @@ void Panel::click(int i)
         flipChecked(i);
         if(items[i].action_id==ID_EXPERT_MODE)
         {
-            expertmode=isChecked(i);
-            ShowWindow(GetConsoleWindow(),expertmode&&ctrl_down?SW_SHOWNOACTIVATE:hideconsole);
+            Settings.expertmode=isChecked(i);
+            ShowWindow(GetConsoleWindow(),Settings.expertmode&&ctrl_down?SW_SHOWNOACTIVATE:hideconsole);
         }
         else
             PostMessage(hMain,WM_COMMAND,items[i].action_id+(BN_CLICKED<<16),0);
@@ -586,7 +586,7 @@ void Panel::draw(HDC hdc)
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
             TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getTemp()));
         }
-        if(items[i].type==TYPE_GROUP_BREAK&&!expertmode)break;
+        if(items[i].type==TYPE_GROUP_BREAK&&!Settings.expertmode)break;
         switch(items[i].type)
         {
             case TYPE_CHECKBOX:
@@ -841,8 +841,8 @@ int panels_hitscan(int hx,int hy,int *ii)
 void panel_loadsettings(Panel *panel,int filters_)
 {
      // Expert mode
-    panel3[5].checked=expertmode;
-    panel3_w[3].checked=expertmode;
+    panel3[5].checked=Settings.expertmode;
+    panel3_w[3].checked=Settings.expertmode;
 
     for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
@@ -955,7 +955,7 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
         tme.cbSize=sizeof(tme);
         tme.hwndTrack=hwnd;
         tme.dwFlags=TME_LEAVE|TME_HOVER;
-        tme.dwHoverTime=(ctrl_down||space_down)?1:hintdelay;
+        tme.dwHoverTime=(ctrl_down||space_down)?1:Settings.hintdelay;
         TrackMouseEvent(&tme);
     }
     if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
