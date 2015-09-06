@@ -1791,6 +1791,13 @@ int Driverpack::checkindex()
     return 1;
 }
 
+static void quick_fix(CHAR const *format,...)
+{
+    va_list args;
+    va_start(args,format);
+    va_end(args);
+}
+
 int Driverpack::loadindex()
 {
     wchar_t filename[BUFLEN];
@@ -1816,7 +1823,7 @@ int Driverpack::loadindex()
     if(*Settings.drpext_dir)return 0;
 
     p=mem=new char[sz];
-    Log.print_con("");// A fix for a compiler bug
+    quick_fix("");// A fix for a compiler bug
     fread(mem,sz,1,f);
 
     if(Settings.flags&COLLECTION_USE_LZMA)
