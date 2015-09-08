@@ -726,7 +726,7 @@ void Updater_t::showProgress(wchar_t *buf)
 
 void Updater_t::showPopup(HDC hdcMem)
 {
-    textdata_t td;
+    textdata_t td(hdcMem);
     TorrentStatus_t t;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
     int per=0;
@@ -735,10 +735,7 @@ void Updater_t::showPopup(HDC hdcMem)
 
     td.col=D(POPUP_TEXT_COLOR);
     td.y=D(POPUP_OFSY);
-    td.wy=D(POPUP_WY);
-    td.hdcMem=hdcMem;
     td.maxsz=0;
-    td.x=p0;
 
     //update_getstatus(&t);
     t=TorrentStatus;
@@ -746,34 +743,34 @@ void Updater_t::showPopup(HDC hdcMem)
     format_size(num1,t.downloaded,0);
     format_size(num2,t.downloadsize,0);
     if(t.downloadsize)per=t.downloaded*100/t.downloadsize;
-    TextOutSF(&td,STR(STR_DWN_DOWNLOADED),STR(STR_DWN_DOWNLOADED_F),num1,num2,per);
+    td.TextOutSF(STR(STR_DWN_DOWNLOADED),STR(STR_DWN_DOWNLOADED_F),num1,num2,per);
     format_size(num1,t.uploaded,0);
-    TextOutSF(&td,STR(STR_DWN_UPLOADED),num1);
+    td.TextOutSF(STR(STR_DWN_UPLOADED),num1);
     format_time(num1,t.elapsed);
-    TextOutSF(&td,STR(STR_DWN_ELAPSED),num1);
+    td.TextOutSF(STR(STR_DWN_ELAPSED),num1);
     format_time(num1,t.remaining);
-    TextOutSF(&td,STR(STR_DWN_REMAINING),num1);
+    td.TextOutSF(STR(STR_DWN_REMAINING),num1);
 
-    td.y+=td.wy;
+    td.nl();
     if(t.status)
-        TextOutSF(&td,STR(STR_DWN_STATUS),L"%s",t.status);
+        td.TextOutSF(STR(STR_DWN_STATUS),L"%s",t.status);
     if(*t.error)
     {
         td.col=D(POPUP_CMP_INVALID_COLOR);
-        TextOutSF(&td,STR(STR_DWN_ERROR),L"%s",t.error);
+        td.TextOutSF(STR(STR_DWN_ERROR),L"%s",t.error);
         td.col=D(POPUP_TEXT_COLOR);
     }
     format_size(num1,t.downloadspeed,1);
-    TextOutSF(&td,STR(STR_DWN_DOWNLOADSPEED),num1);
+    td.TextOutSF(STR(STR_DWN_DOWNLOADSPEED),num1);
     format_size(num1,t.uploadspeed,1);
-    TextOutSF(&td,STR(STR_DWN_UPLOADSPEED),num1);
+    td.TextOutSF(STR(STR_DWN_UPLOADSPEED),num1);
 
-    td.y+=td.wy;
-    TextOutSF(&td,STR(STR_DWN_SEEDS),STR(STR_DWN_SEEDS_F),t.seedsconnected,t.seedstotal);
-    TextOutSF(&td,STR(STR_DWN_PEERS),STR(STR_DWN_SEEDS_F),t.peersconnected,t.peerstotal);
+    td.nl();
+    td.TextOutSF(STR(STR_DWN_SEEDS),STR(STR_DWN_SEEDS_F),t.seedsconnected,t.seedstotal);
+    td.TextOutSF(STR(STR_DWN_PEERS),STR(STR_DWN_SEEDS_F),t.peersconnected,t.peerstotal);
     format_size(num1,t.wasted,0);
     format_size(num2,t.wastedhashfailes,0);
-    TextOutSF(&td,STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
+    td.TextOutSF(STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
 
 //    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
     popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));

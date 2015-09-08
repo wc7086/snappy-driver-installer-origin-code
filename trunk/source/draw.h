@@ -140,22 +140,39 @@ public:
 };
 
 // Text
-struct textdata_t
+class textdata_t
 {
     HDC hdcMem;
+
+    int ofsx;
     int x;
-    int y;
-    int wy;
-    int maxsz;
-    int col;
     int i;
     int *limits;
     int mode;
+
+public:
+    int y;
+    int wy;
+    int col;
+    int maxsz;
+
+private:
+    void TextOut_CM(int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
+
+public:
+    textdata_t(HDC hdcMem1,int ofsx=0,int *lim=nullptr,int mode1=0);
+
+    void limitskip();
+    void ret();
+    void nl();
+    void ret_ofs(int a);
+    int getX(){return x;}
+    int getY(){return y;}
+
+    void TextOutP(const wchar_t *format,...);
+    void TextOutF(int col,const wchar_t *format,...);
+    void TextOutSF(const wchar_t *str,const wchar_t *format,...);
 };
-void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
-void TextOutP(textdata_t *td,const wchar_t *format,...);
-void TextOutF(textdata_t *td,int col,const wchar_t *format,...);
-void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...);
 
 // Popup
 void popup_resize(int x,int y);
