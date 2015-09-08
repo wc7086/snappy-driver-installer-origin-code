@@ -668,52 +668,85 @@ void Panel::draw(HDC hdc)
 //}
 
 //{ Text
-void TextOut_CM(HDC hdcMem,int x,int y,const wchar_t *str,int color,int *maxsz,int mode)
+textdata_t::textdata_t(HDC hdcMem1,int xofs,int *lim,int mode1)
+{
+    hdcMem=hdcMem1;
+    x=D(POPUP_OFSX)+xofs;
+    y=D(POPUP_OFSY);
+    wy=D(POPUP_WY);
+    ofsx=xofs;
+    limits=lim;
+    i=0;
+    maxsz=0;
+    mode=mode1;
+}
+
+void textdata_t::ret()
+{
+    x=D(POPUP_OFSX)+ofsx;
+}
+
+void textdata_t::ret_ofs(int a)
+{
+    x=D(POPUP_OFSX)+a;
+}
+
+void textdata_t::nl()
+{
+    y+=wy;
+}
+
+void textdata_t::limitskip()
+{
+    x+=limits[i++];
+}
+
+void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
 {
     SIZE ss;
     GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
-    if(ss.cx>*maxsz)*maxsz=ss.cx;
+    if(ss.cx>*maxsz1)*maxsz1=ss.cx;
 
-    if(!mode)return;
+    if(!mode1)return;
     SetTextColor(hdcMem,color);
-    TextOutH(hdcMem,x,y,str);
+    TextOutH(hdcMem,x1,y1,str);
     //SetTextColor(hdcMem,0);
 }
 
-void TextOutP(textdata_t *td,const wchar_t *format,...)
+void textdata_t::TextOutP(const wchar_t *format,...)
 {
     wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
     _vsnwprintf(buffer,BUFLEN,format,args);
 
-    TextOut_CM(td->hdcMem,td->x,td->y,buffer,td->col,&td->limits[td->i],td->mode);
-    td->x+=td->limits[td->i];
-    td->i++;
+    TextOut_CM(x,y,buffer,col,&limits[i],mode);
+    x+=limits[i];
+    i++;
     va_end(args);
 }
 
-void TextOutF(textdata_t *td,int col,const wchar_t *format,...)
+void textdata_t::TextOutF(int col1,const wchar_t *format,...)
 {
     wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
     _vsnwprintf(buffer,BUFLEN,format,args);
 
-    TextOut_CM(td->hdcMem,td->x,td->y,buffer,col,&td->maxsz,1);
-    td->y+=td->wy;
+    TextOut_CM(x,y,buffer,col1,&maxsz,1);
+    y+=wy;
     va_end(args);
 }
 
-void TextOutSF(textdata_t *td,const wchar_t *str,const wchar_t *format,...)
+void textdata_t::TextOutSF(const wchar_t *str,const wchar_t *format,...)
 {
     wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
     _vsnwprintf (buffer,BUFLEN,format,args);
-    TextOut_CM(td->hdcMem,td->x,td->y,str,td->col,&td->maxsz,1);
-    TextOut_CM(td->hdcMem,td->x+POPUP_SYSINFO_OFS,td->y,buffer,td->col,&td->maxsz,1);
-    td->y+=td->wy;
+    TextOut_CM(x,y,str,col,&maxsz,1);
+    TextOut_CM(x+POPUP_SYSINFO_OFS,y,buffer,col,&maxsz,1);
+    y+=wy;
     va_end(args);
 }
 //}
@@ -735,30 +768,28 @@ void popup_resize(int x,int y)
 
 void popup_about(HDC hdcMem)
 {
-    textdata_t td;
+    textdata_t td(hdcMem);
     RECT rect;
     int p0=D(POPUP_OFSX);
 
     td.col=D(POPUP_TEXT_COLOR);
-    td.wy=D(POPUP_WY);
-    td.y=D(POPUP_OFSY);
-    td.hdcMem=hdcMem;
-    td.maxsz=0;
 
-    td.x=p0;
-    TextOutF(&td,td.col,L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
-    td.y+=td.wy;
-    rect.left=td.x;
-    rect.top=td.y;
+    td.ret();
+    td.TextOutF(td.col,L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
+    td.nl();
+    rect.left=td.getX();
+    rect.top=td.getY();
     rect.right=D(POPUP_WX)-p0*2;
     rect.bottom=500;
     DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
-    td.y+=td.wy*3;
-    TextOutF(&td,td.col,L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
-    TextOutF(&td,td.col,L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
-    td.y+=td.wy*(intptr_t)STR(STR_ABOUT_SIZE);
+    td.nl();
+    td.nl();
+    td.nl();
+    td.TextOutF(td.col,L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
+    td.TextOutF(td.col,L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
 
-    popup_resize(D(POPUP_WX),td.y+D(POPUP_OFSY));
+    for(int i=0;i<(intptr_t)STR(STR_ABOUT_SIZE);i++)td.nl();
+    popup_resize(D(POPUP_WX),td.getY()+D(POPUP_OFSY));
 }
 
 void format_size(wchar_t *buf,long long val,int isspeed)

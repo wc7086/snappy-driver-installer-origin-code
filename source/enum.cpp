@@ -625,48 +625,48 @@ void State::popup_sysinfo(HDC hdcMem)
     int i,x,y;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
 
-    textdata_t td;
+    textdata_t td(hdcMem);
     td.col=D(POPUP_TEXT_COLOR);
-    td.y=D(POPUP_OFSY);
-    td.wy=D(POPUP_WY);
-    td.hdcMem=hdcMem;
-    td.maxsz=0;
 
-    td.x=p0;
+    td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOutF(&td,td.col,STR(STR_SYSINF_WINDOWS));td.x=p1;
+    td.TextOutF(td.col,STR(STR_SYSINF_WINDOWS));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
 
-    TextOutSF(&td,STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
-    TextOutSF(&td,STR(STR_SYSINF_UPDATE),L"%s",platform.szCSDVersion);
-    TextOutSF(&td,STR(STR_SYSINF_CPU_ARCH),L"%s",architecture?STR(STR_SYSINF_64BIT):STR(STR_SYSINF_32BIT));
-    TextOutSF(&td,STR(STR_SYSINF_LOCALE),L"%X",locale);
-    //TextOutSF(&td,STR(STR_SYSINF_PLATFORM),L"%d",platform.dwPlatformId);
+    td.TextOutSF(STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+    td.TextOutSF(STR(STR_SYSINF_UPDATE),L"%s",platform.szCSDVersion);
+    td.TextOutSF(STR(STR_SYSINF_CPU_ARCH),L"%s",architecture?STR(STR_SYSINF_64BIT):STR(STR_SYSINF_32BIT));
+    td.TextOutSF(STR(STR_SYSINF_LOCALE),L"%X",locale);
+    //TextOutSF(STR(STR_SYSINF_PLATFORM),L"%d",platform.dwPlatformId);
     /*if(platform.dwOSVersionInfoSize == sizeof(OSVERSIONINFOEX))
     {
-        TextOutSF(&td,STR(STR_SYSINF_SERVICEPACK),L"%d.%d",platform.wServicePackMajor,platform.wServicePackMinor);
-        TextOutSF(&td,STR(STR_SYSINF_SUITEMASK),L"%d",platform.wSuiteMask);
-        TextOutSF(&td,STR(STR_SYSINF_PRODUCTTYPE),L"%d",platform.wProductType);
+        td.TextOutSF(STR(STR_SYSINF_SERVICEPACK),L"%d.%d",platform.wServicePackMajor,platform.wServicePackMinor);
+        td.TextOutSF(STR(STR_SYSINF_SUITEMASK),L"%d",platform.wSuiteMask);
+        td.TextOutSF(STR(STR_SYSINF_PRODUCTTYPE),L"%d",platform.wProductType);
     }*/
-    td.x=p0;
+    td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOutF(&td,td.col,STR(STR_SYSINF_ENVIRONMENT));td.x=p1;
+    td.TextOutF(td.col,STR(STR_SYSINF_ENVIRONMENT));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
-    TextOutSF(&td,STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
-    TextOutSF(&td,STR(STR_SYSINF_TEMP),L"%s",textas.get(temp));
+    td.TextOutSF(STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
+    td.TextOutSF(STR(STR_SYSINF_TEMP),L"%s",textas.get(temp));
 
-    td.x=p0;
+    td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOutF(&td,td.col,STR(STR_SYSINF_MOTHERBOARD));td.x=p1;
+    td.TextOutF(td.col,STR(STR_SYSINF_MOTHERBOARD));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
-    TextOutSF(&td,STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
-    TextOutSF(&td,STR(STR_SYSINF_MODEL),L"%s",getModel());
-    TextOutSF(&td,STR(STR_SYSINF_MANUF),L"%s",getManuf());
-    TextOutSF(&td,STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
+    td.TextOutSF(STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
+    td.TextOutSF(STR(STR_SYSINF_MODEL),L"%s",getModel());
+    td.TextOutSF(STR(STR_SYSINF_MANUF),L"%s",getManuf());
+    td.TextOutSF(STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
 
-    td.x=p0;
+    td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOutF(&td,td.col,STR(STR_SYSINF_BATTERY));td.x=p1;
+    td.TextOutF(td.col,STR(STR_SYSINF_BATTERY));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
     SYSTEM_POWER_STATUS *battery_loc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
     switch(battery_loc->ACLineStatus)
@@ -676,7 +676,7 @@ void State::popup_sysinfo(HDC hdcMem)
         default:
         case 255:wcscpy(bufw,STR(STR_SYSINF_UNKNOWN));break;
     }
-    TextOutSF(&td,STR(STR_SYSINF_AC_STATUS),L"%s",bufw);
+    td.TextOutSF(STR(STR_SYSINF_AC_STATUS),L"%s",bufw);
 
     i=battery_loc->BatteryFlag;
     *bufw=0;
@@ -686,26 +686,27 @@ void State::popup_sysinfo(HDC hdcMem)
     if(i&8)wcscat(bufw,STR(STR_SYSINF_CHARGING));
     if(i&128)wcscat(bufw,STR(STR_SYSINF_NOBATTERY));
     if(i==255)wcscat(bufw,STR(STR_SYSINF_UNKNOWN));
-    TextOutSF(&td,STR(STR_SYSINF_FLAGS),L"%s",bufw);
+    td.TextOutSF(STR(STR_SYSINF_FLAGS),L"%s",bufw);
 
     if(battery_loc->BatteryLifePercent!=255)
-        TextOutSF(&td,STR(STR_SYSINF_CHARGED),L"%d%%",battery_loc->BatteryLifePercent);
+        td.TextOutSF(STR(STR_SYSINF_CHARGED),L"%d%%",battery_loc->BatteryLifePercent);
     if(battery_loc->BatteryLifeTime!=0xFFFFFFFF)
-        TextOutSF(&td,STR(STR_SYSINF_LIFETIME),L"%d %s",battery_loc->BatteryLifeTime/60,STR(STR_SYSINF_MINS));
+        td.TextOutSF(STR(STR_SYSINF_LIFETIME),L"%d %s",battery_loc->BatteryLifeTime/60,STR(STR_SYSINF_MINS));
     if(battery_loc->BatteryFullLifeTime!=0xFFFFFFFF)
-        TextOutSF(&td,STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery_loc->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
+        td.TextOutSF(STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery_loc->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
 
     wchar_t *buf=(wchar_t *)(textas.get(monitors));
-    td.x=p0;
+    td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOutF(&td,td.col,STR(STR_SYSINF_MONITORS));td.x=p1;
+    td.TextOutF(td.col,STR(STR_SYSINF_MONITORS));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
     for(i=0;i<buf[0];i++)
     {
         x=buf[1+i*2];
         y=buf[2+i*2];
         td.maxsz+=POPUP_SYSINFO_OFS;
-        TextOutF(&td,td.col,L"%d%s x %d%s (%.1f %s) %.3f %s",
+        td.TextOutF(td.col,L"%d%s x %d%s (%.1f %s) %.3f %s",
                   x,STR(STR_SYSINF_CM),
                   y,STR(STR_SYSINF_CM),
                   sqrt(x*x+y*y)/2.54,STR(STR_SYSINF_INCH),
@@ -715,12 +716,13 @@ void State::popup_sysinfo(HDC hdcMem)
         td.maxsz-=POPUP_SYSINFO_OFS;
     }
 
-    td.x=p0;
+    td.ret();
     td.maxsz+=POPUP_SYSINFO_OFS;
-    td.y+=td.wy;
-    TextOutF(&td,D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));td.x=p1;
+    td.nl();
+    td.TextOutF(D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
+    td.ret_ofs(10);
     td.maxsz-=POPUP_SYSINFO_OFS;
-    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
 }
 
 void State::contextmenu2(int x,int y)

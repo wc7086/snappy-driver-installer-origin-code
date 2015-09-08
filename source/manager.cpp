@@ -348,17 +348,13 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     int bolder=rect.right/2;
     wchar_t *p;
     Driver *cur_driver=nullptr;
-    textdata_t td;
+    textdata_t td(hdcMem);
     Version *a_v=nullptr;
     unsigned score=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
     int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
-    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
+    int p0=D(POPUP_OFSX);
 
-
-    td.y=D(POPUP_OFSY);
-    td.wy=D(POPUP_WY);
-    td.hdcMem=hdcMem;
     td.maxsz=0;
 
     if(devicematch_f->driver)
@@ -390,16 +386,20 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
 
     // Device info (hwidmatch_f,devicematch_f)
     SelectObject(hdcMem,Popup.hFontBold);
-    td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_ANALYSIS));td.x=p1;
+    td.ret();
+    td.TextOutF(c0,L"%s",STR(STR_HINT_ANALYSIS));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
-    TextOutF(&td,c0,L"$%04d",index1);
+    td.TextOutF(c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
         SelectObject(hdcMem,Popup.hFontBold);
-        td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DRP));td.x=p1;
+        td.ret();
+        td.TextOutF(c0,L"%s",STR(STR_HINT_DRP));
+        td.ret_ofs(10);
         SelectObject(hdcMem,Popup.hFontP);
-        TextOutF(&td,c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
-        TextOutF(&td,hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
+        td.TextOutF(c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
+        td.TextOutF(hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
     }
 
@@ -407,14 +407,16 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
 
     SelectObject(hdcMem,Popup.hFontBold);
-    td.x=p0;TextOutF(&td,c0,L"%s",STR(STR_HINT_DEVICE));td.x=p1;
+    td.ret();
+    td.TextOutF(c0,L"%s",STR(STR_HINT_DEVICE));
+    td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
-    TextOutF(&td,c0,L"%s",t+devicematch_f->device->getDescr());
-    TextOutF(&td,c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
-    if(bufw[0])TextOutF(&td,c0,L"%s",bufw);
-    TextOutF(&td,c0,L"%s",t+devicematch_f->device->Driver);
+    td.TextOutF(c0,L"%s",t+devicematch_f->device->getDescr());
+    td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
+    if(bufw[0])td.TextOutF(c0,L"%s",bufw);
+    td.TextOutF(c0,L"%s",t+devicematch_f->device->Driver);
     wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
-    TextOutF(&td,c0,L"%s",bufw);
+    td.TextOutF(c0,L"%s",bufw);
 
     // HWID list (devicematch_f)
     maxln=td.y;
@@ -422,7 +424,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     if(devicematch_f->device->HardwareID)
     {
         SelectObject(hdcMem,Popup.hFontBold);
-        td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_HARDWAREID));td.x=p1+bolder;
+        td.ret_ofs(bolder);
+        td.TextOutF(c0,L"%s",STR(STR_HINT_HARDWAREID));
+        td.ret_ofs(bolder+10);
         SelectObject(hdcMem,Popup.hFontP);
         p=(wchar_t *)(t+devicematch_f->device->HardwareID);
         while(*p)
@@ -431,14 +435,16 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
             if(!StrCmpIW(i_hwid,p))pp|=1;
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
+            td.TextOutF(pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=lstrlenW(p)+1;
         }
     }
     if(devicematch_f->device->CompatibleIDs)
     {
         SelectObject(hdcMem,Popup.hFontBold);
-        td.x=p0+bolder;TextOutF(&td,c0,L"%s",STR(STR_HINT_COMPID));td.x=p1+bolder;
+        td.ret_ofs(bolder);
+        td.TextOutF(c0,L"%s",STR(STR_HINT_COMPID));
+        td.ret_ofs(bolder+10);
         SelectObject(hdcMem,Popup.hFontP);
         p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
         while(*p)
@@ -447,7 +453,7 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
             if(!StrCmpIW(i_hwid,p))pp|=1;
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            TextOutF(&td,pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
+            td.TextOutF(pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=lstrlenW(p)+1;
         }
     }
@@ -471,19 +477,20 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     {
         cur_driver->version.str_date(bufw);
 
-        td.x=p0;
+        td.ret();
         SelectObject(hdcMem,Popup.hFontBold);
-        TextOutF(&td,               c0,L"%s",STR(STR_HINT_INSTDRV));td.x=p1;
+        td.TextOutF(               c0,L"%s",STR(STR_HINT_INSTDRV));
+        td.ret_ofs(10);
         SelectObject(hdcMem,Popup.hFontP);
-        TextOutF(&td,               c0,L"%s",t+cur_driver->DriverDesc);
-        TextOutF(&td,               cur_driver->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
-        TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
-        TextOutF(&td,cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
-        TextOutF(&td,cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
-        TextOutF(&td,cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
-        TextOutF(&td,               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
-        TextOutF(&td,               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
-        TextOutF(&td,cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
+        td.TextOutF(               c0,L"%s",t+cur_driver->DriverDesc);
+        td.TextOutF(               cur_driver->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
+        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
+        td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
+        td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
+        td.TextOutF(cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
+        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
+        td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
+        td.TextOutF(cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
     }
 
     // Available driver (hwidmatch_f)
@@ -493,20 +500,22 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         a_v->str_date(bufw);
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
-        td.x=p0+bolder;
         SelectObject(hdcMem,Popup.hFontBold);
-        TextOutF(&td,               c0,L"%s",STR(STR_HINT_AVAILDRV));td.x=p1+bolder;wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
+        td.ret_ofs(bolder);
+        td.TextOutF(               c0,L"%s",STR(STR_HINT_AVAILDRV));
+        td.ret_ofs(bolder+10);
+        wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
         SelectObject(hdcMem,Popup.hFontP);
-        TextOutF(&td,               c0,L"%s",bufw+1000);
-        TextOutF(&td,hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
+        td.TextOutF(               c0,L"%s",bufw+1000);
+        td.TextOutF(hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
                  L"%s%S",STR(STR_HINT_SIGNATURE),/*hwidmatch_f->pickcat(state),*/hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
-        TextOutF(&td,               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
-        TextOutF(&td,cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
-        TextOutF(&td,cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
-        TextOutF(&td,cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
-        TextOutF(&td,               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
-        TextOutF(&td,hwidmatch_f->getDecorscore()?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
-        TextOutF(&td,cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
+        td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
+        td.TextOutF(cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
+        td.TextOutF(cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
+        td.TextOutF(cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
+        td.TextOutF(               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
+        td.TextOutF(hwidmatch_f->getDecorscore()?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
+        td.TextOutF(cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
     }
 
     if(!devicematch_f->device->HardwareID&&!hwidmatch_f)td.maxsz/=2;
@@ -1828,17 +1837,12 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     int maxsz=0;
     int limits[30];
     int c0=D(POPUP_TEXT_COLOR);
-    textdata_t td;
+    textdata_t td(hdcMem,Popup.horiz_sh,limits,1);
 
     if(i<RES_SLOTS)return;
 
-    td.hdcMem=hdcMem;
-    td.i=0;
-    td.limits=limits;
-    td.x=D(POPUP_OFSX)+Popup.horiz_sh;
     td.y=D(POPUP_OFSY);
     td.col=0;
-    td.mode=1;
 
     int group=items_list[i].index;
     Driver *cur_driver=items_list[i].devicematch->driver;
@@ -1853,7 +1857,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
 
 
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_INSTDRV),c0,&maxsz,1);td.y+=lne;
+    td.TextOutF(c0,STR(STR_HINT_INSTDRV));
     SelectObject(hdcMem,Popup.hFontP);
 
     if(cur_driver)
@@ -1862,22 +1866,23 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
         for(k=0;bufw[k];k++)i_hwid[k]=toupper(bufw[k]);i_hwid[k]=0;
         cur_driver->version.str_date(bufw);
 
-        TextOutP(&td,L"$%04d",i);
-        td.x+=limits[td.i++];
+        td.TextOutP(L"$%04d",i);
+        td.limitskip();
         td.col=c0;
-        TextOutP(&td,L"| %08X",cur_driver->calc_score_h(matcher->getState()));
-        TextOutP(&td,L"| %s",bufw);
-        for(k=0;k<6;k++)td.x+=limits[td.i++];
-        TextOutP(&td,L"| %s%s",t+matcher->getState()->getWindir(),t+cur_driver->InfPath);
-        TextOutP(&td,L"| %s",t+cur_driver->ProviderName);cur_driver->version.str_version(bufw);
-        TextOutP(&td,L"| %s",bufw);
-        TextOutP(&td,L"| %s",i_hwid);
-        TextOutP(&td,L"| %s",t+cur_driver->DriverDesc);
+        td.TextOutP(L"| %08X",cur_driver->calc_score_h(matcher->getState()));
+        td.TextOutP(L"| %s",bufw);
+        for(k=0;k<6;k++)td.limitskip();
+        td.TextOutP(L"| %s%s",t+matcher->getState()->getWindir(),t+cur_driver->InfPath);
+        td.TextOutP(L"| %s",t+cur_driver->ProviderName);cur_driver->version.str_version(bufw);
+        td.TextOutP(L"| %s",bufw);
+        td.TextOutP(L"| %s",i_hwid);
+        td.TextOutP(L"| %s",t+cur_driver->DriverDesc);
         td.y+=lne;
     }
     td.y+=lne;
     SelectObject(hdcMem,Popup.hFontBold);
-    TextOut_CM(hdcMem,10,td.y,STR(STR_HINT_AVAILDRVS),c0,&maxsz,1);td.y+=lne;
+    td.ret();
+    td.TextOutF(c0,STR(STR_HINT_AVAILDRVS));
     SelectObject(hdcMem,Popup.hFontP);
 
     itembar=&items_list[0];
@@ -1904,7 +1909,8 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     if(p.x+maxsz+D(POPUP_OFSX)*3>rect.right)
     {
         td.y+=lne;
-        TextOut_CM(hdcMem,D(POPUP_OFSX),td.y,STR(STR_HINT_SCROLL),c0,&maxsz,1);
+        td.ret();
+        td.TextOutF(c0,STR(STR_HINT_SCROLL));
         td.y+=lne;
     }
     popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));

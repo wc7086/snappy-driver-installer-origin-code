@@ -786,14 +786,9 @@ void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index
     wchar_t bufw[BUFLEN];
     Version *v=getdrp_drvversion();
 
-    textdata_t td;
-    td.hdcMem=hdcMem;
-    td.i=0;
-    td.limits=limits;
-    td.x=D(POPUP_OFSX)+Popup.horiz_sh;
+    textdata_t td(hdcMem,Popup.horiz_sh,limits,mode);
     td.y=y;
     td.col=0;
-    td.mode=mode;
 
     if(!altsectscore)td.col=D(POPUP_LST_INVALID_COLOR);
     else
@@ -803,21 +798,21 @@ void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index
         td.col=D(POPUP_TEXT_COLOR);
     }
 
-    TextOutP(&td,L"$%04d",index);
-    TextOutP(&td,L"| %d",altsectscore);
-    TextOutP(&td,L"| %08X",score);v->str_date(bufw);
-    TextOutP(&td,L"| %s",bufw);
-    TextOutP(&td,L"| %3d",decorscore);
-    TextOutP(&td,L"| %d",markerscore);
-    TextOutP(&td,L"| %3X",status);getdrp_drvsection(buf);
-    TextOutP(&td,L"| %S",buf);
-    TextOutP(&td,L"| %s\\%s",getdrp_packpath(),getdrp_packname());
-    TextOutP(&td,L"| %08X%",getdrp_infcrc());
-    TextOutP(&td,L"| %S%S",getdrp_infpath(),getdrp_infname());
-    TextOutP(&td,L"| %S",getdrp_drvmanufacturer());v->str_version(bufw);
-    TextOutP(&td,L"| %s",bufw);
-    TextOutP(&td,L"| %S",getdrp_drvHWID());wsprintf(bufw,L"%S",getdrp_drvdesc());
-    TextOutP(&td,L"| %s",bufw);
+    td.TextOutP(L"$%04d",index);
+    td.TextOutP(L"| %d",altsectscore);
+    td.TextOutP(L"| %08X",score);v->str_date(bufw);
+    td.TextOutP(L"| %s",bufw);
+    td.TextOutP(L"| %3d",decorscore);
+    td.TextOutP(L"| %d",markerscore);
+    td.TextOutP(L"| %3X",status);getdrp_drvsection(buf);
+    td.TextOutP(L"| %S",buf);
+    td.TextOutP(L"| %s\\%s",getdrp_packpath(),getdrp_packname());
+    td.TextOutP(L"| %08X%",getdrp_infcrc());
+    td.TextOutP(L"| %S%S",getdrp_infpath(),getdrp_infname());
+    td.TextOutP(L"| %S",getdrp_drvmanufacturer());v->str_version(bufw);
+    td.TextOutP(L"| %s",bufw);
+    td.TextOutP(L"| %S",getdrp_drvHWID());wsprintf(bufw,L"%S",getdrp_drvdesc());
+    td.TextOutP(L"| %s",bufw);
 }
 
 int Hwidmatch::cmp(Hwidmatch *match2)
