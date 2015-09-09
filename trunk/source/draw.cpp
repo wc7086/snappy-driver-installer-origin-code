@@ -15,6 +15,22 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "com_header.h"
+#include "svnrev.h"
+#include <webp\decode.h>
+
+#include <windows.h>
+#include <shlwapi.h>        // for StrFormatByteSizeW
+
+#include "common.h"
+#include "indexing.h"
+#include "guicon.h"
+#include "enum.h"
+#include "matcher.h"
+#include "manager.h"
+#include "theme.h"
+#include "draw.h"
+#include "cli.h"
 #include "main.h"
 
 //{ Global vars

@@ -16,6 +16,20 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //#define MERGE_FINDER
+#include "com_header.h"
+#include "7zip.h"
+
+#include <windows.h>
+#include <shlwapi.h>        // for StrStrIW
+
+#include "common.h"
+#include "indexing.h"
+#include "guicon.h"
+#include "enum.h"
+#include "matcher.h"
+#include "manager.h"
+#include "theme.h"
+#include "draw.h"
 #include "main.h"
 
 //{ Global variables

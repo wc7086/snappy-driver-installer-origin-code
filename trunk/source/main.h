@@ -15,99 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define BUFLEN 4096
-#define WIN32_LEAN_AND_MEAN
-#define _WIN32_IE 0x0501
-#undef __STRICT_ANSI__
-//#define BENCH_MODE
-
-//{ Includes
-
-// Windows
-#include <windows.h>
-#include <commdlg.h>        // for GetOpenFileName()
-#include <setupapi.h>       // for SetupDiGetClassDescription()
-#include <shlwapi.h>        // for StrStrIW
-#include <shobjidl.h>       // for ShowProgressInTaskbar()
-#include <shellapi.h>       // for CommandLineToArgvW [x64]
-#include <shlobj.h>         // for SHBrowseForFolder()
-#include "SRRestorePtAPI.h" // for RestorePoint
-
-typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
-#ifndef DISPLAY_DEVICE_ACTIVE
-#define DISPLAY_DEVICE_ACTIVE         1
-#define DISPLAY_DEVICE_ATTACHED       2
-#endif
-
-// C
-#include <stdio.h>      // for _wfopen
-#include <time.h>       // for time
-#include <math.h>       // for sqrt
-#include <signal.h>     // for signal
-#include <process.h>    // for _beginthreadex
-#include <direct.h>     // for _wmkdir
-
-// C++
-#include <unordered_set>
-#include <unordered_map>
-#include <queue>
-#include <vector>
-#include <memory>
-
-// BOOST
-#define BOOST_ALL_NO_LIB
-#define BOOST_ASIO_ENABLE_CANCELIO
-#define BOOST_ASIO_HASH_MAP_BUCKETS 1021
-#define BOOST_ASIO_SEPARATE_COMPILATION
-#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
-#define BOOST_SYSTEM_NO_DEPRECATED
-#define BOOST_SYSTEM_STATIC_LINK 1
-#define BOOST_NO_AUTO_PTR
-
-// webp
-#include <webp\decode.h>
-
-// 7-zip
-extern "C"
-{
-#include "7z.h"
-#include "7zAlloc.h"
-#include "7zCrc.h"
-#include "7zFile.h"
-#include "7zVersion.h"
-#include "LzmaEnc.h"
-#include "Lzma86.h"
-}
-
-#ifndef BENCH_MODE
-#define wcsicmp StrCmpIW
-#endif
-
-// SDI
-#include "svnrev.h"
-#include "resources.h"
-
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
-#include "matcher.h"
-#include "manager.h"
-#include "theme.h"
-#include "install.h"
-#include "draw.h"
-#include "cli.h"
-#include "update.h"
-
-//#include "debug_new.h"
-void* operator new(size_t size, const char* file, int line);
-void* operator new[](size_t size, const char* file, int line);
-#define DEBUG_NEW new(__FILE__, __LINE__)
-#define new DEBUG_NEW
-namespace nvwa {extern size_t total_mem_alloc;}
-//}
-
 //{ Defines
+
+#include "resources.h"
 
 // Misc
 #define APPTITLE            L"Snappy Driver Installer v0.3"
@@ -401,3 +311,11 @@ void checktimer(const wchar_t *str,long long t,int uMsg);
 
 // GUI
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
+
+//#include "debug_new.h"
+void* operator new(size_t size, const char* file, int line);
+void* operator new[](size_t size, const char* file, int line);
+#define DEBUG_NEW new(__FILE__, __LINE__)
+#define new DEBUG_NEW
+namespace nvwa {extern size_t total_mem_alloc;}
+//}

@@ -16,32 +16,28 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifdef USE_TORRENT
-#define _WIN32_IE 0x0501
-
-#define BOOST_ALL_NO_LIB
-#define BOOST_ASIO_ENABLE_CANCELIO
-#define BOOST_ASIO_HASH_MAP_BUCKETS 1021
-#define BOOST_ASIO_SEPARATE_COMPILATION
-#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
-#define BOOST_SYSTEM_NO_DEPRECATED
-#define BOOST_SYSTEM_STATIC_LINK 1
-#define TORRENT_DISABLE_GEO_IP
-#define TORRENT_NO_DEPRECATE
-#define TORRENT_PRODUCTION_ASSERTS 1
-#define TORRENT_RELEASE_ASSERTS 1
-#define TORRENT_USE_I2P 0
-#define TORRENT_USE_ICONV 0
-#define TORRENT_USE_IPV6 0
-#define TORRENT_USE_TOMMATH
-
-#define IPV6_TCLASS 30
+#include "com_header.h"
+#include "svnrev.h"
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
 #include "libtorrent/bencode.hpp"
 #include "libtorrent/alert_types.hpp"
 #include "libtorrent/session.hpp"
 
+#include <windows.h>
+#include <shlwapi.h>        // for StrStrIW
+
+#include "common.h"
+#include "indexing.h"
+#include "guicon.h"
+#include "enum.h"
+#include "matcher.h"
+#include "manager.h"
+#include "theme.h"
+#include "draw.h"
 #include "main.h"
+#include "update.h"
+#include "baseboard.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
@@ -1027,7 +1023,14 @@ bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 //}
 #else
 
-#include "main.h"
+#include "com_header.h"
+
+#include <windows.h>
+#include <setupapi.h>       // for SetupDiGetClassDescription()
+#include <shlwapi.h>        // for StrStrIW
+
+#include "update.h"
+
 TorrentStatus_t TorrentStatus;
 Updater_t Updater;
 int Updater_t::torrentport=50171;
