@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef CLI_H
+#define CLI_H
+
 #define SAVE_INSTALLED_ID_DEF   L"-save-installed-id"
 #define HWIDINSTALLED_DEF       L"-HWIDInstalled:"
 #define GFG_DEF                 L"-cfg:"
@@ -41,3 +44,5 @@ void init_CLIParam();
 void RUN_CLI(CommandLineParam_t ACLIParam);
 bool isCfgSwithExist(const wchar_t *cmdParams,wchar_t *cfgPath);
 bool loadCFGFile(const wchar_t *FileName,wchar_t *DestStr);
+
+#endif

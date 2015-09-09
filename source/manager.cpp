@@ -348,14 +348,12 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     int bolder=rect.right/2;
     wchar_t *p;
     Driver *cur_driver=nullptr;
-    textdata_t td(hdcMem);
+    textdata_vert td(hdcMem);
     Version *a_v=nullptr;
     unsigned score=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
     int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
     int p0=D(POPUP_OFSX);
-
-    td.maxsz=0;
 
     if(devicematch_f->driver)
     {
@@ -459,14 +457,14 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     }
     if(!cur_driver||!hwidmatch_f)cm_hwid=0;
     if(td.y>maxln)maxln=td.y;
-    maxln+=td.wy;
+    maxln+=D(POPUP_WY);
     td.y=maxln;
 
     // Cur driver (cur_driver)
     if(cur_driver||hwidmatch_f)
     {
-        MoveToEx(hdcMem,0,td.y-td.wy/2,nullptr);
-        LineTo(hdcMem,rect.right,td.y-td.wy/2);
+        MoveToEx(hdcMem,0,td.y-D(POPUP_WY)/2,nullptr);
+        LineTo(hdcMem,rect.right,td.y-D(POPUP_WY)/2);
     }
     if(devicematch_f->device->HardwareID||hwidmatch_f)
     {
@@ -518,9 +516,9 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
         td.TextOutF(cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
     }
 
-    if(!devicematch_f->device->HardwareID&&!hwidmatch_f)td.maxsz/=2;
-
-    popup_resize((td.maxsz+10+p0*2)*2,td.y+D(POPUP_OFSY));
+    int zz=td.getMaxsz();
+    if(!devicematch_f->device->HardwareID&&!hwidmatch_f)zz/=2;
+    popup_resize((zz+10+p0*2)*2,td.y+D(POPUP_OFSY));
 }
 
 int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
@@ -1837,7 +1835,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     int maxsz=0;
     int limits[30];
     int c0=D(POPUP_TEXT_COLOR);
-    textdata_t td(hdcMem,Popup.horiz_sh,limits,1);
+    textdata_horiz_t td(hdcMem,Popup.horiz_sh,limits,1);
 
     if(i<RES_SLOTS)return;
 

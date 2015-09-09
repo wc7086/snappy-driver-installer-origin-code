@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef ENUM_H
+#define ENUM_H
+
 // Declarations
 class Manager;
 class State;
@@ -252,3 +255,5 @@ int iswide(int x,int y);
 //  Misc (in baseboard.cpp)
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total);
+
+#endif

@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef COMMON_H
+#define COMMON_H
+
 // Global vars
 extern int trap_mode;
 
@@ -196,3 +199,5 @@ extern void registerLZMA2();
 extern void registerPPMD();
 extern void registerDelta();
 extern void registerByteSwap();
+
+#endif

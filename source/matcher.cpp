@@ -786,7 +786,7 @@ void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index
     wchar_t bufw[BUFLEN];
     Version *v=getdrp_drvversion();
 
-    textdata_t td(hdcMem,Popup.horiz_sh,limits,mode);
+    textdata_horiz_t td(hdcMem,Popup.horiz_sh,limits,mode);
     td.y=y;
     td.col=0;
 
