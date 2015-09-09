@@ -18,6 +18,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <queue>
+#include <unordered_map>
+
 // Global vars
 extern int trap_mode;
 

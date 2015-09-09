@@ -15,7 +15,25 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "com_header.h"
+
+#include <windows.h>
+#include <setupapi.h>       // for CommandLineToArgvW
+#include <shlwapi.h>        // for StrStrIW
+#include <shlobj.h>         // for SHBrowseForFolder()
+
+#include "common.h"
+#include "indexing.h"
+#include "guicon.h"
+#include "enum.h"
+#include "matcher.h"
+#include "manager.h"
+#include "theme.h"
+#include "draw.h"
+#include "cli.h"
 #include "main.h"
+#include "update.h"
+#include "install.h"
 
 //{ Global variables
 
@@ -368,11 +386,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Reset paths for GUI-less version of the app
     #ifdef CONSOLE_MODE
-    flags|=FLAG_NOGUI;
-    license=1;
-    wcscpy(drp_dir,log_dir);
-    wcscpy(index_dir,log_dir);
-    wcscpy(output_dir,log_dir);
+    Settings.flags|=FLAG_NOGUI;
+    Settings.license=1;
+    wcscpy(Settings.drp_dir,Settings.log_dir);
+    wcscpy(Settings.index_dir,Settings.log_dir);
+    wcscpy(Settings.output_dir,Settings.log_dir);
     #endif
 
     // Close the app if the work is done

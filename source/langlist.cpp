@@ -15,7 +15,12 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "main.h"
+#include "com_header.h"
+
+#include <windows.h>
+
+#include "common.h"
+#include "theme.h"
 
 #define DEF_VAL(a) {TEXT(a),0,0},
 #define DEF_STR(a) {TEXT(a),0,0},

@@ -15,7 +15,23 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "com_header.h"
+
+#include <windows.h>
+#include <setupapi.h>       // for CommandLineToArgvW
+#include <shlwapi.h>        // for StrStrIW
+
+#include "common.h"
+#include "indexing.h"
+#include "guicon.h"
+#include "enum.h"
+#include "matcher.h"
+#include "manager.h"
+#include "theme.h"
+#include "draw.h"
+#include "cli.h"
 #include "main.h"
+
 #define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 
 //{Global variables
