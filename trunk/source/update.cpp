@@ -726,16 +726,13 @@ void Updater_t::showProgress(wchar_t *buf)
 
 void Updater_t::showPopup(HDC hdcMem)
 {
-    textdata_t td(hdcMem);
+    textdata_vert td(hdcMem);
     TorrentStatus_t t;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
     int per=0;
     wchar_t num1[BUFLEN],num2[BUFLEN];
 
-
-    td.col=D(POPUP_TEXT_COLOR);
     td.y=D(POPUP_OFSY);
-    td.maxsz=0;
 
     //update_getstatus(&t);
     t=TorrentStatus;
@@ -773,7 +770,7 @@ void Updater_t::showPopup(HDC hdcMem)
     td.TextOutSF(STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
 
 //    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
-    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+    popup_resize((td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
 }
 
 void Updater_t::createThreads()

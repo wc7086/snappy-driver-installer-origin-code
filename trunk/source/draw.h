@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef DRAW_H
+#define DRAW_H
+
 #define NUM_PANELS  13
 #define PAN_ENT     18
 
@@ -142,35 +145,61 @@ public:
 // Text
 class textdata_t
 {
+protected:
     HDC hdcMem;
 
     int ofsx;
     int x;
-    int i;
-    int *limits;
-    int mode;
-
-public:
-    int y;
     int wy;
-    int col;
     int maxsz;
 
-private:
+public:
+    int col;
+    int y;
+
+protected:
     void TextOut_CM(int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
 
 public:
-    textdata_t(HDC hdcMem1,int ofsx=0,int *lim=nullptr,int mode1=0);
+    textdata_t(HDC hdcMem1,int ofsx=0);
 
-    void limitskip();
+    void TextOutF(int col,const wchar_t *format,...);
+    void TextOutF(const wchar_t *format,...);
     void ret();
     void nl();
     void ret_ofs(int a);
     int getX(){return x;}
     int getY(){return y;}
+};
 
+class textdata_horiz_t:public textdata_t
+{
+    int i;
+    int *limits;
+    int mode;
+
+public:
+    textdata_horiz_t(HDC hdcMem1,int ofsx1,int *lim,int mode1):textdata_t(hdcMem1,ofsx1)
+    {
+        limits=lim;
+        mode=mode1;
+        i=0;
+    }
+    void limitskip();
     void TextOutP(const wchar_t *format,...);
-    void TextOutF(int col,const wchar_t *format,...);
+};
+
+class textdata_vert:public textdata_t
+{
+
+public:
+    textdata_vert(HDC hdcMem1,int ofsx1=0):textdata_t(hdcMem1,ofsx1)
+    {
+
+    }
+    void shift_r(){maxsz+=POPUP_SYSINFO_OFS;}
+    void shift_l(){maxsz-=POPUP_SYSINFO_OFS;}
+    int getMaxsz(){return maxsz;}
     void TextOutSF(const wchar_t *str,const wchar_t *format,...);
 };
 
@@ -203,3 +232,5 @@ void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
 void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 HICON CreateMirroredIcon(HICON hiconOrg);
+
+#endif

@@ -625,12 +625,10 @@ void State::popup_sysinfo(HDC hdcMem)
     int i,x,y;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
 
-    textdata_t td(hdcMem);
-    td.col=D(POPUP_TEXT_COLOR);
-
+    textdata_vert td(hdcMem);
     td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    td.TextOutF(td.col,STR(STR_SYSINF_WINDOWS));
+    td.TextOutF(STR(STR_SYSINF_WINDOWS));
     td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
 
@@ -647,7 +645,7 @@ void State::popup_sysinfo(HDC hdcMem)
     }*/
     td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    td.TextOutF(td.col,STR(STR_SYSINF_ENVIRONMENT));
+    td.TextOutF(STR(STR_SYSINF_ENVIRONMENT));
     td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
     td.TextOutSF(STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
@@ -655,7 +653,7 @@ void State::popup_sysinfo(HDC hdcMem)
 
     td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    td.TextOutF(td.col,STR(STR_SYSINF_MOTHERBOARD));
+    td.TextOutF(STR(STR_SYSINF_MOTHERBOARD));
     td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
     td.TextOutSF(STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
@@ -665,7 +663,7 @@ void State::popup_sysinfo(HDC hdcMem)
 
     td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    td.TextOutF(td.col,STR(STR_SYSINF_BATTERY));
+    td.TextOutF(STR(STR_SYSINF_BATTERY));
     td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
     SYSTEM_POWER_STATUS *battery_loc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
@@ -698,31 +696,31 @@ void State::popup_sysinfo(HDC hdcMem)
     wchar_t *buf=(wchar_t *)(textas.get(monitors));
     td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
-    td.TextOutF(td.col,STR(STR_SYSINF_MONITORS));
+    td.TextOutF(STR(STR_SYSINF_MONITORS));
     td.ret_ofs(10);
     SelectObject(hdcMem,Popup.hFontP);
     for(i=0;i<buf[0];i++)
     {
         x=buf[1+i*2];
         y=buf[2+i*2];
-        td.maxsz+=POPUP_SYSINFO_OFS;
-        td.TextOutF(td.col,L"%d%s x %d%s (%.1f %s) %.3f %s",
+        td.shift_r();
+        td.TextOutF(L"%d%s x %d%s (%.1f %s) %.3f %s",
                   x,STR(STR_SYSINF_CM),
                   y,STR(STR_SYSINF_CM),
                   sqrt(x*x+y*y)/2.54,STR(STR_SYSINF_INCH),
                   (double)y/x,
                   iswide(x,y)?STR(STR_SYSINF_WIDE):L"");
 
-        td.maxsz-=POPUP_SYSINFO_OFS;
+        td.shift_l();
     }
 
     td.ret();
-    td.maxsz+=POPUP_SYSINFO_OFS;
+    td.shift_r();
     td.nl();
     td.TextOutF(D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
     td.ret_ofs(10);
-    td.maxsz-=POPUP_SYSINFO_OFS;
-    popup_resize((td.maxsz+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
+    td.shift_l();
+    popup_resize((td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
 }
 
 void State::contextmenu2(int x,int y)

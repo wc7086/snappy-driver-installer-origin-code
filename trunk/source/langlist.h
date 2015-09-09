@@ -140,7 +140,7 @@ enum
     STR_ABOUT_TESTERS_TITLE,
     STR_ABOUT_TESTERS_LIST,
     STR_ABOUT_LICENSE,
-    STR_ABOUT_SIZE,
+    STR_ABOUT_SIZE, // deprecated
 
 // Driver popup windows
     STR_HINT_UNKNOWN,

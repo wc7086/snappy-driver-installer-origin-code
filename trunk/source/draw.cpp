@@ -668,17 +668,18 @@ void Panel::draw(HDC hdc)
 //}
 
 //{ Text
-textdata_t::textdata_t(HDC hdcMem1,int xofs,int *lim,int mode1)
+textdata_t::textdata_t(HDC hdcMem1,int xofs)
 {
     hdcMem=hdcMem1;
     x=D(POPUP_OFSX)+xofs;
     y=D(POPUP_OFSY);
+    col=D(POPUP_TEXT_COLOR);
     wy=D(POPUP_WY);
     ofsx=xofs;
-    limits=lim;
-    i=0;
+    //limits=lim;
+    //i=0;
     maxsz=0;
-    mode=mode1;
+    //mode=mode1;
 }
 
 void textdata_t::ret()
@@ -696,7 +697,7 @@ void textdata_t::nl()
     y+=wy;
 }
 
-void textdata_t::limitskip()
+void textdata_horiz_t::limitskip()
 {
     x+=limits[i++];
 }
@@ -713,7 +714,7 @@ void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxs
     //SetTextColor(hdcMem,0);
 }
 
-void textdata_t::TextOutP(const wchar_t *format,...)
+void textdata_horiz_t::TextOutP(const wchar_t *format,...)
 {
     wchar_t buffer[BUFLEN];
     va_list args;
@@ -738,7 +739,19 @@ void textdata_t::TextOutF(int col1,const wchar_t *format,...)
     va_end(args);
 }
 
-void textdata_t::TextOutSF(const wchar_t *str,const wchar_t *format,...)
+void textdata_t::TextOutF(const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+
+    TextOut_CM(x,y,buffer,col,&maxsz,1);
+    y+=wy;
+    va_end(args);
+}
+
+void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
 {
     wchar_t buffer[BUFLEN];
     va_list args;
@@ -768,28 +781,27 @@ void popup_resize(int x,int y)
 
 void popup_about(HDC hdcMem)
 {
-    textdata_t td(hdcMem);
-    RECT rect;
-    int p0=D(POPUP_OFSX);
-
-    td.col=D(POPUP_TEXT_COLOR);
+    textdata_vert td(hdcMem);
 
     td.ret();
-    td.TextOutF(td.col,L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
+    td.TextOutF(L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
     td.nl();
+
+    RECT rect;
     rect.left=td.getX();
     rect.top=td.getY();
-    rect.right=D(POPUP_WX)-p0*2;
-    rect.bottom=500;
+    rect.right=D(POPUP_WX)-D(POPUP_OFSX)*2;
+    rect.bottom=900;
+    DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
     DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
-    td.nl();
-    td.nl();
-    td.nl();
-    td.TextOutF(td.col,L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
-    td.TextOutF(td.col,L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
 
-    for(int i=0;i<(intptr_t)STR(STR_ABOUT_SIZE);i++)td.nl();
-    popup_resize(D(POPUP_WX),td.getY()+D(POPUP_OFSY));
+    td.nl();
+    td.nl();
+    td.nl();
+    td.TextOutF(L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
+    td.TextOutF(L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
+
+    popup_resize(D(POPUP_WX),rect.bottom+D(POPUP_OFSY));
 }
 
 void format_size(wchar_t *buf,long long val,int isspeed)
