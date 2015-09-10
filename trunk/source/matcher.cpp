@@ -333,6 +333,43 @@ int cmpunsigned(unsigned a,unsigned b)
 //}
 
 //{ Matcher
+class Matcher:public Matcher_interface
+{
+    State *state;
+    Collection *col;
+
+    std::vector<Devicematch> devicematch_list;
+    std::vector<Hwidmatch> hwidmatch_list;
+
+private:
+    void sort();
+
+public:
+    ~Matcher(){}
+
+    void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
+    void init(State *state1,Collection *col1){state=state1;col=col1;devicematch_list.clear();hwidmatch_list.clear();}
+    void populate();
+    void print();
+    void sorta(int *v);
+
+    wchar_t *finddrp(wchar_t *s) override{return col->finddrp(s);}
+    State *getState(){return state;}
+    Collection *getCol(){return col;}
+    unsigned getDwidmatch_list(){return devicematch_list.size();}
+    Devicematch *getDevicematch_i(int i){return &devicematch_list[i];}
+    unsigned getHwidmatch_list(){return hwidmatch_list.size();}
+    void Insert(const Hwidmatch &a){hwidmatch_list.push_back(a);}
+    Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
+};
+
+Matcher_interface::~Matcher_interface(){};
+Matcher_interface *CreateMatcher()
+{
+    return new Matcher();
+}
+
+
 void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int ishw)
 {
     char hwid[BUFLEN];
@@ -488,7 +525,7 @@ void Matcher::sorta(int *v)
 //}
 
 //{ Devicematch
-Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher)
+Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher_interface *matcher)
 {
     device=cur_device;
     driver=cur_driver;
@@ -521,7 +558,7 @@ Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher
     }
     if(num_matches==0)
     {
-        matcher->getHwidmatch_list()->push_back(Hwidmatch(nullptr,0));
+        matcher->Insert(Hwidmatch(nullptr,0));
 
         if(isMissing(state))
             status=STATUS_NF_MISSING;

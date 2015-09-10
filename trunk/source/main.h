@@ -274,7 +274,7 @@ class Bundle
 {
     State state;
     Collection collection;
-    Matcher matcher;
+    Matcher_interface *matcher;
 
 private:
     static unsigned int __stdcall thread_scandevices(void *arg);
@@ -282,7 +282,16 @@ private:
     static unsigned int __stdcall thread_getsysinfo(void *arg);
 
 public:
-    Matcher *getMatcher(){return &matcher;}
+    Bundle()
+    {
+        matcher=CreateMatcher();
+    }
+    ~Bundle()
+    {
+        delete matcher;
+    }
+
+    Matcher_interface *getMatcher(){return matcher;}
 
     static unsigned int __stdcall thread_loadall(void *arg);
 
