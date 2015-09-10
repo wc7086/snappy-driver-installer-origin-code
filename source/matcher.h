@@ -58,32 +58,28 @@ int calc_signature(int catalogfile,State *state,int isnt);
 int cmpunsigned(unsigned a,unsigned b);
 
 // Matcher is used as a storange for devicematch_list and hwidmatch_list
-class Matcher
+class Matcher_interface
 {
-    State *state;
-    Collection *col;
-
-    std::vector<Devicematch> devicematch_list;
-    std::vector<Hwidmatch> hwidmatch_list;
-
-private:
-    void sort();
-
 public:
-    void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
-    void init(State *state1,Collection *col1){state=state1;col=col1;devicematch_list.clear();hwidmatch_list.clear();}
-    void populate();
-    void print();
-    void sorta(int *v);
+    virtual void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw)=0;
+    virtual void init(State *state1,Collection *col1)=0;
+    virtual void populate()=0;
+    virtual void print()=0;
+    virtual void sorta(int *v)=0;
 
-    wchar_t *finddrp(wchar_t *s){return col->finddrp(s);}
-    State *getState(){return state;}
-    Collection *getCol(){return col;}
-    std::vector<Devicematch> *getDwidmatch_list(){return &devicematch_list;}
-    Devicematch *getDevicematch_i(int i){return &devicematch_list[i];}
-    std::vector<Hwidmatch> *getHwidmatch_list(){return &hwidmatch_list;}
-    Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
+    virtual wchar_t *finddrp(wchar_t *s)=0;
+    virtual State *getState()=0;
+    virtual Collection *getCol()=0;
+    virtual unsigned getDwidmatch_list()=0;
+    virtual Devicematch *getDevicematch_i(int i)=0;
+    virtual unsigned getHwidmatch_list()=0;
+    virtual void Insert(const Hwidmatch &a)=0;
+    virtual Hwidmatch *getHwidmatch_i(int i)=0;
+
+    virtual ~Matcher_interface()=0;
 };
+
+Matcher_interface *CreateMatcher();
 
 // Devicematch holds info about device and a list of alternative drivers
 class Devicematch
@@ -97,7 +93,7 @@ public:
     Driver *driver;
 
 public:
-    Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher);
+    Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher_interface *matcher);
     int isMissing(State *state);
     int getStatus(){return status;}
 

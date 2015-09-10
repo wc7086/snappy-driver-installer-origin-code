@@ -563,7 +563,7 @@ int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
 //}
 
 //{ Manager
-void Manager::init(Matcher *matchera)
+void Manager::init(Matcher_interface *matchera)
 {
     matcher=matchera;
     items_list.clear();
@@ -596,7 +596,7 @@ void Manager::populate()
     matcher->sorta(remap);
     items_list.resize(RES_SLOTS);
 
-    for(unsigned i=0;i<matcher->getDwidmatch_list()->size();i++)
+    for(unsigned i=0;i<matcher->getDwidmatch_list();i++)
     {
         Devicematch *devicematch=matcher->getDevicematch_i(remap[i]);
         Hwidmatch *hwidmatch=matcher->getHwidmatch_i(devicematch->start_matches);

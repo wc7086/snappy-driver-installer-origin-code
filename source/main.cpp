@@ -740,7 +740,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)
             {
                 // NOGUI mode
-                manager_g->matcher=&bundle[bundle_shadow].matcher;
+                manager_g->matcher=bundle[bundle_shadow].matcher;
                 manager_g->populate();
                 manager_g->filter(Settings.filters);
                 bundle[bundle_shadow].bundle_lowprioirity();
@@ -775,7 +775,7 @@ void Bundle::bundle_init()
 {
     state.init();
     collection.init(Settings.drp_dir,Settings.index_dir,Settings.output_dir);
-    matcher.init(&state,&collection);
+    matcher->init(&state,&collection);
 }
 
 void Bundle::bundle_prep()
@@ -813,8 +813,8 @@ void Bundle::bundle_load(Bundle *pbundle)
 
     state.isnotebook_a();
     state.genmarker();
-    matcher.getState()->textas.shrink();
-    matcher.populate();
+    matcher->getState()->textas.shrink();
+    matcher->populate();
     Timers.stop(time_test);
 }
 
@@ -828,7 +828,7 @@ void Bundle::bundle_lowprioirity()
 
     collection.printstats();
     state.print();
-    matcher.print();
+    matcher->print();
     manager_g->print_hr();
 
     #ifdef USE_TORRENT

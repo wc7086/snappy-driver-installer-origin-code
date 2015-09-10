@@ -172,7 +172,7 @@ class Manager
     long animstart;
 
 public:
-    Matcher *matcher;
+    Matcher_interface *matcher;
 
 private:
     int  calc_cutoff();
@@ -180,7 +180,7 @@ private:
     int  drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
 
 public:
-    void init(Matcher *matcher);
+    void init(Matcher_interface *matcher);
     void populate();
     void filter(int options);
     void print_tbl();
