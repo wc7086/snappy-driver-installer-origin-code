@@ -20,6 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <webp\decode.h>
 
 #include <windows.h>
+#include <setupapi.h>       // for SetupDiGetClassDescription()
 #include <shlwapi.h>        // for StrFormatByteSizeW
 
 #include "common.h"
@@ -356,6 +357,19 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 //}
 
 //{ Canvas
+void Canvas::drawconnection(int x1,int pos,int ofsy,int curpos)
+{
+    HPEN oldpen,newpen;
+
+    newpen=CreatePen(PS_SOLID,D(DRVITEM_LINE_WIDTH),D(DRVITEM_LINE_COLOR));
+    oldpen=(HPEN)SelectObject(hdcMem,newpen);
+    MoveToEx(hdcMem,x1-D(DRVITEM_LINE_INTEND)/2,curpos-D(DRVITEM_DIST_Y0)+D(DRVITEM_WY)-ofsy,nullptr);
+    LineTo(hdcMem,x1-D(DRVITEM_LINE_INTEND)/2,pos+D(DRVITEM_WY)/2);
+    LineTo(hdcMem,x1,pos+D(DRVITEM_WY)/2);
+    SelectObject(hdcMem,oldpen);
+    DeleteObject(newpen);
+}
+
 Canvas::Canvas()
 {
     hdcMem=CreateCompatibleDC(nullptr);
@@ -553,13 +567,12 @@ void Panel::draw(Canvas &canvas)
 {
     wchar_t buf[BUFLEN];
     POINT p;
-    HRGN rgn=nullptr;
+    ClipRegion rgn;
     int cur_i;
     int i;
     int x=Xp(),y=Yp();
     int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
     int wy=D(PANEL_WY+indofs);
-    HDC hdc=canvas.getDC();
 
     if(XP()<0)return;
     if(!D(PANEL_WY+indofs))return;
@@ -617,7 +630,6 @@ void Panel::draw(Canvas &canvas)
                 canvas.TextOutH(mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
                 //if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
                 y+=D(PNLITEM_WY);
-                SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_BUTTON:
@@ -638,7 +650,6 @@ void Panel::draw(Canvas &canvas)
                     canvas.TextOutH(mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id));
 
                 y+=D(PNLITEM_WY);
-                SetTextAlign(hdc,TA_LEFT);
                 break;
 
             case TYPE_TEXT:
@@ -667,8 +678,8 @@ void Panel::draw(Canvas &canvas)
                 if(i)y+=D(PNLITEM_WY);
                 canvas.drawbox(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
                          BOX_PANEL+index*2+2);
-                rgn=CreateRectRgn(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2);
-                SelectClipRgn(hdc,rgn);
+                rgn.setRegion(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2);
+                canvas.setClipRegion(rgn);
                 break;
 
             default:
@@ -676,11 +687,7 @@ void Panel::draw(Canvas &canvas)
         }
 
     }
-    if(rgn)
-    {
-        SelectClipRgn(hdc,nullptr);
-        DeleteObject(rgn);
-    }
+    canvas.clearClipRegion();
 }
 //}
 
@@ -907,7 +914,31 @@ void panel_loadsettings(Panel *panel,int filters_)
     for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
 
-void Font::SetFont(wchar_t *name,int size,int bold)
+ClipRegion::ClipRegion(int x1,int y1,int x2,int y2)
+{
+    hrgn=CreateRectRgn(x1,y1,x2,y2);
+    if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed CreateRectRgn\n");
+}
+
+ClipRegion::ClipRegion(int x1,int y1,int x2,int y2,int r)
+{
+    hrgn=CreateRoundRectRgn(x1,y1,x2,y2,r,r);
+    if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed CreateRoundRectRgn\n");
+}
+
+void ClipRegion::setRegion(int x1,int y1,int x2,int y2)
+{
+    if(hrgn)DeleteObject(hrgn);
+    hrgn=CreateRectRgn(x1,y1,x2,y2);
+    if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed setRegion\n");
+}
+
+ClipRegion::~ClipRegion()
+{
+    if(hrgn)DeleteObject(hrgn);
+}
+
+void Font::SetFont(const wchar_t *name,int size,int bold)
 {
     if(hFont&&!DeleteObject(hFont))
         Log.print_err("ERROR in setfont(): failed DeleteObject\n");
@@ -934,9 +965,58 @@ void Canvas::setFont(Font &font)
     SelectObject(hdcMem,font.hFont);
 }
 
+void Canvas::setClipRegion(ClipRegion &clip)
+{
+    SelectClipRgn(hdcMem,clip.hrgn);
+}
+
+void Canvas::clearClipRegion()
+{
+    SelectClipRgn(hdcMem,nullptr);
+}
+
 void Canvas::calcRect(const wchar_t *str,RECT *rect)
 {
     DrawText(hdcMem,str,-1,rect,DT_WORDBREAK|DT_CALCRECT);
+}
+
+void Canvas::drawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
+{
+    HICON hIcon;
+    bool ret=false;
+    if(guid_driverpack)
+    {
+        GUID gd;
+        loadGUID(&gd,guid_driverpack);
+        ret=SetupDiLoadClassIcon(&gd,&hIcon,nullptr);
+    }
+    if(!ret)ret=SetupDiLoadClassIcon(guid_device,&hIcon,nullptr);
+    if(ret)
+    {
+        if(rtl)
+        {
+            HICON miricon;
+            miricon=CreateMirroredIcon(hIcon);
+            DestroyIcon(hIcon);
+            hIcon=miricon;
+        }
+        DrawIconEx(hdcMem,x1,y1,hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
+        DestroyIcon(hIcon);
+    }
+}
+
+void Canvas::drawRect(int x1,int y1,int x2,int y2,int color)
+{
+    SelectObject(hdcMem,GetStockObject(DC_BRUSH));
+    SelectObject(hdcMem,GetStockObject(DC_PEN));
+    SetDCBrushColor(hdcMem,color);
+    Rectangle(hdcMem,x1,y1,x2,y2);
+}
+
+void Canvas::drawLine(int x1,int y1,int x2,int y2)
+{
+    MoveToEx(hdcMem,x1,y1,nullptr);
+    LineTo(hdcMem,x2,y2);
 }
 
 void Canvas::drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)

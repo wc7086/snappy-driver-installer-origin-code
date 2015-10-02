@@ -350,7 +350,6 @@ void itembar_t::contextmenu(int x,int y)
 
 void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index1)
 {
-    HDC hdcMem=canvas.getDC();
     if(index1<RES_SLOTS)return;
 
     //itembar_t *itembar=&manager->items_list[index];
@@ -482,13 +481,11 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int in
     // Cur driver (cur_driver)
     if(cur_driver||hwidmatch_f)
     {
-        MoveToEx(hdcMem,0,td.y-D(POPUP_WY)/2,nullptr);
-        LineTo(hdcMem,rect.right,td.y-D(POPUP_WY)/2);
+        canvas.drawLine(0,td.y-D(POPUP_WY)/2,rect.right,td.y-D(POPUP_WY)/2);
     }
     if(devicematch_f->device->HardwareID||hwidmatch_f)
     {
-        MoveToEx(hdcMem,bolder,0,nullptr);
-        LineTo(hdcMem,bolder,rect.bottom);
+        canvas.drawLine(bolder,0,bolder,rect.bottom);
     }
     if(cur_driver)
     {
@@ -1280,11 +1277,8 @@ int Manager::countItems()
 int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
 {
     itembar_t *itembar=&items_list[index];
-    HDC hdc=canvas.getDC();
 
-    HICON hIcon;
     wchar_t bufw[BUFLEN];
-    HRGN hrgn=nullptr,hrgn2;
     int x=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
     int wx=XG(D(DRVITEM_WX),x);
     int r=D(boxindex[itembar->box_status()]+3);
@@ -1314,26 +1308,17 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
     canvas.setFont(MainWindow.hFont);
 
     if(index<SLOT_RESTORE_POINT)cutoff=D(DRVITEM_OFSY);
-    hrgn2=CreateRectRgn(0,cutoff,x+wx,MainWindow.mainy_c);
-    hrgn=CreateRoundRectRgn(x,(pos<cutoff)?cutoff:pos,x+wx,pos+D(DRVITEM_WY),r,r);
+    ClipRegion hrgn2{0,cutoff,x+wx,MainWindow.mainy_c};
+    ClipRegion hrgn{x,(pos<cutoff)?cutoff:pos,x+wx,pos+D(DRVITEM_WY),r};
     int cl=((zone>=0)?1:0);
     if(index==SLOT_EXTRACTING&&itembar->install_status&&installmode==MODE_NONE)
         cl=((GetTickCount()-animstart)/200)%2;
-    SelectClipRgn(hdc,hrgn2);
+    canvas.setClipRegion(hrgn2);
     if(intend&&D(DRVITEM_LINE_WIDTH)&&!(itembar->first&2))
-    {
-        HPEN oldpen,newpen;
+        canvas.drawconnection(x,pos,ofsy,items_list[intend].curpos>>16);
 
-        newpen=CreatePen(PS_SOLID,D(DRVITEM_LINE_WIDTH),D(DRVITEM_LINE_COLOR));
-        oldpen=(HPEN)SelectObject(hdc,newpen);
-        MoveToEx(hdc,x-D(DRVITEM_LINE_INTEND)/2,(items_list[intend].curpos>>16)-D(DRVITEM_DIST_Y0)+D(DRVITEM_WY)-ofsy,nullptr);
-        LineTo(hdc,x-D(DRVITEM_LINE_INTEND)/2,pos+D(DRVITEM_WY)/2);
-        LineTo(hdc,x,pos+D(DRVITEM_WY)/2);
-        SelectObject(hdc,oldpen);
-        DeleteObject(newpen);
-    }
     canvas.drawbox(x,pos,x+wx,pos+D(DRVITEM_WY),itembar->box_status()+cl);
-    SelectClipRgn(hdc,hrgn);
+    canvas.setClipRegion(hrgn);
 
     if(itembar->percent)
     {
@@ -1485,7 +1470,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 if(oldstyle)
                     canvas.TextOutH(x+D(ITEM_TEXT_OFS_X),pos,bufw);
                 else
-                    DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
+                    canvas.drawTextRect(bufw,&rect);
 
 
                 // Available driver status
@@ -1519,7 +1504,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 if(oldstyle)
                     canvas.TextOutH(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
                 else
-                    DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
+                    canvas.drawTextRect(bufw,&rect);
 
                 if(Settings.flags&FLAG_SHOWDRPNAMES1)
                 {
@@ -1550,7 +1535,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                     if(oldstyle)
                         canvas.TextOutH(x+D(ITEM_TEXT_OFS_X),pos,bufw);
                     else
-                        DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
+                        canvas.drawTextRect(bufw,&rect);
 
                     itembar->str_status(bufw);
                     canvas.setTextColor(D(boxindex[itembar->box_status()]+15));
@@ -1561,47 +1546,28 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                     if(oldstyle)
                         canvas.TextOutH(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
                     else
-                        DrawText(hdc,bufw,-1,&rect,DT_WORDBREAK);
+                        canvas.drawTextRect(bufw,&rect);
                 }
             }
             // Device icon
             if(itembar->devicematch)
             {
-                bool ret=false;
-                if(itembar->hwidmatch)
-                {
-                    GUID gd;
-                    loadGUID(&gd,itembar->hwidmatch->getdrp_drvfield(ClassGuid_));
-                    ret=SetupDiLoadClassIcon(&gd,&hIcon,nullptr);
-                }
-                if(!ret)ret=SetupDiLoadClassIcon(&itembar->devicematch->device->DeviceInfoData.ClassGuid,&hIcon,nullptr);
-                if(ret)
-                {
-                    if(rtl)
-                    {
-                        HICON miricon;
-                        miricon=CreateMirroredIcon(hIcon);
-                        DestroyIcon(hIcon);
-                        hIcon=miricon;
-                    }
-                    DrawIconEx(hdc,x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
-                    DestroyIcon(hIcon);
-                }
+                canvas.drawIcon(x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),
+                                (itembar->hwidmatch)?itembar->hwidmatch->getdrp_drvfield(ClassGuid_):nullptr,
+                                &itembar->devicematch->device->DeviceInfoData.ClassGuid);
             }
 
             // Expand icon
             if(groupsize(itembar->index)>1&&itembar->first&1)
             {
                 int xo=x+wx-D(ITEM_ICON_SIZE)*2+10;
-                icon[(itembar->isactive&2?0:2)+(zone==2?1:0)].draw(hdc,xo,pos,xo+32,pos+32,0,Image::HSTR|Image::VSTR);
+                canvas.drawImage(icon[(itembar->isactive&2?0:2)+(zone==2?1:0)],xo,pos,xo+32,pos+32,0,Image::HSTR|Image::VSTR);
             }
             break;
 
     }
 
-    SelectClipRgn(hdc,nullptr);
-    DeleteObject(hrgn);
-    DeleteObject(hrgn2);
+    canvas.clearClipRegion();
     return 1;
 }
 
@@ -1846,7 +1812,6 @@ void Manager::restorepos(Manager *manager_old)
 //{ Popup
 void Manager::popup_driverlist(Canvas &canvas,RECT rect,unsigned i)
 {
-    HDC hdcMem=canvas.getDC();
     itembar_t *itembar;
     POINT p;
     wchar_t i_hwid[BUFLEN];
@@ -1910,10 +1875,9 @@ void Manager::popup_driverlist(Canvas &canvas,RECT rect,unsigned i)
     {
         if(k==i)
         {
-            SelectObject(hdcMem,GetStockObject(DC_BRUSH));
-            SelectObject(hdcMem,GetStockObject(DC_PEN));
-            SetDCBrushColor(hdcMem,D(POPUP_LST_SELECTED_COLOR));
-            Rectangle(hdcMem,D(POPUP_OFSX)+Popup.horiz_sh,td.y,rect.right+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne);
+            canvas.drawRect(D(POPUP_OFSX)+Popup.horiz_sh,td.y,
+                            rect.right+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne,
+                            D(POPUP_LST_SELECTED_COLOR));
         }
         itembar->hwidmatch->popup_driverline(limits,canvas,td.y,1,k);
         td.y+=lne;
