@@ -91,6 +91,11 @@ public:
     Canvas(const Canvas &)=delete;
     Canvas &operator=(const Canvas &)=delete;
 
+    void drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
+    void drawbox(int x1,int y1,int x2,int y2,int i);
+    void drawcheckbox(int x,int y,int wx,int wy,int checked,int active);
+    void drawrevision(int y);
+
     HDC getDC(){return hdcMem;}
     void begin(HWND hwnd,int x,int y);
     void end();
@@ -135,7 +140,7 @@ public:
     int  hitscan(int x,int y);
     void keybAdvance(int v);
     void draw_inv();
-    void draw(HDC hdc);
+    void draw(Canvas &canvas);
     void moveWindow(HWND hwnd,int i,int j,int f);
     void click(int i);
 
@@ -161,7 +166,7 @@ protected:
     void TextOut_CM(int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
 
 public:
-    textdata_t(HDC hdcMem1,int ofsx=0);
+    textdata_t(Canvas &canvas,int ofsx=0);
 
     void TextOutF(int col,const wchar_t *format,...);
     void TextOutF(const wchar_t *format,...);
@@ -179,7 +184,7 @@ class textdata_horiz_t:public textdata_t
     int mode;
 
 public:
-    textdata_horiz_t(HDC hdcMem1,int ofsx1,int *lim,int mode1):textdata_t(hdcMem1,ofsx1)
+    textdata_horiz_t(Canvas &canvas,int ofsx1,int *lim,int mode1):textdata_t(canvas,ofsx1)
     {
         limits=lim;
         mode=mode1;
@@ -193,7 +198,7 @@ class textdata_vert:public textdata_t
 {
 
 public:
-    textdata_vert(HDC hdcMem1,int ofsx1=0):textdata_t(hdcMem1,ofsx1)
+    textdata_vert(Canvas &canvas,int ofsx1=0):textdata_t(canvas,ofsx1)
     {
 
     }
@@ -205,7 +210,7 @@ public:
 
 // Popup
 void popup_resize(int x,int y);
-void popup_about(HDC hdcMem);
+void popup_about(Canvas &canvas);
 void format_size(wchar_t *buf,long long val,int isspeed);
 void format_time(wchar_t *buf,long long val);
 
@@ -226,10 +231,6 @@ int YG(int y,int o);
 int  panels_hitscan(int hx,int hy,int *ii);
 void panel_loadsettings(Panel *panel,int filters);
 
-void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
-void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int i);
-void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active);
-void drawrevision(HDC hdcMem,int y);
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 HICON CreateMirroredIcon(HICON hiconOrg);
 

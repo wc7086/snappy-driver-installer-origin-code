@@ -549,7 +549,7 @@ void Panel::click(int i)
     }
 }
 
-void Panel::draw(HDC hdc)
+void Panel::draw(Canvas &canvas)
 {
     wchar_t buf[BUFLEN];
     POINT p;
@@ -559,6 +559,7 @@ void Panel::draw(HDC hdc)
     int x=Xp(),y=Yp();
     int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
     int wy=D(PANEL_WY+indofs);
+    HDC hdc=canvas.getDC();
 
     if(XP()<0)return;
     if(!D(PANEL_WY+indofs))return;
@@ -608,10 +609,10 @@ void Panel::draw(HDC hdc)
             case TYPE_CHECKBOX:
                 if(isSelected&&MainWindow.kbpanel)
                 {
-                    drawbox(hdc,x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
+                    canvas.drawbox(x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
                     isSelected=false;
                 }
-                drawcheckbox(hdc,mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,isSelected);
+                canvas.drawcheckbox(mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,isSelected);
                 SetTextColor(hdc,D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
                 TextOutH(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
                 //if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
@@ -621,9 +622,9 @@ void Panel::draw(HDC hdc)
 
             case TYPE_BUTTON:
                 if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
-                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,isSelected?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
+                    canvas.drawbox(x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,isSelected?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
                 else
-                    drawbox(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+                    canvas.drawbox(x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
                 SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
 
@@ -664,7 +665,7 @@ void Panel::draw(HDC hdc)
             case TYPE_GROUP:
                 if(index>=8&&index<=10)break;
                 if(i)y+=D(PNLITEM_WY);
-                drawbox(hdc,x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
+                canvas.drawbox(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
                          BOX_PANEL+index*2+2);
                 rgn=CreateRectRgn(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2);
                 SelectClipRgn(hdc,rgn);
@@ -684,9 +685,9 @@ void Panel::draw(HDC hdc)
 //}
 
 //{ Text
-textdata_t::textdata_t(HDC hdcMem1,int xofs)
+textdata_t::textdata_t(Canvas &canvas,int xofs)
 {
-    hdcMem=hdcMem1;
+    hdcMem=canvas.getDC();
     x=D(POPUP_OFSX)+xofs;
     y=D(POPUP_OFSY);
     col=D(POPUP_TEXT_COLOR);
@@ -795,9 +796,9 @@ void popup_resize(int x,int y)
     }
 }
 
-void popup_about(HDC hdcMem)
+void popup_about(Canvas &canvas)
 {
-    textdata_vert td(hdcMem);
+    textdata_vert td(canvas);
 
     td.ret();
     td.TextOutF(L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
@@ -808,8 +809,8 @@ void popup_about(HDC hdcMem)
     rect.top=td.getY();
     rect.right=D(POPUP_WX)-D(POPUP_OFSX)*2;
     rect.bottom=900;
-    DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
-    DrawText(hdcMem,STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
+    DrawText(canvas.getDC(),STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
+    DrawText(canvas.getDC(),STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
 
     td.nl();
     td.nl();
@@ -906,7 +907,7 @@ void panel_loadsettings(Panel *panel,int filters_)
     for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
 
-void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
+void Canvas::drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
     HBRUSH newbrush,oldbrush;
@@ -915,26 +916,26 @@ void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,in
 
     //oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
     newbrush=CreateSolidBrush(color1);
-    oldbrush=(HBRUSH)SelectObject(hdc,newbrush);
-    if(color1&0xFF000000)(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
+    oldbrush=(HBRUSH)SelectObject(hdcMem,newbrush);
+    if(color1&0xFF000000)(HBRUSH)SelectObject(hdcMem,GetStockObject(NULL_BRUSH));
 
     if(!oldbrush)Log.print_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
-    r32=SetDCBrushColor(hdc,color1);
+    r32=SetDCBrushColor(hdcMem,color1);
     if(r32==CLR_INVALID)Log.print_err("ERROR in drawrect(): failed SetDCBrushColor\n");
 
     newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
     if(!newpen)Log.print_err("ERROR in drawrect(): failed CreatePen\n");
-    oldpen=(HPEN)SelectObject(hdc,newpen);
+    oldpen=(HPEN)SelectObject(hdcMem,newpen);
     if(!oldpen)Log.print_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
 
     if(rn)
-        RoundRect(hdc,x1,y1,x2,y2,rn,rn);
+        RoundRect(hdcMem,x1,y1,x2,y2,rn,rn);
     else
-        Rectangle(hdc,x1,y1,x2,y2);
+        Rectangle(hdcMem,x1,y1,x2,y2);
 
-    r=SelectObject(hdc,oldpen);
+    r=SelectObject(hdcMem,oldpen);
     if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
-    r=SelectObject(hdc,oldbrush);
+    r=SelectObject(hdcMem,oldbrush);
     if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
     r32=DeleteObject(newpen);
     if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
@@ -942,7 +943,7 @@ void drawrect(HDC hdc,int x1,int y1,int x2,int y2,int color1,int color2,int w,in
     if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
 }
 
-void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int id)
+void Canvas::drawbox(int x1,int y1,int x2,int y2,int id)
 {
     if(id<0||id>=BOX_NUM)
     {
@@ -955,24 +956,24 @@ void drawbox(HDC hdc,int x1,int y1,int x2,int y2,int id)
         Log.print_err("ERROR in box_draw(): invalid index=%d\n",i);
         return;
     }
-    drawrect(hdc,x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
-    box[id].draw(hdc,x1,y1,x2,y2,D(i+5),D(i+6));
+    drawrect(x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
+    box[id].draw(hdcMem,x1,y1,x2,y2,D(i+5),D(i+6));
 }
 
-void drawcheckbox(HDC hdc,int x,int y,int wx,int wy,int checked,int active)
+void Canvas::drawcheckbox(int x1,int y1,int wx,int wy,int checked,int active)
 {
     RECT rect;
     int i=4+(active?1:0)+(checked?2:0);
 
-    rect.left=x;
-    rect.top=y;
-    rect.right=x+wx;
-    rect.bottom=y+wy;
+    rect.left=x1;
+    rect.top=y1;
+    rect.right=x1+wx;
+    rect.bottom=y1+wy;
 
     if(icon[i].isLoaded())
-        icon[i].draw(hdc,x,y,x+wx,y+wy,0,Image::HSTR|Image::VSTR);
+        icon[i].draw(hdcMem,x1,y1,x1+wx,y1+wy,0,Image::HSTR|Image::VSTR);
     else
-        DrawFrameControl(hdc,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
+        DrawFrameControl(hdcMem,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
 }
 
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd)

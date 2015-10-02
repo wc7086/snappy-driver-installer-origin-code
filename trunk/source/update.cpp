@@ -720,9 +720,9 @@ void Updater_t::showProgress(wchar_t *buf)
                 (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
 }
 
-void Updater_t::showPopup(HDC hdcMem)
+void Updater_t::showPopup(Canvas &canvas)
 {
-    textdata_vert td(hdcMem);
+    textdata_vert td(canvas);
     TorrentStatus_t t;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
     int per=0;

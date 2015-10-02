@@ -636,13 +636,14 @@ void State::print()
     //log_file("Errors: %d\n",error_count);
 }
 
-void State::popup_sysinfo(HDC hdcMem)
+void State::popup_sysinfo(Canvas &canvas)
 {
+    HDC hdcMem=canvas.getDC();
     wchar_t bufw[BUFLEN];
     int i,x,y;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
 
-    textdata_vert td(hdcMem);
+    textdata_vert td(canvas);
     td.ret();
     SelectObject(hdcMem,Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_WINDOWS));

@@ -39,6 +39,7 @@ enum DRIVER_STATUS
 
 class Devicematch;
 class Hwidmatch;
+class Canvas;
 
 struct markers_t
 {
@@ -142,7 +143,7 @@ public:
     void calclen(int *limits);
     void print_tbl(int *limits);
     void print_hr();
-    void popup_driverline(int *limits,HDC hdcMem,int ln,int mode,int index);
+    void popup_driverline(int *limits,Canvas &canvas,int ln,int mode,int index);
     int  cmp(Hwidmatch *match2);
     int isdup(Hwidmatch *match2,char *sect1);
     int isdrivervalid();
