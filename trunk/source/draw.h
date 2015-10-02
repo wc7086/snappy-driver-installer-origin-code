@@ -74,6 +74,21 @@ public:
     void draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
 
+// ClipRegion
+class ClipRegion
+{
+private:
+    HRGN hrgn;
+public:
+    ClipRegion():hrgn(nullptr){}
+    ClipRegion(int x1,int y1,int x2,int y2);
+    ClipRegion(int x1,int y1,int x2,int y2,int r);
+    void setRegion(int x1,int y1,int x2,int y2);
+    ~ClipRegion();
+
+    friend class Canvas;
+};
+
 // Font
 class Font
 {
@@ -82,7 +97,7 @@ private:
 public:
     Font():hFont(nullptr){}
     ~Font();
-    void SetFont(wchar_t *name,int size,int bold=false);
+    void SetFont(const wchar_t *name,int size,int bold=false);
     HFONT get(){return hFont;}
 
     friend class Canvas;
@@ -109,11 +124,20 @@ public:
     void drawbox(int x1,int y1,int x2,int y2,int i);
     void drawcheckbox(int x,int y,int wx,int wy,int checked,int active);
     void drawrevision(int y);
+    void drawconnection(int x,int pos,int ofsy,int curpos);
     void TextOutH(int x,int y,LPCTSTR buf);
+    void drawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device);
+    void drawTextRect(LPCTSTR bufw,RECT *rect){DrawText(hdcMem,bufw,-1,rect,DT_WORDBREAK);}
+    void drawLine(int x1,int y1,int x2,int y2);
+    void drawRect(int x1,int y1,int x2,int y2,int color);
+    void drawImage(Image &image,int x1,int y1,int wx,int wy,int flags1,int flags2){image.draw(hdcMem,x1,y1,wx,wy,flags1,flags2);}
 
     HDC getDC(){return hdcMem;}
     void setTextColor(int color);
     void setFont(Font &font);
+
+    void setClipRegion(ClipRegion &clip);
+    void clearClipRegion();
     void calcRect(const wchar_t *str,RECT *rect);
 
     void begin(HWND hwnd,int x,int y);
