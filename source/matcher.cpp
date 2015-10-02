@@ -831,13 +831,13 @@ void Hwidmatch::print_hr()
     Log.print_file("\n");
 }
 
-void Hwidmatch::popup_driverline(int *limits,HDC hdcMem,int y,int mode,int index)
+void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,int index)
 {
     char buf[BUFLEN];
     wchar_t bufw[BUFLEN];
     Version *v=getdrp_drvversion();
 
-    textdata_horiz_t td(hdcMem,Popup.horiz_sh,limits,mode);
+    textdata_horiz_t td(canvas,Popup.horiz_sh,limits,mode);
     td.y=y;
     td.col=0;
 

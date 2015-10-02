@@ -1638,12 +1638,12 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             GetClientRect(hwnd,&rect);
             canvasMain->begin(hwnd,rect.right,rect.bottom);
 
-            drawbox(canvasMain->getDC(),0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
+            canvasMain->drawbox(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
             SelectObject(canvasMain->getDC(),hFont);
-            panels[7].draw(canvasMain->getDC());// draw revision
+            panels[7].draw(*canvasMain);// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
             {
-                panels[i].draw(canvasMain->getDC());
+                panels[i].draw(*canvasMain);
             }
             canvasMain->end();
             break;
@@ -1932,7 +1932,7 @@ int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPA
             canvasField->begin(hwnd,rect.right,rect.bottom);
 
             BitBlt(canvasField->getDC(),0,0,rect.right,rect.bottom,canvasMain->getDC(),Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
-            manager_g->draw(canvasField->getDC(),y);
+            manager_g->draw(*canvasField,y);
 
             canvasField->end();
             break;
@@ -2131,12 +2131,12 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
             GetClientRect(hwnd,&rect);
             canvasPopup->begin(hwnd,rect.right,rect.bottom);
 
-            drawbox(canvasPopup->getDC(),0,0,rect.right,rect.bottom,BOX_POPUP);
+            canvasPopup->drawbox(0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
                     SelectObject(canvasPopup->getDC(),Popup.hFontP);
-                    manager_g->matcher->getState()->popup_sysinfo(canvasPopup->getDC());
+                    manager_g->matcher->getState()->popup_sysinfo(*canvasPopup);
                     break;
 
                 case FLOATING_TOOLTIP:
@@ -2151,23 +2151,23 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 
                 case FLOATING_CMPDRIVER:
                     SelectObject(canvasPopup->getDC(),hFontP);
-                    manager_g->popup_drivercmp(manager_g,canvasPopup->getDC(),rect,floating_itembar);
+                    manager_g->popup_drivercmp(manager_g,*canvasPopup,rect,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:
                     SelectObject(canvasPopup->getDC(),hFontP);
-                    manager_g->popup_driverlist(canvasPopup->getDC(),rect,floating_itembar);
+                    manager_g->popup_driverlist(*canvasPopup,rect,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:
                     SelectObject(canvasPopup->getDC(),hFontP);
-                    popup_about(canvasPopup->getDC());
+                    popup_about(*canvasPopup);
                     break;
 
                 case FLOATING_DOWNLOAD:
                     SelectObject(canvasPopup->getDC(),hFontP);
                     #ifdef USE_TORRENT
-                    Updater.showPopup(canvasPopup->getDC());
+                    Updater.showPopup(*canvasPopup);
                     #endif
                     break;
 

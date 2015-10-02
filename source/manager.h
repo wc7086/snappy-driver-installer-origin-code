@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+class Canvas;
+
 // Filters
 enum GUI_ID
 {
@@ -156,12 +158,12 @@ public:
     itembar_t();
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
-    void drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2);
+    void drawbutton(Canvas &canvas,int x,int pos,const wchar_t *str1,const wchar_t *str2);
     void updatecur();
     int  box_status();
 
     void contextmenu(int x,int y);
-    void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    void popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index);
 };
 int  itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb);
 
@@ -177,7 +179,7 @@ public:
 private:
     int  calc_cutoff();
     int  isbehind(int pos,int ofs,int j);
-    int  drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff);
+    int  drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff);
 
 public:
     void init(Matcher_interface *matcher);
@@ -204,16 +206,16 @@ public:
     int  animate();
 
     void getINFpath(int wp);
-    void draw(HDC hdc,int ofsy);
+    void draw(Canvas &canvas,int ofsy);
     void restorepos1(Manager *manager_prev);
     void restorepos(Manager *manager_prev);
-    void popup_driverlist(HDC hdcMem,RECT rect,unsigned i);
+    void popup_driverlist(Canvas &canvas,RECT rect,unsigned i);
     int  manager_drplive(wchar_t *s);
     void set_rstpnt(int checked);
     void itembar_settext(int i,const wchar_t *txt1,int percent);
     void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1,int percent=-1);
     void itembar_setactive(int i,int val);
-    void popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index);
+    void popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index);
     void contextmenu(int x,int y);
     const wchar_t *getHWIDby(int id);
     static unsigned int __stdcall thread_install(void *arg);

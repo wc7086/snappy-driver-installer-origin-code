@@ -98,7 +98,7 @@ public:
 
     void checkUpdates();
     void showProgress(wchar_t *buf);
-    void showPopup(HDC hdcMem);
+    void showPopup(Canvas &canvas);
     void createThreads();
     void destroyThreads();
 

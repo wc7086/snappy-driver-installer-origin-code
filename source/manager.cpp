@@ -121,8 +121,9 @@ void itembar_t::str_status(wchar_t *buf)
     }
 }
 
-void itembar_t::drawbutton(HDC hdc,int x,int pos,const wchar_t *str1,const wchar_t *str2)
+void itembar_t::drawbutton(Canvas &canvas,int x,int pos,const wchar_t *str1,const wchar_t *str2)
 {
+    HDC hdc=canvas.getDC();
     pos+=D(ITEM_TEXT_OFS_Y);
     SetTextColor(hdc,D(boxindex[box_status()]+14));
     TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,str1);
@@ -348,8 +349,9 @@ void itembar_t::contextmenu(int x,int y)
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
 }
 
-void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1)
+void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index1)
 {
+    HDC hdcMem=canvas.getDC();
     if(index1<RES_SLOTS)return;
 
     //itembar_t *itembar=&manager->items_list[index];
@@ -366,7 +368,7 @@ void itembar_t::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index1
     int bolder=rect.right/2;
     wchar_t *p;
     Driver *cur_driver=nullptr;
-    textdata_vert td(hdcMem);
+    textdata_vert td(canvas);
     Version *a_v=nullptr;
     unsigned score=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
@@ -1154,7 +1156,7 @@ void Manager::set_rstpnt(int checked)
 }
 
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
-void Manager::popup_drivercmp(Manager *manager,HDC hdcMem,RECT rect,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,hdcMem,rect,index);}
+void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,rect,index);}
 void Manager::contextmenu(int x,int y){items_list[Popup.floating_itembar].contextmenu(x,y);}
 const wchar_t *Manager::getHWIDby(int id){return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
@@ -1276,9 +1278,10 @@ int Manager::countItems()
     return cnt;
 }
 
-int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
+int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
 {
     itembar_t *itembar=&items_list[index];
+    HDC hdc=canvas.getDC();
 
     HICON hIcon;
     wchar_t bufw[BUFLEN];
@@ -1330,7 +1333,7 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         SelectObject(hdc,oldpen);
         DeleteObject(newpen);
     }
-    drawbox(hdc,x,pos,x+wx,pos+D(DRVITEM_WY),itembar->box_status()+cl);
+    canvas.drawbox(x,pos,x+wx,pos+D(DRVITEM_WY),itembar->box_status()+cl);
     SelectClipRgn(hdc,hrgn);
 
     if(itembar->percent)
@@ -1339,14 +1342,14 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
         int a=BOX_PROGR;
         //if(index==SLOT_EXTRACTING&&installmode==MODE_STOPPING)a=BOX_PROGR_S;
         //if(index>=RES_SLOTS&&(!itembar->checked||installmode==MODE_STOPPING))a=BOX_PROGR_S;
-        drawbox(hdc,x,pos,x+wx*itembar->percent/1000.,pos+D(DRVITEM_WY),a);
+        canvas.drawbox(x,pos,x+wx*itembar->percent/1000.,pos+D(DRVITEM_WY),a);
     }
 
     SetTextColor(hdc,0); // todo: color
     switch(index)
     {
         case SLOT_RESTORE_POINT:
-            drawcheckbox(hdc,x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_CHECKBOX_OFS_Y),
+            canvas.drawcheckbox(x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_CHECKBOX_OFS_Y),
                          D(ITEM_CHECKBOX_SIZE),D(ITEM_CHECKBOX_SIZE),
                          itembar->checked,zone>=0);
 
@@ -1401,7 +1404,7 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_NODRIVERS:
-            itembar->drawbutton(hdc,x,pos,STR(STR_EMPTYDRP),matcher->getCol()->getDriverpack_dir());
+            itembar->drawbutton(canvas,x,pos,STR(STR_EMPTYDRP),matcher->getCol()->getDriverpack_dir());
             break;
 
         case SLOT_NOUPDATES:
@@ -1421,32 +1424,32 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             if(!Updater.isPaused())
             {
                 Updater.showProgress(bufw);
-                itembar->drawbutton(hdc,x,pos,bufw,STR(STR_UPD_MODIFY));
+                itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_MODIFY));
             }
             else
 #endif
-                itembar->drawbutton(hdc,x,pos,bufw,STR(STR_UPD_START));
+                itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_START));
 
             break;
 
         case SLOT_SNAPSHOT:
-            itembar->drawbutton(hdc,x,pos,Settings.state_file,STR(STR_CLOSE_SNAPSHOT));
+            itembar->drawbutton(canvas,x,pos,Settings.state_file,STR(STR_CLOSE_SNAPSHOT));
             break;
 
         case SLOT_DPRDIR:
-            itembar->drawbutton(hdc,x,pos,Settings.drpext_dir,STR(STR_CLOSE_DRPEXT));
+            itembar->drawbutton(canvas,x,pos,Settings.drpext_dir,STR(STR_CLOSE_DRPEXT));
             break;
 
         case SLOT_VIRUS_AUTORUN:
-            itembar->drawbutton(hdc,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_AUTORUN));
+            itembar->drawbutton(canvas,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_AUTORUN));
             break;
 
         case SLOT_VIRUS_RECYCLER:
-            itembar->drawbutton(hdc,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_RECYCLER));
+            itembar->drawbutton(canvas,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_RECYCLER));
             break;
 
         case SLOT_VIRUS_HIDDEN:
-            itembar->drawbutton(hdc,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_HIDDEN));
+            itembar->drawbutton(canvas,x,pos,STR(STR_VIRUS),STR(STR_VIRUS_HIDDEN));
             break;
 
         default:
@@ -1465,7 +1468,7 @@ int Manager::drawitem(HDC hdc,int index,int ofsy,int zone,int cutoff)
             if(itembar->hwidmatch)
             {
                 // Checkbox
-                drawcheckbox(hdc,x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_CHECKBOX_OFS_Y),
+                canvas.drawcheckbox(x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_CHECKBOX_OFS_Y),
                          D(ITEM_CHECKBOX_SIZE),D(ITEM_CHECKBOX_SIZE),
                          itembar->checked,zone>=0);
 
@@ -1627,7 +1630,7 @@ int Manager::calc_cutoff()
     return cutoff;
 }
 
-void Manager::draw(HDC hdc,int ofsy)
+void Manager::draw(Canvas &canvas,int ofsy)
 {
     itembar_t *itembar;
     int i;
@@ -1643,7 +1646,7 @@ void Manager::draw(HDC hdc,int ofsy)
     hitscan(p.x,p.y,&cur_i,&zone);
 
     GetClientRect(MainWindow.hField,&rect);
-    drawbox(hdc,0,0,rect.right,rect.bottom,BOX_DRVLIST);
+    canvas.drawbox(0,0,rect.right,rect.bottom,BOX_DRVLIST);
 
     cutoff=calc_cutoff();
     items_list[itembar_act].updatecur();
@@ -1654,7 +1657,7 @@ void Manager::draw(HDC hdc,int ofsy)
         if(itembar->isactive)continue;
 
         if(isbehind((itembar->curpos>>16),ofsy,i))continue;
-        nm+=drawitem(hdc,i,ofsy,-1,cutoff);
+        nm+=drawitem(canvas,i,ofsy,-1,cutoff);
     }
     for(i=items_list.size()-1;i>=0;i--)
     {
@@ -1662,7 +1665,7 @@ void Manager::draw(HDC hdc,int ofsy)
         if(itembar->isactive==0)continue;
 
         if(itembar->curpos>maxpos)maxpos=itembar->curpos;
-        nm+=drawitem(hdc,i,ofsy,cur_i==i?zone:-1,cutoff);
+        nm+=drawitem(canvas,i,ofsy,cur_i==i?zone:-1,cutoff);
 
     }
     //printf("nm:%3d, ofs:%d\n",nm,ofsy);
@@ -1842,8 +1845,9 @@ void Manager::restorepos(Manager *manager_old)
 //}
 
 //{ Popup
-void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
+void Manager::popup_driverlist(Canvas &canvas,RECT rect,unsigned i)
 {
+    HDC hdcMem=canvas.getDC();
     itembar_t *itembar;
     POINT p;
     wchar_t i_hwid[BUFLEN];
@@ -1853,7 +1857,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     int maxsz=0;
     int limits[30];
     int c0=D(POPUP_TEXT_COLOR);
-    textdata_horiz_t td(hdcMem,Popup.horiz_sh,limits,1);
+    textdata_horiz_t td(canvas,Popup.horiz_sh,limits,1);
 
     if(i<RES_SLOTS)return;
 
@@ -1869,7 +1873,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
     itembar=&items_list[0];
     for(k=0;k<items_list.size();k++,itembar++)
         if(itembar->index==group&&itembar->hwidmatch)
-            itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,0,k);
+            itembar->hwidmatch->popup_driverline(limits,canvas,td.y,0,k);
 
 
     SelectObject(hdcMem,Popup.hFontBold);
@@ -1912,7 +1916,7 @@ void Manager::popup_driverlist(HDC hdcMem,RECT rect,unsigned i)
             SetDCBrushColor(hdcMem,D(POPUP_LST_SELECTED_COLOR));
             Rectangle(hdcMem,D(POPUP_OFSX)+Popup.horiz_sh,td.y,rect.right+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne);
         }
-        itembar->hwidmatch->popup_driverline(limits,hdcMem,td.y,1,k);
+        itembar->hwidmatch->popup_driverline(limits,canvas,td.y,1,k);
         td.y+=lne;
     }
 

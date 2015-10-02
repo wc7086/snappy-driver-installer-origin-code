@@ -23,6 +23,7 @@ class Manager;
 class State;
 class Device;
 class infdata_t;
+class Canvas;
 typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 typedef PVOID HDEVINFO;
 
@@ -231,7 +232,7 @@ public:
 
     State();
     void print();
-    void popup_sysinfo(HDC hdcMem);
+    void popup_sysinfo(Canvas &canvas);
     void contextmenu2(int x,int y);
 
     void save(const wchar_t *filename);
