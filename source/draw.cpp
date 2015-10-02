@@ -573,12 +573,12 @@ void Panel::draw(Canvas &canvas)
     {
         bool isSelected=i==cur_i;
 
-        SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
+        canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
         // System Info (1st line)
         if(i==1&&index==0)
         {
-            TextOutH(hdc,x+ofsx+SYSINFO_COL1,y+ofsy,STR(STR_SYSINF_MOTHERBOARD));
-            TextOutH(hdc,x+ofsx+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_ENVIRONMENT));
+            canvas.TextOutH(x+ofsx+SYSINFO_COL1,y+ofsy,STR(STR_SYSINF_MOTHERBOARD));
+            canvas.TextOutH(x+ofsx+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_ENVIRONMENT));
         }
 
         // System Info (2nd line)
@@ -586,10 +586,10 @@ void Panel::draw(Canvas &canvas)
         {
             wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
             if(rtl)wcscat(buf,L"\u200E");
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getWindir()));
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getWindir()));
         }
 
         // System Info (3rd line)
@@ -597,11 +597,11 @@ void Panel::draw(Canvas &canvas)
         {
             wsprintf(buf,L"%s",(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
             if(rtl)wcscat(buf,L"\u200E");
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
             wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
-            TextOutH(hdc,x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getTemp()));
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
+            canvas.TextOutH(x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getTemp()));
         }
         if(items[i].type==TYPE_GROUP_BREAK&&!Settings.expertmode)break;
         switch(items[i].type)
@@ -613,8 +613,8 @@ void Panel::draw(Canvas &canvas)
                     isSelected=false;
                 }
                 canvas.drawcheckbox(mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,isSelected);
-                SetTextColor(hdc,D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOutH(hdc,mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
+                canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+                canvas.TextOutH(mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
                 //if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
                 y+=D(PNLITEM_WY);
                 SetTextAlign(hdc,TA_LEFT);
@@ -626,16 +626,16 @@ void Panel::draw(Canvas &canvas)
                 else
                     canvas.drawbox(x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
-                SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
+                canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
 
                 if(i==1&&index==8) // Install button
                 {
                     wsprintf(buf,L"%s (%d)",STR(items[i].str_id),manager_g->countItems());
                     int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
-                    TextOutH(hdc,mirw(x,ofsx+nwy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf);
+                    canvas.TextOutH(mirw(x,ofsx+nwy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf);
                 }
                 else
-                    TextOutH(hdc,mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id));
+                    canvas.TextOutH(mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id));
 
                 y+=D(PNLITEM_WY);
                 SetTextAlign(hdc,TA_LEFT);
@@ -653,11 +653,11 @@ void Panel::draw(Canvas &canvas)
                     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
                     v.str_date(buf+wcslen(buf));
                     wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
-                    SetTextColor(hdc,D(CHKBOX_TEXT_COLOR));
-                    TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,buf);
+                    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
+                    canvas.TextOutH(mirw(x,ofsx,XP()),y+ofsy,buf);
                 }
-                SetTextColor(hdc,D(isSelected&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                TextOutH(hdc,mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id));
+                canvas.setTextColor(D(isSelected&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+                canvas.TextOutH(mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id));
                 y+=D(PNLITEM_WY);
                 break;
 
@@ -685,9 +685,10 @@ void Panel::draw(Canvas &canvas)
 //}
 
 //{ Text
-textdata_t::textdata_t(Canvas &canvas,int xofs)
+textdata_t::textdata_t(Canvas &canvas_,int xofs)
 {
-    hdcMem=canvas.getDC();
+    pcanvas=&canvas_;
+    hdcMem=canvas_.getDC();
     x=D(POPUP_OFSX)+xofs;
     y=D(POPUP_OFSY);
     col=D(POPUP_TEXT_COLOR);
@@ -726,9 +727,8 @@ void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxs
     if(ss.cx>*maxsz1)*maxsz1=ss.cx;
 
     if(!mode1)return;
-    SetTextColor(hdcMem,color);
-    TextOutH(hdcMem,x1,y1,str);
-    //SetTextColor(hdcMem,0);
+    pcanvas->setTextColor(color);
+    pcanvas->TextOutH(x1,y1,str);
 }
 
 void textdata_horiz_t::TextOutP(const wchar_t *format,...)
@@ -859,9 +859,9 @@ int mirw(int x,int ofs,int w)
     UNREFERENCED_PARAMETER(w)
     return x+ofs;
 }
-void TextOutH(HDC hdc,int x,int y,LPCTSTR buf)
+void Canvas::TextOutH(int x1,int y1,LPCTSTR buf)
 {
-    TextOut(hdc,x,y,buf,wcslen(buf));
+    TextOut(hdcMem,x1,y1,buf,wcslen(buf));
 }
 int Xm(int x,int o)
 {
@@ -905,6 +905,38 @@ void panel_loadsettings(Panel *panel,int filters_)
     panel3_w[3].checked=Settings.expertmode;
 
     for(int j=0;j<7;j++)panel[j].setFilters(filters_);
+}
+
+void Font::SetFont(wchar_t *name,int size,int bold)
+{
+    if(hFont&&!DeleteObject(hFont))
+        Log.print_err("ERROR in setfont(): failed DeleteObject\n");
+
+    hFont=CreateFont(-size,0,0,0,bold?FW_BOLD:FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,name);
+
+    if(!hFont)Log.print_err("ERROR in setfont(): failed CreateFont\n");
+}
+
+Font::~Font()
+{
+    if(hFont&&!DeleteObject(hFont))
+        Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
+}
+
+void Canvas::setTextColor(int color)
+{
+    SetTextColor(hdcMem,color);
+}
+
+void Canvas::setFont(Font &font)
+{
+    SelectObject(hdcMem,font.hFont);
+}
+
+void Canvas::calcRect(const wchar_t *str,RECT *rect)
+{
+    DrawText(hdcMem,str,-1,rect,DT_WORDBREAK|DT_CALCRECT);
 }
 
 void Canvas::drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
