@@ -74,6 +74,20 @@ public:
     void draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
 
+// Font
+class Font
+{
+private:
+    HFONT hFont;
+public:
+    Font():hFont(nullptr){}
+    ~Font();
+    void SetFont(wchar_t *name,int size,int bold=false);
+    HFONT get(){return hFont;}
+
+    friend class Canvas;
+};
+
 // Canvas
 class Canvas
 {
@@ -95,8 +109,13 @@ public:
     void drawbox(int x1,int y1,int x2,int y2,int i);
     void drawcheckbox(int x,int y,int wx,int wy,int checked,int active);
     void drawrevision(int y);
+    void TextOutH(int x,int y,LPCTSTR buf);
 
     HDC getDC(){return hdcMem;}
+    void setTextColor(int color);
+    void setFont(Font &font);
+    void calcRect(const wchar_t *str,RECT *rect);
+
     void begin(HWND hwnd,int x,int y);
     void end();
 };
@@ -152,6 +171,7 @@ class textdata_t
 {
 protected:
     HDC hdcMem;
+    Canvas *pcanvas;
 
     int ofsx;
     int x;
@@ -216,7 +236,6 @@ void format_time(wchar_t *buf,long long val);
 
 // Misc functions
 int mirw(int x,int ofs,int w);
-void TextOutH(HDC hdc,int x,int y,LPCTSTR buf);
 
 int Xm(int x,int o);
 int Ym(int y);

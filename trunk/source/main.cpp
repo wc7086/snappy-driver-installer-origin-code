@@ -899,24 +899,12 @@ void MainWindow_t::lang_refresh()
 
 void MainWindow_t::theme_refresh()
 {
-    // Set font
-    if(hFont&&!DeleteObject(hFont))Log.print_err("ERROR in manager_setfont(): failed DeleteObject\n");
-    hFont=CreateFont(-D(FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!hFont)Log.print_err("ERROR in manager_setfont(): failed CreateFont\n");
+    hFont.SetFont(D_STR(FONT_NAME),D(FONT_SIZE));
+    Popup.hFontP.SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE));
+    Popup.hFontBold.SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE),true);
 
-    if(Popup.hFontP&&!DeleteObject(Popup.hFontP))Log.print_err("ERROR in manager_setfont(): failed DeleteObject\n");
-    Popup.hFontP=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!Popup.hFontP)Log.print_err("ERROR in manager_setfont(): failed CreateFont\n");
-
-    if(Popup.hFontBold&&!DeleteObject(Popup.hFontBold))Log.print_err("ERROR in manager_setfont(): failed DeleteObject\n");
-    Popup.hFontBold=CreateFont(-D(POPUP_FONT_SIZE),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,D_STR(FONT_NAME));
-    if(!Popup.hFontBold)Log.print_err("ERROR in manager_setfont(): failed CreateFont\n");
-
-    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
-    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont,MAKELPARAM(FALSE,0));
+    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont.get(),MAKELPARAM(FALSE,0));
+    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont.get(),MAKELPARAM(FALSE,0));
 
     if(!hMain||!hField)
     {
@@ -1384,12 +1372,6 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             Settings.wndwx=rect.right-rect.left;
             Settings.wndwy=rect.bottom-rect.top;
 
-            if(!DeleteObject(hFont))
-                Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
-            if(!DeleteObject(Popup.hFontP))
-                Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
-            if(!DeleteObject(Popup.hFontBold))
-                Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
             if(mon_lang)mon_lang->stop();
             if(mon_theme)mon_theme->stop();
             delete canvasMain;
@@ -1639,7 +1621,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             canvasMain->begin(hwnd,rect.right,rect.bottom);
 
             canvasMain->drawbox(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
-            SelectObject(canvasMain->getDC(),hFont);
+            canvasMain->setFont(hFont);
             panels[7].draw(*canvasMain);// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
             {
@@ -2094,7 +2076,6 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 
 int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
-    HDC hdcMem;
     RECT rect;
     WINDOWPOS *wp;
 
@@ -2104,19 +2085,17 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
             if(floating_type!=FLOATING_TOOLTIP)break;
 
             wp=(WINDOWPOS*)lParam;
-            hdcMem=GetDC(hwnd);
             GetClientRect(hwnd,&rect);
             rect.right=D(POPUP_WX);
             rect.bottom=floating_y;
 
-            SelectObject(hdcMem,Popup.hFontP);
-            DrawText(hdcMem,STR(floating_itembar),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
+            canvasPopup->setFont(Popup.hFontP);
+            canvasPopup->calcRect(STR(floating_itembar),&rect);
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
             popup_resize(rect.right-rect.left+D(POPUP_OFSX)*2,rect.bottom-rect.top+D(POPUP_OFSY)*2);
             wp->cx=rect.right+D(POPUP_OFSX)*2;
             wp->cy=rect.bottom+D(POPUP_OFSY)*2;
-            ReleaseDC(hwnd,hdcMem);
             break;
 
         case WM_CREATE:
@@ -2135,7 +2114,7 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
-                    SelectObject(canvasPopup->getDC(),Popup.hFontP);
+                    canvasPopup->setFont(Popup.hFontP);
                     manager_g->matcher->getState()->popup_sysinfo(*canvasPopup);
                     break;
 
@@ -2144,28 +2123,28 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
                     rect.top+=D(POPUP_OFSY);
                     rect.right-=D(POPUP_OFSX);
                     rect.bottom-=D(POPUP_OFSY);
-                    SelectObject(canvasPopup->getDC(),hFontP);
-                    SetTextColor(canvasPopup->getDC(),D(POPUP_TEXT_COLOR));
+                    canvasPopup->setFont(Popup.hFontP);
+                    canvasPopup->setTextColor(D(POPUP_TEXT_COLOR));
                     DrawText(canvasPopup->getDC(),STR(floating_itembar),-1,&rect,DT_WORDBREAK);
                     break;
 
                 case FLOATING_CMPDRIVER:
-                    SelectObject(canvasPopup->getDC(),hFontP);
+                    canvasPopup->setFont(Popup.hFontP);
                     manager_g->popup_drivercmp(manager_g,*canvasPopup,rect,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:
-                    SelectObject(canvasPopup->getDC(),hFontP);
+                    canvasPopup->setFont(Popup.hFontP);
                     manager_g->popup_driverlist(*canvasPopup,rect,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:
-                    SelectObject(canvasPopup->getDC(),hFontP);
+                    canvasPopup->setFont(Popup.hFontP);
                     popup_about(*canvasPopup);
                     break;
 
                 case FLOATING_DOWNLOAD:
-                    SelectObject(canvasPopup->getDC(),hFontP);
+                    canvasPopup->setFont(Popup.hFontP);
                     #ifdef USE_TORRENT
                     Updater.showPopup(*canvasPopup);
                     #endif

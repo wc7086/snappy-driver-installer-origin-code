@@ -35,7 +35,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 
 //{Global variables
-HFONT CLIHelp_Font;
+Font CLIHelp_Font;
 CommandLineParam_t CLIParam;
 //}
 
@@ -79,7 +79,7 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
         get_resource(IDR_CLI_HELP,(void **)&s,&sz);
         hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
 
-        SendMessage(hEditBox,WM_SETFONT,(WPARAM)CLIHelp_Font,0);
+        SendMessage(hEditBox,WM_SETFONT,(WPARAM)CLIHelp_Font.get(),0);
 
         SetWindowTextA(hEditBox,s);
         SendMessage(hEditBox,EM_SETREADONLY,1,0);
@@ -110,12 +110,9 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
 
 static void ShowHelp(HINSTANCE AhInst)
 {
-    CLIHelp_Font=CreateFont(-12,0,0,0,FW_NORMAL,0,0,0,
-                         DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,
-                         DEFAULT_QUALITY,FF_DONTCARE,L"Consolas");
+    CLIHelp_Font.SetFont(L"Consolas",12);
 
     DialogBox(AhInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)ShowHelpProcedure);
-    DeleteObject(CLIHelp_Font);
 }
 
 void SaveHWID(wchar_t *hwid)

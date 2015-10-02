@@ -145,7 +145,7 @@ class Popup_t
 {
 public:
     HWND hPopup;
-    HFONT hFontP,hFontBold;
+    Font hFontP,hFontBold;
     Canvas *canvasPopup;
 
     int floating_type;
@@ -164,7 +164,7 @@ class MainWindow_t
 public:
     int main1x_c,main1y_c;
     int mainx_c,mainy_c;
-    HFONT hFont;
+    Font hFont;
     HWND hMain,hField,hLang,hTheme;
     int ctrl_down;
     int space_down;
