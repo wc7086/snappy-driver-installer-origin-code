@@ -4,9 +4,4 @@
 
 #include "../../C/7zCrc.h"
 
-__declspec(dllexport) struct CCRCTableInit { CCRCTableInit() { CrcGenerateTable(); } } g_CRCTableInit;
-
-void registercrc()
-{
-	CCRCTableInit *a;
-}
+struct CCRCTableInit { CCRCTableInit() { CrcGenerateTable(); } } g_CRCTableInit;

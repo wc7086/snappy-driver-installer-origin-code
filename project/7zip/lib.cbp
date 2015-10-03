@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="7-ZIP 7.38" />
+		<Option title="7-ZIP 15.08 beta" />
 		<Option platforms="Windows;" />
 		<Option makefile="makefile" />
 		<Option compiler="gcc" />
@@ -134,8 +134,6 @@
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/StdAfx.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CoderMixer2.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CoderMixer2.h" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CoderMixer2MT.cpp" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CoderMixer2MT.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CrossThreadProgress.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CrossThreadProgress.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/DummyOutStream.cpp" />
@@ -208,8 +206,6 @@
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BcjCoder.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BcjCoder.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BcjRegister.cpp" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BranchCoder.cpp" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BranchCoder.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BranchMisc.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BranchMisc.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/BranchRegister.cpp" />
@@ -228,8 +224,6 @@
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/LzmaRegister.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/PpmdDecoder.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/PpmdRegister.cpp" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/RangeCoder.h" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/RangeCoderBit.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Compress/StdAfx.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/ICoder.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/IDecl.h" />

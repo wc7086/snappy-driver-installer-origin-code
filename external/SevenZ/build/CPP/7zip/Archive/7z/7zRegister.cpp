@@ -9,23 +9,14 @@
 namespace NArchive {
 namespace N7z {
 
-IMP_CreateArcIn
-IMP_CreateArcOut
+static Byte k_Signature_Dec[kSignatureSize] = {'7' + 1, 'z', 0xBC, 0xAF, 0x27, 0x1C};
 
-static CArcInfo g_ArcInfo =
-  { "7z", "7z", 0, 7,
-  6, {'7' + 1, 'z', 0xBC, 0xAF, 0x27, 0x1C},
+REGISTER_ARC_IO_DECREMENT_SIG(
+  "7z", "7z", NULL, 7,
+  k_Signature_Dec,
   0,
   NArcInfoFlags::kFindSignature,
-  REF_CreateArc_Pair };
+  NULL);
 
-REGISTER_ARC_DEC_SIG(7z)
-// REGISTER_ARC(7z)
-
-//REGISTER_ARC(7z)
-
-void register7z()
-{
-	REGISTER_ARC_NAME(7z) *g_RegisterArc;
-}
+void register7z(){}
 }}
