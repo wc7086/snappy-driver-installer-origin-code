@@ -16,10 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-
 #include <windows.h>
-
-#include "common.h"
 #include "theme.h"
 
 #define DEF_VAL(a) {TEXT(a),0,0},

@@ -16,21 +16,21 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "svnrev.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for StrStrIW
 
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
 #include "matcher.h"
+#include "common.h"
+#include "draw.h"
+#include "indexing.h"
+#include "enum.h"
+#include "main.h"
+
+#include "guicon.h"
 #include "manager.h"
 #include "theme.h"
-#include "draw.h"
-#include "main.h"
 
 //{ Global variables
 Filemon *mon_vir;
@@ -122,9 +122,9 @@ void Log_t::stop()
     fclose(logfile);
 }
 
-void Log_t::print_file(CHAR const *format,...)
+void Log_t::print_file(char const *format,...)
 {
-    CHAR buffer[1024*16];
+    char buffer[1024*16];
 
     if(!logfile)return;
     va_list args;
@@ -135,9 +135,9 @@ void Log_t::print_file(CHAR const *format,...)
     va_end(args);
 }
 
-void Log_t::print_err(CHAR const *format,...)
+void Log_t::print_err(char const *format,...)
 {
-    CHAR buffer[1024*16];
+    char buffer[1024*16];
 
     if((log_verbose&LOG_VERBOSE_LOG_ERR)==0)return;
     va_list args;
@@ -148,9 +148,9 @@ void Log_t::print_err(CHAR const *format,...)
     va_end(args);
 }
 
-void Log_t::print_con(CHAR const *format,...)
+void Log_t::print_con(char const *format,...)
 {
-    CHAR buffer[1024*16];
+    char buffer[1024*16];
 
     if((log_verbose&LOG_VERBOSE_LOG_CON)==0)return;
     va_list args;
@@ -161,7 +161,7 @@ void Log_t::print_con(CHAR const *format,...)
     va_end(args);
 }
 
-void Log_t::print_nul(CHAR const *format,...)
+void Log_t::print_nul(char const *format,...)
 {
     UNREFERENCED_PARAMETER(format);
 }

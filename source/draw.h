@@ -21,10 +21,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define NUM_PANELS  13
 #define PAN_ENT     18
 
+#include "themelist.h"
+
 // Declarations
 class Image;
 class Panel;
 class Panelitem;
+class ClipRegionImp;
 
 // Global vars
 extern int rtl;
@@ -78,9 +81,10 @@ public:
 class ClipRegion
 {
 private:
-    HRGN hrgn;
+    ClipRegionImp *imp;
+
 public:
-    ClipRegion():hrgn(nullptr){}
+    ClipRegion();
     ClipRegion(int x1,int y1,int x2,int y2);
     ClipRegion(int x1,int y1,int x2,int y2,int r);
     void setRegion(int x1,int y1,int x2,int y2);
@@ -246,8 +250,8 @@ public:
     {
 
     }
-    void shift_r(){maxsz+=POPUP_SYSINFO_OFS;}
-    void shift_l(){maxsz-=POPUP_SYSINFO_OFS;}
+    void shift_r();
+    void shift_l();
     int getMaxsz(){return maxsz;}
     void TextOutSF(const wchar_t *str,const wchar_t *format,...);
 };

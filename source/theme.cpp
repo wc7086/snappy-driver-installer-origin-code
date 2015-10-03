@@ -20,15 +20,15 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <shlwapi.h>        // for StrStrIW
 
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
 #include "matcher.h"
-#include "manager.h"
-#include "theme.h"
+#include "common.h"
 #include "draw.h"
+#include "indexing.h"
+#include "enum.h"
 #include "main.h"
+
+#include "guicon.h"
+#include "theme.h"
 
 //{ Global vars
 Filemon *mon_lang,*mon_theme;

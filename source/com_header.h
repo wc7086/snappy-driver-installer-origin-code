@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "svnrev.h"
+
 // Misc
 #define BUFLEN 4096
 #define WIN32_LEAN_AND_MEAN

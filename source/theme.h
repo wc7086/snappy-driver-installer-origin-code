@@ -27,6 +27,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 class Filemon;
 class Vault;
 struct entry_t;
+
+#include <unordered_map>
+#include <memory>
+
 typedef std::unordered_map <std::wstring,int> lookuptbl_t;
 
 // Global vars

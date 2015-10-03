@@ -23,6 +23,22 @@ class data_inffile_t;
 class data_desc_t;
 class data_HWID_t;
 class driverpack_task;
+class Hashtable;
+class Txt;
+
+template<typename Data>
+class concurrent_queue;
+
+#include <queue>
+#include <unordered_map>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Weffc++"
+#define BOOST_SYSTEM_NO_DEPRECATED
+#include <boost/thread/condition_variable.hpp>
+#pragma GCC diagnostic pop
 
 typedef unsigned ofst;
 typedef concurrent_queue<driverpack_task> drplist_t;

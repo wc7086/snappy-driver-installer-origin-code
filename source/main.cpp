@@ -22,16 +22,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for StrStrIW
 #include <shlobj.h>         // for SHBrowseForFolder()
 
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
 #include "matcher.h"
+#include "common.h"
+#include "draw.h"
+#include "indexing.h"
+#include "enum.h"
+#include "main.h"
+
+#include "guicon.h"
 #include "manager.h"
 #include "theme.h"
-#include "draw.h"
 #include "cli.h"
-#include "main.h"
 #include "update.h"
 #include "install.h"
 

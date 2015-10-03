@@ -16,6 +16,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //{ Defines
+class Manager;
+class Font;
+class Matcher;
+class Hwidmatch;
 
 #include "resources.h"
 
@@ -126,6 +130,88 @@ enum install_mode
     MODE_INSTALLING    = 1,
     MODE_STOPPING      = 2,
     MODE_SCANNING      = 3,
+};
+
+// IDs
+enum GUI_ID
+{
+    ID_SHOW_MISSING     =1,
+    ID_SHOW_NEWER       =2,
+    ID_SHOW_CURRENT     =3,
+    ID_SHOW_OLD         =4,
+    ID_SHOW_BETTER      =5,
+    ID_SHOW_WORSE_RANK  =6,
+
+    ID_SHOW_NF_MISSING  =7,
+    ID_SHOW_NF_UNKNOWN  =8,
+    ID_SHOW_NF_STANDARD= 9,
+
+    ID_SHOW_ONE        =10,
+    ID_SHOW_DUP        =11,
+    ID_SHOW_INVALID    =12,
+
+    ID_INSTALL         =13,
+    ID_SELECT_ALL      =14,
+    ID_SELECT_NONE     =15,
+    ID_EXPERT_MODE     =16,
+
+    ID_LANG            =17,
+    ID_THEME           =18,
+
+    ID_OPENLOGS        =19,
+    ID_SNAPSHOT        =20,
+    ID_EXTRACT         =21,
+    ID_DRVDIR          =22,
+
+    ID_SCHEDULE        =23,
+    ID_SHOWALT         =24,
+    ID_OPENINF         =25,
+    ID_LOCATEINF       =26,
+
+    ID_EMU_32          =27,
+    ID_EMU_64          =28,
+    ID_DEVICEMNG       =29,
+    ID_DIS_INSTALL     =30,
+    ID_DIS_RESTPNT     =31,
+
+    ID_WIN_2000        =32,
+    ID_WIN_XP          =33,
+    ID_WIN_VISTA       =34,
+    ID_WIN_7           =35,
+    ID_WIN_8           =36,
+    ID_WIN_81          =37,
+    ID_WIN_10          =38,
+
+    ID_RESTPNT         =39,
+    ID_REBOOT          =40,
+
+    ID_URL0            =41,
+    ID_URL1            =42,
+    ID_URL2            =43,
+    ID_URL3            =44,
+    ID_URL4            =45,
+
+    ID_HWID_CLIP      =100,
+    ID_HWID_WEB       =200,
+};
+
+// fileter_show
+enum fileter_show
+{
+    FILTER_SHOW_MISSING    = (1<<ID_SHOW_MISSING),
+    FILTER_SHOW_NEWER      = (1<<ID_SHOW_NEWER),
+    FILTER_SHOW_CURRENT    = (1<<ID_SHOW_CURRENT),
+    FILTER_SHOW_OLD        = (1<<ID_SHOW_OLD),
+    FILTER_SHOW_BETTER     = (1<<ID_SHOW_BETTER),
+    FILTER_SHOW_WORSE_RANK = (1<<ID_SHOW_WORSE_RANK),
+
+    FILTER_SHOW_NF_MISSING = (1<<ID_SHOW_NF_MISSING),
+    FILTER_SHOW_NF_UNKNOWN = (1<<ID_SHOW_NF_UNKNOWN),
+    FILTER_SHOW_NF_STANDARD= (1<<ID_SHOW_NF_STANDARD),
+
+    FILTER_SHOW_ONE        = (1<<ID_SHOW_ONE),
+    FILTER_SHOW_DUP        = (1<<ID_SHOW_DUP),
+    FILTER_SHOW_INVALID    = (1<<ID_SHOW_INVALID),
 };
 //}
 
@@ -274,7 +360,7 @@ class Bundle
 {
     State state;
     Collection collection;
-    Matcher_interface *matcher;
+    Matcher *matcher;
 
 private:
     static unsigned int __stdcall thread_scandevices(void *arg);
@@ -291,7 +377,7 @@ public:
         delete matcher;
     }
 
-    Matcher_interface *getMatcher(){return matcher;}
+    Matcher *getMatcher(){return matcher;}
 
     static unsigned int __stdcall thread_loadall(void *arg);
 

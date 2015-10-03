@@ -20,16 +20,15 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <shlwapi.h>        // for StrStrIW
 
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
 #include "matcher.h"
-#include "manager.h"
-#include "theme.h"
+#include "common.h"
 #include "draw.h"
+#include "indexing.h"
+#include "enum.h"
 #include "main.h"
 
+#include "guicon.h"
+#include "theme.h"
 #include "device.h"
 
 //{ Global variables
@@ -333,7 +332,7 @@ int cmpunsigned(unsigned a,unsigned b)
 //}
 
 //{ Matcher
-class Matcher:public Matcher_interface
+class MatcherImp:public Matcher
 {
     State *state;
     Collection *col;
@@ -345,7 +344,7 @@ private:
     void sort();
 
 public:
-    ~Matcher(){}
+    ~MatcherImp(){}
 
     void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw);
     void init(State *state1,Collection *col1){state=state1;col=col1;devicematch_list.clear();hwidmatch_list.clear();}
@@ -363,14 +362,14 @@ public:
     Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
 };
 
-Matcher_interface::~Matcher_interface(){};
-Matcher_interface *CreateMatcher()
+Matcher::~Matcher(){};
+Matcher *CreateMatcher()
 {
-    return new Matcher();
+    return new MatcherImp();
 }
 
 
-void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int ishw)
+void MatcherImp::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int ishw)
 {
     char hwid[BUFLEN];
     wsprintfA(hwid,"%ws",hwidv);
@@ -392,7 +391,7 @@ void Matcher::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,int 
     }
 }
 
-void Matcher::sort()
+void MatcherImp::sort()
 {
     Hwidmatch *match1,*match2,*bestmatch;
     Hwidmatch matchtmp(nullptr,0);
@@ -430,7 +429,7 @@ void Matcher::sort()
     }
 }
 
-void Matcher::populate()
+void MatcherImp::populate()
 {
     Timers.start(time_matcher);
 
@@ -449,7 +448,7 @@ void Matcher::populate()
     Timers.stop(time_matcher);
 }
 
-void Matcher::print()
+void MatcherImp::print()
 {
     int limits[7];
 
@@ -478,7 +477,7 @@ void Matcher::print()
     Log.print_file("}matcher_print\n\n");
 }
 
-void Matcher::sorta(int *v)
+void MatcherImp::sorta(int *v)
 {
     Devicematch *devicematch_i,*devicematch_j;
     Hwidmatch *hwidmatch_i,*hwidmatch_j;
@@ -525,7 +524,7 @@ void Matcher::sorta(int *v)
 //}
 
 //{ Devicematch
-Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher_interface *matcher)
+Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher)
 {
     device=cur_device;
     driver=cur_driver;
@@ -754,7 +753,7 @@ Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1)
 6 desc
 */
 
-void Hwidmatch::minlen(CHAR *s,int *len)
+void Hwidmatch::minlen(char *s,int *len)
 {
     int l=strlen(s);
     if(*len<l)*len=l;
