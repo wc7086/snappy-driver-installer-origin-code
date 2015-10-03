@@ -18,6 +18,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 class Canvas;
 class Txt;
 class Devicematch;
+class Hwidmatch;
+class Matcher;
 
 #include <vector>
 

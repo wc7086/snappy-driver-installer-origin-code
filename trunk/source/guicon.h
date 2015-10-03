@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdio.h>
+
 // Timer
 enum TIMER
 {
@@ -33,13 +35,14 @@ enum TIMER
 
 class Timers_t
 {
-    long timers[time_NUM];
+    long long timers[time_NUM];
 public:
     void start(int a){timers[a]=GetTickCount();}
     void stop(int a){if(timers[a])timers[a]=GetTickCount()-timers[a];}
     void reset(int a){timers[a]=0;}
     void print();
     void stoponce(int a,int b){if(!timers[a])timers[a]=GetTickCount()-timers[b];}
+    long long get(int a){return timers[a];}
 };
 extern Timers_t Timers;
 

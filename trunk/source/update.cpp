@@ -26,13 +26,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <shlwapi.h>        // for StrStrIW
 
-#include "matcher.h"
 #include "common.h"
 #include "draw.h"
 #include "indexing.h"
 #include "enum.h"
 #include "main.h"
 
+#include "matcher.h"
 #include "guicon.h"
 #include "manager.h"
 #include "theme.h"

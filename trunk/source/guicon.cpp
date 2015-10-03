@@ -21,7 +21,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for StrStrIW
 
-#include "matcher.h"
 #include "common.h"
 #include "draw.h"
 #include "indexing.h"
