@@ -22,13 +22,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for StrStrIW
 #include <shlobj.h>         // for SHBrowseForFolder()
 
-#include "matcher.h"
 #include "common.h"
 #include "draw.h"
 #include "indexing.h"
 #include "enum.h"
 #include "main.h"
 
+#include "matcher.h"
 #include "guicon.h"
 #include "manager.h"
 #include "theme.h"
@@ -703,6 +703,16 @@ unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
     return 0;
 }
 
+Bundle::Bundle()
+{
+    matcher=CreateMatcher();
+}
+
+Bundle::~Bundle()
+{
+    delete matcher;
+}
+
 unsigned int __stdcall Bundle::thread_loadall(void *arg)
 {
     Bundle *bundle=(Bundle *)arg;
@@ -833,7 +843,7 @@ void Bundle::bundle_lowprioirity()
     manager_g->print_hr();
 
     #ifdef USE_TORRENT
-    if(Settings.flags&FLAG_CHECKUPDATES&&!time_chkupdate)Updater.checkUpdates();
+    if(Settings.flags&FLAG_CHECKUPDATES&&!Timers.get(time_chkupdate))Updater.checkUpdates();
     #endif
 
     collection.save();

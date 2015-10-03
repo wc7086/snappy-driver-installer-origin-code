@@ -368,14 +368,8 @@ private:
     static unsigned int __stdcall thread_getsysinfo(void *arg);
 
 public:
-    Bundle()
-    {
-        matcher=CreateMatcher();
-    }
-    ~Bundle()
-    {
-        delete matcher;
-    }
+    Bundle();
+    ~Bundle();
 
     Matcher *getMatcher(){return matcher;}
 

@@ -19,8 +19,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include "theme.h"
 
-#define DEF_VAL(a) {TEXT(a),0,0},
-#define DEF_STR(a) {TEXT(a),0,0},
+#define TEXT_1(quote) L##quote
+#define DEF_VAL(a) {TEXT_1(a),0,0},
+#define DEF_STR(a) {TEXT_1(a),0,0},
 
 entry_t language[STR_NM]=
 {
