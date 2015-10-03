@@ -22,14 +22,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for StrStrIW
 
 #include "common.h"
-#include "indexing.h"
 #include "guicon.h"
-#include "enum.h"
-#include "matcher.h"
-#include "manager.h"
-#include "theme.h"
-#include "draw.h"
-#include "main.h"
 
 Test::Test()
 {

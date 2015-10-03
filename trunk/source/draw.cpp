@@ -16,23 +16,25 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "svnrev.h"
-#include <webp\decode.h>
+
+#include "matcher.h"
+#include "cli.h"
 
 #include <windows.h>
+
+#include "common.h"   // todo: HANDLE and events
+#include "draw.h"     // todo: lots of Win32
+#include "indexing.h" // needs Txt and Hashtable from common.h
+#include "enum.h"     // needs Version from indexing.h
+#include "main.h"     // needs State and Collection from enum.h and Font from draw.h
+
+#include "theme.h"    // todo: HWND and CALLBACK
+#include "guicon.h"   // todo: lots of Win32
+#include "manager.h"  // todo: RECT
+
 #include <setupapi.h>       // for SetupDiGetClassDescription()
 #include <shlwapi.h>        // for StrFormatByteSizeW
-
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
-#include "matcher.h"
-#include "manager.h"
-#include "theme.h"
-#include "draw.h"
-#include "cli.h"
-#include "main.h"
+#include <webp\decode.h>
 
 //{ Global vars
 int rtl=0;
@@ -727,6 +729,9 @@ void textdata_horiz_t::limitskip()
     x+=limits[i++];
 }
 
+void textdata_vert::shift_r(){maxsz+=POPUP_SYSINFO_OFS;}
+void textdata_vert::shift_l(){maxsz-=POPUP_SYSINFO_OFS;}
+
 void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
 {
     SIZE ss;
@@ -914,29 +919,52 @@ void panel_loadsettings(Panel *panel,int filters_)
     for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
 
-ClipRegion::ClipRegion(int x1,int y1,int x2,int y2)
+//{ ClipRegion
+class ClipRegionImp
+{
+private:
+    HRGN hrgn;
+public:
+    ClipRegionImp():hrgn(nullptr){}
+    ClipRegionImp(int x1,int y1,int x2,int y2);
+    ClipRegionImp(int x1,int y1,int x2,int y2,int r);
+    ~ClipRegionImp();
+
+    void setRegion(int x1,int y1,int x2,int y2);
+
+    friend class Canvas;
+};
+
+ClipRegionImp::ClipRegionImp(int x1,int y1,int x2,int y2)
 {
     hrgn=CreateRectRgn(x1,y1,x2,y2);
     if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed CreateRectRgn\n");
 }
 
-ClipRegion::ClipRegion(int x1,int y1,int x2,int y2,int r)
+ClipRegionImp::ClipRegionImp(int x1,int y1,int x2,int y2,int r)
 {
     hrgn=CreateRoundRectRgn(x1,y1,x2,y2,r,r);
     if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed CreateRoundRectRgn\n");
 }
 
-void ClipRegion::setRegion(int x1,int y1,int x2,int y2)
+void ClipRegionImp::setRegion(int x1,int y1,int x2,int y2)
 {
     if(hrgn)DeleteObject(hrgn);
     hrgn=CreateRectRgn(x1,y1,x2,y2);
     if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed setRegion\n");
 }
 
-ClipRegion::~ClipRegion()
+ClipRegionImp::~ClipRegionImp()
 {
     if(hrgn)DeleteObject(hrgn);
 }
+
+ClipRegion::ClipRegion(int x1,int y1,int x2,int y2):imp(new ClipRegionImp(x1,y1,x2,y2)){}
+ClipRegion::ClipRegion(int x1,int y1,int x2,int y2,int r):imp(new ClipRegionImp(x1,y1,x2,y2,r)){}
+ClipRegion::ClipRegion():imp(new ClipRegionImp()){}
+ClipRegion::~ClipRegion(){delete imp;};
+void ClipRegion::setRegion(int x1,int y1,int x2,int y2){imp->setRegion(x1,y1,x2,y2);}
+//}
 
 void Font::SetFont(const wchar_t *name,int size,int bold)
 {
@@ -967,7 +995,7 @@ void Canvas::setFont(Font &font)
 
 void Canvas::setClipRegion(ClipRegion &clip)
 {
-    SelectClipRgn(hdcMem,clip.hrgn);
+    SelectClipRgn(hdcMem,clip.imp->hrgn);
 }
 
 void Canvas::clearClipRegion()

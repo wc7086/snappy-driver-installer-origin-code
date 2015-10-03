@@ -38,8 +38,14 @@ enum DRIVER_STATUS
 };
 
 class Devicematch;
+class State;
+class Collection;
 class Hwidmatch;
 class Canvas;
+class Device;
+class Driver;
+class Driverpack;
+class Version;
 
 struct markers_t
 {
@@ -59,7 +65,7 @@ int calc_signature(int catalogfile,State *state,int isnt);
 int cmpunsigned(unsigned a,unsigned b);
 
 // Matcher is used as a storange for devicematch_list and hwidmatch_list
-class Matcher_interface
+class Matcher
 {
 public:
     virtual void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw)=0;
@@ -77,10 +83,10 @@ public:
     virtual void Insert(const Hwidmatch &a)=0;
     virtual Hwidmatch *getHwidmatch_i(int i)=0;
 
-    virtual ~Matcher_interface()=0;
+    virtual ~Matcher()=0;
 };
 
-Matcher_interface *CreateMatcher();
+Matcher *CreateMatcher();
 
 // Devicematch holds info about device and a list of alternative drivers
 class Devicematch
@@ -94,12 +100,12 @@ public:
     Driver *driver;
 
 public:
-    Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher_interface *matcher);
+    Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher);
     int isMissing(State *state);
     int getStatus(){return status;}
 
     friend class Manager; // TODO: friend
-    friend class Matcher; // TODO: friend
+    friend class MatcherImp; // TODO: friend
 };
 
 // Hwidmatch is used to extract info about an available driver from indexes
@@ -139,7 +145,7 @@ public:
     int calc_catalogfile();
     int calc_notebook();
 
-    void minlen(CHAR *s,int *len);
+    void minlen(char *s,int *len);
     void calclen(int *limits);
     void print_tbl(int *limits);
     void print_hr();

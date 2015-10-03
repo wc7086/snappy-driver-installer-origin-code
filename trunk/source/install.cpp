@@ -23,16 +23,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "SRRestorePtAPI.h" // for RestorePoint
 typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
 #include "matcher.h"
-#include "manager.h"
-#include "theme.h"
+#include "common.h"
 #include "draw.h"
-#include "cli.h"
+#include "indexing.h"
+#include "enum.h"
 #include "main.h"
+
+#include "manager.h"
+#include "guicon.h"
+#include "theme.h"
+#include "cli.h"
 #include "device.h"
 #include "install.h"
 #include "baseboard.h"

@@ -17,7 +17,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_TORRENT
 #include "com_header.h"
-#include "svnrev.h"
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
 #include "libtorrent/bencode.hpp"
@@ -27,15 +26,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <shlwapi.h>        // for StrStrIW
 
-#include "common.h"
-#include "indexing.h"
-#include "guicon.h"
-#include "enum.h"
 #include "matcher.h"
+#include "common.h"
+#include "draw.h"
+#include "indexing.h"
+#include "enum.h"
+#include "main.h"
+
+#include "guicon.h"
 #include "manager.h"
 #include "theme.h"
-#include "draw.h"
-#include "main.h"
 #include "update.h"
 #include "baseboard.h"
 

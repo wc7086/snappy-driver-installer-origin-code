@@ -24,8 +24,10 @@ class State;
 class Device;
 class infdata_t;
 class Canvas;
+class Version;
 typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 typedef PVOID HDEVINFO;
+typedef unsigned ofst;
 
 // Misc struct
 class infdata_t

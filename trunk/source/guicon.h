@@ -84,11 +84,11 @@ private:
         0;
 
 public:
-    void print_con(CHAR const *format,...);
-    void print_file(CHAR const *format,...);
-    void print_err(CHAR const *format,...);
+    void print_con(char const *format,...);
+    void print_file(char const *format,...);
+    void print_err(char const *format,...);
     void print_syserr(int r,const wchar_t *s);
-    void print_nul(CHAR const *format,...);
+    void print_nul(char const *format,...);
 
     void gen_timestamp();
     void start(wchar_t *log_dir);

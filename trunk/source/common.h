@@ -21,6 +21,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <queue>
 #include <unordered_map>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma GCC diagnostic ignored "-Weffc++"
+#define BOOST_SYSTEM_NO_DEPRECATED
+#include <boost/thread/condition_variable.hpp>
+#pragma GCC diagnostic pop
+
 // Global vars
 extern int trap_mode;
 
@@ -83,14 +91,6 @@ char *vector_load(std::vector<T> *v,char *p)
     memcpy(v->data(),p,sz);p+=sz;
     return p;
 }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma GCC diagnostic ignored "-Weffc++"
-#define BOOST_SYSTEM_NO_DEPRECATED
-#include <boost/thread/condition_variable.hpp>
-#pragma GCC diagnostic pop
 
 // Concurrent_queue
 template<typename Data>
