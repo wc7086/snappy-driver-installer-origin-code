@@ -319,7 +319,6 @@ int decode(char *dest,int dest_sz,char *src,int src_sz)
 void registerall()
 {
 #ifndef CONSOLE_MODE
-    registercrc();
     NArchive::N7z::register7z();
     registerBCJ();
     registerBCJ2();
@@ -327,9 +326,6 @@ void registerall()
     registerCopy();
     registerLZMA();
     registerLZMA2();
-//  registerPPMD();
-    registerDelta();
-    registerByteSwap();
 
     CrcGenerateTable();
 #endif

@@ -2,6 +2,8 @@
 
 #include "StdAfx.h"
 
+#include <string.h>
+
 #include "LimitedStreams.h"
 #include "../../Common/Defs.h"
 
@@ -279,7 +281,10 @@ STDMETHODIMP CLimitedCachedInStream::Read(void *data, UInt32 size, UInt32 *proce
   if (newPos >= _cachePhyPos &&
       offsetInCache <= _cacheSize &&
       size <= _cacheSize - (size_t)offsetInCache)
-    memcpy(data, _cache + (size_t)offsetInCache, size);
+  {
+    if (size != 0)
+      memcpy(data, _cache + (size_t)offsetInCache, size);
+  }
   else
   {
     if (newPos != _physPos)

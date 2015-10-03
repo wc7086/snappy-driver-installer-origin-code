@@ -192,15 +192,11 @@ namespace N7z{
         extern void register7z();
 }}
 extern int  Extract7z(wchar_t *str);
-extern void registercrc();
 extern void registerBCJ();
 extern void registerBCJ2();
 extern void registerBranch();
 extern void registerCopy();
 extern void registerLZMA();
 extern void registerLZMA2();
-extern void registerPPMD();
-extern void registerDelta();
-extern void registerByteSwap();
 
 #endif
