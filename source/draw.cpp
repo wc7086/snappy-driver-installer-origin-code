@@ -26,11 +26,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"  // todo: RECT
 
 #include "common.h"   // todo: HANDLE and events
-#include "draw.h"     // todo: lots of Win32
 #include "indexing.h" // needs Txt and Hashtable from common.h
 #include "enum.h"     // needs Version from indexing.h
-#include "main.h"     // needs State and Collection from enum.h and Font from draw.h
+#include "main.h"     // needs State and Collection from enum.h
 
+#include "draw.h"     // todo: lots of Win32
 #include "matcher.h"
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
@@ -989,9 +989,9 @@ void Canvas::setTextColor(int color)
     SetTextColor(hdcMem,color);
 }
 
-void Canvas::setFont(Font &font)
+void Canvas::setFont(Font *font)
 {
-    SelectObject(hdcMem,font.hFont);
+    SelectObject(hdcMem,font->hFont);
 }
 
 void Canvas::setClipRegion(ClipRegion &clip)

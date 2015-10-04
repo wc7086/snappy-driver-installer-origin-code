@@ -1,12 +1,27 @@
+/*
+This file is part of Snappy Driver Installer.
+
+Snappy Driver Installer is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Snappy Driver Installer is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "com_header.h"
+
 #include <stdio.h>
 #include <comdef.h>
 #include <Wbemidl.h>
 #include <shobjidl.h>
 
-//for some reason CLSID_WbemLocator isn't declared in libwbemuuid.a (although it probably should be).
-#ifndef _WIN64
-const GUID CLSID_WbemLocator={0x4590F811,0x1D3A,0x11D0,{ 0x89,0x1F,0x00,0xAA,0x00,0x4B,0x2E,0x24}};
-#endif
 const IID IID_ITaskbarList3 = {0xea1afb91, 0x9e28, 0x4b86, {0x90, 0xe9, 0x9e, 0x9f, 0x8a, 0x5e, 0xef, 0xaf}};
 const IID my_CLSID_TaskbarList = { 0x56fdf344, 0xfd6d, 0x11d0, { 0x95, 0x8a, 0x00, 0x60, 0x97, 0xc9, 0xa0, 0x90 } };
 
@@ -18,7 +33,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 {
     *manuf=*model=*product=*cs_model=*type=0;
 
-    int hres=CoInitializeEx(0,COINIT_MULTITHREADED);
+    int hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))
     {
         printf("FAILED to initialize COM library. Error code = 0x%X\n",hres);
@@ -27,8 +42,8 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
     if(!init)
     {
-        hres=CoInitializeSecurity(NULL,-1,NULL,NULL,RPC_C_AUTHN_LEVEL_DEFAULT,
-                                RPC_C_IMP_LEVEL_IMPERSONATE,NULL,EOAC_NONE,NULL);
+        hres=CoInitializeSecurity(nullptr,-1,nullptr,nullptr,RPC_C_AUTHN_LEVEL_DEFAULT,
+                                RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE,nullptr);
         if(FAILED(hres))
         {
             printf("FAILED to initialize security. Error code = 0x%X\n",hres);
@@ -37,8 +52,8 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         }
     }
 
-    IWbemLocator *pLoc=0;
-    hres=CoCreateInstance(CLSID_WbemLocator,0,CLSCTX_INPROC_SERVER,IID_IWbemLocator,(LPVOID *)&pLoc);
+    IWbemLocator *pLoc=nullptr;
+    hres=CoCreateInstance(CLSID_WbemLocator,nullptr,CLSCTX_INPROC_SERVER,IID_IWbemLocator,(LPVOID *)&pLoc);
     if(FAILED(hres))
     {
         printf("FAILED to create IWbemLocator object. Error code = 0x%X\n",hres);
@@ -46,8 +61,8 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         return 0;
     }
 
-    IWbemServices *pSvc=0;
-    hres=pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),NULL,NULL,0,NULL,0,0,&pSvc);
+    IWbemServices *pSvc=nullptr;
+    hres=pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),nullptr,nullptr,nullptr,0,nullptr,nullptr,&pSvc);
     if(FAILED(hres))
     {
         printf("FAILED to connect to root\\cimv2. Error code = 0x%X\n",hres);
@@ -58,8 +73,8 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
     //printf("Connected to ROOT\\CIMV2 WMI namespace\n");
 
-    hres=CoSetProxyBlanket(pSvc,RPC_C_AUTHN_WINNT,RPC_C_AUTHZ_NONE,NULL,
-       RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,NULL,EOAC_NONE);
+    hres=CoSetProxyBlanket(pSvc,RPC_C_AUTHN_WINNT,RPC_C_AUTHZ_NONE,nullptr,
+       RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE);
     if(FAILED(hres))
     {
         printf("FAILED to set proxy blanket. Error code = 0x%X\n",hres);
@@ -69,11 +84,11 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         return 0;
     }
 
-    IEnumWbemClassObject *pEnumerator=NULL;
+    IEnumWbemClassObject *pEnumerator=nullptr;
     hres=pSvc->ExecQuery(
         _bstr_t(L"WQL"),
         _bstr_t(L"SELECT * FROM Win32_BaseBoard"),
-        WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,NULL,&pEnumerator);
+        WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
         printf("FAILED to query for Win32_BaseBoard. Error code = 0x%X\n",hres);
@@ -94,13 +109,13 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
             VARIANT vtProp1,vtProp2,vtProp3;
 
-            hres=pclsObj->Get(L"Manufacturer",0,&vtProp1,0,0);
+            hres=pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
             if(vtProp1.bstrVal)wcscpy(manuf,vtProp1.bstrVal);
 
-            hres=pclsObj->Get(L"Model",0,&vtProp2,0,0);
+            hres=pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
             if(vtProp2.bstrVal)wcscpy(model,vtProp2.bstrVal);
 
-            hres=pclsObj->Get(L"Product",0,&vtProp3,0,0);
+            hres=pclsObj->Get(L"Product",0,&vtProp3,nullptr,nullptr);
             if(vtProp3.bstrVal)wcscpy(product,vtProp3.bstrVal);
         }
     }
@@ -108,7 +123,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     hres=pSvc->ExecQuery(
         _bstr_t(L"WQL"),
         _bstr_t(L"SELECT * FROM Win32_ComputerSystem"),
-        WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,NULL,&pEnumerator);
+        WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
         printf("FAILED to query for Win32_ComputerSystem. Error code = 0x%X\n",hres);
@@ -129,10 +144,10 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
             VARIANT vtProp1,vtProp2;
 
-            hres=pclsObj->Get(L"Manufacturer",0,&vtProp1,0,0);
+            hres=pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
             if(vtProp1.bstrVal)wcscpy(cs_manuf,vtProp1.bstrVal);
 
-            hres=pclsObj->Get(L"Model",0,&vtProp2,0,0);
+            hres=pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
             if(vtProp2.bstrVal)wcscpy(cs_model,vtProp2.bstrVal);
         }
     }
@@ -140,7 +155,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     hres=pSvc->ExecQuery(
         _bstr_t(L"WQL"),
         _bstr_t(L"SELECT * FROM Win32_SystemEnclosure"),
-        WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,NULL,&pEnumerator);
+        WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
         printf("FAILED to query for Win32_SystemEnclosure. Error code = 0x%X\n",hres);
@@ -160,7 +175,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
             if(0==uReturn)break;
 
             VARIANT vtProp;
-            hres=pclsObj->Get(L"ChassisTypes",0,&vtProp,0,0);// Uint16
+            hres=pclsObj->Get(L"ChassisTypes",0,&vtProp,nullptr,nullptr);// Uint16
             if(!FAILED(hres))
             {
                 if((vtProp.vt==VT_NULL)||(vtProp.vt==VT_EMPTY))
@@ -169,7 +184,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
                     if((vtProp.vt&VT_ARRAY))
                     {
                         long lLower,lUpper;
-                        UINT32 Element=NULL;
+                        UINT32 Element=0;
                         SAFEARRAY *pSafeArray=vtProp.parray;
                         SafeArrayGetLBound(pSafeArray,1,&lLower);
                         SafeArrayGetUBound(pSafeArray,1,&lUpper);
@@ -199,8 +214,8 @@ void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long
     int hres;
     ITaskbarList3 *pTL;
 
-    CoInitializeEx(0,COINIT_MULTITHREADED);
-    hres=CoCreateInstance(my_CLSID_TaskbarList,NULL,CLSCTX_ALL,IID_ITaskbarList3,(LPVOID*)&pTL);
+    CoInitializeEx(nullptr,COINIT_MULTITHREADED);
+    hres=CoCreateInstance(my_CLSID_TaskbarList,nullptr,CLSCTX_ALL,IID_ITaskbarList3,(LPVOID*)&pTL);
     if(FAILED(hres))
     {
         CoUninitialize();

@@ -78,7 +78,7 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-m64" />
-					<Add library="webp64" />
+					<Add library="webp" />
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
@@ -103,7 +103,7 @@
 				<Linker>
 					<Add option="-pg -lgmon" />
 					<Add option="-m64" />
-					<Add library="webp64" />
+					<Add library="webp" />
 					<Add library="torrent" />
 					<Add library="wsock32" />
 					<Add library="ws2_32" />
@@ -172,7 +172,6 @@
 		<Linker>
 			<Add option="-static" />
 			<Add library="msimg32" />
-			<Add library="baseboard" />
 			<Add library="7z" />
 			<Add library="kernel32" />
 			<Add library="user32" />
@@ -199,6 +198,7 @@
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="../source/7zip.h" />
+		<Unit filename="../source/baseboard.cpp" />
 		<Unit filename="../source/baseboard.h" />
 		<Unit filename="../source/cli.cpp" />
 		<Unit filename="../source/cli.h" />
@@ -224,6 +224,8 @@
 		<Unit filename="../source/manager.h" />
 		<Unit filename="../source/matcher.cpp" />
 		<Unit filename="../source/matcher.h" />
+		<Unit filename="../source/model.cpp" />
+		<Unit filename="../source/model.h" />
 		<Unit filename="../source/svnrev.h" />
 		<Unit filename="../source/theme.cpp" />
 		<Unit filename="../source/theme.h" />

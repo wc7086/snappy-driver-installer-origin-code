@@ -138,7 +138,7 @@ public:
 
     HDC getDC(){return hdcMem;}
     void setTextColor(int color);
-    void setFont(Font &font);
+    void setFont(Font *font);
 
     void setClipRegion(ClipRegion &clip);
     void clearClipRegion();

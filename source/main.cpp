@@ -875,6 +875,8 @@ const wchar_t MainWindow_t::classField[]=L"classSDIField";
 const wchar_t MainWindow_t::classPopup[]=L"classSDIPopup";
 MainWindow_t::MainWindow_t()
 {
+    hFont=new Font;
+
     Popup.floating_itembar=-1;
     Popup.floating_x=1;
     Popup.floating_y=1;
@@ -884,6 +886,11 @@ MainWindow_t::MainWindow_t()
     mousey=-1;
     mousedown=MOUSE_NONE;
     kbpanel=KB_NONE;
+}
+
+MainWindow_t::~MainWindow_t()
+{
+    delete hFont;
 }
 
 void MainWindow_t::lang_refresh()
@@ -910,12 +917,12 @@ void MainWindow_t::lang_refresh()
 
 void MainWindow_t::theme_refresh()
 {
-    hFont.SetFont(D_STR(FONT_NAME),D(FONT_SIZE));
-    Popup.hFontP.SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE));
-    Popup.hFontBold.SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE),true);
+    hFont->SetFont(D_STR(FONT_NAME),D(FONT_SIZE));
+    Popup.hFontP->SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE));
+    Popup.hFontBold->SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE),true);
 
-    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont.get(),MAKELPARAM(FALSE,0));
-    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont.get(),MAKELPARAM(FALSE,0));
+    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont->get(),MAKELPARAM(FALSE,0));
+    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont->get(),MAKELPARAM(FALSE,0));
 
     if(!hMain||!hField)
     {
@@ -2083,6 +2090,17 @@ int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPA
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
     return Popup.PopupProcedure2(hwnd,message,wParam,lParam);
+}
+
+Popup_t::Popup_t()
+{
+    hFontP=new Font();
+    hFontBold=new Font();
+}
+Popup_t::~Popup_t()
+{
+    delete hFontP;
+    delete hFontBold;
 }
 
 int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
