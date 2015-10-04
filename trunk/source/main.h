@@ -231,8 +231,11 @@ class Popup_t
 {
 public:
     HWND hPopup;
-    Font hFontP,hFontBold;
+    Font *hFontP,*hFontBold;
     Canvas *canvasPopup;
+
+    Popup_t();
+    ~Popup_t();
 
     int floating_type;
     int floating_itembar;
@@ -250,7 +253,7 @@ class MainWindow_t
 public:
     int main1x_c,main1y_c;
     int mainx_c,mainy_c;
-    Font hFont;
+    Font *hFont;
     HWND hMain,hField,hLang,hTheme;
     int ctrl_down;
     int space_down;
@@ -301,6 +304,7 @@ public:
     int WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
 
     MainWindow_t();
+    ~MainWindow_t();
 };
 extern MainWindow_t MainWindow;
 

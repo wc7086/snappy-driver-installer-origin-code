@@ -25,9 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <newdev.h>
 #include <stdio.h>
 
-void print_error(int r,const WCHAR *s);
-
-void print_error(int r,const WCHAR *s)
+static void print_error(int r,const WCHAR *s)
 {
     WCHAR buf[4096];
     buf[0]=0;

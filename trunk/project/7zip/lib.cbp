@@ -95,6 +95,13 @@
 		</Build>
 		<Compiler>
 			<Add option="-W" />
+			<Add option="-Wno-missing-field-initializers" />
+			<Add option="-Wno-maybe-uninitialized" />
+			<Add option="-Wno-ignored-qualifiers" />
+			<Add option="-Wno-attributes" />
+			<Add option="-Wno-sign-compare" />
+			<Add option="-Wno-type-limits" />
+			<Add option="-Wno-empty-body" />
 			<Add option="-fexceptions" />
 			<Add option="-DWIN32" />
 			<Add option="-D_CONSOLE" />

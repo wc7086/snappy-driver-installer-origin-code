@@ -19,6 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 class TorrentStatus_t;
 class UpdateDialog_t;
 class Updater_t;
+class Canvas;
 
 // Global variables
 extern TorrentStatus_t TorrentStatus;
