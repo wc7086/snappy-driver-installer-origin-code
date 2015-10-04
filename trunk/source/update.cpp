@@ -15,8 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef USE_TORRENT
 #include "com_header.h"
+
+#ifdef USE_TORRENT
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
 #include "libtorrent/bencode.hpp"
@@ -25,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <shlwapi.h>        // for StrStrIW
+#include <shobjidl.h>
 
 #include "common.h"
 #include "main.h"
@@ -35,7 +37,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "theme.h"
 #include "update.h"
-#include "baseboard.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
@@ -939,7 +940,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
 
             // Show progress
             Updater.updateTorrentStatus();
-            ShowProgressInTaskbar(MainWindow.hMain,TBPF_NORMAL,TorrentStatus.downloaded,TorrentStatus.downloadsize);
+            ShowProgressInTaskbar(MainWindow.hMain,true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
             InvalidateRect(Popup.hPopup,nullptr,0);
 
             // Send libtorrent messages to log
@@ -993,7 +994,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                 if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
 
                 // Flash in taskbar
-                ShowProgressInTaskbar(MainWindow.hMain,TBPF_NOPROGRESS,0,0);
+                ShowProgressInTaskbar(MainWindow.hMain,false);
                 FLASHWINFO fi;
                 fi.cbSize=sizeof(FLASHWINFO);
                 fi.hwnd=MainWindow.hMain;
@@ -1021,12 +1022,7 @@ bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 //}
 #else
 
-#include "com_header.h"
-
 #include <windows.h>
-#include <setupapi.h>       // for SetupDiGetClassDescription()
-#include <shlwapi.h>        // for StrStrIW
-
 #include "update.h"
 
 TorrentStatus_t TorrentStatus;

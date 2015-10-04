@@ -18,17 +18,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define WIN32_LEAN_AND_MEAN
 #undef __STRICT_ANSI__
 
-#ifdef _WIN64
 #include <cfgmgr32.h>
 #include <newdev.h>
-#else
 
+/*#ifdef _WIN64
+#else
 #ifdef __MINGW64_VERSION_MAJOR
-#include <cfgmgr32.h>
-#include <newdev.h>
 #else
-#include <ddk/cfgmgr32.h>
-#include <ddk/newdev.h>
 #endif
-
-#endif
+#endif*/

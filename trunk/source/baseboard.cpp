@@ -26,7 +26,7 @@ const IID IID_ITaskbarList3 = {0xea1afb91, 0x9e28, 0x4b86, {0x90, 0xe9, 0x9e, 0x
 const IID my_CLSID_TaskbarList = { 0x56fdf344, 0xfd6d, 0x11d0, { 0x95, 0x8a, 0x00, 0x60, 0x97, 0xc9, 0xa0, 0x90 } };
 
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
-void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total);
+void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long total);
 
 int init=0;
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type)
@@ -209,7 +209,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     return 1;
 }
 
-void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long total)
+void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long total)
 {
     int hres;
     ITaskbarList3 *pTL;
@@ -224,7 +224,7 @@ void ShowProgressInTaskbar(HWND hwnd,TBPFLAG flags,long long complited,long long
     }
     //printf("%d,%d\n",flags,complited);
     pTL->SetProgressValue(hwnd,complited,total);
-    pTL->SetProgressState(hwnd,flags);
+    pTL->SetProgressState(hwnd,show?TBPF_NORMAL:TBPF_NOPROGRESS);
     pTL->Release();
     CoUninitialize();
 }
