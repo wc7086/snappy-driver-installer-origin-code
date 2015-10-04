@@ -176,29 +176,6 @@ void findosattr(char *bufa,char *adr,int len)
         p++;
     }
 }
-
-void loadGUID(GUID *g,const char *s)
-{
-    char d[3];
-    d[2]=0;
-    g->Data1=strtol(s+1,nullptr,16);
-    g->Data2=strtol(s+10,nullptr,16);
-    g->Data3=strtol(s+15,nullptr,16);
-    memcpy(d,s+15+5,2);g->Data4[0]=strtol(d,nullptr,16);
-    memcpy(d,s+15+5+2,2);g->Data4[1]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+4,2);g->Data4[2]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+6,2);g->Data4[3]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+8,2);g->Data4[4]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+10,2);g->Data4[5]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+12,2);g->Data4[6]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+14,2);g->Data4[7]=strtol(d,nullptr,16);
-
-    /*Log.print_con("%s\n",s);
-    Log.print_con("{%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\n\n",g->Data1,g->Data2,g->Data3,
-        (int)(g->Data4[0]),(int)(g->Data4[1]),
-        (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
-        (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
-}
 //}
 
 //{ Version
@@ -1903,12 +1880,12 @@ int Driverpack::loadindex()
         p=mem_unpack;
     }
 
-    p=vector_load(&inffile,p);
-    p=vector_load(&manufacturer_list,p);
-    p=vector_load(&desc_list,p);
-    p=vector_load(&HWID_list,p);
-    p=vector_load(text_ind.getVector(),p);
-    p=indexes.load(p);
+    p=inffile.loaddata(p);
+    p=manufacturer_list.loaddata(p);
+    p=desc_list.loaddata(p);
+    p=HWID_list.loaddata(p);
+    p=text_ind.loaddata(p);
+    p=indexes.loaddata(p);
 
     delete[] mem;
     if(mem_unpack)delete[] mem_unpack;
@@ -1948,12 +1925,12 @@ void Driverpack::saveindex()
     fwrite("SDW",3,1,f);
     fwrite(&version,sizeof(int),1,f);
 
-    p=vector_save(&inffile,p);
-    p=vector_save(&manufacturer_list,p);
-    p=vector_save(&desc_list,p);
-    p=vector_save(&HWID_list,p);
-    p=vector_save(text_ind.getVector(),p);
-    p=indexes.save(p);
+    p=inffile.savedata(p);
+    p=manufacturer_list.savedata(p);
+    p=desc_list.savedata(p);
+    p=HWID_list.savedata(p);
+    p=text_ind.savedata(p);
+    p=indexes.savedata(p);
 
     if(Settings.flags&COLLECTION_USE_LZMA)
     {

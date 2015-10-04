@@ -25,6 +25,7 @@ class Device;
 class infdata_t;
 class Canvas;
 class Version;
+class Driverpack;
 
 typedef std::unordered_map <std::wstring,infdata_t> inflist_tp;
 typedef PVOID HDEVINFO;
@@ -208,8 +209,8 @@ class State
 
     // --- End of POD ---
 
-    std::vector<Device> Devices_list;
-    std::vector<Driver> Drivers_list;
+    loadable_vector<Device> Devices_list;
+    loadable_vector<Driver> Drivers_list;
 
 public:
     Txt textas;

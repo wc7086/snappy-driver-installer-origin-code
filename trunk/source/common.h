@@ -19,13 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define COMMON_H
 
 #include <unordered_map>
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wswitch-enum"
-#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#define BOOST_SYSTEM_NO_DEPRECATED
-#include <boost/thread/condition_variable.hpp>
-#pragma GCC diagnostic pop
+#include <vector>
 
 // Global vars
 extern int trap_mode;
@@ -37,31 +31,6 @@ public:
     std::string s;
     Test();
     ~Test();
-};
-
-// Txt
-class Txt
-{
-    std::unordered_map<std::string,int> dub;
-    std::vector<char> text;
-
-public:
-    unsigned getSize()const{return text.size();}
-    std::vector<char> *getVector(){return &text;}
-    char *get(int offset){return &text[offset];}
-    wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
-    wchar_t *getw2(int offset){return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
-
-    int strcpy(const char *mem);
-    int strcpyw(const wchar_t *mem);
-    int t_memcpy(const char *mem,int sz);
-    int t_memcpyz(const char *mem,int sz);
-    int memcpyz_dup(const char *mem,int sz);
-    int alloc(int sz);
-
-    Txt();
-    void reset(int sz);
-    void shrink();
 };
 
 // Vector templates
@@ -90,6 +59,65 @@ char *vector_load(std::vector<T> *v,char *p)
     return p;
 }
 
+template <class T>
+class loadable_vector:public std::vector<T>
+{
+public:
+    char *savedata(char *p){return vector_save(this,p);}
+    char *loaddata(char *p){return vector_load(this,p);}
+};
+
+// Version
+class Version
+{
+    int d,m,y;
+    int v1,v2,v3,v4;
+
+public:
+    int  setDate(int d_,int m_,int y_);
+    void setVersion(int v1_,int v2_,int v3_,int v4_);
+    void setInvalid(){y=v1=-1;}
+    void str_date(wchar_t *buf);
+    void str_version(wchar_t *buf);
+
+    Version():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
+    Version(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
+
+    friend class Driverpack;
+    friend class Hwidmatch;
+    friend int cmpdate(Version *t1,Version *t2);
+    friend int cmpversion(Version *t1,Version *t2);
+};
+int cmpdate(Version *t1,Version *t2);
+int cmpversion(Version *t1,Version *t2);
+
+// Txt
+class Txt
+{
+    std::unordered_map<std::string,int> dub;
+    loadable_vector<char> text;
+
+public:
+    unsigned getSize()const{return text.size();}
+    char *get(int offset){return &text[offset];}
+    wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
+    wchar_t *getw2(int offset){return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
+
+    int strcpy(const char *mem);
+    int strcpyw(const wchar_t *mem);
+    int t_memcpy(const char *mem,int sz);
+    int t_memcpyz(const char *mem,int sz);
+    int memcpyz_dup(const char *mem,int sz);
+    int alloc(int sz);
+
+    char *savedata(char *p){return text.savedata(p);}
+    char *loaddata(char *p){return text.loaddata(p);};
+
+    Txt();
+    void reset(int sz);
+    void shrink();
+};
+
 // Hashtable
 class Hashitem
 {
@@ -109,15 +137,15 @@ class Hashtable
     int findnext_v;
     int findstr;
     int size;
-    std::vector<Hashitem> items;
+    loadable_vector<Hashitem> items;
 
 public:
     int getSize(){return items.size();}
 
     static unsigned gethashcode(const char *s,int sz);
     void reset(int size);
-    char *save(char *p);
-    char *load(char *p);
+    char *savedata(char *p);
+    char *loaddata(char *p);
     void additem(int key,int value);
     int  find(int vl,int *isfound);
     int  findnext(int *isfound);

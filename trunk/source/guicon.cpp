@@ -20,6 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for StrStrIW
+#include <ctime>
 
 #include "common.h"
 #include "main.h"

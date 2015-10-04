@@ -20,6 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
 #include <shlwapi.h>        // for StrStrIW
+#include <stdio.h>
 
 #include "main.h"
 #include "draw.h"

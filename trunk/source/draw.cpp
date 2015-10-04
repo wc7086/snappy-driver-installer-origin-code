@@ -24,7 +24,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"  // todo: RECT
 
 #include "common.h"   // todo: HANDLE and events
-#include "indexing.h" // needs Txt and Hashtable from common.h
 #include "enum.h"     // needs Version from indexing.h
 #include "main.h"     // needs State and Collection from enum.h
 
@@ -1005,6 +1004,29 @@ void Canvas::clearClipRegion()
 void Canvas::calcRect(const wchar_t *str,RECT *rect)
 {
     DrawText(hdcMem,str,-1,rect,DT_WORDBREAK|DT_CALCRECT);
+}
+
+void loadGUID(GUID *g,const char *s)
+{
+    char d[3];
+    d[2]=0;
+    g->Data1=strtol(s+1,nullptr,16);
+    g->Data2=strtol(s+10,nullptr,16);
+    g->Data3=strtol(s+15,nullptr,16);
+    memcpy(d,s+15+5,2);g->Data4[0]=strtol(d,nullptr,16);
+    memcpy(d,s+15+5+2,2);g->Data4[1]=strtol(d,nullptr,16);
+    memcpy(d,s+15+6+4,2);g->Data4[2]=strtol(d,nullptr,16);
+    memcpy(d,s+15+6+6,2);g->Data4[3]=strtol(d,nullptr,16);
+    memcpy(d,s+15+6+8,2);g->Data4[4]=strtol(d,nullptr,16);
+    memcpy(d,s+15+6+10,2);g->Data4[5]=strtol(d,nullptr,16);
+    memcpy(d,s+15+6+12,2);g->Data4[6]=strtol(d,nullptr,16);
+    memcpy(d,s+15+6+14,2);g->Data4[7]=strtol(d,nullptr,16);
+
+    /*Log.print_con("%s\n",s);
+    Log.print_con("{%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\n\n",g->Data1,g->Data2,g->Data3,
+        (int)(g->Data4[0]),(int)(g->Data4[1]),
+        (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
+        (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
 }
 
 void Canvas::drawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
