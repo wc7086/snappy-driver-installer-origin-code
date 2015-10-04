@@ -800,9 +800,9 @@ void State::save(const wchar_t *filename)
     fwrite(&version,sizeof(int),1,f);
 
     memcpy(p,this,sizeof(state_m_t));p+=sizeof(state_m_t);
-    p=vector_save(&Devices_list,p);
-    p=vector_save(&Drivers_list,p);
-    p=vector_save(textas.getVector(),p);
+    p=Devices_list.savedata(p);
+    p=Drivers_list.savedata(p);
+    p=textas.savedata(p);
 
     if(1)
     {
@@ -861,9 +861,9 @@ int  State::load(const wchar_t *filename)
     p=mem_unpack.get();
 
     memcpy(this,p,sizeof(state_m_t));p+=sizeof(state_m_t);
-    p=vector_load(&Devices_list,p);
-    p=vector_load(&Drivers_list,p);
-    p=vector_load(textas.getVector(),p);
+    p=Devices_list.loaddata(p);
+    p=Drivers_list.loaddata(p);
+    p=textas.loaddata(p);
 
     fakeOSversion();
 

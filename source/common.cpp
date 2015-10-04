@@ -24,6 +24,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "guicon.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#define BOOST_SYSTEM_NO_DEPRECATED
+#include <boost/thread/condition_variable.hpp>
+#pragma GCC diagnostic pop
+
 Test::Test()
 {
     Log.print_con("Test(%s) created\n",s.c_str());
@@ -131,18 +138,18 @@ void Hashtable::reset(int size1)
     memset(items.data(),0,size*sizeof(Hashitem));
 }
 
-char *Hashtable::save(char *p)
+char *Hashtable::savedata(char *p)
 {
     memcpy(p,&size,sizeof(int));p+=sizeof(int);
-    p=vector_save(&items,p);
+    p=items.savedata(p);
     return p;
 }
 
-char *Hashtable::load(char *p)
+char *Hashtable::loaddata(char *p)
 {
     memcpy(&size,p,sizeof(int));p+=sizeof(int);
     items.resize(size);
-    p=vector_load(&items,p);
+    p=items.loaddata(p);
     return p;
 }
 

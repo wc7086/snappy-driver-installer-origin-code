@@ -76,7 +76,6 @@ enum DRIVERPACK_TYPE
 
 // Misc functions
 void findosattr(char *bufa,char *adr,int len);
-void loadGUID(GUID *g,const char *s);
 void *mySzAlloc(void *p,size_t size);
 void mySzFree(void *p,void *address);
 
@@ -114,30 +113,6 @@ public:
     friend class Parser;
     friend class Driverpack;
 };
-
-// Version
-class Version
-{
-    int d,m,y;
-    int v1,v2,v3,v4;
-
-public:
-    int  setDate(int d_,int m_,int y_);
-    void setVersion(int v1_,int v2_,int v3_,int v4_);
-    void setInvalid(){y=v1=-1;}
-    void str_date(wchar_t *buf);
-    void str_version(wchar_t *buf);
-
-    Version():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
-    Version(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
-
-    friend class Driverpack;
-    friend class Hwidmatch;
-    friend int cmpdate(Version *t1,Version *t2);
-    friend int cmpversion(Version *t1,Version *t2);
-};
-int cmpdate(Version *t1,Version *t2);
-int cmpversion(Version *t1,Version *t2);
 
 // Parser
 class Parser
@@ -283,10 +258,10 @@ class Driverpack
     Hashtable indexes;
     std::unordered_map<std::string,ofst> cat_list;
 
-    std::vector<data_inffile_t> inffile;
-    std::vector<data_manufacturer_t> manufacturer_list;
-    std::vector<data_desc_t> desc_list;
-    std::vector<data_HWID_t> HWID_list;
+    loadable_vector<data_inffile_t> inffile;
+    loadable_vector<data_manufacturer_t> manufacturer_list;
+    loadable_vector<data_desc_t> desc_list;
+    loadable_vector<data_HWID_t> HWID_list;
     Txt text_ind;
     concurrent_queue<inffile_task> *objs_new;
 
@@ -296,6 +271,10 @@ private:
     void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index);
+
+    static unsigned int __stdcall loaddrp_thread(void *arg);
+    static unsigned int __stdcall indexinf_thread(void *arg);
+    static unsigned int __stdcall savedrp_thread(void *arg);
 
 public:
     wchar_t *getPath(){return text_ind.getw2(drppath);}
@@ -310,10 +289,6 @@ public:
     Driverpack &operator=(const Driverpack&)=default;
     Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col);
 
-    static unsigned int __stdcall loaddrp_thread(void *arg);
-    static unsigned int __stdcall indexinf_thread(void *arg);
-    static unsigned int __stdcall savedrp_thread(void *arg);
-
     int  checkindex();
     int  loadindex();
     void saveindex();
@@ -327,4 +302,5 @@ public:
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
 
     friend class Hwidmatch;
+    friend class Collection;
 };

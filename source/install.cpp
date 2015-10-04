@@ -24,7 +24,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 
 #include "common.h"
-#include "indexing.h"
 #include "enum.h"
 #include "main.h"
 
