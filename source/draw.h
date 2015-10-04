@@ -280,5 +280,6 @@ void panel_loadsettings(Panel *panel,int filters);
 
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 HICON CreateMirroredIcon(HICON hiconOrg);
+void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited=0,long long total=0);
 
 #endif

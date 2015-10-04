@@ -17,8 +17,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 
-#include "cli.h"
-
 #include <windows.h>
 
 #include "guicon.h"   // todo: lots of Win32

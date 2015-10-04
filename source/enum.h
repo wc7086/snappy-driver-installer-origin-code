@@ -257,4 +257,6 @@ int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
 
+int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
+
 #endif

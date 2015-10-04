@@ -33,7 +33,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 #include "install.h"
 #include "update.h"
-#include "baseboard.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=
@@ -945,7 +944,7 @@ void Manager::updateoverall()
         items_list[SLOT_EXTRACTING].val1=_processeditems;
         items_list[SLOT_EXTRACTING].val2=_totalitems;
         if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater.isPaused())
-            ShowProgressInTaskbar(MainWindow.hMain,TBPF_NORMAL,items_list[SLOT_EXTRACTING].percent,1000);
+            ShowProgressInTaskbar(MainWindow.hMain,true,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }
 void Manager::install(int flagsv)
