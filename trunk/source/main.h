@@ -20,6 +20,7 @@ class Manager;
 class Font;
 class Matcher;
 class Hwidmatch;
+class Canvas;
 
 #include "resources.h"
 
@@ -358,32 +359,6 @@ extern Settings_t Settings;
 const wchar_t *getWindowsName(int a);
 int getWindowsVer(int a);
 //}
-
-//Bundle
-class Bundle
-{
-    State state;
-    Collection collection;
-    Matcher *matcher;
-
-private:
-    static unsigned int __stdcall thread_scandevices(void *arg);
-    static unsigned int __stdcall thread_loadindexes(void *arg);
-    static unsigned int __stdcall thread_getsysinfo(void *arg);
-
-public:
-    Bundle();
-    ~Bundle();
-
-    Matcher *getMatcher(){return matcher;}
-
-    static unsigned int __stdcall thread_loadall(void *arg);
-
-    void bundle_init();
-    void bundle_prep();
-    void bundle_load(Bundle *pbundle);
-    void bundle_lowprioirity();
-};
 
 // Subroutes
 void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);

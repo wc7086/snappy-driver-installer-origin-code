@@ -18,13 +18,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <queue>
 #include <unordered_map>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
-#pragma GCC diagnostic ignored "-Weffc++"
 #define BOOST_SYSTEM_NO_DEPRECATED
 #include <boost/thread/condition_variable.hpp>
 #pragma GCC diagnostic pop
@@ -91,56 +89,6 @@ char *vector_load(std::vector<T> *v,char *p)
     memcpy(v->data(),p,sz);p+=sz;
     return p;
 }
-
-// Concurrent_queue
-template<typename Data>
-class concurrent_queue
-{
-private:
-    std::queue<Data> the_queue;
-    mutable boost::mutex the_mutex;
-    HANDLE notification;
-
-public:
-    concurrent_queue()
-    {
-        notification=CreateEvent(nullptr,0,0,nullptr);
-    }
-
-    ~concurrent_queue()
-    {
-        CloseHandle(notification);
-    }
-
-    void push(Data const& data)
-    {
-        boost::mutex::scoped_lock lock(the_mutex);
-        the_queue.push(data);
-        lock.unlock();
-        SetEvent(notification);
-    }
-
-    void wait_and_pop(Data& popped_value)
-    {
-        boost::mutex::scoped_lock lock(the_mutex);
-
-        while(1)
-        {
-            if(the_queue.empty())
-            {
-                lock.unlock();
-                WaitForSingleObject(notification,INFINITE);
-                lock.lock();
-            }
-            else
-            {
-                popped_value=the_queue.front();
-                the_queue.pop();
-                return;
-            }
-        }
-    }
-};
 
 // Hashtable
 class Hashitem
