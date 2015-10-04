@@ -23,15 +23,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for StrStrIW
 
 #include "common.h"
-#include "draw.h"
 #include "indexing.h"
-#include "enum.h"
+#include "enum.h" // todo: decouple State
 #include "main.h"
 
 #include "matcher.h"
 #include "guicon.h"
 #include "manager.h"
 #include "theme.h"
+
+#include <queue>
 
 //{ Global variables
 int drp_count;
@@ -62,6 +63,57 @@ const wchar_t *olddrps[]=
     L"DP_Video_AMD_1",
     L"DP_Videos_AMD_1",
     L"DP_LAN_Realtek_1",
+};
+//}
+
+//{ Concurrent_queue
+template<typename Data>
+class concurrent_queue
+{
+private:
+    std::queue<Data> the_queue;
+    mutable boost::mutex the_mutex;
+    HANDLE notification;
+
+public:
+    concurrent_queue()
+    {
+        notification=CreateEvent(nullptr,0,0,nullptr);
+    }
+
+    ~concurrent_queue()
+    {
+        CloseHandle(notification);
+    }
+
+    void push(Data const& data)
+    {
+        boost::mutex::scoped_lock lock(the_mutex);
+        the_queue.push(data);
+        lock.unlock();
+        SetEvent(notification);
+    }
+
+    void wait_and_pop(Data& popped_value)
+    {
+        boost::mutex::scoped_lock lock(the_mutex);
+
+        while(1)
+        {
+            if(the_queue.empty())
+            {
+                lock.unlock();
+                WaitForSingleObject(notification,INFINITE);
+                lock.lock();
+            }
+            else
+            {
+                popped_value=the_queue.front();
+                the_queue.pop();
+                return;
+            }
+        }
+    }
 };
 //}
 

@@ -21,11 +21,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for StrStrIW
 
 #include "common.h"
-#include "draw.h"
-#include "indexing.h"
-#include "enum.h"
 #include "main.h"
 
+#include "draw.h"
 #include "guicon.h"
 #include "theme.h"
 
