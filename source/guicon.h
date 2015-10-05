@@ -115,33 +115,19 @@ void start_exception_hadnlers();
 void SignalHandler(int signum);
 
 // Virus detection
-void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam);
+void viruscheck(const wchar_t *szFile,int action,int lParam);
 void virusmonitor_start();
 void virusmonitor_stop();
 
 // FileMonitor
-class Filemon;
-typedef void (CALLBACK *FileChangeCallback)(const wchar_t *,DWORD,LPARAM);
 class Filemon
 {
-	OVERLAPPED ol;
-	HANDLE     hDir;
-	BYTE       buffer[32*1024];
-	LPARAM     lParam;
-	DWORD      notifyFilter;
-	BOOL       fStop;
-	wchar_t      dir[BUFLEN];
-	int        subdirs;
-	FileChangeCallback callback;
-
-private:
-    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-    int  refresh();
-
 public:
-    static Filemon *start(LPCTSTR szDirectory,DWORD notifyFilter,int subdirs,FileChangeCallback callback);
-    void stop();
+    virtual ~Filemon(){}
 };
+
+typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
+Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
 
 // Misc
 int canWrite(const wchar_t *path);

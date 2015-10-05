@@ -318,12 +318,12 @@ void* operator new[](size_t size, const char* file, int line)
         throw;
     }
 }
-#define new DEBUG_NEW
+//#define new DEBUG_NEW
 
 //}
 
 //{ Virus detection
-void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
+void viruscheck(const wchar_t *szFile,int action,int lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -393,58 +393,87 @@ void CALLBACK viruscheck(const wchar_t *szFile,DWORD action,LPARAM lParam)
 
 void virusmonitor_start()
 {
-    mon_vir=Filemon::start(L"\\",FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,0,viruscheck);
+    mon_vir=CreateFilemon(L"\\",FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,0,viruscheck);
 }
 
 void virusmonitor_stop()
 {
-    if(mon_vir)mon_vir->stop();
+    if(mon_vir)delete mon_vir;
 }
 //}
 
 //{ FileMonitor
-Filemon *Filemon::start(LPCTSTR szDirectory, DWORD notifyFilter, int subdirs, FileChangeCallback callback)
+struct FilemonDataPOD
 {
-	Filemon *pMonitor = static_cast<Filemon*>(HeapAlloc(GetProcessHeap(),HEAP_ZERO_MEMORY,sizeof(*pMonitor)));
+	OVERLAPPED ol;
+	HANDLE     hDir;
+	BYTE       buffer[32*1024];
+	LPARAM     lParam;
+	DWORD      notifyFilter;
+	BOOL       fStop;
+	wchar_t      dir[BUFLEN];
+	int        subdirs;
+	FileChangeCallback callback;
+};
 
-	wcscpy(pMonitor->dir,szDirectory);
-	pMonitor->hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
+class FilemonImp:public Filemon
+{
+    FilemonDataPOD data;
+
+private:
+    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
+    static int refresh(FilemonDataPOD &data);
+
+public:
+    FilemonImp(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
+    ~FilemonImp();
+};
+
+Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback)
+{
+    return new FilemonImp(szDirectory,notifyFilter,subdirs,callback);
+}
+
+FilemonImp::FilemonImp(const wchar_t *szDirectory, int notifyFilter_, int subdirs_, FileChangeCallback callback_)
+{
+	wcscpy(data.dir,szDirectory);
+
+	data.hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
 	                            nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OVERLAPPED,nullptr);
 
-	if(pMonitor->hDir!=INVALID_HANDLE_VALUE)
+	if(data.hDir!=INVALID_HANDLE_VALUE)
 	{
-		pMonitor->ol.hEvent    = CreateEvent(nullptr,TRUE,FALSE,nullptr);
-		pMonitor->notifyFilter = notifyFilter;
-		pMonitor->callback     = callback;
-		pMonitor->subdirs      = subdirs;
+		data.ol.hEvent    = CreateEvent(nullptr,TRUE,FALSE,nullptr);
+		data.notifyFilter = notifyFilter_;
+		data.callback     = callback_;
+		data.subdirs      = subdirs_;
 
-		if (pMonitor->refresh())
+		if(refresh(data))
 		{
-			return pMonitor;
+			return;
 		}
 		else
 		{
-			CloseHandle(pMonitor->ol.hEvent);
-			CloseHandle(pMonitor->hDir);
+			CloseHandle(data.ol.hEvent);
+			CloseHandle(data.hDir);
+			data.hDir=INVALID_HANDLE_VALUE;
 		}
 	}
-	HeapFree(GetProcessHeap(),0,pMonitor);
-	return nullptr;
 }
 
-BOOL Filemon::refresh()
+int FilemonImp::refresh(FilemonDataPOD &data1)
 {
-	return ReadDirectoryChangesW(hDir,buffer,sizeof(buffer),subdirs,
-	                      notifyFilter,nullptr,&ol,monitor_callback);
+	return ReadDirectoryChangesW(data1.hDir,data1.buffer,sizeof(data1.buffer),data1.subdirs,
+	                      data1.notifyFilter,nullptr,&data1.ol,monitor_callback);
 }
 
-void CALLBACK Filemon::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)
+void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)
 {
     UNREFERENCED_PARAMETER(dwNumberOfBytesTransfered);
 
 	TCHAR szFile[MAX_PATH];
 	PFILE_NOTIFY_INFORMATION pNotify;
-	Filemon *pMonitor=reinterpret_cast<Filemon*>(lpOverlapped);
+	FilemonDataPOD *pMonitor=reinterpret_cast<FilemonDataPOD*>(lpOverlapped);
 	size_t offset=0;
 
 	if(dwErrorCode==ERROR_SUCCESS)
@@ -516,17 +545,19 @@ void CALLBACK Filemon::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesT
 			}
 		}while(pNotify->NextEntryOffset!=0);
 	}
-	if(!pMonitor->fStop)pMonitor->refresh();
+	if(!pMonitor->fStop)refresh(*pMonitor);
 }
 
-void Filemon::stop()
+FilemonImp::~FilemonImp()
 {
-    fStop=TRUE;
-    CancelIo(hDir);
-    if(!HasOverlappedIoCompleted(&ol))SleepEx(5,TRUE);
-    CloseHandle(ol.hEvent);
-    CloseHandle(hDir);
-    HeapFree(GetProcessHeap(),0,this);
+	if(data.hDir!=INVALID_HANDLE_VALUE)
+    {
+        data.fStop=TRUE;
+        CancelIo(data.hDir);
+        if(!HasOverlappedIoCompleted(&data.ol))SleepEx(5,TRUE);
+        CloseHandle(data.ol.hEvent);
+        CloseHandle(data.hDir);
+    }
 }
 //}
 
