@@ -18,6 +18,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#ifndef _INC_SHLWAPI
+#define _INC_SHLWAPI
+  extern "C" __stdcall char *StrStrIA(const char *lpFirst,const char *lpSrch);
+  extern "C" __stdcall wchar_t *StrStrIW(const wchar_t *lpFirst,const wchar_t *lpSrch);
+  extern "C" __stdcall int StrCmpIW(const wchar_t *psz1,const wchar_t *psz2);
+#endif
+
 class Event
 {
 public:
@@ -51,6 +58,8 @@ public:
     void ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize);
     bool ChooseDir(wchar_t *path,const wchar_t *title);
     bool ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_t *ext);
+    void CreateDir(const wchar_t *filename);
+    void fileDelSpec(wchar_t *filename);
 
     void getClassDesc(GUID *guid,wchar_t *bufw);
     void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);

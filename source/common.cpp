@@ -16,13 +16,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-
-#include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
-
-#include "7zip.h"
 #include "common.h"
 #include "guicon.h"
+
+#include "7zip.h"
+#include "system.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"

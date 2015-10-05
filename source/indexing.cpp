@@ -17,22 +17,20 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //#define MERGE_FINDER
 #include "com_header.h"
+#include "common.h"
+#include "settings.h"
+#include "guicon.h"
+#include "matcher.h"
+#include "indexing.h"
+
 #include "7zip.h"
 
-#include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
-
-#include "common.h"
-#include "indexing.h"
-#include "enum.h" // todo: decouple State
-#include "main.h"
-
-#include "matcher.h"
-#include "guicon.h"
+// Depend on Win32API
 #include "manager.h"
-#include "theme.h"
 #include "system.h"
-#include "settings.h"
+#include "enum.h"
+#include "main.h"
+#include "theme.h"
 
 #include <queue>
 

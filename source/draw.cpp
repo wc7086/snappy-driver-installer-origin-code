@@ -16,20 +16,19 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-
-#include "guicon.h"   // todo: lots of Win32
-#include <windows.h>
-
-#include "theme.h"    // todo: HWND and CALLBACK
-#include "manager.h"  // todo: RECT
-
-#include "common.h"   // todo: HANDLE and events
-#include "enum.h"     // needs Version from indexing.h
-#include "main.h"     // needs State and Collection from enum.h
-
-#include "draw.h"     // todo: lots of Win32
+#include "guicon.h"
 #include "matcher.h"
 #include "settings.h"
+#include "common.h"
+
+#include <windows.h>
+
+// Depend on Win32API
+#include "main.h"     // needs State and Collection from enum.h
+#include "enum.h"     // needs Version from indexing.h
+#include "theme.h"    // todo: HWND
+#include "manager.h"  // todo: RECT
+#include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
 #include <shlwapi.h>        // for StrFormatByteSizeW

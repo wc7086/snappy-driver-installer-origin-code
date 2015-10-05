@@ -16,22 +16,21 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-
-#include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
-#include "system.h"
-
 #include "common.h"
 #include "indexing.h"
-#include "enum.h"
-#include "main.h"
-
-#include "draw.h"
 #include "matcher.h"
 #include "guicon.h"
+#include "settings.h"
+
+#include <windows.h>
+#include <shlwapi.h>        // for StrCmpIA
+
+#include "system.h"
+#include "enum.h"
+#include "main.h"
+#include "draw.h"
 #include "theme.h"
 #include "device.h"
-#include "settings.h"
 
 //{ Global variables
 

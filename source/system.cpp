@@ -16,16 +16,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "guicon.h"
 
 #include <windows.h>
 #include <process.h>
 #include <setupapi.h>       // for SHELLEXECUTEINFO
-#include <shlwapi.h>        // for StrStrIW
-#include <shlobj.h>         // for SHBrowseForFolder()
+#include <shlwapi.h>        // for PathFileExists
+#include <shlobj.h>         // for SHBrowseForFolder
 
 #include "system.h"
 #include "main.h"
-#include "guicon.h"
 
 SystemImp System;
 
@@ -163,6 +163,21 @@ int SystemImp::canWrite(const wchar_t *path)
 void SystemImp::getClassDesc(GUID *guid,wchar_t *bufw)
 {
     SetupDiGetClassDescription(guid,bufw,BUFLEN,nullptr);
+}
+
+void SystemImp::CreateDir(const wchar_t *filename)
+{
+    CreateDirectory(filename,nullptr);
+}
+
+void SystemImp::deletefile(const wchar_t *filename)
+{
+    DeleteFileW(filename);
+}
+
+void SystemImp::fileDelSpec(wchar_t *filename)
+{
+    PathRemoveFileSpec(filename);
 }
 
 int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait)

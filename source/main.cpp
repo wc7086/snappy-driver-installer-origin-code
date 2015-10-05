@@ -16,27 +16,26 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "guicon.h"
+#include "common.h"
+#include "matcher.h"
+#include "settings.h"
+#include "cli.h"
+#include "indexing.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
-#include <shlwapi.h>        // for StrStrIW
 
 #include "system.h"
-#include "common.h"
-#include "indexing.h"
 #include "enum.h"
 #include "main.h"
-
 #include "model.h"
+
+#include "install.h"
+#include "update.h"
 #include "draw.h"
-#include "matcher.h"
-#include "guicon.h"
 #include "manager.h"
 #include "theme.h"
-#include "cli.h"
-#include "update.h"
-#include "install.h"
-#include "settings.h"
 
 //{ Global variables
 
@@ -983,7 +982,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                         wcscpy(Settings.drpext_dir,lpszFile);
                         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
                     }
-                    else if(StrStrI(lpszFile,L".snp"))
+                    else if(StrStrIW(lpszFile,L".snp"))
                     {
                         wcscpy(Settings.state_file,lpszFile);
                         Settings.statemode=STATEMODE_EMUL;

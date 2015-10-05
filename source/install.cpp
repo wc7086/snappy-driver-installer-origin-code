@@ -16,27 +16,25 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "guicon.h"
+#include "cli.h"
+#include "matcher.h"
+#include "settings.h"
+#include "common.h"
 
 #include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
 #include <SRRestorePtAPI.h> // for RestorePoint
 typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
+#include "device.h"
 
-#include "common.h"
+#include "install.h"
 #include "enum.h"
 #include "main.h"
-
-#include "draw.h"   // todo: decouple panel
+#include "draw.h"
 #include "system.h"
-#include "matcher.h"
 #include "manager.h"
-#include "guicon.h"
 #include "theme.h"
-#include "cli.h"
-#include "device.h"
-#include "install.h"
 #include "update.h"
-#include "settings.h"
 
 //{ Global vars
 long long ar_total,ar_proceed;
@@ -81,7 +79,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
 
     *ret=1;*needrb=1;
     wsprintf(cmd,L"%s\\install64.exe",extractdir);
-    if(!PathFileExists(cmd))
+    if(!System.FileExists(cmd))
     {
         mkdir_r(extractdir);
         Log.print_con("Dir: (%S)\n",extractdir);
@@ -297,7 +295,7 @@ goaround:
                 unpacked?hwidmatch->getdrp_packpath():extractdir,
                 hwidmatch->getdrp_infpath(),
                 hwidmatch->getdrp_infname());
-        if(PathFileExists(inf))
+        if(System.FileExists(inf))
         {
             Log.print_con("Already unpacked(%S)\n",inf);
             _7z_total(100);
@@ -342,7 +340,7 @@ goaround:
                 if(r==2)
                 {
                     Log.print_con("Error, checking for driverpack availability...");
-                    if(PathFileExists(hwidmatch->getdrp_packpath()))break;
+                    if(System.FileExists(hwidmatch->getdrp_packpath()))break;
                     Log.print_con("Waiting for driverpacks to become available.");
                     do
                     {
@@ -350,7 +348,7 @@ goaround:
                         Sleep(1000);
                         tries++;
                         if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                    }while(!PathFileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
+                    }while(!System.FileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
                     Log.print_con("OK\n");
                 }
             }while(r&&!hwidmatch->getdrp_packontorrent());

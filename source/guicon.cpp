@@ -16,17 +16,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-
-#include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
-#include <ctime>
-
-#include "system.h"
 #include "common.h"
-#include "main.h"
-
 #include "guicon.h"
 #include "settings.h"
+
+#include <windows.h>
+#include <ctime>
+
+// Depend on Win32API
+#include "system.h"
+#include "main.h"
 #include "manager.h"
 #include "theme.h"
 

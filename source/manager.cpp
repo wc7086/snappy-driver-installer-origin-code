@@ -16,24 +16,22 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "common.h"
+#include "guicon.h"
+#include "matcher.h"
+#include "settings.h"
+#include "indexing.h"
 
 #include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
 
-#include "common.h"
-#include "indexing.h"
 #include "enum.h"
 #include "main.h"
-
 #include "system.h"
 #include "draw.h"
-#include "matcher.h"
-#include "guicon.h"
 #include "manager.h"
 #include "theme.h"
 #include "install.h"
 #include "update.h"
-#include "settings.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=
