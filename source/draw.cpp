@@ -29,6 +29,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "draw.h"     // todo: lots of Win32
 #include "matcher.h"
+#include "settings.h"
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
 #include <shlwapi.h>        // for StrFormatByteSizeW

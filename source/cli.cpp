@@ -17,22 +17,24 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 
-#include <windows.h>
-#include <setupapi.h>       // for CommandLineToArgvW
 #include <shlwapi.h>        // for StrStrIW
-#include <stdio.h>
 
-#include "main.h"
-#include "draw.h"
 #include "guicon.h"
+#include "settings.h"
 #include "cli.h"
 
 #define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 
-//{Global variables
-Font CLIHelp_Font;
+// Structures
+struct CommandLineParam_t
+{
+    bool ShowHelp;
+    bool SaveInstalledHWD;
+    wchar_t SaveInstalledFileName[BUFLEN];
+    bool HWIDInstalled;
+    wchar_t HWIDSTR[BUFLEN];
+};
 CommandLineParam_t CLIParam;
-//}
 
 static void ExpandPath(wchar_t *Apath)
 {
@@ -43,71 +45,6 @@ static void ExpandPath(wchar_t *Apath)
     ExpandEnvironmentStringsW(Apath,infoBuf,INFO_BUFFER_SIZE);
     wcscpy(Apath,infoBuf);
     #undef INFO_BUFFER_SIZE
-}
-
-static wchar_t *ltrim(wchar_t *s)
-{
-    while(iswspace(*s)) s++;
-    return s;
-}
-
-static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-
-    HWND hEditBox;
-    LPCSTR s;
-    int sz;
-
-    switch(Message)
-    {
-    case WM_INITDIALOG:
-        SetWindowTextW(hwnd,L"Command Line options help");
-        hEditBox=GetDlgItem(hwnd,0);
-        SetWindowTextW(hEditBox,L"Command Line options");
-        //ShowWindow(hEditBox,SW_HIDE);
-        hEditBox=GetDlgItem(hwnd,IDOK);
-        ShowWindow(hEditBox,SW_HIDE);
-        hEditBox=GetDlgItem(hwnd,IDCANCEL);
-        SetWindowTextW(hEditBox,L"Close");
-
-        get_resource(IDR_CLI_HELP,(void **)&s,&sz);
-        hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
-
-        SendMessage(hEditBox,WM_SETFONT,(WPARAM)CLIHelp_Font.get(),0);
-
-        SetWindowTextA(hEditBox,s);
-        SendMessage(hEditBox,EM_SETREADONLY,1,0);
-
-        return TRUE;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam))
-        {
-        case IDOK:
-            EndDialog(hwnd,IDOK);
-            return TRUE;
-
-        case IDCANCEL:
-            EndDialog(hwnd,IDCANCEL);
-            return TRUE;
-
-        default:
-            break;
-        }
-        break;
-
-    default:
-        break;
-    }
-    return false;
-}
-
-static void ShowHelp(HINSTANCE AhInst)
-{
-    CLIHelp_Font.SetFont(L"Consolas",12);
-
-    DialogBox(AhInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)ShowHelpProcedure);
 }
 
 void SaveHWID(wchar_t *hwid)
@@ -172,22 +109,12 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
 void init_CLIParam()
 {
     memset(&CLIParam,0,sizeof(CLIParam));
-    CLIParam.ShowHelp=false;
-    CLIParam.SaveInstalledHWD=false;
-    CLIParam.SaveInstalledFileName[0]=0;
-    CLIParam.HWIDInstalled=false;
 }
 
-void RUN_CLI(CommandLineParam_t ACLIParam)
+void RUN_CLI()
 {
     wchar_t buf[BUFLEN];
-    if(ACLIParam.ShowHelp)
-    {
-        ShowHelp(ghInst);
-        Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
-        Settings.statemode=STATEMODE_EXIT;
-        return;
-    } else
+
     if(CLIParam.SaveInstalledHWD)
     {
         ExpandPath(CLIParam.SaveInstalledFileName);
@@ -220,55 +147,3 @@ void RUN_CLI(CommandLineParam_t ACLIParam)
         Settings.statemode=STATEMODE_EXIT;
     }
 }
-
-bool isCfgSwithExist(const wchar_t *cmdParams,wchar_t *cfgPath)
-{
-    wchar_t **argv;
-    int argc;
-
-    argv=CommandLineToArgvW(cmdParams,&argc);
-    for(int i=1;i<argc;i++)
-    {
-        wchar_t *pr=argv[i];
-        if(pr[0]=='/')pr[0]='-';
-        if(StrStrIW(pr,GFG_DEF))
-        {
-            wcscpy(cfgPath,pr+wcslen(GFG_DEF));
-            return true;
-        }
-    }
-    return false;
-}
-
-bool loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
-{
-    FILE *f;
-    wchar_t Buff[BUFLEN];
-
-    *DestStr=0;
-
-    ExpandEnvironmentStringsW(FileName,Buff,BUFLEN);
-    Log.print_con("Opening '%S'\n",Buff);
-    f=_wfopen(Buff,L"rt");
-    if(!f)
-    {
-        Log.print_err("Failed to open '%S'\n",Buff);
-        return false;
-    }
-
-    while(fgetws(Buff,sizeof(Buff),f))
-    {
-        wcscpy(Buff,ltrim(Buff));       //  trim spaces
-        if(*Buff=='#')continue;         // comments
-        if(*Buff==';')continue;         // comments
-        if(*Buff=='/')*Buff='-';         // replace / with -
-        if(wcsstr(Buff,L"-?"))continue; // ignore -?
-        if(Buff[wcslen(Buff)-1]=='\n')Buff[wcslen(Buff)-1]='\0';
-        if(wcslen(Buff)==0)continue;
-
-        wcscat(wcscat(DestStr,Buff),L" ");
-    }
-    fclose(f);
-    return true;
-}
-
