@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef MANAGER_H
+#define MANAGER_H
+
 class Canvas;
 class Txt;
 class Devicematch;
@@ -146,3 +149,5 @@ public:
 
     friend int _7z_setcomplited(long long i); // TODO: friend
 };
+
+#endif

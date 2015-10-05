@@ -199,7 +199,6 @@
 		</Unit>
 		<Unit filename="../source/7zip.h" />
 		<Unit filename="../source/baseboard.cpp" />
-		<Unit filename="../source/baseboard.h" />
 		<Unit filename="../source/cli.cpp" />
 		<Unit filename="../source/cli.h" />
 		<Unit filename="../source/com_header.h" />

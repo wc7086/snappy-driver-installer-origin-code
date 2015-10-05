@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef DEVICE_H
+#define DEVICE_H
+
 #include <cfgmgr32.h>
 #include <newdev.h>
 
@@ -24,3 +27,5 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #else
 #endif
 #endif*/
+
+#endif

@@ -1,6 +1,5 @@
 /*
-This file is part of
-Snappy Driver Installer.
+This file is part of Snappy Driver Installer.
 
 Snappy Driver Installer is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

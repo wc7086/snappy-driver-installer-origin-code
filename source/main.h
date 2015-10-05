@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef MAIN_H
+#define MAIN_H
+
 //{ Defines
 class Manager;
 class Font;
@@ -387,3 +390,5 @@ void* operator new[](size_t size, const char* file, int line);
 #define new DEBUG_NEW
 namespace nvwa {extern size_t total_mem_alloc;}*/
 //}
+
+#endif

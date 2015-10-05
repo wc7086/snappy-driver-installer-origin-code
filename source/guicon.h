@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef GUICON_H
+#define GUICON_H
+
 #include <stdio.h>
 
 // Timer
@@ -133,3 +136,5 @@ Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,F
 int canWrite(const wchar_t *path);
 DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
 void benchmark();
+
+#endif

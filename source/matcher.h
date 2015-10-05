@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef MATCHER_H
+#define MATCHER_H
+
 #define NUM_DECS 12*4
 #define NUM_MARKERS 39
 #define NUM_FILTERS 22
@@ -182,3 +185,5 @@ public:
     char *getdrp_drvHWID();
 // <<< GETTERS
 };
+
+#endif

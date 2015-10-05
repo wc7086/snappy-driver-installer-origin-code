@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef LANGLIST_H
+#define LANGLIST_H
+
 enum
 {
     STR_EMPTY=0,
@@ -338,3 +341,5 @@ enum
 
     STR_NM
 };
+
+#endif

@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef COM_HEADER_H
+#define COM_HEADER_H
+
 #include "svnrev.h"
 
 // Misc
@@ -43,3 +46,5 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define TORRENT_USE_ICONV 0
 #define TORRENT_USE_IPV6 0
 #define TORRENT_USE_TOMMATH
+
+#endif
