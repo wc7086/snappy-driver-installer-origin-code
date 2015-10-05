@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef SEVENZIP_H
+#define SEVENZIP_H
+
 extern "C"
 {
 #include "7z.h"
@@ -25,3 +28,5 @@ extern "C"
 #include "LzmaEnc.h"
 #include "Lzma86.h"
 }
+
+#endif

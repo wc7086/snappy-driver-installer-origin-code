@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef INDEXING_H
+#define INDEXING_H
+
 // Declarations
 class Collection;
 class Driverpack;
@@ -304,3 +307,5 @@ public:
     friend class Hwidmatch;
     friend class Collection;
 };
+
+#endif

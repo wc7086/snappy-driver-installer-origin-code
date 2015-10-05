@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef UPDATE_H
+#define UPDATE_H
+
 // Declarations
 class TorrentStatus_t;
 class UpdateDialog_t;
@@ -111,3 +114,5 @@ public:
     bool isPaused(){return TorrentStatus.sessionpaused;}
     bool isUpdateCompleted(){return finishedupdating;}
 };
+
+#endif

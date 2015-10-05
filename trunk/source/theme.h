@@ -15,6 +15,9 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef THEME_H
+#define THEME_H
+
 #include "themelist.h"
 #include "langlist.h"
 
@@ -93,3 +96,5 @@ void theme_enum(HWND hwnd,const wchar_t *path);
 void vault_startmonitors();
 void lang_callback(const wchar_t *szFile,int action,int lParam);
 void theme_callback(const wchar_t *szFile,int action,int lParam);
+
+#endif
