@@ -18,10 +18,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 
 #include <windows.h>
-#include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for StrStrIW
 #include <ctime>
 
+#include "system.h"
 #include "common.h"
 #include "main.h"
 
@@ -37,6 +37,10 @@ Timers_t Timers;
 //}
 
 //{ Logging
+
+void Timers_t::start(int a){timers[a]=GetTickCount();}
+void Timers_t::stop(int a){if(timers[a])timers[a]=GetTickCount()-timers[a];}
+void Timers_t::stoponce(int a,int b){if(!timers[a])timers[a]=GetTickCount()-timers[b];}
 
 void Timers_t::print()
 {
@@ -83,7 +87,7 @@ void Log_t::start(wchar_t *logdir)
     gen_timestamp();
 
     wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
-    if(!canWrite(filename))
+    if(!System.canWrite(filename))
     {
         Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
@@ -221,18 +225,6 @@ void Log_t::print_syserr(int r,const wchar_t *s)
     error_count++;
 }
 
-void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj)
-{
-    if(!CloseHandle(h))
-        Log.print_err("ERROR in %S(): failed CloseHandle(%S)\n",func,obj);
-}
-
-void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj)
-{
-    if(!UnregisterClass(lpClassName,hInstance))
-        Log.print_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
-}
-
 static void myterminate()
 {
     wchar_t buf[BUFLEN];
@@ -341,7 +333,7 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
     // autorun.inf
     if(type!=DRIVE_CDROM)
     {
-        if(PathFileExists(L"\\autorun.inf"))
+        if(System.FileExists(L"\\autorun.inf"))
         {
             FILE *f;
             f=_wfopen(L"\\autorun.inf",L"rb");
@@ -361,7 +353,7 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
 
     // RECYCLER
     if(type==DRIVE_REMOVABLE)
-        if(PathFileExists(L"\\RECYCLER")&&!PathFileExists(L"\\RECYCLER\\not_a_virus.txt"))
+        if(System.FileExists(L"\\RECYCLER")&&!System.FileExists(L"\\RECYCLER\\not_a_virus.txt"))
             manager_g->itembar_setactive(SLOT_VIRUS_RECYCLER,update=1);
 
     // Hidden folders
@@ -378,7 +370,7 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
             {
                 wchar_t bufw[BUFLEN];
                 wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
-                if(PathFileExists(bufw))continue;
+                if(System.FileExists(bufw))continue;
                 Log.print_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
                 manager_g->itembar_setactive(SLOT_VIRUS_HIDDEN,update=1);
             }
@@ -560,167 +552,4 @@ FilemonImp::~FilemonImp()
         CloseHandle(data.hDir);
     }
 }
-//}
-
-//{ Misc
-int canWrite(const wchar_t *path)
-{
-    DWORD flagsv;
-    wchar_t drive[4];
-
-    wcscpy(drive,L"C:\\");
-
-    if(path&&wcslen(path)>1&&path[1]==':')
-    {
-        drive[0]=path[0];
-        GetVolumeInformation(drive,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
-    }
-    else
-        GetVolumeInformation(nullptr,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
-
-    return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
-}
-
-DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait)
-{
-    DWORD ret;
-
-    SHELLEXECUTEINFO ShExecInfo;
-    memset(&ShExecInfo,0,sizeof(SHELLEXECUTEINFO));
-    ShExecInfo.cbSize=sizeof(SHELLEXECUTEINFO);
-    ShExecInfo.fMask=SEE_MASK_NOCLOSEPROCESS;
-    ShExecInfo.lpFile=file;
-    ShExecInfo.lpParameters=cmd;
-    ShExecInfo.nShow=show;
-
-    Log.print_con("Run(%S,%S,%d,%d)\n",file,cmd,show,wait);
-    if(!wcscmp(file,L"open"))
-        ShellExecute(nullptr,L"open",cmd,nullptr,nullptr,SW_SHOWNORMAL);
-    else
-        ShellExecuteEx(&ShExecInfo);
-
-    if(!wait)return 0;
-    WaitForSingleObject(ShExecInfo.hProcess,INFINITE);
-    GetExitCodeProcess(ShExecInfo.hProcess,&ret);
-    return ret;
-}
-
-#ifdef BENCH_MODE
-void benchmark()
-{
-    char buf[BUFLEN];
-    wchar_t bufw[BUFLEN];
-    long long i,tm1,tm2;
-    int a;
-
-    // wsprintfA is faster but doesn't support %f
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024;i++)wsprintfA(buf,"Test str %ws",L"wchar str");
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024;i++)sprintf(buf,"Test str %ws",L"wchar str");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c wsprintfA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c sprintf   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024;i++)wsprintfW(bufw,L"Test str %s",L"wchar str");
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024;i++)swprintf(bufw,L"Test str %s",L"wchar str");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c wsprintfW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c swprintf  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)strcasecmp("Test str %ws","wchar str");
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c strcasecmp \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)StrCmpIW(L"Test str %ws",L"wchar str");
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)wcsicmp(L"Test str %ws",L"wchar str");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrCmpIW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c wcsicmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)StrCmpIA("Test str %ws","wchar str");
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrCmpIA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)StrCmpW(L"Test str %ws",bufw); // StrCmpW == lstrcmp
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)wcscmp(L"Test str %ws",bufw);
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrCmpW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c wcscmp  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)a=StrCmpA("Test str %ws",buf);
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)a=strcmp("Test str %ws",buf);
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrCmpA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c strcmp \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)StrStrA("Test str %ws",buf);
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)strstr("Test str %ws","Test str %ws");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrStrA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c strstr \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)StrStrW(L"Test str %ws",bufw);
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)wcsstr(L"Test str %ws",bufw);
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrStrW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c wcsstr  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5*2;i++)lstrlenA(buf);
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5*2;i++)strlen(buf);
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c lstrlenA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c strlen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5*2;i++)lstrlenW(bufw);
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5*2;i++)wcslen(bufw);
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c lstrlenW \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c wcslen   \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-
-    tm1=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)StrCpyA(buf,"Test str %ws");
-    tm1=GetTickCount()-tm1;
-    tm2=GetTickCount();
-    for(i=0;i<1024*1024*5;i++)strcpy(buf,"Test str %ws");
-    tm2=GetTickCount()-tm2;
-    Log.print_con("%c StrCpyA \t%ld\n",tm1<tm2?'+':' ',tm1);
-    Log.print_con("%c strcpy \t%ld\n\n",tm1>tm2?'+':' ',tm2);
-}
-#endif
 //}

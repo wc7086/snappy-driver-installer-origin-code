@@ -20,8 +20,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
 #include <shlwapi.h>        // for StrStrIW
-#include <shlobj.h>         // for SHBrowseForFolder()
 
+#include "system.h"
 #include "common.h"
 #include "indexing.h"
 #include "enum.h"
@@ -44,7 +44,7 @@ Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 
 volatile int deviceupdate_exitflag=0;
-HANDLE deviceupdate_event;
+Event *deviceupdate_event;
 HINSTANCE ghInst;
 CRITICAL_SECTION sync;
 int manager_active=0;
@@ -171,7 +171,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     Bundle bundle[2];
     manager_v[0].init(bundle[bundle_display].getMatcher());
     manager_v[1].init(bundle[bundle_display].getMatcher());
-    deviceupdate_event=CreateEvent(nullptr,0,0,nullptr);
+    deviceupdate_event=CreateEvent();
 
     // Start device/driver scan
     bundle[bundle_display].bundle_prep();
@@ -193,10 +193,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Wait till the device scan thread is finished
     if(MainWindow.hMain)deviceupdate_exitflag=1;
-    SetEvent(deviceupdate_event);
+    deviceupdate_event->raise();
     WaitForSingleObject(thr,INFINITE);
-    CloseHandle_log(thr,L"WinMain",L"thr");
-    CloseHandle_log(deviceupdate_event,L"WinMain",L"event");
+    System.CloseHandle_log(thr,L"WinMain",L"thr");
+    delete deviceupdate_event;
 
     // Stop libtorrent
     #ifdef USE_TORRENT
@@ -262,7 +262,7 @@ void MainWindow_t::gui(int nCmd)
     if(!RegisterClassEx(&wcx))
     {
         Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
-        UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
+        System.UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
         return;
     }
 
@@ -272,8 +272,8 @@ void MainWindow_t::gui(int nCmd)
     if(!RegisterClassEx(&wcx))
     {
         Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
-        UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
-        UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
+        System.UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
+        System.UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
         return;
     }
 
@@ -406,9 +406,9 @@ void MainWindow_t::gui(int nCmd)
         }
     }
 
-    UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
-    UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
-    UnregisterClass_log(classField,ghInst,L"gui",L"classField");
+    System.UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
+    System.UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
+    System.UnregisterClass_log(classField,ghInst,L"gui",L"classField");
 }
 //}
 
@@ -490,17 +490,7 @@ void MainWindow_t::theme_refresh()
 
 void MainWindow_t::snapshot()
 {
-    OPENFILENAME ofn;
-    memset(&ofn,0,sizeof(OPENFILENAME));
-    ofn.lStructSize=sizeof(OPENFILENAME);
-    ofn.hwndOwner  =hMain;
-    ofn.lpstrFilter=STR(STR_OPENSNAPSHOT);
-    ofn.nMaxFile   =BUFLEN;
-    ofn.lpstrDefExt=L"snp";
-    ofn.lpstrFile  =Settings.state_file;
-    ofn.Flags      =OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR;
-
-    if(GetOpenFileName(&ofn))
+    if(System.ChooseFile(Settings.state_file,STR(STR_OPENSNAPSHOT),L"snp"))
     {
         Settings.statemode=STATEMODE_EMUL;
         invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
@@ -511,18 +501,8 @@ void MainWindow_t::extractto()
 {
     wchar_t dir[BUFLEN];
 
-    BROWSEINFO lpbi;
-    memset(&lpbi,0,sizeof(BROWSEINFO));
-    lpbi.hwndOwner=hMain;
-    lpbi.pszDisplayName=dir;
-    lpbi.lpszTitle=STR(STR_EXTRACTFOLDER);
-    lpbi.ulFlags=BIF_NEWDIALOGSTYLE|BIF_EDITBOX;
-
-    LPITEMIDLIST list=SHBrowseForFolder(&lpbi);
-    if(list)
+    if(System.ChooseDir(dir,STR(STR_EXTRACTFOLDER)))
     {
-        SHGetPathFromIDList(list,dir);
-
         int argc;
         wchar_t buf[BUFLEN];
         wchar_t **argv=CommandLineToArgvW(GetCommandLineW(),&argc);
@@ -539,19 +519,8 @@ void MainWindow_t::extractto()
 
 void MainWindow_t::selectDrpDir()
 {
-    BROWSEINFO lpbi;
-    memset(&lpbi,0,sizeof(BROWSEINFO));
-    lpbi.hwndOwner=hMain;
-    lpbi.pszDisplayName=Settings.drpext_dir;
-    lpbi.lpszTitle=STR(STR_EXTRACTFOLDER);
-    lpbi.ulFlags=BIF_NEWDIALOGSTYLE|BIF_EDITBOX;
-
-    LPITEMIDLIST list=SHBrowseForFolder(&lpbi);
-    if(list)
+    if(System.ChooseDir(Settings.drpext_dir,STR(STR_DRVDIR)))
     {
-        SHGetPathFromIDList(list,Settings.drpext_dir);
-        //int len=wcslen(drpext_dir);
-        //drpext_dir[len]=0;
         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
     }
 }
@@ -559,7 +528,7 @@ void MainWindow_t::selectDrpDir()
 void invalidate(int v)
 {
     invaidate_set|=v;
-    SetEvent(deviceupdate_event);
+    deviceupdate_event->raise();
 }
 //}
 
@@ -635,7 +604,7 @@ void get_resource(int id,void **data,int *size)
 void mkdir_r(const wchar_t *path)
 {
     if(path[1]==L':'&&path[2]==0)return;
-    if(!canWrite(path))
+    if(!System.canWrite(path))
     {
         Log.print_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
         return;
@@ -1232,9 +1201,9 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(i<0)break;
 
             if(j==7||j==12)
-                run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
+                System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
             else if(i<4&&j==0)
-                run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
+                System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
             else
                 panels[j].click(i);
             break;
@@ -1278,8 +1247,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 case ID_SHOWALT:
                     if(Popup.floating_itembar==SLOT_RESTORE_POINT)
                     {
-                        run_command(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
-                        run_command(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
+                        System.run_command(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
+                        System.run_command(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
                     }
                     else
                     {
@@ -1293,7 +1262,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     break;
 
                 case ID_DEVICEMNG:
-                    run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
+                    System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
                     break;
 
                 case ID_EMU_32:
@@ -1335,7 +1304,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     //wsprintf(buf,L"https://www.google.com/#q=%s",str);
                     wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",str);
                     escapeAmpUrl(buf2,buf);
-                    run_command(L"iexplore.exe",buf2,SW_SHOW,0);
+                    System.run_command(L"iexplore.exe",buf2,SW_SHOW,0);
 
                 }
                 else

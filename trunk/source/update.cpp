@@ -31,6 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "main.h"
 
+#include "system.h"
 #include "draw.h"
 #include "matcher.h"
 #include "guicon.h"
@@ -656,7 +657,7 @@ void Updater_t::moveNewFiles()
     {
         wchar_t buf [BUFLEN];
         wsprintf(buf,L"/c del %ws\\_*.bin",Settings.index_dir);
-        run_command(L"cmd",buf,SW_HIDE,1);
+        System.run_command(L"cmd",buf,SW_HIDE,1);
     }
 
     for(i=0;i<numfiles;i++)
@@ -701,12 +702,12 @@ void Updater_t::moveNewFiles()
         if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
             Log.print_syserr(GetLastError(),L"MoveFileEx()");
     }
-    run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
+    System.run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
 
 void Updater_t::checkUpdates()
 {
-    if(canWrite(L"update"))SetEvent(downloadmangar_event);
+    if(System.canWrite(L"update"))SetEvent(downloadmangar_event);
 }
 
 void Updater_t::showProgress(wchar_t *buf)
@@ -790,8 +791,8 @@ void Updater_t::destroyThreads()
         downloadmangar_exitflag=1;
         SetEvent(downloadmangar_event);
         WaitForSingleObject(thandle_download,INFINITE);
-        CloseHandle_log(thandle_download,L"thandle_download",L"thr");
-        CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
+        System.CloseHandle_log(thandle_download,L"thandle_download",L"thr");
+        System.CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
         Log.print_con("DONE\n");
         thandle_download=nullptr;
     }
@@ -927,7 +928,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     while(!downloadmangar_exitflag)
     {
         // Wait till is allowed to download driverpacks
-        if(Settings.flags&FLAG_AUTOUPDATE&&canWrite(L"update"))
+        if(Settings.flags&FLAG_AUTOUPDATE&&System.canWrite(L"update"))
             UpdateDialog.openDialog();
         else
             WaitForSingleObject(downloadmangar_event,INFINITE);
@@ -990,7 +991,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                 {
                     wchar_t buf[BUFLEN];
                     wsprintf(buf,L" /c %s",Settings.finish_upd);
-                    run_command(L"cmd",buf,SW_HIDE,0);
+                    System.run_command(L"cmd",buf,SW_HIDE,0);
                 }
                 if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
 

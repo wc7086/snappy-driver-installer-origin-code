@@ -40,11 +40,11 @@ class Timers_t
 {
     long long timers[time_NUM];
 public:
-    void start(int a){timers[a]=GetTickCount();}
-    void stop(int a){if(timers[a])timers[a]=GetTickCount()-timers[a];}
+    void start(int a);
+    void stop(int a);
     void reset(int a){timers[a]=0;}
     void print();
-    void stoponce(int a,int b){if(!timers[a])timers[a]=GetTickCount()-timers[b];}
+    void stoponce(int a,int b);
     long long get(int a){return timers[a];}
 };
 extern Timers_t Timers;
@@ -112,8 +112,6 @@ extern Log_t Log;
 
 // Error handling
 const wchar_t *errno_str();
-void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
-void UnregisterClass_log(LPCTSTR lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
 void start_exception_hadnlers();
 void SignalHandler(int signum);
 
@@ -132,9 +130,5 @@ public:
 typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
 Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
 
-// Misc
-int canWrite(const wchar_t *path);
-DWORD run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
-void benchmark();
 
 #endif

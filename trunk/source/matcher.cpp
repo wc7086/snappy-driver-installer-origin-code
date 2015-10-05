@@ -19,6 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <shlwapi.h>        // for StrStrIW
+#include "system.h"
 
 #include "common.h"
 #include "indexing.h"
@@ -204,7 +205,7 @@ void State::genmarker()
 
     for(int i=0;i<NUM_FILTERS;i++)
     for(int j=1;filter_list[i][j];j++)
-        if(StrStrI(str,filter_list[i][j]))
+        if(StrStrIW(str,filter_list[i][j]))
             wsprintfA(marker,"%S_nb",filter_list[i][0]);
 
     Log.print_con("Marker: '%s'\n",marker);
@@ -588,13 +589,13 @@ int Devicematch::isMissing(State *state)
 //{ Hwidmatch
 int Hwidmatch::isvalid_usb30hub(State *state,const wchar_t *str)
 {
-    if(StrStrI(state->textas.getw(devicematch->device->getHardwareID()),str))return 1;
+    if(StrStrIW(state->textas.getw(devicematch->device->getHardwareID()),str))return 1;
     return 0;
 }
 
 int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *section)
 {
-    if(StrStrI(state->textas.getw(devicematch->device->getHardwareID()),hwid))
+    if(StrStrIW(state->textas.getw(devicematch->device->getHardwareID()),hwid))
     {
         char buf[BUFLEN];
         getdrp_drvsection(buf);

@@ -18,7 +18,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 
 #include <shlwapi.h>        // for StrStrIW
+#include <stdio.h>
+#include <mem.h>
 
+#include "system.h"
 #include "guicon.h"
 #include "settings.h"
 #include "cli.h"
@@ -42,7 +45,7 @@ static void ExpandPath(wchar_t *Apath)
     wchar_t infoBuf[INFO_BUFFER_SIZE];
 
     memset(infoBuf,0,sizeof(infoBuf));
-    ExpandEnvironmentStringsW(Apath,infoBuf,INFO_BUFFER_SIZE);
+    System.ExpandEnvVar(Apath,infoBuf,INFO_BUFFER_SIZE);
     wcscpy(Apath,infoBuf);
     #undef INFO_BUFFER_SIZE
 }
