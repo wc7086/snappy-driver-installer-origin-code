@@ -29,6 +29,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "guicon.h"
 #include "manager.h"
 #include "update.h"
+#include "settings.h"
 
 extern HANDLE deviceupdate_event;
 extern volatile int deviceupdate_exitflag;

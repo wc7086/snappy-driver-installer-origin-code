@@ -35,6 +35,7 @@ typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestor
 #include "device.h"
 #include "install.h"
 #include "update.h"
+#include "settings.h"
 
 //{ Global vars
 long long ar_total,ar_proceed;

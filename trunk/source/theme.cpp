@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "draw.h"
 #include "guicon.h"
 #include "theme.h"
+#include "settings.h"
 
 //{ Global vars
 Filemon *mon_lang,*mon_theme;

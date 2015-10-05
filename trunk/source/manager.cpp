@@ -33,6 +33,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 #include "install.h"
 #include "update.h"
+#include "settings.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=

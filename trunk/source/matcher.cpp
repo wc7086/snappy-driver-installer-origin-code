@@ -30,6 +30,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "guicon.h"
 #include "theme.h"
 #include "device.h"
+#include "settings.h"
 
 //{ Global variables
 

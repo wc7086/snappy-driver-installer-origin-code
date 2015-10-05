@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 #include "guicon.h"
+#include "settings.h"
 #include "manager.h"
 #include "theme.h"
 
