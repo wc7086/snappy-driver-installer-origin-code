@@ -16,15 +16,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-
-#include <shlwapi.h>        // for StrStrIW
-#include <stdio.h>
-#include <mem.h>
-
-#include "system.h"
 #include "guicon.h"
 #include "settings.h"
 #include "cli.h"
+
+#include <windows.h>
+
+// Depend on Win32API
+#include "system.h"
+
+
 
 #define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 
@@ -76,7 +77,7 @@ void Parse_save_installed_id_swith(const wchar_t *ParamStr)
     else
         wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
 
-    CLIParam.SaveInstalledHWD=TRUE;
+    CLIParam.SaveInstalledHWD=true;
 }
 
 void Parse_HWID_installed_swith(const wchar_t *ParamStr)
@@ -85,7 +86,7 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
     if(wcslen(ParamStr)<(tmpLen+17)) //-HWIDInstalled:VEN_xxxx&DEV_xxxx
     {
         Log.print_err("invalid parameter %S\n",ParamStr);
-        ret_global=ERROR_BAD_LENGTH;
+        ret_global=24;//ERROR_BAD_LENGTH;
         Settings.statemode=STATEMODE_EXIT;
         return;
     }
@@ -105,7 +106,7 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
             buf [tmpLen-1]=0;
         }
         wcscpy(CLIParam.HWIDSTR, buf);
-        CLIParam.HWIDInstalled=TRUE;
+        CLIParam.HWIDInstalled=true;
     }
 }
 
@@ -122,9 +123,9 @@ void RUN_CLI()
     {
         ExpandPath(CLIParam.SaveInstalledFileName);
         wcscpy(buf, CLIParam.SaveInstalledFileName);
-        PathRemoveFileSpec(buf);
-        CreateDirectory(buf,nullptr);
-        DeleteFileW(CLIParam.SaveInstalledFileName);
+        System.fileDelSpec(buf);
+        System.CreateDir(buf);
+        System.deletefile(CLIParam.SaveInstalledFileName);
     }
     else
     if(CLIParam.HWIDInstalled)

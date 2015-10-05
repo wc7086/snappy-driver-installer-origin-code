@@ -16,17 +16,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "common.h"
+#include "guicon.h"
+#include "settings.h"
 
 #include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
-
-#include "common.h"
-#include "main.h"
 
 #include "draw.h"
-#include "guicon.h"
+#include "main.h"
 #include "theme.h"
-#include "settings.h"
+#include "system.h"
 
 //{ Global vars
 Filemon *mon_lang,*mon_theme;
@@ -291,8 +290,8 @@ int Vault::pickTheme()
     int f=0;
     int j=SendMessage(MainWindow.hTheme,CB_GETCOUNT,0,0);
     for(int i=0;i<j;i++)
-        if(StrStrI(namelist[i],D_STR(THEME_NAME))&&
-            StrStrI(namelist[i],L"big")==nullptr){f=i;break;}
+        if(StrStrIW(namelist[i],D_STR(THEME_NAME))&&
+            StrStrIW(namelist[i],L"big")==nullptr){f=i;break;}
 
     return f;
 }

@@ -16,7 +16,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+
 #include <windows.h>
+
 #include "theme.h"
 
 #define TEXT_1(quote) L##quote

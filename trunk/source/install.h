@@ -64,7 +64,7 @@ class Autoclicker_t
 private:
     void calcwnddata(wnddata_t *w,HWND hwnd);
     int cmpclickdata(int *a,int *b);
-    static BOOL CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam);
+    static int CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam);
 
 public:
     void setflag(int v){clicker_flag=v;}

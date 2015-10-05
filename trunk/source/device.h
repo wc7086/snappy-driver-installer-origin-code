@@ -18,6 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include <windows.h>
 #include <cfgmgr32.h>
 #include <newdev.h>
 

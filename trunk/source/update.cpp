@@ -18,6 +18,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 
 #ifdef USE_TORRENT
+#include "common.h"
+#include "settings.h"
+#include "guicon.h"
+#include "matcher.h"
+
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
 #include "libtorrent/bencode.hpp"
@@ -25,20 +30,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "libtorrent/session.hpp"
 
 #include <windows.h>
-#include <shlwapi.h>        // for StrStrIW
 #include <shobjidl.h>
 
-#include "common.h"
 #include "main.h"
-
 #include "system.h"
 #include "draw.h"
-#include "matcher.h"
-#include "guicon.h"
 #include "manager.h"
 #include "theme.h"
 #include "update.h"
-#include "settings.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
@@ -417,7 +416,7 @@ int UpdateDialog_t::populate(int update)
             wsprintf(buf,L"%S",filenamefull);
             *wcsstr(buf,L"DP_")=L'_';
             strsub(buf,L"indexes\\SDI",Settings.index_dir);
-            if(!PathFileExists(buf))
+            if(!System.FileExists(buf))
                 missingindexes=1;
         }
         else if(!StrStrIA(filenamefull,"drivers\\"))

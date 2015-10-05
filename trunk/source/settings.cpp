@@ -16,19 +16,18 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "common.h"
+#include "settings.h"
+#include "cli.h"
+#include "guicon.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
-#include <shlwapi.h>        // for StrStrIW
 
 #include "system.h"
-#include "common.h"
 #include "main.h"
-#include "settings.h"
-#include "guicon.h"
 #include "update.h"
 #include "install.h"
-#include "cli.h"
 #include "draw.h"
 
 int volatile installmode=MODE_NONE;
@@ -100,18 +99,18 @@ static void ShowHelp(HINSTANCE AhInst)
 Settings_t::Settings_t()
 {
     *curlang=0;
-    StrCpyW(curtheme,  L"(default)");
-    StrCpyW(logO_dir,  L"logs");
+    wcscpy(curtheme,  L"(default)");
+    wcscpy(logO_dir,  L"logs");
     license=0;
 
-    StrCpyW(drp_dir,   L"drivers");
-    StrCpyW(output_dir,L"indexes\\SDI\\txt");
+    wcscpy(drp_dir,   L"drivers");
+    wcscpy(output_dir,L"indexes\\SDI\\txt");
     *drpext_dir=0;
-    StrCpyW(index_dir, L"indexes\\SDI");
-    StrCpyW(data_dir,  L"tools\\SDI");
+    wcscpy(index_dir, L"indexes\\SDI");
+    wcscpy(data_dir,  L"tools\\SDI");
     *log_dir=0;
 
-    StrCpyW(state_file,L"untitled.snp");
+    wcscpy(state_file,L"untitled.snp");
     *finish=0;
     *finish_upd=0;
     *finish_rb=0;
