@@ -27,6 +27,7 @@ typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestor
 #include "main.h"
 
 #include "draw.h"   // todo: decouple panel
+#include "system.h"
 #include "matcher.h"
 #include "manager.h"
 #include "guicon.h"
@@ -111,7 +112,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
         wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
         wsprintf(cmd,L"%s\\install64.exe",extractdir);
         Log.print_con("'%S %S'\n",cmd,buf);
-        *ret=run_command(cmd,buf,SW_HIDE,1);
+        *ret=System.run_command(cmd,buf,SW_HIDE,1);
         if((*ret&0x7FFFFFFF)==1)
         {
             *needrb=*ret&0x80000000?1:0;
@@ -120,7 +121,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     }
     Autoclicker.setflag(0);
     WaitForSingleObject(thr,INFINITE);
-    CloseHandle_log(thr,L"driver_install",L"thr");
+    System.CloseHandle_log(thr,L"driver_install",L"thr");
     if(*ret==1)SaveHWID(hwid);
 }
 
@@ -452,7 +453,7 @@ goaround:
     if(instflag&INSTALLDRIVERS&&(Settings.flags&FLAG_KEEPTEMPFILES)==0)
     {
         wsprintf(buf,L" /c rd /s /q \"%s\"",extractdir);
-        run_command(L"cmd",buf,SW_HIDE,1);
+        System.run_command(L"cmd",buf,SW_HIDE,1);
     }
 
     manager_g->items_list[SLOT_EXTRACTING].percent=0;

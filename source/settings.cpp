@@ -21,6 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <setupapi.h>       // for CommandLineToArgvW
 #include <shlwapi.h>        // for StrStrIW
 
+#include "system.h"
 #include "common.h"
 #include "main.h"
 #include "settings.h"
@@ -230,7 +231,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
             Log.print_con("Ret: %X,%d\n",ret_global,needreboot);
             if(needreboot)ret_global|=0x80000000;
             wsprintf(buf,L" /c rd /s /q \"%s\"",extractdir);
-            run_command(L"cmd",buf,SW_HIDE,1);
+            System.run_command(L"cmd",buf,SW_HIDE,1);
             statemode=STATEMODE_EXIT;
             break;
         }else
@@ -281,7 +282,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
 void Settings_t::save()
 {
     if(flags&FLAG_PRESERVECFG)return;
-    if(!canWrite(L"sdi.cfg"))
+    if(!System.canWrite(L"sdi.cfg"))
     {
         Log.print_err("ERROR in settings_save(): Write-protected,'sdi.cfg'\n");
         return;

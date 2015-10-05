@@ -18,7 +18,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 
 #include <windows.h>
-#include <setupapi.h>       // for SetupDiGetClassDescription()
 #include <shlwapi.h>        // for StrStrIW
 
 #include "common.h"
@@ -26,6 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "enum.h"
 #include "main.h"
 
+#include "system.h"
 #include "draw.h"
 #include "matcher.h"
 #include "guicon.h"
@@ -420,7 +420,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int in
     }
 
     bufw[0]=0;
-    SetupDiGetClassDescription(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
+    System.getClassDesc(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw);
 
     canvas.setFont(Popup.hFontBold);
     td.ret();
@@ -1165,9 +1165,9 @@ void Manager::getINFpath(int wp)
             matcher->getState()->textas.get(items_list[Popup.floating_itembar].devicematch->driver->getInfPath()));
 
     if(wp==ID_OPENINF)
-        run_command(buf,L"",SW_SHOW,0);
+        System.run_command(buf,L"",SW_SHOW,0);
     else
-        run_command(L"explorer.exe",buf,SW_SHOW,0);
+        System.run_command(L"explorer.exe",buf,SW_SHOW,0);
 }
 //}
 
@@ -1692,7 +1692,7 @@ void Manager::restorepos1(Manager *manager_prev)
                 wsprintf(buf,L" /c %s",needreboot?Settings.finish_rb:Settings.finish);
 
             if(*(needreboot?Settings.finish_rb:Settings.finish)||panels[11].isChecked(3))
-                run_command(L"cmd",buf,SW_HIDE,0);
+                System.run_command(L"cmd",buf,SW_HIDE,0);
 
             if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
         }

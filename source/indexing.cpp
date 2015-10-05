@@ -31,6 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "guicon.h"
 #include "manager.h"
 #include "theme.h"
+#include "system.h"
 #include "settings.h"
 
 #include <queue>
@@ -575,7 +576,7 @@ int Collection::scanfolder_count(const wchar_t *path)
             {
                 if(Settings.flags&(FLAG_AUTOINSTALL|FLAG_NOGUI))break;
                 wsprintf(buf,L" /c del \"%s\\%s*.7z\" /Q /F",driverpack_dir,olddrps[i]);
-                run_command(L"cmd",buf,SW_HIDE,1);
+                System.run_command(L"cmd",buf,SW_HIDE,1);
                 break;
             }
             if(i==6&&StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
@@ -654,7 +655,7 @@ void Collection::loadOnlineIndexes()
 
         wsprintf(buf,L"drivers\\%ws",filename);
         buf[8]=L'D';
-        if(PathFileExists(buf))
+        if(System.FileExists(buf))
         {
             Log.print_con("Skip %S\n",buf);
             continue;
@@ -726,7 +727,7 @@ void Collection::populate()
     for(int i=0;i<num_thr;i++)
     {
         WaitForSingleObject(cons[i],INFINITE);
-        CloseHandle_log(cons[i],L"driverpack_genindex",L"cons");
+        System.CloseHandle_log(cons[i],L"driverpack_genindex",L"cons");
     }
 
     loadOnlineIndexes();
@@ -742,7 +743,7 @@ void Collection::populate()
     for(int i=0;i<num_thr_1;i++)
     {
         WaitForSingleObject(thr[i],INFINITE);
-        CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
+        System.CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
     }
 //}thread
     Settings.flags&=~COLLECTION_FORCE_REINDEXING;
@@ -756,7 +757,7 @@ void Collection::save()
     return;
     #endif
     if(*Settings.drpext_dir)return;
-    if(!canWrite(index_bin_dir))
+    if(!System.canWrite(index_bin_dir))
     {
         Log.print_err("ERROR in collection_save(): Write-protected,'%S'\n",index_bin_dir);
         return;
@@ -784,7 +785,7 @@ void Collection::save()
     for(int i=0;i<num_cores;i++)
     {
         WaitForSingleObject(thr[i],INFINITE);
-        CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
+        System.CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
     }
     manager_g->itembar_settext(SLOT_INDEXING,0);
     if(count_)Log.print_con("DONE\n");
@@ -1906,7 +1907,7 @@ void Driverpack::saveindex()
     char *mem,*p,*mem_pack;
 
     getindexfilename(col->getIndex_bin_dir(),L"bin",filename);
-    if(!canWrite(filename))
+    if(!System.canWrite(filename))
     {
         Log.print_err("ERROR in driverpack_saveindex(): Write-protected,'%S'\n",filename);
         return;

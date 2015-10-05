@@ -27,6 +27,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "enum.h"
 #include "main.h"
 
+#include "system.h"
 #include "draw.h"
 #include "matcher.h"
 #include "guicon.h"
@@ -775,7 +776,7 @@ void State::save(const wchar_t *filename)
 
     if(Settings.flags&FLAG_NOSNAPSHOT)return;
     Log.print_con("Saving state in '%S'...",filename);
-    if(!canWrite(filename))
+    if(!System.canWrite(filename))
     {
         Log.print_err("ERROR in state_save(): Write-protected,'%S'\n",filename);
         return;

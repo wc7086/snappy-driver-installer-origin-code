@@ -20,6 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 #include "common.h"
+#include "system.h"
 #include "indexing.h"
 #include "enum.h"
 #include "main.h"
@@ -31,7 +32,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "settings.h"
 
-extern HANDLE deviceupdate_event;
+extern Event *deviceupdate_event;
 extern volatile int deviceupdate_exitflag;
 extern int bundle_display;
 extern int bundle_shadow;
@@ -85,7 +86,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
     while(1)
     {
         // Wait for an update request
-        WaitForSingleObject(deviceupdate_event,INFINITE);
+        deviceupdate_event->wait();
         if(deviceupdate_exitflag)break;
         bundle[bundle_shadow].bundle_init();
             /*static long long prmem;
@@ -100,12 +101,12 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
         // Check if the state has been udated during scanning
         int cancel_update=0;
         if(!(Settings.flags&FLAG_NOGUI))
-        if(WaitForSingleObject(deviceupdate_event,0)==WAIT_OBJECT_0)cancel_update=1;
+        if(deviceupdate_event->isRaised())cancel_update=1;
 
         if(cancel_update)
         {
             Log.print_con("*** CANCEL ***\n\n");
-            SetEvent(deviceupdate_event);
+            deviceupdate_event->raise();
         }
         else
         {
@@ -159,7 +160,9 @@ void Bundle::bundle_prep()
 }
 void Bundle::bundle_load(Bundle *pbundle)
 {
-    HANDLE thandle[3];
+    ThreadAbs *thandle0=CreateThread();
+    ThreadAbs *thandle1=CreateThread();
+    ThreadAbs *thandle2=CreateThread();
 
     Timers.start(time_test);
 
@@ -173,14 +176,15 @@ void Bundle::bundle_load(Bundle *pbundle)
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
     if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;Timers.reset(time_indexes);}
 
-
-    thandle[0]=(HANDLE)_beginthreadex(nullptr,0,&thread_scandevices,&state,0,nullptr);
-    thandle[1]=(HANDLE)_beginthreadex(nullptr,0,&thread_loadindexes,&collection,0,nullptr);
-    thandle[2]=(HANDLE)_beginthreadex(nullptr,0,&thread_getsysinfo,&state,0,nullptr);
-    WaitForMultipleObjects(3,thandle,1,INFINITE);
-    CloseHandle_log(thandle[0],L"bundle_load",L"0");
-    CloseHandle_log(thandle[1],L"bundle_load",L"1");
-    CloseHandle_log(thandle[2],L"bundle_load",L"2");
+    thandle0->start(&thread_scandevices,&state);
+    thandle1->start(&thread_loadindexes,&collection);
+    thandle2->start(&thread_getsysinfo,&state);
+    thandle0->join();
+    thandle1->join();
+    thandle2->join();
+    delete thandle0;
+    delete thandle1;
+    delete thandle2;
 
     /*if((invaidate_set&INVALIDATE_DEVICES)==0)
     {
