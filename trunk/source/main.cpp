@@ -429,8 +429,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Allocate resources
     Bundle bundle[2];
-    bundle[0].bundle_init();
-    bundle[1].bundle_init();
     manager_v[0].init(bundle[bundle_display].getMatcher());
     manager_v[1].init(bundle[bundle_display].getMatcher());
     deviceupdate_event=CreateEvent(nullptr,0,0,nullptr);
@@ -446,7 +444,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Start folder monitors
-    Filemon *mon_drp=Filemon::start(Settings.drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
+    Filemon *mon_drp=CreateFilemon(Settings.drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
     virusmonitor_start();
     viruscheck(L"",0,0);
 
@@ -476,7 +474,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Stop folder monitors
-    if(mon_drp)mon_drp->stop();
+    if(mon_drp)delete mon_drp;
     virusmonitor_stop();
 
     // Bring the console window back
@@ -675,7 +673,7 @@ void MainWindow_t::gui(int nCmd)
 //}
 
 //{ Subroutes
-void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
+void drp_callback(const wchar_t *szFile,int action,int lParam)
 {
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
@@ -1203,8 +1201,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             Settings.wndwx=rect.right-rect.left;
             Settings.wndwy=rect.bottom-rect.top;
 
-            if(mon_lang)mon_lang->stop();
-            if(mon_theme)mon_theme->stop();
+            if(mon_lang)delete mon_lang;
+            if(mon_theme)delete mon_theme;
             delete canvasMain;
             PostQuitMessage(0);
             break;

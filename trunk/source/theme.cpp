@@ -426,12 +426,12 @@ void vault_startmonitors()
     wchar_t buf[BUFLEN];
 
     wsprintf(buf,L"%s\\langs",Settings.data_dir);
-    mon_lang=Filemon::start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
+    mon_lang=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
     wsprintf(buf,L"%s\\themes",Settings.data_dir);
-    mon_theme=Filemon::start(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
+    mon_theme=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
 }
 
-void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
+void lang_callback(const wchar_t *szFile,int action,int lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -440,7 +440,7 @@ void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
     PostMessage(MainWindow.hMain,WM_UPDATELANG,0,0);
 }
 
-void CALLBACK theme_callback(const wchar_t *szFile,DWORD action,LPARAM lParam)
+void theme_callback(const wchar_t *szFile,int action,int lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);

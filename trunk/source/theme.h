@@ -91,5 +91,5 @@ void lang_enum(HWND hwnd,const wchar_t *path,int locale);
 void theme_enum(HWND hwnd,const wchar_t *path);
 
 void vault_startmonitors();
-void CALLBACK lang_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
-void CALLBACK theme_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
+void lang_callback(const wchar_t *szFile,int action,int lParam);
+void theme_callback(const wchar_t *szFile,int action,int lParam);

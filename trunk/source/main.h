@@ -361,7 +361,7 @@ int getWindowsVer(int a);
 //}
 
 // Subroutes
-void CALLBACK drp_callback(const wchar_t *szFile,DWORD action,LPARAM lParam);
+void drp_callback(const wchar_t *szFile,int action,int lParam);
 void invalidate(int v);
 
 // Misc
