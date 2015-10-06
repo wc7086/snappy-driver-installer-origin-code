@@ -58,10 +58,6 @@ itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupin
     first=first1;
 }
 
-itembar_t::itembar_t()
-{
-}
-
 void itembar_t::itembar_setpos(int *pos,int *cnt)
 {
     if(isactive)

@@ -229,12 +229,12 @@ protected:
     Canvas *pcanvas;
 
     int ofsx;
-    int x;
     int wy;
     int maxsz;
 
 public:
     int col;
+    int x;
     int y;
 
 protected:

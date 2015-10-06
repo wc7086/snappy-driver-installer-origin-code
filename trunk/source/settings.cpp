@@ -330,13 +330,13 @@ void Settings_t::loginfo()
         Log.print_con("  theme=%S\n",curtheme);
         Log.print_con("  expertmode=%d\n",expertmode);
         Log.print_con("  filters=%d\n",filters);
-        Log.print_con("  autoinstall=%d\n",flags&FLAG_AUTOINSTALL?1:0);
-        Log.print_con("  autoclose=%d\n",flags&FLAG_AUTOCLOSE?1:0);
-        Log.print_con("  failsafe=%d\n",flags&FLAG_FAILSAFE?1:0);
-        Log.print_con("  delextrainfs=%d\n",flags&FLAG_DELEXTRAINFS?1:0);
-        Log.print_con("  checkupdates=%d\n",flags&FLAG_CHECKUPDATES?1:0);
-        Log.print_con("  norestorepnt=%d\n",flags&FLAG_NORESTOREPOINT?1:0);
-        Log.print_con("  disableinstall=%d\n",flags&FLAG_DISABLEINSTALL?1:0);
+        Log.print_con("  autoinstall=%d\n",(flags&FLAG_AUTOINSTALL)?1:0);
+        Log.print_con("  autoclose=%d\n",(flags&FLAG_AUTOCLOSE)?1:0);
+        Log.print_con("  failsafe=%d\n",(flags&FLAG_FAILSAFE)?1:0);
+        Log.print_con("  delextrainfs=%d\n",(flags&FLAG_DELEXTRAINFS)?1:0);
+        Log.print_con("  checkupdates=%d\n",(flags&FLAG_CHECKUPDATES)?1:0);
+        Log.print_con("  norestorepnt=%d\n",(flags&FLAG_NORESTOREPOINT)?1:0);
+        Log.print_con("  disableinstall=%d\n",(flags&FLAG_DISABLEINSTALL)?1:0);
         Log.print_con("\n");
 
         if(statemode==STATEMODE_EMUL)Log.print_con("Virtual system system config '%S'\n",state_file);

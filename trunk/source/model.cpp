@@ -39,7 +39,7 @@ extern int bundle_shadow;
 //{ Bundle
 unsigned int __stdcall Bundle::thread_scandevices(void *arg)
 {
-    State *state=(State *)arg;
+    State *state=static_cast<State *>(arg);
 
     if((invaidate_set&INVALIDATE_DEVICES)==0)return 0;
 
@@ -51,7 +51,7 @@ unsigned int __stdcall Bundle::thread_scandevices(void *arg)
 
 unsigned int __stdcall Bundle::thread_loadindexes(void *arg)
 {
-    Collection *collection=(Collection *)arg;
+    Collection *collection=static_cast<Collection *>(arg);
 
     if(invaidate_set&INVALIDATE_INDEXES)collection->updatedir();
     return 0;
@@ -59,7 +59,7 @@ unsigned int __stdcall Bundle::thread_loadindexes(void *arg)
 
 unsigned int __stdcall Bundle::thread_getsysinfo(void *arg)
 {
-    State *state=(State *)arg;
+    State *state=static_cast<State *>(arg);
 
     if(Settings.statemode==STATEMODE_REAL&&invaidate_set&INVALIDATE_SYSINFO)
         state->getsysinfo_slow();
@@ -79,7 +79,7 @@ Bundle::~Bundle()
 
 unsigned int __stdcall Bundle::thread_loadall(void *arg)
 {
-    Bundle *bundle=(Bundle *)arg;
+    Bundle *bundle=static_cast<Bundle *>(arg);
 
     InitializeCriticalSection(&sync);
     while(1)

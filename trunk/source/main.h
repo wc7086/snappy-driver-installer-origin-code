@@ -105,17 +105,18 @@ class Popup_t
     operator=(const Popup_t&)=delete;
 
 public:
-    HWND hPopup;
-    Font *hFontP,*hFontBold;
-    Canvas *canvasPopup;
+    HWND hPopup=nullptr;
+    Canvas *canvasPopup=nullptr;
+    Font *hFontP;
+    Font *hFontBold;
 
     Popup_t();
     ~Popup_t();
 
-    int floating_type;
-    int floating_itembar;
-    int floating_x,floating_y;
-    int horiz_sh;
+    int floating_type=0;
+    int floating_itembar=0;
+    int floating_x,floating_y=0;
+    int horiz_sh=0;
 
     int PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 };

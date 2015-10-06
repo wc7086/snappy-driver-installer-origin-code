@@ -82,7 +82,7 @@ public:
 
 public:
     itembar_t(Devicematch *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
-    itembar_t();
+    itembar_t(){}
     void itembar_setpos(int *pos,int *cnt);
     void str_status(wchar_t *buf);
     void drawbutton(Canvas &canvas,int x,int pos,const wchar_t *str1,const wchar_t *str2);

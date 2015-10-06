@@ -37,9 +37,23 @@ Timers_t Timers;
 
 //{ Logging
 
-void Timers_t::start(int a){timers[a]=GetTickCount();}
-void Timers_t::stop(int a){if(timers[a])timers[a]=GetTickCount()-timers[a];}
-void Timers_t::stoponce(int a,int b){if(!timers[a])timers[a]=GetTickCount()-timers[b];}
+Timers_t::Timers_t():
+    timers{0,0,0,0,0,0,0,0,0,0}
+{
+}
+
+void Timers_t::start(int a)
+{
+    timers[a]=GetTickCount();
+}
+void Timers_t::stop(int a)
+{
+    if(timers[a])timers[a]=GetTickCount()-timers[a];
+}
+void Timers_t::stoponce(int a,int b)
+{
+    if(!timers[a])timers[a]=GetTickCount()-timers[b];
+}
 
 void Timers_t::print()
 {
@@ -466,11 +480,11 @@ void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfByt
 	TCHAR szFile[MAX_PATH];
 	PFILE_NOTIFY_INFORMATION pNotify;
 	FilemonDataPOD *pMonitor=reinterpret_cast<FilemonDataPOD*>(lpOverlapped);
-	size_t offset=0;
 
 	if(dwErrorCode==ERROR_SUCCESS)
 	{
-		do
+        size_t offset=0;
+        do
 		{
 			pNotify=(PFILE_NOTIFY_INFORMATION)&pMonitor->buffer[offset];
 			offset+=pNotify->NextEntryOffset;

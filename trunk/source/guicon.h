@@ -39,7 +39,9 @@ enum TIMER
 class Timers_t
 {
     long long timers[time_NUM];
+
 public:
+    Timers_t();
     void start(int a);
     void stop(int a);
     void reset(int a){timers[a]=0;}
