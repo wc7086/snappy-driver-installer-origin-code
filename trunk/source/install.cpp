@@ -21,20 +21,50 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "settings.h"
 #include "common.h"
+#include "update.h"
+#include "manager.h"
+#include "install.h"
 
 #include <windows.h>
 #include <SRRestorePtAPI.h> // for RestorePoint
 typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 #include "device.h"
 
-#include "install.h"
 #include "enum.h"
 #include "main.h"
 #include "draw.h"
 #include "system.h"
-#include "manager.h"
 #include "theme.h"
-#include "update.h"
+
+// Autoclicker
+#define AUTOCLICKER_CONFIRM
+#define NUM_CLICKDATA 5
+struct wnddata_t
+{
+    // Main wnd
+    int wnd_wx,wnd_wy;
+    int cln_wx,cln_wy;
+
+    // Install button
+    int btn_x, btn_y;
+    int btn_wx,btn_wy;
+};
+
+class Autoclicker_t
+{
+    static const wnddata_t clicktbl[NUM_CLICKDATA];
+    static volatile int clicker_flag;
+
+private:
+    void calcwnddata(wnddata_t *w,HWND hwnd);
+    int cmpclickdata(int *a,int *b);
+    static int CALLBACK EnumWindowsProc(HWND hwnd,LPARAM lParam);
+
+public:
+    void setflag(int v){clicker_flag=v;}
+    void wndclicker(int mode);
+    static unsigned int __stdcall thread_clicker(void *arg);
+};
 
 //{ Global vars
 long long ar_total,ar_proceed;
@@ -42,6 +72,9 @@ int instflag;
 int itembar_act;
 int needreboot=0;
 wchar_t extractdir[BUFLEN];
+
+volatile int Autoclicker_t::clicker_flag;
+Autoclicker_t Autoclicker;
 
 long long totalinstalltime,totalextracttime;
 long long installtime,extracttime;
@@ -198,7 +231,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             }
             if(!Updater->isTorrentReady())break;
         }
-        UpdateDialog.setPriorities(itembar->hwidmatch->getdrp_packname(),1);
+        Updater->setFilePriority(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)
@@ -551,8 +584,6 @@ const wnddata_t Autoclicker_t::clicktbl[NUM_CLICKDATA]=
 #endif
     }
 };
-volatile int Autoclicker_t::clicker_flag;
-Autoclicker_t Autoclicker;
 
 void Autoclicker_t::calcwnddata(wnddata_t *w,HWND hwnd)
 {
@@ -652,6 +683,11 @@ BOOL CALLBACK Autoclicker_t::EnumWindowsProc(HWND hwnd,LPARAM lParam)
 void Autoclicker_t::wndclicker(int mode)
 {
     EnumChildWindows(GetDesktopWindow(),EnumWindowsProc,mode);
+}
+
+void save_wndinfo()
+{
+    Autoclicker.wndclicker(2);
 }
 
 unsigned int __stdcall Autoclicker_t::thread_clicker(void *arg)

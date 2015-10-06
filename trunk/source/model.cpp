@@ -21,6 +21,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "guicon.h"
 #include "settings.h"
+#include "manager.h"
+#include "update.h"
 
 #include <windows.h>
 
@@ -28,8 +30,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "enum.h"
 #include "model.h"
 #include "main.h"
-#include "manager.h"
-#include "update.h"
 
 extern Event *deviceupdate_event;
 extern volatile int deviceupdate_exitflag;

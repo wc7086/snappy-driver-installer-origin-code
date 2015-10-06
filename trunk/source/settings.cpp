@@ -21,14 +21,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "cli.h"
 #include "guicon.h"
+#include "update.h"
+#include "install.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
 
 #include "system.h"
 #include "main.h"
-#include "update.h"
-#include "install.h"
 #include "draw.h"
 
 int volatile installmode=MODE_NONE;

@@ -20,14 +20,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "settings.h"
 #include "common.h"
+#include "manager.h"
 
 #include <windows.h>
 
 // Depend on Win32API
-#include "main.h"     // needs State and Collection from enum.h
 #include "enum.h"     // needs Version from indexing.h
+#include "main.h"     // todo: lots of Win32
 #include "theme.h"    // todo: HWND
-#include "manager.h"  // todo: RECT
 #include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
@@ -920,6 +920,9 @@ void panel_loadsettings(Panel *panel,int filters_)
 //{ ClipRegion
 class ClipRegionImp
 {
+    ClipRegionImp(const ClipRegionImp&)=delete;
+    operator=(const ClipRegionImp&)=delete;
+
 private:
     HRGN hrgn;
 public:

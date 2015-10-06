@@ -22,16 +22,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "indexing.h"
 #include "manager.h"
+#include "update.h"
+#include "install.h"
 
 #include <windows.h>
 
-#include "update.h"
 #include "enum.h"
 #include "main.h"
 #include "system.h"
 #include "draw.h"
 #include "theme.h"
-#include "install.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=
@@ -1652,7 +1652,7 @@ void Manager::restorepos1(Manager *manager_prev)
     LeaveCriticalSection(&sync);
 
     #ifdef USE_TORRENT
-    UpdateDialog.populate(0);
+    Updater->populate(0);
     #endif
     //Log.print_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
     if(Settings.flags&FLAG_AUTOINSTALL)

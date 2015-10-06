@@ -22,6 +22,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "cli.h"
 #include "indexing.h"
+#include "manager.h"
+#include "update.h"
+#include "install.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -30,11 +33,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "enum.h"
 #include "main.h"
 #include "model.h"
-
-#include "install.h"
-#include "update.h"
 #include "draw.h"
-#include "manager.h"
 #include "theme.h"
 
 //{ Global variables
@@ -183,8 +182,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Check updates
     #ifdef USE_TORRENT
-    Updater=new Updater_t();
-    Updater->createThreads();
+    Updater=CreateUpdater();
     #endif
 
     // Start folder monitors
@@ -204,7 +202,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Stop libtorrent
     #ifdef USE_TORRENT
-    Updater->destroyThreads();
     delete Updater;
     #endif
 
@@ -1092,7 +1089,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
             if(wParam==VK_F7)
             {
-                Autoclicker.wndclicker(2);
+                save_wndinfo();
                 MessageBox(hMain,L"Windows data recorded into the log.",L"Message",0);
             }
             if(wParam==VK_F8)
@@ -1517,7 +1514,7 @@ int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPA
             if(Popup.floating_itembar==SLOT_DOWNLOAD)
             {
                 #ifdef USE_TORRENT
-                UpdateDialog.openDialog();
+                Updater->openDialog();
                 #endif
                 break;
             }
