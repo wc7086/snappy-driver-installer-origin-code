@@ -26,21 +26,24 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define D(A) theme[A].val
 #define D_STR(A) theme[A].valstr
 
+#define TEXT_1(quote) L##quote
+#define DEF_VAL(a) {TEXT_1(a),0,0},
+#define DEF_STR(a) {TEXT_1(a),0,0},
+
 // Declarations
 class Filemon;
+class VaultInt;
+class VaultTheme;
+class VaultLang;
 class Vault;
 struct entry_t;
-
-#include <unordered_map>
-#include <memory>
-
-typedef std::unordered_map <std::wstring,int> lookuptbl_t;
 
 // Global vars
 extern entry_t language[STR_NM];
 extern entry_t theme[THEME_NM];
 extern Filemon *mon_lang,*mon_theme;
-extern Vault vLang,vTheme;
+extern VaultInt *vLang;
+extern VaultInt *vTheme;
 extern int monitor_pause;
 
 // Entry
@@ -56,45 +59,18 @@ struct entry_t
 };
 
 // Vault
-class Vault
+class VaultInt
 {
-    entry_t *entry;
-    int num;
-    wchar_t namelist[64][250];
-    std::unique_ptr<wchar_t []> data_ptr,odata_ptr,datav_ptr;
-
-    lookuptbl_t lookuptbl;
-    int res;
-
-private:
-    int  findvar(wchar_t *str);
-    wchar_t *findstr(wchar_t *str);
-    int  readvalue(const wchar_t *str);
-    void parse();
-    bool loadFromEncodedFile(const wchar_t *filename);
-    void loadFromFile(wchar_t *filename);
-    void loadFromRes(int id);
-
 public:
-    Vault(const Vault&)=delete;
-    Vault &operator=(const Vault&)=delete;
-    Vault();
-    void init1(entry_t *entry,int num,int res);
-    void load(int i);
-    int pickTheme();
+    virtual ~VaultInt(){}
+    virtual void load(int i)=0;
+    virtual int pickTheme()=0;
 
-    friend void lang_enum(HWND hwnd,const wchar_t *path,int locale);
-    friend void theme_enum(HWND hwnd,const wchar_t *path);
+    virtual void switchdata(int i)=0;
+    virtual void enumfiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
+    virtual void startmonitor()=0;
 };
-
-// Lang/theme
-void lang_set(int i);
-void theme_set(int i);
-void lang_enum(HWND hwnd,const wchar_t *path,int locale);
-void theme_enum(HWND hwnd,const wchar_t *path);
-
-void vault_startmonitors();
-void lang_callback(const wchar_t *szFile,int action,int lParam);
-void theme_callback(const wchar_t *szFile,int action,int lParam);
+VaultInt *CreateVaultLang(entry_t *entry,int num,int res);
+VaultInt *CreateVaultTheme(entry_t *entry,int num,int res);
 
 #endif

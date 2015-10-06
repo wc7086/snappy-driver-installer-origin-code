@@ -21,10 +21,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "theme.h"
 
-#define TEXT_1(quote) L##quote
-#define DEF_VAL(a) {TEXT_1(a),0,0},
-#define DEF_STR(a) {TEXT_1(a),0,0},
-
 entry_t language[STR_NM]=
 {
     DEF_STR("STR_EMPTY")

@@ -25,14 +25,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 // Depend on Win32API
+#include "system.h"
+#include "theme.h"    // todo: HWND
 #include "enum.h"     // needs Version from indexing.h
 #include "main.h"     // todo: lots of Win32
-#include "theme.h"    // todo: HWND
 #include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
 #include <shlwapi.h>        // for StrFormatByteSizeW
 #include <webp\decode.h>
+#include <memory>
 
 //{ Global vars
 int rtl=0;
@@ -836,7 +838,7 @@ void popup_about(Canvas &canvas)
 void format_size(wchar_t *buf,long long val,int isspeed)
 {
 #ifdef USE_TORRENT
-    StrFormatByteSizeW(val,buf,BUFLEN);
+    StrFormatSize(val,buf,BUFLEN);
 #else
     buf[0]=0;
     UNREFERENCED_PARAMETER(val)
