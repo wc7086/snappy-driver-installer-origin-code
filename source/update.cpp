@@ -22,6 +22,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "guicon.h"
 #include "matcher.h"
+#include "update.h"
+#include "manager.h"
 
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
@@ -35,14 +37,101 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 #include "system.h"
 #include "draw.h"
-#include "manager.h"
 #include "theme.h"
-#include "update.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
 
 using namespace libtorrent;
+
+// TorrentStatus
+class TorrentStatus_t
+{
+    long long downloaded,downloadsize;
+    long long uploaded;
+    int elapsed,remaining;
+
+    const wchar_t *status;
+    wchar_t error[BUFLEN];
+    int uploadspeed,downloadspeed;
+    int seedstotal,seedsconnected;
+    int peerstotal,peersconnected;
+    int wasted,wastedhashfailes;
+
+    int sessionpaused,torrentpaused;
+
+    friend class UpdaterImp;
+};
+
+// UpdateDialog
+class UpdateDialog_t
+{
+    static const int cxn[];
+    static WNDPROC wpOrigButtonProc;
+    static int bMouseInWindow;
+    static HWND hUpdate;
+    int totalsize;
+    static HWND hListg;
+
+private:
+    int  getnewver(const char *ptr);
+    int  getcurver(const char *ptr);
+    static int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
+    void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,const wchar_t *str);
+    void calctotalsize();
+    void updateTexts();
+
+    void setCheckboxes();
+    void setPriorities();
+    static LRESULT CALLBACK NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    static BOOL CALLBACK UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
+
+public:
+    int  populate(int flags,bool clearlist=false);
+    void setFilePriority(const wchar_t *name,int pri);
+    void openDialog();
+};
+
+// Updater
+class UpdaterImp:public Updater_t
+{
+    static HANDLE downloadmangar_event;
+    static HANDLE thandle_download;
+
+    static int downloadmangar_exitflag;
+    static int finishedupdating;
+    static int finisheddownloading;
+
+    int averageSpeed;
+    long long torrenttime;
+
+private:
+    void updateTorrentStatus();
+    void removeOldDriverpacks(const wchar_t *ptr);
+    void moveNewFiles();
+    static unsigned int __stdcall thread_download(void *arg);
+
+public:
+    UpdaterImp();
+    ~UpdaterImp();
+
+    void showProgress(wchar_t *buf);
+    void showPopup(Canvas &canvas);
+
+    void downloadTorrent();
+    void checkUpdates();
+    void resumeDownloading();
+    void pause();
+
+    bool isTorrentReady();
+    bool isPaused();
+    bool isUpdateCompleted();
+
+    int  populate(int flags);
+    void setFilePriority(const wchar_t *name,int pri);
+    void openDialog();
+};
+Updater_t *CreateUpdater(){return new UpdaterImp;}
 
 //{ Global variables
 session *hSession=nullptr;
@@ -53,6 +142,17 @@ dht_settings dht;
 UpdateDialog_t UpdateDialog;
 Updater_t *Updater;
 TorrentStatus_t TorrentStatus;
+
+enum DOWNLOAD_STATUS
+{
+    DOWNLOAD_STATUS_WAITING,
+    DOWNLOAD_STATUS_DOWLOADING_TORRENT,
+    DOWNLOAD_STATUS_TORRENT_GOT,
+    DOWNLOAD_STATUS_DOWLOADING_DATA,
+    DOWNLOAD_STATUS_FINISHED_DOWNLOADING,
+    DOWNLOAD_STATUS_PAUSING,
+    DOWNLOAD_STATUS_STOPPING,
+};
 
 // UpdateDialog (static)
 const int UpdateDialog_t::cxn[]={199,60,44,70,70,90};
@@ -66,11 +166,11 @@ int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
-int Updater_t::downloadmangar_exitflag;
-int Updater_t::finishedupdating;
-int Updater_t::finisheddownloading;
-HANDLE Updater_t::downloadmangar_event=nullptr;
-HANDLE Updater_t::thandle_download=nullptr;
+int UpdaterImp::downloadmangar_exitflag;
+int UpdaterImp::finishedupdating;
+int UpdaterImp::finisheddownloading;
+HANDLE UpdaterImp::downloadmangar_event=nullptr;
+HANDLE UpdaterImp::thandle_download=nullptr;
 //}
 
 //{ UpdateDialog
@@ -293,8 +393,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             }
 
             hUpdate=hwnd;
-            UpdateDialog.clearList();
-            UpdateDialog.populate(0);
+            UpdateDialog.populate(0,true);
             UpdateDialog.updateTexts();
             UpdateDialog.setCheckboxes();
             if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
@@ -351,8 +450,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                 case IDONLYUPDATE:
                     Settings.flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
-                    UpdateDialog.clearList();
-                    UpdateDialog.populate(0);
+                    UpdateDialog.populate(0,true);
                     break;
 
                 case IDCHECKALL:
@@ -385,7 +483,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
     return FALSE;
 }
 
-int UpdateDialog_t::populate(int update)
+int UpdateDialog_t::populate(int update,bool clearlist)
 {
     wchar_t buf[BUFLEN];
     int ret=0;
@@ -430,6 +528,7 @@ int UpdateDialog_t::populate(int update)
 
     // Disable redrawing of the list
     if(hListg)SendMessage(hListg,WM_SETREDRAW,0,0);
+    if(clearlist)ListView_DeleteAllItems(hListg);
 
     // Setup LVITEM
     LVITEM lvI;
@@ -534,7 +633,7 @@ int UpdateDialog_t::populate(int update)
     return ret;
 }
 
-void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
+void UpdateDialog_t::setFilePriority(const wchar_t *name,int pri)
 {
     char buf[BUFLEN];
     wsprintfA(buf,"%S",name);
@@ -551,15 +650,10 @@ void UpdateDialog_t::openDialog()
 {
     DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),MainWindow.hMain,(DLGPROC)UpdateProcedure);
 }
-
-void UpdateDialog_t::clearList()
-{
-    ListView_DeleteAllItems(hListg);
-}
 //}
 
 //{ Updater
-void Updater_t::updateTorrentStatus()
+void UpdaterImp::updateTorrentStatus()
 {
     std::vector<torrent_status> temp;
     TorrentStatus_t *t=&TorrentStatus;
@@ -616,7 +710,7 @@ void Updater_t::updateTorrentStatus()
     MainWindow.redrawfield();
 }
 
-void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
+void UpdaterImp::removeOldDriverpacks(const wchar_t *ptr)
 {
     wchar_t bffw[BUFLEN];
     wchar_t *s=bffw;
@@ -639,7 +733,7 @@ void Updater_t::removeOldDriverpacks(const wchar_t *ptr)
     }
 }
 
-void Updater_t::moveNewFiles()
+void UpdaterImp::moveNewFiles()
 {
     int i;
     boost::intrusive_ptr<torrent_info const> ti;
@@ -704,7 +798,7 @@ void Updater_t::moveNewFiles()
     System.run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }
 
-void Updater_t::checkUpdates()
+void UpdaterImp::checkUpdates()
 {
     if(System.canWrite(L"update"))
     {
@@ -713,7 +807,7 @@ void Updater_t::checkUpdates()
     }
 }
 
-void Updater_t::showProgress(wchar_t *buf)
+void UpdaterImp::showProgress(wchar_t *buf)
 {
     wchar_t num1[64],num2[64];
 
@@ -724,7 +818,7 @@ void Updater_t::showProgress(wchar_t *buf)
                 (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
 }
 
-void Updater_t::showPopup(Canvas &canvas)
+void UpdaterImp::showPopup(Canvas &canvas)
 {
     textdata_vert td(canvas);
     TorrentStatus_t t;
@@ -773,7 +867,7 @@ void Updater_t::showPopup(Canvas &canvas)
     popup_resize((td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
 }
 
-void Updater_t::createThreads()
+UpdaterImp::UpdaterImp()
 {
     TorrentStatus.sessionpaused=1;
     downloadmangar_exitflag=DOWNLOAD_STATUS_WAITING;
@@ -782,22 +876,19 @@ void Updater_t::createThreads()
     thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
 }
 
-void Updater_t::destroyThreads()
+UpdaterImp::~UpdaterImp()
 {
     if(thandle_download)
     {
-        //Log.print_con("Stopping torrent thread...");
         downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
         SetEvent(downloadmangar_event);
         WaitForSingleObject(thandle_download,INFINITE);
         System.CloseHandle_log(thandle_download,L"thandle_download",L"thr");
         System.CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
-        //Log.print_con("DONE\n");
-        thandle_download=nullptr;
     }
 }
 
-void Updater_t::downloadTorrent()
+void UpdaterImp::downloadTorrent()
 {
     error_code ec;
     int i;
@@ -884,7 +975,7 @@ void Updater_t::downloadTorrent()
     Timers.stop(time_chkupdate);
 }
 
-void Updater_t::resumeDownloading()
+void UpdaterImp::resumeDownloading()
 {
     if(!hSession||!hTorrent.torrent_file())
     {
@@ -904,7 +995,7 @@ void Updater_t::resumeDownloading()
     torrenttime=GetTickCount();
 }
 
-unsigned int __stdcall Updater_t::thread_download(void *arg)
+unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 {
     UNREFERENCED_PARAMETER(arg)
 
@@ -918,6 +1009,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     }
 
     // Download torrent
+    UpdaterImp *Updater1=dynamic_cast<UpdaterImp *>(Updater);
     Updater->downloadTorrent();
     if(downloadmangar_exitflag!=DOWNLOAD_STATUS_TORRENT_GOT)
     {
@@ -925,7 +1017,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         return 0;
     }
 
-    Updater->updateTorrentStatus();
+    Updater1->updateTorrentStatus();
     ResetEvent(downloadmangar_event);
 
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
@@ -944,7 +1036,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
             Sleep(500);
 
             // Show progress
-            Updater->updateTorrentStatus();
+            Updater1->updateTorrentStatus();
             ShowProgressInTaskbar(MainWindow.hMain,true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
             InvalidateRect(Popup.hPopup,nullptr,0);
 
@@ -982,12 +1074,11 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                 }
 
                 // Move files
-                Updater->moveNewFiles();
+                Updater1->moveNewFiles();
                 hTorrent.force_recheck();
 
                 // Update list
-                UpdateDialog.clearList();
-                UpdateDialog.populate(0);
+                UpdateDialog.populate(0,true);
 
                 // Execute user cmd
                 if(*Settings.finish_upd)
@@ -1013,7 +1104,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         // Download is completed
         finishedupdating=1;
         hSession->pause();
-        Updater->updateTorrentStatus();
+        Updater1->updateTorrentStatus();
         monitor_pause=0;
         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
         Log.print_con("}torrent_stop\n");
@@ -1031,19 +1122,22 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     return 0;
 }
 
-void Updater_t::pause(){downloadmangar_exitflag=DOWNLOAD_STATUS_PAUSING;}
+void UpdaterImp::pause(){downloadmangar_exitflag=DOWNLOAD_STATUS_PAUSING;}
 
-bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
-bool Updater_t::isPaused(){return TorrentStatus.sessionpaused;}
-bool Updater_t::isUpdateCompleted(){return finishedupdating;}
+bool UpdaterImp::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
+bool UpdaterImp::isPaused(){return TorrentStatus.sessionpaused;}
+bool UpdaterImp::isUpdateCompleted(){return finishedupdating;}
+
+int  UpdaterImp::populate(int flags){return UpdateDialog.populate(flags);}
+void UpdaterImp::setFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
+void UpdaterImp::openDialog(){UpdateDialog.openDialog();}
 //}
 #else
 
 #include <windows.h>
 #include "update.h"
 
-TorrentStatus_t TorrentStatus;
-Updater_t Updater;
+Updater_t *Updater;
 int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;

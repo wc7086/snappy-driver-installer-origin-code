@@ -70,6 +70,9 @@ const wchar_t *olddrps[]=
 template<typename Data>
 class concurrent_queue
 {
+    concurrent_queue(const concurrent_queue&)=delete;
+    operator=(const concurrent_queue&)=delete;
+
 private:
     std::queue<Data> the_queue;
     mutable boost::mutex the_mutex;

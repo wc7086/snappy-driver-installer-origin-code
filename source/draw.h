@@ -80,6 +80,9 @@ public:
 // ClipRegion
 class ClipRegion
 {
+    ClipRegion(const ClipRegion&)=delete;
+    operator=(const ClipRegion&)=delete;
+
 private:
     ClipRegionImp *imp;
 
@@ -96,6 +99,9 @@ public:
 // Font
 class Font
 {
+    Font(const Font&)=delete;
+    operator=(const Font&)=delete;
+
 private:
     HFONT hFont;
 public:
@@ -253,12 +259,7 @@ class textdata_horiz_t:public textdata_t
     int mode;
 
 public:
-    textdata_horiz_t(Canvas &canvas,int ofsx1,int *lim,int mode1):textdata_t(canvas,ofsx1)
-    {
-        limits=lim;
-        mode=mode1;
-        i=0;
-    }
+    textdata_horiz_t(Canvas &canvas,int ofsx1,int *lim,int mode1):textdata_t(canvas,ofsx1),i(0),limits(lim),mode(mode1){}
     void limitskip();
     void TextOutP(const wchar_t *format,...);
 };

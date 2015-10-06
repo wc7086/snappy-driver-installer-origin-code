@@ -25,6 +25,9 @@ class Matcher;
 //Bundle
 class Bundle
 {
+    Bundle(const Bundle&)=delete;
+    operator=(const Bundle&)=delete;
+
     State state;
     Collection collection;
     Matcher *matcher;
