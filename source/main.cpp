@@ -317,7 +317,7 @@ void MainWindow_t::gui(int nCmd)
     if(Settings.license)
     {
         //time_test=GetTickCount()-time_total;log_times();
-        ShowWindow(hMain,Settings.flags&FLAG_NOGUI?SW_HIDE:nCmd);
+        ShowWindow(hMain,(Settings.flags&FLAG_NOGUI)?SW_HIDE:nCmd);
 
         int done=0;
         while(!done)
@@ -367,13 +367,13 @@ void MainWindow_t::gui(int nCmd)
                     if((msg.wParam==VK_LEFT)&&kbpanel==KB_FIELD)
                     {
                         int index,nop;
-                        manager_g->hitscan(nop,nop,&index,&nop);
+                        manager_g->hitscan(0,0,&index,&nop);
                         manager_g->expand(index,EXPAND_MODE::COLLAPSE);
                     }
                     if((msg.wParam==VK_RIGHT)&&kbpanel==KB_FIELD)
                     {
                         int index,nop;
-                        manager_g->hitscan(nop,nop,&index,&nop);
+                        manager_g->hitscan(0,0,&index,&nop);
                         manager_g->expand(index,EXPAND_MODE::EXPAND);
                     }
                     if(msg.wParam==VK_UP)arrowsAdvance(-1);else
@@ -949,7 +949,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_BUNDLEREADY:
             {
-                Bundle *bb=(Bundle *)wParam;
+                Bundle *bb=reinterpret_cast<Bundle *>(wParam);
                 Manager *manager_prev=manager_g;
                 Log.print_con("{Sync");
                 EnterCriticalSection(&sync);
@@ -1283,7 +1283,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_DIS_RESTPNT:
                     Settings.flags^=FLAG_NORESTOREPOINT;
-                    manager_g->itembar_setactive(SLOT_RESTORE_POINT,Settings.flags&FLAG_NORESTOREPOINT?0:1);
+                    manager_g->itembar_setactive(SLOT_RESTORE_POINT,(Settings.flags&FLAG_NORESTOREPOINT)?0:1);
                     manager_g->set_rstpnt(0);
                     break;
 
@@ -1584,7 +1584,7 @@ int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPA
                 else if(itembar_i==SLOT_VIRUS_HIDDEN)
                     drawpopup(STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_EXTRACTING&&installmode)
-                    drawpopup(instflag&INSTALLDRIVERS?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
+                    drawpopup((instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_RESTORE_POINT)
                     drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
@@ -1614,10 +1614,10 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
     return Popup.PopupProcedure2(hwnd,message,wParam,lParam);
 }
 
-Popup_t::Popup_t()
+Popup_t::Popup_t():
+    hFontP(new Font()),
+    hFontBold(new Font())
 {
-    hFontP=new Font();
-    hFontBold=new Font();
 }
 Popup_t::~Popup_t()
 {

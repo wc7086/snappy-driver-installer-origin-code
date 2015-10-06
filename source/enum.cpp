@@ -526,7 +526,23 @@ wchar_t *State::getModel()
     return s;
 }
 
-State::State()
+State::State():
+    locale(0),
+    architecture(0),
+
+    manuf(0),
+    model(0),
+    product(0),
+    monitors(0),
+    battery(0),
+
+    windir(0),
+    temp(0),
+
+    cs_manuf(0),
+    cs_model(0),
+    ChassisType(0),
+    revision(SVN_REV)
 {
     memset(this,0,sizeof(state_m_t));
     revision=SVN_REV;
@@ -637,7 +653,7 @@ void State::print()
 void State::popup_sysinfo(Canvas &canvas)
 {
     wchar_t bufw[BUFLEN];
-    int i,x,y;
+    int i;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
 
     textdata_vert td(canvas);
@@ -716,6 +732,7 @@ void State::popup_sysinfo(Canvas &canvas)
     canvas.setFont(Popup.hFontP);
     for(i=0;i<buf[0];i++)
     {
+        int x,y;
         x=buf[1+i*2];
         y=buf[2+i*2];
         td.shift_r();
@@ -757,8 +774,8 @@ void State::contextmenu2(int x,int y)
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING,ID_DEVICEMNG,STR(STR_SYS_DEVICEMNG));
     InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_SEPARATOR,0,nullptr);
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(Settings.flags&FLAG_DISABLEINSTALL?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
-    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|(Settings.flags&FLAG_NORESTOREPOINT?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|((Settings.flags&FLAG_DISABLEINSTALL)?MF_CHECKED:0),ID_DIS_INSTALL,STR(STR_SYS_DISINSTALL));
+    InsertMenu(hPopupMenu,i++,MF_BYPOSITION|MF_STRING|((Settings.flags&FLAG_NORESTOREPOINT)?MF_CHECKED:0),ID_DIS_RESTPNT,STR(STR_SYS_DISRESTPNT));
 
     RECT rect;
     SetForegroundWindow(MainWindow.hMain);

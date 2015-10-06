@@ -12,7 +12,11 @@ void movefile(char *file1,char *file2)
 
     f1=fopen(file1,"rb");
     f2=fopen(file2,"rb");
-    if(!f2)return;
+    if(!f2)
+	{
+		fclose(f1);
+		return;
+	}
 
     while(!feof(f1)&&!feof(f2))
     {
@@ -37,7 +41,7 @@ void movefile(char *file1,char *file2)
 
 int movefolder(char *dir1,char *dir2,char *subdir)
 {
-    HANDLE hFind = INVALID_HANDLE_VALUE;
+    HANDLE hFind;
     WIN32_FIND_DATA ffd;
     TCHAR szDir[MAX_PATH];
     TCHAR newsubdir[MAX_PATH];

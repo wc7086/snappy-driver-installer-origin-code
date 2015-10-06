@@ -370,15 +370,20 @@ void Canvas::drawconnection(int x1,int pos,int ofsy,int curpos)
     DeleteObject(newpen);
 }
 
-Canvas::Canvas()
+Canvas::Canvas():
+    x(0),
+    y(0),
+    localDC(nullptr),
+    hdcMem(CreateCompatibleDC(nullptr)),
+    bitmap(nullptr),
+    oldbitmap(nullptr),
+    //ps(nullptr),
+    hwnd(nullptr),
+    clipping(nullptr)
 {
-    hdcMem=CreateCompatibleDC(nullptr);
     if(!hdcMem)Log.print_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
     int r=SetBkMode(hdcMem,TRANSPARENT);
     if(!r)Log.print_err("ERROR in canvas_init(): failed SetBkMode\n");
-    bitmap=nullptr;
-    x=0;
-    y=0;
 }
 
 Canvas::~Canvas()
@@ -538,7 +543,7 @@ void Panel::setFilters(int filters_)
 {
     for(int i=0;i<items[0].action_id+1;i++)
         if(items[i].action_id>=ID_SHOW_MISSING&&items[i].action_id<=ID_SHOW_INVALID)
-            items[i].checked=filters_&(1<<items[i].action_id)?1:0;
+            items[i].checked=(filters_&(1<<items[i].action_id))?1:0;
 }
 
 void Panel::moveWindow(HWND hwnd,int i,int j,int f)
@@ -692,19 +697,16 @@ void Panel::draw(Canvas &canvas)
 //}
 
 //{ Text
-textdata_t::textdata_t(Canvas &canvas_,int xofs)
+textdata_t::textdata_t(Canvas &canvas_,int xofs):
+    hdcMem(canvas_.getDC()),
+    pcanvas(&canvas_),
+    ofsx(xofs),
+    wy(D(POPUP_WY)),
+    maxsz(0),
+    col(D(POPUP_TEXT_COLOR)),
+    x(D(POPUP_OFSX)+xofs),
+    y(D(POPUP_OFSY))
 {
-    pcanvas=&canvas_;
-    hdcMem=canvas_.getDC();
-    x=D(POPUP_OFSX)+xofs;
-    y=D(POPUP_OFSY);
-    col=D(POPUP_TEXT_COLOR);
-    wy=D(POPUP_WY);
-    ofsx=xofs;
-    //limits=lim;
-    //i=0;
-    maxsz=0;
-    //mode=mode1;
 }
 
 void textdata_t::ret()
@@ -936,15 +938,15 @@ public:
     friend class Canvas;
 };
 
-ClipRegionImp::ClipRegionImp(int x1,int y1,int x2,int y2)
+ClipRegionImp::ClipRegionImp(int x1,int y1,int x2,int y2):
+    hrgn(CreateRectRgn(x1,y1,x2,y2))
 {
-    hrgn=CreateRectRgn(x1,y1,x2,y2);
     if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed CreateRectRgn\n");
 }
 
-ClipRegionImp::ClipRegionImp(int x1,int y1,int x2,int y2,int r)
+ClipRegionImp::ClipRegionImp(int x1,int y1,int x2,int y2,int r):
+    hrgn(CreateRoundRectRgn(x1,y1,x2,y2,r,r))
 {
-    hrgn=CreateRoundRectRgn(x1,y1,x2,y2,r,r);
     if(!hrgn)Log.print_err("ERROR in ClipRegion(): failed CreateRoundRectRgn\n");
 }
 

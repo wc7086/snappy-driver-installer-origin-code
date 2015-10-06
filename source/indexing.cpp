@@ -532,18 +532,18 @@ void Parser::readStr(char **vb,char **ve)
     *ve=strEnd;
 }
 
-Parser::Parser(Driverpack *drpv,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf)
+Parser::Parser(Driverpack *drpv,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf):
+    pack(drpv),
+    string_list(&string_listv),
+    inffile(inf)
 {
-    pack=drpv;
-    string_list=&string_listv;
-    inffile=inf;
 }
 
-Parser::Parser(char *vb,char *ve)
+Parser::Parser(char *vb,char *ve):
+    pack(nullptr),
+    strBeg(vb),
+    strEnd(ve)
 {
-    strBeg=vb;
-    strEnd=ve;
-    pack=nullptr;
 }
 
 void Parser::setRange(sect_data_t *lnk)
@@ -906,7 +906,7 @@ public:
     Merger(CSzArEx *_db,const wchar_t *fullname);
     ~Merger();
     void makerecords(int i);
-    int checkfolders(const std::wstring dir1,const std::wstring dir2,int sub);
+    int checkfolders(const std::wstring &dir1,const std::wstring &dir2,int sub);
     void find_dups();
     int combine(std::wstring dir1,std::wstring dir2,int sz);
     void process_file(int i,unsigned *CRC,int *size,
@@ -997,7 +997,7 @@ void Merger::makerecords(int i)
     }
 }
 
-int Merger::checkfolders(const std::wstring dir1,const std::wstring dir2,int sub)
+int Merger::checkfolders(const std::wstring &dir1,const std::wstring &dir2,int sub)
 {
     int sizecom=0,sizedif=0;
     bool hasINF=false;
@@ -1312,7 +1312,10 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
     data.drp=this;
     if(!adr)
     {
-        data.adr=nullptr;
+        data.adr=nullptr;// end marker
+        data.inffile=nullptr;
+        data.pathinf=nullptr;
+        data.len=0;
         if(objs_new)objs_new->push(data);
         return;
     }
@@ -1714,13 +1717,13 @@ void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
         strcpy(buf,text_ind.get(rr[pos]));
 }
 
-Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col_v)
+Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_filename,Collection *col_v):
+    type(DRIVERPACK_TYPE_PENDING_SAVE),
+    col(col_v)
 {
-    col=col_v;
     drppath=text_ind.strcpyw(driverpack_path);
     drpfilename=text_ind.strcpyw(driverpack_filename);
     indexes.reset(0);
-    type=DRIVERPACK_TYPE_PENDING_SAVE;
 }
 
 unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
@@ -2007,7 +2010,7 @@ void Driverpack::print_index_hr()
     f=_wfopen(filename,L"wt");
 
     Log.print_con("Saving %S\n",filename);
-    fwprintf(f,L"%s\\%s (%d inf files)\n",getPath(),getFilename(),n);
+    fwprintf(f,L"%s\\%s (%u inf files)\n",getPath(),getFilename(),n);
     for(inffile_index=0;inffile_index<n;inffile_index++)
     {
         d_i=&inffile[inffile_index];
@@ -2048,7 +2051,7 @@ void Driverpack::print_index_hr()
                     for(HWID_index=HWID_index_last;HWID_index<HWID_list.size();HWID_index++)
                         if(HWID_list[HWID_index].desc_index==desc_index)
                     {
-                        if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%d,%d\n",HWID_index_last,HWID_index);
+                        if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%u,%u\n",HWID_index_last,HWID_index);
                         HWID_index_last=HWID_index;
                         hwidmatch.setHWID_index(HWID_index_last);
 

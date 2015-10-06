@@ -66,12 +66,15 @@ bool SystemImp::ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_
 //{ Event
 class EventImp:public Event
 {
+    EventImp(const EventImp&)=delete;
+    operator=(const EventImp&)=delete;
+
     HANDLE h;
 
 public:
-    EventImp()
+    EventImp():
+        h(CreateEvent(nullptr,0,0,nullptr))
     {
-        h=CreateEvent(nullptr,0,0,nullptr);
     }
     ~EventImp()
     {
@@ -99,7 +102,7 @@ Event *CreateEvent()
 
 class ThreadImp:public ThreadAbs
 {
-    HANDLE h;
+    HANDLE h=nullptr;
 
 public:
     void start(threadCallback callback,void *arg)
@@ -108,11 +111,11 @@ public:
     }
     void join()
     {
-        WaitForSingleObject(h,INFINITE);
+        if(h)WaitForSingleObject(h,INFINITE);
     }
     ~ThreadImp()
     {
-        CloseHandle(h);
+        if(h)CloseHandle(h);
     }
 };
 ThreadAbs *CreateThread()

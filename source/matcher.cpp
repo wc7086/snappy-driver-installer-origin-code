@@ -525,12 +525,12 @@ void MatcherImp::sorta(int *v)
 //}
 
 //{ Devicematch
-Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher)
+Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher):
+    start_matches(items),
+    num_matches(0),
+    device(cur_device),
+    driver(cur_driver)
 {
-    device=cur_device;
-    driver=cur_driver;
-    start_matches=items;
-    num_matches=0;
     State *state=matcher->getState();
 
     if(device->getHardwareID())
@@ -719,13 +719,12 @@ int Hwidmatch::calc_status(State *state)
     return r;
 }
 
-Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State *state,Devicematch *devicematch1)
+Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State *state,Devicematch *devicematch1):
+    drp(drp1),
+    HWID_index(HWID_index1),
+    devicematch(devicematch1)
 {
     char buf[BUFLEN];
-
-    drp=drp1;
-    HWID_index=HWID_index1;
-    devicematch=devicematch1;
 
     getdrp_drvsection(buf);
 
@@ -738,10 +737,10 @@ Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1,int dev_pos,int ishw,State
     status=calc_status(state);
 }
 
-Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1)
+Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1):
+    drp(drp1),
+    HWID_index(HWID_index1)
 {
-    drp=drp1;
-    HWID_index=HWID_index1;
 }
 
 /*
