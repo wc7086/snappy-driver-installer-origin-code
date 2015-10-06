@@ -183,29 +183,29 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
         if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
     {
-        if(!Updater.isTorrentReady())
+        if(!Updater->isTorrentReady())
         {
             Log.print_con("Waiting for torrent");
             for(j=0;j<200;j++)
             {
                 Log.print_con("*");
-                if(Updater.isTorrentReady())
+                if(Updater->isTorrentReady())
                 {
                     Log.print_con("DONE\n");
                     break;
                 }
                 Sleep(100);
             }
-            if(!Updater.isTorrentReady())break;
+            if(!Updater->isTorrentReady())break;
         }
         UpdateDialog.setPriorities(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)
     {
-        Updater.resumeDownloading();
+        Updater->resumeDownloading();
         Log.print_con("{{{{{{{{\n");
-        while(installmode&&!Updater.isUpdateCompleted())
+        while(installmode&&!Updater->isUpdateCompleted())
         {
             Sleep(500);
         }

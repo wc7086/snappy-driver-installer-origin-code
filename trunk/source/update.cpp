@@ -51,7 +51,7 @@ session_settings settings;
 dht_settings dht;
 
 UpdateDialog_t UpdateDialog;
-Updater_t Updater;
+Updater_t *Updater;
 TorrentStatus_t TorrentStatus;
 
 // UpdateDialog (static)
@@ -173,11 +173,11 @@ void UpdateDialog_t::updateTexts()
 
 void UpdateDialog_t::setCheckboxes()
 {
-    if(Updater.isPaused())return;
+    if(Updater->isPaused())return;
 
     // The app and indexes
     int baseChecked=0,indexesChecked=0;
-    for(int i=0;i<Updater.numfiles;i++)
+    for(int i=0;i<Updater->numfiles;i++)
     if(hTorrent.file_priority(i)==2)
     {
         if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))
@@ -206,7 +206,7 @@ void UpdateDialog_t::setCheckboxes()
 void UpdateDialog_t::setPriorities()
 {
     // Clear priorities for driverpacks
-    for(int i=0;i<Updater.numfiles;i++)
+    for(int i=0;i<Updater->numfiles;i++)
     if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
         hTorrent.file_priority(i,0);
 
@@ -226,7 +226,7 @@ void UpdateDialog_t::setPriorities()
     }
 
     // Set priorities for the app and indexes
-    for(int i=0;i<Updater.numfiles;i++)
+    for(int i=0;i<Updater->numfiles;i++)
     if(!StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
         hTorrent.file_priority(i,StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\")?indexes_pri:base_pri);
 }
@@ -332,7 +332,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     UpdateDialog.setPriorities();
                     Settings.flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
-                    Updater.resumeDownloading();
+                    Updater->resumeDownloading();
                     EndDialog(hwnd,IDOK);
                     return TRUE;
 
@@ -340,7 +340,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     UpdateDialog.setPriorities();
                     Settings.flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
-                    Updater.resumeDownloading();
+                    Updater->resumeDownloading();
                     return TRUE;
 
                 case IDCANCEL:
@@ -394,17 +394,17 @@ int UpdateDialog_t::populate(int update)
     boost::intrusive_ptr<torrent_info const> ti;
     std::vector<size_type> file_progress;
     ti=hTorrent.torrent_file();
-    Updater.numfiles=0;
+    Updater->numfiles=0;
     if(!ti)return 0;
     hTorrent.file_progress(file_progress);
-    Updater.numfiles=ti->num_files();
+    Updater->numfiles=ti->num_files();
 
     // Calculate size and progress for the app and indexes
     int missingindexes=0;
     int newver=0;
     int basesize=0,basedownloaded=0;
     int indexsize=0,indexdownloaded=0;
-    for(int i=0;i<Updater.numfiles;i++)
+    for(int i=0;i<Updater->numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
         const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
@@ -475,7 +475,7 @@ int UpdateDialog_t::populate(int update)
     }
 
     // Add driverpacks to the list
-    for(int i=0;i<Updater.numfiles;i++)
+    for(int i=0;i<Updater->numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
         const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
@@ -539,7 +539,7 @@ void UpdateDialog_t::setPriorities(const wchar_t *name,int pri)
     char buf[BUFLEN];
     wsprintfA(buf,"%S",name);
 
-    for(int i=0;i<Updater.numfiles;i++)
+    for(int i=0;i<Updater->numfiles;i++)
     if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),buf))
     {
         hTorrent.file_priority(i,pri);
@@ -706,7 +706,11 @@ void Updater_t::moveNewFiles()
 
 void Updater_t::checkUpdates()
 {
-    if(System.canWrite(L"update"))SetEvent(downloadmangar_event);
+    if(System.canWrite(L"update"))
+    {
+        downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_TORRENT;
+        SetEvent(downloadmangar_event);
+    }
 }
 
 void Updater_t::showProgress(wchar_t *buf)
@@ -771,37 +775,25 @@ void Updater_t::showPopup(Canvas &canvas)
 
 void Updater_t::createThreads()
 {
-    if(thandle_download)return;
-
     TorrentStatus.sessionpaused=1;
-    downloadmangar_exitflag=0;
-    //if(flags&FLAG_CHECKUPDATES)
-    {
-        downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
-        thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
-    }
+    downloadmangar_exitflag=DOWNLOAD_STATUS_WAITING;
+
+    downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
+    thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
 }
 
 void Updater_t::destroyThreads()
 {
     if(thandle_download)
     {
-        Log.print_con("Stopping torrent thread...");
-        downloadmangar_exitflag=1;
+        //Log.print_con("Stopping torrent thread...");
+        downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
         SetEvent(downloadmangar_event);
         WaitForSingleObject(thandle_download,INFINITE);
         System.CloseHandle_log(thandle_download,L"thandle_download",L"thr");
         System.CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
-        Log.print_con("DONE\n");
+        //Log.print_con("DONE\n");
         thandle_download=nullptr;
-    }
-
-    if(hSession)
-    {
-        Log.print_con("Closing torrent session...");
-        delete hSession;
-        Log.print_con("DONE\n");
-        hSession=nullptr;
     }
 }
 
@@ -874,12 +866,18 @@ void Updater_t::downloadTorrent()
             Log.print_con("DONE\n");
             break;
         }
-        if(downloadmangar_exitflag)break;
+        if(downloadmangar_exitflag!=DOWNLOAD_STATUS_DOWLOADING_TORRENT)break;
         Sleep(100);
     }
-    Log.print_con(hTorrent.torrent_file()?"":"FAILED\n");
+    if(!hTorrent.torrent_file())
+    {
+        downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
+        Log.print_con("FAILED\n");
+        return;
+    }
 
     // Pupulate list
+    downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
     i=UpdateDialog.populate(0);
     Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
     for(i=0;i<numfiles;i++)hTorrent.file_priority(i,0);
@@ -913,34 +911,40 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
     // Wait till is allowed to download the torrent
     Log.print_con("{thread_download\n");
     WaitForSingleObject(downloadmangar_event,INFINITE);
-    if(downloadmangar_exitflag)
+    if(downloadmangar_exitflag!=DOWNLOAD_STATUS_DOWLOADING_TORRENT)
     {
-        Log.print_con("}thread_download(idle)\n");
+        Log.print_con("}thread_download(never started)\n");
         return 0;
     }
 
     // Download torrent
-    Updater.downloadTorrent();
-    Updater.updateTorrentStatus();
+    Updater->downloadTorrent();
+    if(downloadmangar_exitflag!=DOWNLOAD_STATUS_TORRENT_GOT)
+    {
+        Log.print_con("}thread_download(failed to download torrent)\n");
+        return 0;
+    }
+
+    Updater->updateTorrentStatus();
     ResetEvent(downloadmangar_event);
 
-    while(!downloadmangar_exitflag)
+    while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {
         // Wait till is allowed to download driverpacks
         if(Settings.flags&FLAG_AUTOUPDATE&&System.canWrite(L"update"))
             UpdateDialog.openDialog();
         else
             WaitForSingleObject(downloadmangar_event,INFINITE);
-        if(downloadmangar_exitflag)break;
+        if(downloadmangar_exitflag==DOWNLOAD_STATUS_STOPPING)break;
 
         // Downloading loop
         Log.print_con("{torrent_start\n");
-        while(!downloadmangar_exitflag&&hSession)
+        while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING&&hSession)
         {
             Sleep(500);
 
             // Show progress
-            Updater.updateTorrentStatus();
+            Updater->updateTorrentStatus();
             ShowProgressInTaskbar(MainWindow.hMain,true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
             InvalidateRect(Popup.hPopup,nullptr,0);
 
@@ -978,7 +982,7 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
                 }
 
                 // Move files
-                Updater.moveNewFiles();
+                Updater->moveNewFiles();
                 hTorrent.force_recheck();
 
                 // Update list
@@ -1009,17 +1013,29 @@ unsigned int __stdcall Updater_t::thread_download(void *arg)
         // Download is completed
         finishedupdating=1;
         hSession->pause();
-        Updater.updateTorrentStatus();
+        Updater->updateTorrentStatus();
         monitor_pause=0;
         invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
         Log.print_con("}torrent_stop\n");
         ResetEvent(downloadmangar_event);
     }
+
+    if(hSession)
+    {
+        Log.print_con("Closing torrent session...");
+        delete hSession;
+        Log.print_con("DONE\n");
+        hSession=nullptr;
+    }
     Log.print_con("}thread_download\n");
     return 0;
 }
 
+void Updater_t::pause(){downloadmangar_exitflag=DOWNLOAD_STATUS_PAUSING;}
+
 bool Updater_t::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
+bool Updater_t::isPaused(){return TorrentStatus.sessionpaused;}
+bool Updater_t::isUpdateCompleted(){return finishedupdating;}
 //}
 #else
 

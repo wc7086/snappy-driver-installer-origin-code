@@ -210,7 +210,7 @@ void Bundle::bundle_lowprioirity()
     manager_g->print_hr();
 
     #ifdef USE_TORRENT
-    if(Settings.flags&FLAG_CHECKUPDATES&&!Timers.get(time_chkupdate))Updater.checkUpdates();
+    if(Settings.flags&FLAG_CHECKUPDATES&&!Timers.get(time_chkupdate))Updater->checkUpdates();
     #endif
 
     collection.save();

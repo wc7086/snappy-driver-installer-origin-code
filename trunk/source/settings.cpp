@@ -16,6 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include <wchar.h>
 #include "common.h"
 #include "settings.h"
 #include "cli.h"
@@ -181,10 +182,10 @@ void Settings_t::parse(const wchar_t *str,int ind)
         if(argint(pr,L"-wndwy:",&wndwy))continue;
         if(argint(pr,L"-filters:",&filters))continue;
 
-        if(argint(pr,L"-port:",&Updater.torrentport))continue;
-        if(argint(pr,L"-downlimit:",&Updater.downlimit))continue;
-        if(argint(pr,L"-uplimit:",&Updater.uplimit))continue;
-        if(argint(pr,L"-connections:",&Updater.connections))continue;
+        if(argint(pr,L"-port:",&Updater->torrentport))continue;
+        if(argint(pr,L"-downlimit:",&Updater->downlimit))continue;
+        if(argint(pr,L"-uplimit:",&Updater->uplimit))continue;
+        if(argint(pr,L"-connections:",&Updater->connections))continue;
 
         if(argopt(pr,L"-license",&license))continue;
         if(argopt(pr,L"-expertmode",&expertmode))continue;
@@ -297,7 +298,7 @@ void Settings_t::save()
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
             curlang,curtheme,hintdelay,wndwx,wndwy,filters,
-            Updater.torrentport,Updater.downlimit,Updater.uplimit,Updater.connections);
+            Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections);
 
     if(license)fwprintf(f,L"-license ");
     if(expertmode)fwprintf(f,L"-expertmode ");

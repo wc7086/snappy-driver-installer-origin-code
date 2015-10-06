@@ -194,6 +194,27 @@ public:
     friend class MainWindow_t;
 };
 
+// Combobox
+class Combobox
+{
+    HWND handle;
+
+public:
+    /*Combobox(HWND hwnd,int id)
+    {
+        handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
+    }*/
+    void reset()
+    {
+        SendMessage(handle,CB_RESETCONTENT,0,0);
+    }
+    int finditem(const wchar_t *str)
+    {
+        return SendMessage(handle,CB_FINDSTRINGEXACT,-1,(LPARAM)str);
+    }
+
+};
+
 // Text
 class textdata_t
 {

@@ -29,15 +29,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <boost/thread/condition_variable.hpp>
 #pragma GCC diagnostic pop
 
-Test::Test()
-{
-    Log.print_con("Test(%s) created\n",s.c_str());
-}
-Test::~Test()
-{
-    Log.print_con("Test destroyed\n");
-}
-
 //{ Txt
 int Txt::strcpy(const char *str)
 {

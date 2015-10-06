@@ -21,17 +21,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "settings.h"
 #include "indexing.h"
+#include "manager.h"
 
 #include <windows.h>
 
+#include "update.h"
 #include "enum.h"
 #include "main.h"
 #include "system.h"
 #include "draw.h"
-#include "manager.h"
 #include "theme.h"
 #include "install.h"
-#include "update.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=
@@ -346,7 +346,7 @@ void itembar_t::contextmenu(int x,int y)
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
 }
 
-void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index1)
+void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index1)
 {
     if(index1<RES_SLOTS)return;
 
@@ -361,7 +361,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int in
 
     char *t=state->textas.get(0);
     int maxln=0;
-    int bolder=rect.right/2;
+    int bolder=wx/2;
     wchar_t *p;
     Driver *cur_driver=nullptr;
     textdata_vert td(canvas);
@@ -479,11 +479,11 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int in
     // Cur driver (cur_driver)
     if(cur_driver||hwidmatch_f)
     {
-        canvas.drawLine(0,td.y-D(POPUP_WY)/2,rect.right,td.y-D(POPUP_WY)/2);
+        canvas.drawLine(0,td.y-D(POPUP_WY)/2,wx,td.y-D(POPUP_WY)/2);
     }
     if(devicematch_f->device->HardwareID||hwidmatch_f)
     {
-        canvas.drawLine(bolder,0,bolder,rect.bottom);
+        canvas.drawLine(bolder,0,bolder,wy);
     }
     if(cur_driver)
     {
@@ -942,7 +942,7 @@ void Manager::updateoverall()
         items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
         items_list[SLOT_EXTRACTING].val1=_processeditems;
         items_list[SLOT_EXTRACTING].val2=_totalitems;
-        if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater.isPaused())
+        if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater->isPaused())
             ShowProgressInTaskbar(MainWindow.hMain,true,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }
@@ -1017,7 +1017,7 @@ void Manager::toggle(int index)
     int group;
 
     #ifdef USE_TORRENT
-    if(installmode&&!Updater.isPaused())return;
+    if(installmode&&!Updater->isPaused())return;
     #endif
 
     itembar1=&items_list[index];
@@ -1080,7 +1080,7 @@ void Manager::selectnone()
     unsigned i;
 
     #ifdef USE_TORRENT
-    if(installmode&&!Updater.isPaused())return;
+    if(installmode&&!Updater->isPaused())return;
     #endif
 
     if(items_list[SLOT_RESTORE_POINT].isactive)
@@ -1098,7 +1098,7 @@ void Manager::selectall()
     int group=-1;
 
     #ifdef USE_TORRENT
-    if(installmode&&!Updater.isPaused())return;
+    if(installmode&&!Updater->isPaused())return;
     #endif
 
     itembar=&items_list[SLOT_RESTORE_POINT];
@@ -1150,7 +1150,7 @@ void Manager::set_rstpnt(int checked)
 }
 
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
-void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,RECT rect,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,rect,index);}
+void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index);}
 void Manager::contextmenu(int x,int y){items_list[Popup.floating_itembar].contextmenu(x,y);}
 const wchar_t *Manager::getHWIDby(int id){return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
@@ -1403,9 +1403,9 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 wsprintf(bufw,STR(STR_UPD_AVAIL2),itembar->val1&0xFF);
 
 #ifdef USE_TORRENT
-            if(!Updater.isPaused())
+            if(!Updater->isPaused())
             {
-                Updater.showProgress(bufw);
+                Updater->showProgress(bufw);
                 itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_MODIFY));
             }
             else
@@ -1808,8 +1808,10 @@ void Manager::restorepos(Manager *manager_old)
 //}
 
 //{ Popup
-void Manager::popup_driverlist(Canvas &canvas,RECT rect,unsigned i)
+void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
 {
+    UNREFERENCED_PARAMETER(wy)
+
     itembar_t *itembar;
     POINT p;
     wchar_t i_hwid[BUFLEN];
@@ -1874,13 +1876,14 @@ void Manager::popup_driverlist(Canvas &canvas,RECT rect,unsigned i)
         if(k==i)
         {
             canvas.drawRect(D(POPUP_OFSX)+Popup.horiz_sh,td.y,
-                            rect.right+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne,
+                            wx+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne,
                             D(POPUP_LST_SELECTED_COLOR));
         }
         itembar->hwidmatch->popup_driverline(limits,canvas,td.y,1,k);
         td.y+=lne;
     }
 
+    RECT rect;
     GetWindowRect(GetDesktopWindow(),&rect);
     p.y=0;p.x=0;
     ClientToScreen(Popup.hPopup,&p);
