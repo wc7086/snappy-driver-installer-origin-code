@@ -20,6 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <process.h>
+#include <errno.h>
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for PathFileExists
 #include <shlobj.h>         // for SHBrowseForFolder
@@ -61,6 +62,47 @@ bool SystemImp::ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_
 
     if(GetOpenFileName(&ofn))return true;
     return false;
+}
+void get_resource(int id,void **data,int *size)
+{
+    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
+    if(!myResource)
+    {
+        Log.print_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
+        *size=0;
+        *data=nullptr;
+        return;
+    }
+    *size=SizeofResource(nullptr,myResource);
+    *data=LoadResource(nullptr,myResource);
+}
+void StrFormatSize(int val,wchar_t *buf,int len)
+{
+    StrFormatByteSizeW(val,buf,len);
+}
+
+void mkdir_r(const wchar_t *path)
+{
+    if(path[1]==L':'&&path[2]==0)return;
+    if(!System.canWrite(path))
+    {
+        Log.print_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
+        return;
+    }
+
+    wchar_t buf[BUFLEN];
+    wcscpy(buf,path);
+    wchar_t *p=buf;
+    while((p=wcschr(p,L'\\')))
+    {
+        *p=0;
+        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
+            Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+        *p=L'\\';
+        p++;
+    }
+    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
+        Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 
 //{ Event

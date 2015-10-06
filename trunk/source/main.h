@@ -198,8 +198,6 @@ void drp_callback(const wchar_t *szFile,int action,int lParam);
 void invalidate(int v);
 
 // Misc
-void get_resource(int id,void **data,int *size);
-void mkdir_r(const wchar_t *path);
 void escapeAmpUrl(wchar_t *buf,const wchar_t *source);
 void escapeAmp(wchar_t *buf,const wchar_t *source);
 

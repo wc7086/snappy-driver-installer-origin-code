@@ -29,11 +29,80 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global vars
 Filemon *mon_lang,*mon_theme;
-Vault vLang,vTheme;
+VaultInt *vLang;
+VaultInt *vTheme;
 int monitor_pause=0;
 //}
 
 //{ Vault
+#include <unordered_map>
+#include <memory>
+typedef std::unordered_map <std::wstring,int> lookuptbl_t;
+
+class Vault:public VaultInt
+{
+    Vault(const Vault&)=delete;
+    Vault &operator=(const Vault&)=delete;
+
+protected:
+    entry_t *entry;
+    int num;
+    std::unique_ptr<wchar_t []> data_ptr,odata_ptr,datav_ptr;
+
+    lookuptbl_t lookuptbl;
+    int res;
+
+    wchar_t namelist[64][250];
+
+protected:
+    int  findvar(wchar_t *str);
+    wchar_t *findstr(wchar_t *str);
+    int  readvalue(const wchar_t *str);
+    void parse();
+    bool loadFromEncodedFile(const wchar_t *filename);
+    void loadFromFile(wchar_t *filename);
+    void loadFromRes(int id);
+
+public:
+    Vault(entry_t *entry,int num,int res);
+    virtual ~Vault(){}
+    void load(int i);
+    int pickTheme();
+
+    virtual void switchdata(int i)=0;
+    virtual void enumfiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
+    virtual void startmonitor()=0;
+    void updateCallback(const wchar_t *szFile,int action,int lParam);
+};
+
+class VaultLang:public Vault
+{
+public:
+    VaultLang(entry_t *entry,int num,int res);
+    void switchdata(int i);
+    void enumfiles(HWND hwnd,const wchar_t *path,int arg=0);
+    void startmonitor();
+    static void updateCallback(const wchar_t *szFile,int action,int lParam);
+};
+
+class VaultTheme:public Vault
+{
+public:
+    VaultTheme(entry_t *entry,int num,int res);
+    void switchdata(int i);
+    void enumfiles(HWND hwnd,const wchar_t *path,int arg=0);
+    void startmonitor();
+    static void updateCallback(const wchar_t *szFile,int action,int lParam);
+};
+VaultInt *CreateVaultLang(entry_t *entry,int num,int res)
+{
+    return new VaultLang(entry,num,res);
+}
+VaultInt *CreateVaultTheme(entry_t *entry,int num,int res)
+{
+    return new VaultTheme(entry,num,res);
+}
+
 int Vault::findvar(wchar_t *str)
 {
     int i;
@@ -265,16 +334,23 @@ void Vault::loadFromRes(int id)
         if(entry[i].init<1)Log.print_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
-Vault::Vault(){}
-
-void Vault::init1(entry_t *entryv,int numv,int resv)
+Vault::Vault(entry_t *entryv,int numv,int resv):
+    entry(entryv),
+    num(numv),
+    res(resv)
 {
-    entry=entryv;
-    num=numv;
-    res=resv;
-
     for(int i=0;i<num;i++)
         lookuptbl.insert({std::wstring(entry[i].name),i+1});
+}
+
+VaultLang::VaultLang(entry_t *entryv,int numv,int resv):
+    Vault{entryv,numv,resv}
+{
+}
+
+VaultTheme::VaultTheme(entry_t *entryv,int numv,int resv):
+    Vault{entryv,numv,resv}
+{
 }
 
 void Vault::load(int i)
@@ -299,16 +375,16 @@ int Vault::pickTheme()
 //}
 
 //{ Lang/theme
-void lang_set(int i)
+void VaultLang::switchdata(int i)
 {
     if(Settings.flags&FLAG_NOGUI)return;
-    vLang.load(i);
+    load(i);
 }
 
-void theme_set(int i)
+void VaultTheme::switchdata(int i)
 {
     if(Settings.flags&FLAG_NOGUI)return;
-    vTheme.load(i);
+    load(i);
 
     for(i=0;i<BOX_NUM;i++)
     {
@@ -346,7 +422,7 @@ void theme_set(int i)
     }
 }
 
-void lang_enum(HWND hwnd,const wchar_t *path,int locale)
+void VaultLang::enumfiles(HWND hwnd,const wchar_t *path,int locale)
 {
     wchar_t buf[BUFLEN];
     HANDLE hFind;
@@ -366,14 +442,14 @@ void lang_enum(HWND hwnd,const wchar_t *path,int locale)
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
         wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
-        vLang.loadFromFile(buf);
+        loadFromFile(buf);
         if(language[STR_LANG_CODE].val==(locale&0xFF))
         {
             wsprintf(lang_auto_str,L"Auto (%s)",STR(STR_LANG_NAME));
             lang_auto=i;
         }
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)STR(STR_LANG_NAME));
-        wcscpy(vLang.namelist[i],buf);
+        wcscpy(namelist[i],buf);
         i++;
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
@@ -382,16 +458,18 @@ void lang_enum(HWND hwnd,const wchar_t *path,int locale)
     if(!i)
     {
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)L"English");
-        vLang.namelist[i][0]=0;
+        namelist[i][0]=0;
     }else
     {
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)lang_auto_str);
-        wcscpy(vLang.namelist[i],(lang_auto>=0)?vLang.namelist[lang_auto]:L"");
+        wcscpy(namelist[i],(lang_auto>=0)?namelist[lang_auto]:L"");
     }
 }
 
-void theme_enum(HWND hwnd,const wchar_t *path)
+void VaultTheme::enumfiles(HWND hwnd,const wchar_t *path,int arg)
 {
+    UNREFERENCED_PARAMETER(arg)
+
     wchar_t buf[BUFLEN];
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
@@ -405,9 +483,9 @@ void theme_enum(HWND hwnd,const wchar_t *path)
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
         wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
-        vTheme.loadFromFile(buf);
+        loadFromFile(buf);
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)D(THEME_NAME));
-        wcscpy(vTheme.namelist[i],buf);
+        wcscpy(namelist[i],buf);
         i++;
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
@@ -416,22 +494,28 @@ void theme_enum(HWND hwnd,const wchar_t *path)
     if(!i)
     {
         SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)L"(default)");
-        vTheme.namelist[i][0]=0;
+        namelist[i][0]=0;
     }
-    vTheme.load(-1);
+    load(-1);
 }
 
-void vault_startmonitors()
+void VaultLang::startmonitor()
 {
     wchar_t buf[BUFLEN];
 
     wsprintf(buf,L"%s\\langs",Settings.data_dir);
-    mon_lang=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,lang_callback);
-    wsprintf(buf,L"%s\\themes",Settings.data_dir);
-    mon_theme=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,theme_callback);
+    mon_lang=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
 }
 
-void lang_callback(const wchar_t *szFile,int action,int lParam)
+void VaultTheme::startmonitor()
+{
+    wchar_t buf[BUFLEN];
+
+    wsprintf(buf,L"%s\\themes",Settings.data_dir);
+    mon_theme=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
+}
+
+void VaultLang::updateCallback(const wchar_t *szFile,int action,int lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);
@@ -440,7 +524,7 @@ void lang_callback(const wchar_t *szFile,int action,int lParam)
     PostMessage(MainWindow.hMain,WM_UPDATELANG,0,0);
 }
 
-void theme_callback(const wchar_t *szFile,int action,int lParam)
+void VaultTheme::updateCallback(const wchar_t *szFile,int action,int lParam)
 {
     UNREFERENCED_PARAMETER(szFile);
     UNREFERENCED_PARAMETER(action);

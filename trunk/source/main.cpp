@@ -165,9 +165,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     mkdir_r(Settings.output_dir);
 
     // Load text
-    vLang.init1(language,STR_NM,IDR_LANG);
-    vTheme.init1(theme,THEME_NM,IDR_THEME);
-    vLang.load(0);
+    vLang=CreateVaultLang(language,STR_NM,IDR_LANG);
+    vTheme=CreateVaultTheme(theme,THEME_NM,IDR_THEME);
+    vLang->load(0);
 
     // Allocate resources
     Bundle bundle[2];
@@ -209,6 +209,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     int i;
     for(i=0;i<BOX_NUM;i++)box[i].release();
     for(i=0;i<ICON_NUM;i++)icon[i].release();
+    delete vLang;
 
     // Save settings
     #ifndef CONSOLE_MODE
@@ -589,43 +590,6 @@ void MainWindow_t::setscrollpos(int pos)
 //}
 
 //{ Misc
-void get_resource(int id,void **data,int *size)
-{
-    HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
-    if(!myResource)
-    {
-        Log.print_err("ERROR in get_resource(): failed FindResource(%d)\n",id);
-        *size=0;
-        *data=nullptr;
-        return;
-    }
-    *size=SizeofResource(nullptr,myResource);
-    *data=LoadResource(nullptr,myResource);
-}
-
-void mkdir_r(const wchar_t *path)
-{
-    if(path[1]==L':'&&path[2]==0)return;
-    if(!System.canWrite(path))
-    {
-        Log.print_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
-        return;
-    }
-
-    wchar_t buf[BUFLEN];
-    wcscpy(buf,path);
-    wchar_t *p=buf;
-    while((p=wcschr(p,L'\\')))
-    {
-        *p=0;
-        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
-            Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
-        *p=L'\\';
-        p++;
-    }
-    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
-        Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
-}
 
 void escapeAmpUrl(wchar_t *buf,const wchar_t *source)
 {
@@ -887,7 +851,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             PostMessage(hwnd,WM_UPDATETHEME,1,0);
 
             // Misc
-            vault_startmonitors();
+            vLang->startmonitor();
+            vTheme->startmonitor();
             DragAcceptFiles(hwnd,1);
 
             manager_g->populate();
@@ -920,20 +885,20 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
         case WM_UPDATELANG:
             SendMessage(hLang,CB_RESETCONTENT,0,0);
-            lang_enum(hLang,L"langs",manager_g->matcher->getState()->getLocale());
+            vLang->enumfiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
             f=SendMessage(hLang,CB_FINDSTRINGEXACT,-1,(LPARAM)Settings.curlang);
             if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
-            lang_set(f);
+            vLang->switchdata(f);
             SendMessage(hLang,CB_SETCURSEL,f,0);
             lang_refresh();
             break;
 
         case WM_UPDATETHEME:
             SendMessage(hTheme,CB_RESETCONTENT,0,0);
-            theme_enum(hTheme,L"themes");
+            vTheme->enumfiles(hTheme,L"themes");
             f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)Settings.curtheme);
-            if(f==CB_ERR)f=vTheme.pickTheme();
-            theme_set(f);
+            if(f==CB_ERR)f=vTheme->pickTheme();
+            vTheme->switchdata(f);
             if(Settings.wndwx)D(MAINWND_WX)=Settings.wndwx;
             if(Settings.wndwy)D(MAINWND_WY)=Settings.wndwy;
             SendMessage(hTheme,CB_SETCURSEL,f,0);
@@ -1329,7 +1294,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 {
                     i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curlang);
-                    lang_set(i);
+                    vLang->switchdata(i);
                     lang_refresh();
                 }
 
@@ -1337,7 +1302,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 {
                     i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curtheme);
-                    theme_set(i);
+                    vTheme->switchdata(i);
                     theme_refresh();
                 }
             }
