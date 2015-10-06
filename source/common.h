@@ -24,15 +24,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Global vars
 extern int trap_mode;
 
-// Test
-class Test
-{
-public:
-    std::string s;
-    Test();
-    ~Test();
-};
-
 // Vector templates
 template <class T>
 char *vector_save(std::vector<T> *v,char *p)

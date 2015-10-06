@@ -25,9 +25,19 @@ class Updater_t;
 class Canvas;
 
 // Global variables
-extern TorrentStatus_t TorrentStatus;
 extern UpdateDialog_t UpdateDialog;
-extern Updater_t Updater;
+extern Updater_t *Updater;
+
+enum DOWNLOAD_STATUS
+{
+    DOWNLOAD_STATUS_WAITING,
+    DOWNLOAD_STATUS_DOWLOADING_TORRENT,
+    DOWNLOAD_STATUS_TORRENT_GOT,
+    DOWNLOAD_STATUS_DOWLOADING_DATA,
+    DOWNLOAD_STATUS_FINISHED_DOWNLOADING,
+    DOWNLOAD_STATUS_PAUSING,
+    DOWNLOAD_STATUS_STOPPING,
+};
 
 // TorrentStatus
 class TorrentStatus_t
@@ -95,24 +105,26 @@ private:
     void updateTorrentStatus();
     void removeOldDriverpacks(const wchar_t *ptr);
     void moveNewFiles();
+    static unsigned int __stdcall thread_download(void *arg);
 
 public:
     int numfiles;
     static int torrentport,downlimit,uplimit,connections;
 
-    void checkUpdates();
     void showProgress(wchar_t *buf);
     void showPopup(Canvas &canvas);
+
     void createThreads();
     void destroyThreads();
 
     void downloadTorrent();
+    void checkUpdates();
     void resumeDownloading();
-    static unsigned int __stdcall thread_download(void *arg);
+    void pause();
 
     bool isTorrentReady();
-    bool isPaused(){return TorrentStatus.sessionpaused;}
-    bool isUpdateCompleted(){return finishedupdating;}
+    bool isPaused();
+    bool isUpdateCompleted();
 };
 
 #endif

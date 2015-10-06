@@ -151,6 +151,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     ExpandEnvironmentStrings(Settings.logO_dir,Settings.log_dir,BUFLEN);
     Log.start(Settings.log_dir);
     Settings.loginfo();
+    #ifndef NDEBUG
+    Log.print_con("Debug info present\n");
+    if(backtrace)Log.print_con("Backtrace is loaded\n");
+    #endif
 
     #ifdef BENCH_MODE
     benchmark();
@@ -179,7 +183,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Check updates
     #ifdef USE_TORRENT
-    Updater.createThreads();
+    Updater=new Updater_t();
+    Updater->createThreads();
     #endif
 
     // Start folder monitors
@@ -199,7 +204,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Stop libtorrent
     #ifdef USE_TORRENT
-    Updater.destroyThreads();
+    Updater->destroyThreads();
+    delete Updater;
     #endif
 
     // Free allocated resources
@@ -220,10 +226,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
 
     // Stop runtime error handlers
-    if(backtrace)
+    /*if(backtrace)
         FreeLibrary(backtrace);
     else
-        signal(SIGSEGV,SIG_DFL);
+        signal(SIGSEGV,SIG_DFL);*/
 
     // Stop logging
     //time_total=GetTickCount()-time_total;
@@ -305,7 +311,7 @@ void MainWindow_t::gui(int nCmd)
         {
             Settings.flags|=FLAG_CHECKUPDATES;
             #ifdef USE_TORRENT
-            Updater.checkUpdates();
+            Updater->checkUpdates();
             #endif
             invalidate(INVALIDATE_MANAGER);
         }
@@ -417,7 +423,7 @@ void drp_callback(const wchar_t *szFile,int action,int lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    if(StrStrIW(szFile,L".7z")&&Updater.isPaused())invalidate(INVALIDATE_INDEXES);
+    if(StrStrIW(szFile,L".7z")&&Updater->isPaused())invalidate(INVALIDATE_INDEXES);
 }
 
 const wchar_t MainWindow_t::classMain[]= L"classSDIMain";
@@ -899,7 +905,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             {
                 installmode=MODE_STOPPING;
                 #ifdef USE_TORRENT
-                Updater.destroyThreads();
+                Updater->pause();
                 #endif
             }
             break;
@@ -1678,12 +1684,12 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 
                 case FLOATING_CMPDRIVER:
                     canvasPopup->setFont(Popup.hFontP);
-                    manager_g->popup_drivercmp(manager_g,*canvasPopup,rect,floating_itembar);
+                    manager_g->popup_drivercmp(manager_g,*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:
                     canvasPopup->setFont(Popup.hFontP);
-                    manager_g->popup_driverlist(*canvasPopup,rect,floating_itembar);
+                    manager_g->popup_driverlist(*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:
@@ -1694,7 +1700,7 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
                 case FLOATING_DOWNLOAD:
                     canvasPopup->setFont(Popup.hFontP);
                     #ifdef USE_TORRENT
-                    Updater.showPopup(*canvasPopup);
+                    Updater->showPopup(*canvasPopup);
                     #endif
                     break;
 
