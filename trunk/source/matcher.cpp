@@ -363,7 +363,7 @@ public:
     Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
 };
 
-Matcher::~Matcher(){};
+Matcher::~Matcher(){}
 Matcher *CreateMatcher()
 {
     return new MatcherImp();

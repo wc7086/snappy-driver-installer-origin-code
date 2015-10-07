@@ -29,7 +29,7 @@ extern Updater_t *Updater;
 class Updater_t
 {
 public:
-    int numfiles;
+    int numfiles=0;
     static int torrentport,downlimit,uplimit,connections;
 
 public:

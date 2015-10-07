@@ -207,8 +207,7 @@ STDMETHODIMP CExtractCallbackConsole::SetCompleted(const UInt64 *completeValue)
       _percent.Completed = *completeValue;
     _percent.Print();
   }
-  _7z_setcomplited(*completeValue);
-  return CheckBreak2();
+  return _7z_setcomplited(*completeValue);
 }
 
 static const char *kTab = "  ";

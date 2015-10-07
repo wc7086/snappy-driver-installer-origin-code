@@ -555,7 +555,7 @@ void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 
 void Panel::click(int i)
 {
-    if(items[i].type==TYPE_CHECKBOX||TYPE_BUTTON)
+    if(items[i].type==TYPE_CHECKBOX||items[i].type==TYPE_BUTTON)
     {
         flipChecked(i);
         if(items[i].action_id==ID_EXPERT_MODE)
@@ -967,7 +967,7 @@ ClipRegionImp::~ClipRegionImp()
 ClipRegion::ClipRegion(int x1,int y1,int x2,int y2):imp(new ClipRegionImp(x1,y1,x2,y2)){}
 ClipRegion::ClipRegion(int x1,int y1,int x2,int y2,int r):imp(new ClipRegionImp(x1,y1,x2,y2,r)){}
 ClipRegion::ClipRegion():imp(new ClipRegionImp()){}
-ClipRegion::~ClipRegion(){delete imp;};
+ClipRegion::~ClipRegion(){delete imp;}
 void ClipRegion::setRegion(int x1,int y1,int x2,int y2){imp->setRegion(x1,y1,x2,y2);}
 //}
 

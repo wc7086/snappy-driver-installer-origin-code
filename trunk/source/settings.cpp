@@ -385,7 +385,7 @@ bool Settings_t::loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
         if(*Buff=='/')*Buff='-';         // replace / with -
         if(wcsstr(Buff,L"-?"))continue; // ignore -?
         if(Buff[wcslen(Buff)-1]=='\n')Buff[wcslen(Buff)-1]='\0';
-        if(wcslen(Buff)==0)continue;
+        if(!*Buff)continue;
 
         wcscat(wcscat(DestStr,Buff),L" ");
     }

@@ -404,7 +404,7 @@ void virusmonitor_start()
 
 void virusmonitor_stop()
 {
-    if(mon_vir)delete mon_vir;
+    delete mon_vir;
 }
 //}
 

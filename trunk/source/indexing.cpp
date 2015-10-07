@@ -163,11 +163,12 @@ void findosattr(char *bufa,char *adr,int len)
 {
     unsigned bufal=0;
     char *p=adr;
+    static wchar_t osatt[]={L'O',L'S',L'A',L't',L't'}; // OSAtt
 
     *bufa=0;
     while(p+11<adr+len)
     {
-        if(*p=='O'&&!memcmp(p,L"OSAttr",10))
+        if(*p=='O'&&!memcmp(p,osatt,10))
         {
             int ofs=p[19]=='2'||p[19]=='1'?1:0;
             if(!*bufa||bufal<wcslen((wchar_t *)(p+18+ofs)))
@@ -427,7 +428,6 @@ int Parser::parseField()
     parseWhitespace();
 
     char *p=blockBeg;
-    int flag=0;
 
     strBeg=strEnd=p;
 
@@ -458,7 +458,7 @@ int Parser::parseField()
     }
     else
     {
-        while(p<blockEnd&&!flag)
+        while(p<blockEnd)
         {
             switch(*p)
             {
@@ -597,6 +597,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
     wsprintf(buf,L"%s\\*.*",path);
     WIN32_FIND_DATA FindFileData;
     HANDLE hFind=FindFirstFile(buf,&FindFileData);
+    int pathlen=wcslen(driverpack_dir)+1;
 
     while(FindNextFile(hFind,&FindFileData)!=0)
     {
@@ -624,7 +625,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
                 char *buft=new char[len];
                 fread(buft,len,1,f);
                 fclose(f);
-                wsprintf(buf,L"%s\\",path+wcslen(driverpack_dir)+1);
+                wsprintf(buf,L"%s\\",path+pathlen);
 
                 if(len)
                 {
@@ -1244,8 +1245,9 @@ int Driverpack::genindex()
             }
             SzArEx_GetFileNameUtf16(&db,i,(UInt16 *)fullname);
 
-            if(StrCmpIW(fullname+wcslen(fullname)-4,L".inf")==0||
-                StrCmpIW(fullname+wcslen(fullname)-4,L".cat")==0)
+            int namelen=wcslen(fullname)-4;
+            if(StrCmpIW(fullname+namelen,L".inf")==0||
+                StrCmpIW(fullname+namelen,L".cat")==0)
             {
                 //Log.print_con("{");
 
@@ -1836,7 +1838,7 @@ int Driverpack::checkindex()
     sz-=3+sizeof(int);
     fclose(f);
 
-    if(memcmp(buf,"SDW",3)||version!=VER_INDEX)if(version!=0x204)return 0;
+    if(memcmp(buf,"SDW",3)!=0||version!=VER_INDEX)if(version!=0x204)return 0;
 
     return 1;
 }
@@ -1869,7 +1871,7 @@ int Driverpack::loadindex()
     fread(&version,sizeof(int),1,f);
     sz-=3+sizeof(int);
 
-    if(memcmp(buf,"SDW",3)||version!=VER_INDEX)if(version!=0x204)return 0;
+    if(memcmp(buf,"SDW",3)!=0||version!=VER_INDEX)if(version!=0x204)return 0;
     if(*Settings.drpext_dir)return 0;
 
     p=mem=new char[sz];
@@ -1894,7 +1896,7 @@ int Driverpack::loadindex()
     p=indexes.loaddata(p);
 
     delete[] mem;
-    if(mem_unpack)delete[] mem_unpack;
+    delete[] mem_unpack;
     fclose(f);
     text_ind.shrink();
 
@@ -2016,7 +2018,8 @@ void Driverpack::print_index_hr()
         d_i=&inffile[inffile_index];
         fprintf(f,"  %s%s (%d bytes)\n",text_ind.get(d_i->infpath),text_ind.get(d_i->inffilename),d_i->infsize);
         for(i=0;i<(int)n;i++)if(i!=(int)inffile_index&&d_i->infcrc==inffile[i].infcrc)
-        fprintf(f,"**%s%s\n",text_ind.get(inffile[i].infpath),text_ind.get(inffile[i].inffilename));
+            fprintf(f,"**%s%s\n",text_ind.get(inffile[i].infpath),text_ind.get(inffile[i].inffilename));
+
         t=&d_i->version;
         fprintf(f,"    date\t\t\t%d/%d/%d\n",t->d,t->m,t->y);
         fprintf(f,"    version\t\t\t%d.%d.%d.%d\n",t->v1,t->v2,t->v3,t->v4);
@@ -2089,7 +2092,7 @@ void Driverpack::print_index_hr()
         }
         fprintf(f,"\n");
     }
-    fprintf(f,"  HWIDS:%d/%d\n",HWID_index_last+1,(int)HWID_list.size());
+    fprintf(f,"  HWIDS:%u/%u\n",HWID_index_last+1,HWID_list.size());
     fclose(f);
 }
 
@@ -2169,11 +2172,6 @@ void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char
         int size=inf_len;
 
         char *buf_out=new char[size+2];
-        if(!buf_out)
-        {
-            Log.print_err("ERROR in driverpack_indexinf: malloc(%d)\n",size+2);
-            return;
-        }
         size=unicode2ansi(bb,buf_out,size);
         indexinf_ansi(drpdir,iinfdilename,buf_out,size);
         delete[] buf_out;
