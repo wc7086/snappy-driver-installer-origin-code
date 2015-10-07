@@ -857,7 +857,7 @@ int  State::load(const wchar_t *filename)
     fread(&version,sizeof(int),1,f);
     sz-=3+sizeof(int);
 
-    if(memcmp(buf,VER_MARKER,3))
+    if(memcmp(buf,VER_MARKER,3)!=0)
     {
         Log.print_err("ERROR in State::load(): invalid snapshot\n");
         return 0;

@@ -102,8 +102,8 @@ class UpdaterImp:public Updater_t
     static int finishedupdating;
     static int finisheddownloading;
 
-    int averageSpeed;
-    long long torrenttime;
+    int averageSpeed=0;
+    long long torrenttime=0;
 
 private:
     void updateTorrentStatus();
@@ -213,7 +213,7 @@ int UpdateDialog_t::getcurver(const char *ptr)
     return 0;
 }
 
-static int yes1(libtorrent::torrent_status const&){return true;}
+static bool yes1(libtorrent::torrent_status const&){return true;}
 
 int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
 {
@@ -987,6 +987,7 @@ void UpdaterImp::resumeDownloading()
     {
         hTorrent.force_recheck();
         Log.print_con("torrent_resume\n");
+        downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_DATA;
         SetEvent(downloadmangar_event);
     }
     hSession->resume();
@@ -1031,7 +1032,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
         // Downloading loop
         Log.print_con("{torrent_start\n");
-        while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING&&hSession)
+        while(downloadmangar_exitflag==DOWNLOAD_STATUS_DOWLOADING_DATA&&hSession)
         {
             Sleep(500);
 
@@ -1098,7 +1099,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 fi.uCount=1;
                 fi.dwTimeout=0;
                 FlashWindowEx(&fi);
-                break;
+                downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
             }
         }
         // Download is completed

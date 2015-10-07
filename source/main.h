@@ -115,7 +115,7 @@ public:
 
     int floating_type=0;
     int floating_itembar=0;
-    int floating_x,floating_y=0;
+    int floating_x=0,floating_y=0;
     int horiz_sh=0;
 
     int PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);

@@ -538,15 +538,15 @@ int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
         if(a->hwidmatch->getHWID_index()==b->hwidmatch->getHWID_index())return 3;
         return 0;
     }
-    if(wcslen(ta->getw(a->devicematch->device->getDriver()))>0)
+    if(*ta->getw(a->devicematch->device->getDriver()))
     {
-        if(!wcscmp(ta->getw(a->devicematch->device->getDriver()),tb->getw(b->devicematch->device->getDriver())))return wcslen(ta->getw(a->devicematch->device->getDriver()))+10;
+        if(!wcscmp(ta->getw(a->devicematch->device->getDriver()),tb->getw(b->devicematch->device->getDriver())))return 2;
     }
     else
     {
-        if(wcslen(ta->getw(a->devicematch->device->getDescr()))>0)
+        if(*ta->getw(a->devicematch->device->getDescr()))
         {
-            if(!wcscmp(ta->getw(a->devicematch->device->getDescr()),tb->getw(b->devicematch->device->getDescr())))return 100+wcslen(ta->getw(a->devicematch->device->getDescr()));
+            if(!wcscmp(ta->getw(a->devicematch->device->getDescr()),tb->getw(b->devicematch->device->getDescr())))return 1;
         }
     }
 
@@ -567,7 +567,7 @@ void Manager::init(Matcher *matchera)
 int  Manager::manager_drplive(wchar_t *s)
 {
     itembar_t *itembar;
-    unsigned k,needle=0;
+    unsigned k;
 
     itembar=&items_list[RES_SLOTS];
     for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
@@ -577,9 +577,8 @@ int  Manager::manager_drplive(wchar_t *s)
         {
             if(itembar->hwidmatch->getdrp_packontorrent())return 0;// Yes
         }
-        needle=1;
     }
-    return needle?1:1; // No/Unknown
+    return 1;
 }
 
 void Manager::populate()
@@ -595,7 +594,7 @@ void Manager::populate()
 
         for(unsigned j=0;j<devicematch->num_matches;j++,hwidmatch++)
         {
-            items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?2:2));
+            items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],2));
             items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1));
         }
         if(!devicematch->num_matches)
@@ -886,7 +885,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             ofs=(itembar->first&1)?0:D(DRVITEM_LINE_INTEND);
             if(x-ofs>0)*r=i;
             if(x-ofs>0&&x-ofs<D(ITEM_CHECKBOX_SIZE)&&y>0&&y<D(ITEM_CHECKBOX_SIZE))*zone=1;
-            if(x>wx-50&&!ofs)*zone=Settings.expertmode?2:2;
+            if(x>wx-50&&!ofs)*zone=2;
             if(!*zone&&(x-ofs<D(ITEM_CHECKBOX_SIZE)))*zone=3;
             if(!*zone&&(x>240+190))*zone=3;
             if(MainWindow.kbpanel==KB_NONE)return;
@@ -932,10 +931,10 @@ void Manager::updateoverall()
     }
     if(_totalitems)
     {
-        double d=(items_list[itembar_act].percent)/_totalitems;
+        int d=items_list[itembar_act].percent/_totalitems;
         if(items_list[itembar_act].checked==0)d=0;
         if(itembar_act==SLOT_RESTORE_POINT)d=0;
-        items_list[SLOT_EXTRACTING].percent=(int)(_processeditems*1000./_totalitems+d);
+        items_list[SLOT_EXTRACTING].percent=_processeditems*1000/_totalitems+d;
         items_list[SLOT_EXTRACTING].val1=_processeditems;
         items_list[SLOT_EXTRACTING].val2=_totalitems;
         if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater->isPaused())
@@ -1153,10 +1152,12 @@ const wchar_t *Manager::getHWIDby(int id){return items_list[Popup.floating_itemb
 void Manager::getINFpath(int wp)
 {
     wchar_t buf[BUFLEN];
+    State *state=matcher->getState();
+
     wsprintf(buf,L"%s%s%s",
             (wp==ID_LOCATEINF)?L"/select,":L"",
-            matcher->getState()->textas.get(matcher->getState()->getWindir()),
-            matcher->getState()->textas.get(items_list[Popup.floating_itembar].devicematch->driver->getInfPath()));
+            state->textas.get(state->getWindir()),
+            state->textas.get(items_list[Popup.floating_itembar].devicematch->driver->getInfPath()));
 
     if(wp==ID_OPENINF)
         System.run_command(buf,L"",SW_SHOW,0);
@@ -1707,7 +1708,7 @@ void Manager::restorepos(Manager *manager_old)
     itembar_t *itembar_new,*itembar_old;
     Txt *t_new,*t_old;
     unsigned i,j;
-    int show_changes=manager_old->items_list.size()>20;
+    bool show_changes=manager_old->items_list.size()>20;
 
     //if(statemode==STATEMODE_LOAD)show_changes=0;
     if(Log.isHidden(LOG_VERBOSE_DEVSYNC))show_changes=0;

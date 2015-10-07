@@ -217,7 +217,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Stop folder monitors
-    if(mon_drp)delete mon_drp;
+    delete mon_drp;
     virusmonitor_stop();
 
     // Bring the console window back
@@ -877,8 +877,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             Settings.wndwx=rect.right-rect.left;
             Settings.wndwy=rect.bottom-rect.top;
 
-            if(mon_lang)delete mon_lang;
-            if(mon_theme)delete mon_theme;
+            delete mon_lang;
+            delete mon_theme;
             delete canvasMain;
             PostQuitMessage(0);
             break;

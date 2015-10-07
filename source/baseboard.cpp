@@ -104,18 +104,18 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
         while(pEnumerator)
         {
-            hres=pEnumerator->Next(WBEM_INFINITE,1,&pclsObj,&uReturn);
+            pEnumerator->Next(WBEM_INFINITE,1,&pclsObj,&uReturn);
             if(0==uReturn)break;
 
             VARIANT vtProp1,vtProp2,vtProp3;
 
-            hres=pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
+            pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
             if(vtProp1.bstrVal)wcscpy(manuf,vtProp1.bstrVal);
 
-            hres=pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
+            pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
             if(vtProp2.bstrVal)wcscpy(model,vtProp2.bstrVal);
 
-            hres=pclsObj->Get(L"Product",0,&vtProp3,nullptr,nullptr);
+            pclsObj->Get(L"Product",0,&vtProp3,nullptr,nullptr);
             if(vtProp3.bstrVal)wcscpy(product,vtProp3.bstrVal);
         }
     }
@@ -139,15 +139,15 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
         while(pEnumerator)
         {
-            hres=pEnumerator->Next(WBEM_INFINITE,1,&pclsObj,&uReturn);
+            pEnumerator->Next(WBEM_INFINITE,1,&pclsObj,&uReturn);
             if(0==uReturn)break;
 
             VARIANT vtProp1,vtProp2;
 
-            hres=pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
+            pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
             if(vtProp1.bstrVal)wcscpy(cs_manuf,vtProp1.bstrVal);
 
-            hres=pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
+            pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
             if(vtProp2.bstrVal)wcscpy(cs_model,vtProp2.bstrVal);
         }
     }
@@ -171,7 +171,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
         while(pEnumerator)
         {
-            hres=pEnumerator->Next(WBEM_INFINITE,1,&pclsObj,&uReturn);
+            pEnumerator->Next(WBEM_INFINITE,1,&pclsObj,&uReturn);
             if(0==uReturn)break;
 
             VARIANT vtProp;
