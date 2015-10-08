@@ -171,6 +171,107 @@ struct Panelitem
     int action_id;
     int checked;
 };
+
+class Widget
+{
+protected:
+    int x1,y1,wx,wy;
+    bool isSelected=false;
+
+public:
+    Widget *parent;
+
+    virtual ~Widget(){}
+    //virtual void click(int x,int y);
+    virtual void draw(Canvas &){}
+    virtual void hover(int x,int y){isSelected=(x>=x1&&x<=x1+wx&&y>=y1&&y<=y1+wy);}
+    virtual void setboundbox(int v1,int v2,int v3,int v4){x1=v1;y1=v2;wx=v3;wy=v4;}
+};
+
+class WidgetComposite:public Widget
+{
+protected:
+    int num=0;
+    Widget *widgets[20];
+
+public:
+    virtual void Add(Widget *w)
+    {
+        widgets[num]=w;
+        widgets[num]->parent=this;
+        num++;
+    }
+    ~WidgetComposite()
+    {
+        for(int i=0;i<num;i++)delete widgets[i];
+    }
+    void draw(Canvas &canvas)
+    {
+        for(int i=0;i<num;i++)widgets[i]->draw(canvas);
+    }
+    void hover(int x,int y)
+    {
+        for(int i=0;i<num;i++)widgets[i]->hover(x,y);
+    }
+
+};
+
+class wCanvas:public WidgetComposite
+{
+};
+
+class wPanel:public WidgetComposite
+{
+    int sz,indofs,index;
+
+public:
+    wPanel(int sz_,int ofs):sz(sz_),indofs((ofs+1)*PAN_ENT),index(ofs){}
+    void draw(Canvas &canvas);
+};
+
+class wText:public Widget
+{
+    int str_id;
+
+public:
+    void hover(int,int){}
+    void draw(Canvas &canvas);
+    wText(int str_id_):str_id(str_id_){}
+};
+
+class wTextRev:public wText
+{
+public:
+    void draw(Canvas &canvas);
+    wTextRev():wText(0){}
+};
+
+class wCheckbox:public Widget
+{
+    int str_id,action_id;
+
+public:
+    void draw(Canvas &canvas);
+    wCheckbox(int str_id_,int action_id_):str_id(str_id_),action_id(action_id_){}
+};
+
+class wButton:public Widget
+{
+protected:
+    int str_id,action_id;
+
+public:
+    void draw(Canvas &canvas);
+    wButton(int str_id_,int action_id_):str_id(str_id_),action_id(action_id_){}
+};
+
+class wButtonInst:public wButton
+{
+public:
+    void draw(Canvas &canvas);
+    wButtonInst(int str_id_,int action_id_):wButton(str_id_,action_id_){}
+};
+
 class Panel
 {
     Panelitem *items;
@@ -304,5 +405,6 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 HICON CreateMirroredIcon(HICON hiconOrg);
 void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited=0,long long total=0);
 void loadGUID(GUID *g,const char *s);
+void drawnew(Canvas &canvas);
 
 #endif
