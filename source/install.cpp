@@ -146,7 +146,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
         *ret=System.run_command(cmd,buf,SW_HIDE,1);
         if((*ret&0x7FFFFFFF)==1)
         {
-            *needrb=*ret&0x80000000?1:0;
+            *needrb=(*ret&0x80000000)?1:0;
             *ret&=~0x80000000;
         }
     }
@@ -204,7 +204,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
 
     installmode=MODE_INSTALLING;
     manager_g->items_list[SLOT_EXTRACTING].install_status=
-        instflag&INSTALLDRIVERS?STR_INST_INSTALLING:STR_EXTR_EXTRACTING;
+        (instflag&INSTALLDRIVERS)?STR_INST_INSTALLING:STR_EXTR_EXTRACTING;
     manager_g->items_list[SLOT_EXTRACTING].isactive=1;
     manager_g->setpos();
     if(panels[11].isChecked(3))Settings.flags|=FLAG_AUTOINSTALL;
@@ -360,7 +360,7 @@ goaround:
                 if(!wcsstr(cmd,buf))wcscat(cmd,buf);
             }
             Log.print_con("Extracting via '%S'\n",cmd);
-            itembar->install_status=instflag&INSTALLDRIVERS?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
+            itembar->install_status=(instflag&INSTALLDRIVERS)?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
             MainWindow.redrawfield();
             int tries=0;
             do

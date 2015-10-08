@@ -210,6 +210,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     for(i=0;i<BOX_NUM;i++)box[i].release();
     for(i=0;i<ICON_NUM;i++)icon[i].release();
     delete vLang;
+    delete vTheme;
 
     // Save settings
     #ifndef CONSOLE_MODE
@@ -877,8 +878,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             Settings.wndwx=rect.right-rect.left;
             Settings.wndwy=rect.bottom-rect.top;
 
-            delete mon_lang;
-            delete mon_theme;
+            vLang->stopmonitor();
+            vTheme->stopmonitor();
             delete canvasMain;
             PostQuitMessage(0);
             break;

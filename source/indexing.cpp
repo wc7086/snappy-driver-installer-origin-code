@@ -2092,7 +2092,7 @@ void Driverpack::print_index_hr()
         }
         fprintf(f,"\n");
     }
-    fprintf(f,"  HWIDS:%u/%u\n",HWID_index_last+1,HWID_list.size());
+    fprintf(f,"  HWIDS:%u/%u\n",HWID_index_last+1,(unsigned)HWID_list.size());
     fclose(f);
 }
 

@@ -31,20 +31,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define DEF_STR(a) {TEXT_1(a),0,0},
 
 // Declarations
-class Filemon;
 class VaultInt;
-class VaultTheme;
-class VaultLang;
-class Vault;
 struct entry_t;
 
 // Global vars
 extern entry_t language[STR_NM];
 extern entry_t theme[THEME_NM];
-extern Filemon *mon_lang,*mon_theme;
 extern VaultInt *vLang;
 extern VaultInt *vTheme;
-extern int monitor_pause;
 
 // Entry
 struct entry_t
@@ -69,6 +63,7 @@ public:
     virtual void switchdata(int i)=0;
     virtual void enumfiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
     virtual void startmonitor()=0;
+    virtual void stopmonitor()=0;
 };
 VaultInt *CreateVaultLang(entry_t *entry,int num,int res);
 VaultInt *CreateVaultTheme(entry_t *entry,int num,int res);

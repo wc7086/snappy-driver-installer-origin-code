@@ -27,18 +27,15 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 #include "system.h"
 
+#include <memory>
+#include <string.h>
+
 //{ Global vars
-Filemon *mon_lang,*mon_theme;
 VaultInt *vLang;
 VaultInt *vTheme;
-int monitor_pause=0;
 //}
 
-//{ Vault
-#include <unordered_map>
-#include <memory>
-typedef std::unordered_map <std::wstring,int> lookuptbl_t;
-
+//{ Vault (imp)
 class Vault:public VaultInt
 {
     Vault(const Vault&)=delete;
@@ -49,8 +46,12 @@ protected:
     int num;
     std::unique_ptr<wchar_t []> data_ptr,odata_ptr,datav_ptr;
 
-    lookuptbl_t lookuptbl;
+    std::unordered_map <std::wstring,int> lookuptbl;
     int res;
+
+    Filemon *mon;
+    int elem_id;
+    const wchar_t *folder;
 
     wchar_t namelist[64][250];
 
@@ -64,7 +65,7 @@ protected:
     void loadFromRes(int id);
 
 public:
-    Vault(entry_t *entry,int num,int res);
+    Vault(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
     virtual ~Vault(){}
     void load(int i);
     int pickTheme();
@@ -72,13 +73,16 @@ public:
     virtual void switchdata(int i)=0;
     virtual void enumfiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
     virtual void startmonitor()=0;
+    virtual void stopmonitor(){delete mon;};
     void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
+//}
 
+//{ Vault (lang/theme)
 class VaultLang:public Vault
 {
 public:
-    VaultLang(entry_t *entry,int num,int res);
+    VaultLang(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
     void switchdata(int i);
     void enumfiles(HWND hwnd,const wchar_t *path,int arg=0);
     void startmonitor();
@@ -88,7 +92,7 @@ public:
 class VaultTheme:public Vault
 {
 public:
-    VaultTheme(entry_t *entry,int num,int res);
+    VaultTheme(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
     void switchdata(int i);
     void enumfiles(HWND hwnd,const wchar_t *path,int arg=0);
     void startmonitor();
@@ -96,13 +100,15 @@ public:
 };
 VaultInt *CreateVaultLang(entry_t *entry,int num,int res)
 {
-    return new VaultLang(entry,num,res);
+    return new VaultLang(entry,num,res,WM_UPDATELANG,L"langs");
 }
 VaultInt *CreateVaultTheme(entry_t *entry,int num,int res)
 {
-    return new VaultTheme(entry,num,res);
+    return new VaultTheme(entry,num,res,WM_UPDATETHEME,L"themes");
 }
+//}
 
+//{ Vault definitions
 int Vault::findvar(wchar_t *str)
 {
     int i;
@@ -334,22 +340,24 @@ void Vault::loadFromRes(int id)
         if(entry[i].init<1)Log.print_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
-Vault::Vault(entry_t *entryv,int numv,int resv):
+Vault::Vault(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
     entry(entryv),
     num(numv),
-    res(resv)
+    res(resv),
+    elem_id(elem_id_),
+    folder(folder_)
 {
     for(int i=0;i<num;i++)
         lookuptbl.insert({std::wstring(entry[i].name),i+1});
 }
 
-VaultLang::VaultLang(entry_t *entryv,int numv,int resv):
-    Vault{entryv,numv,resv}
+VaultLang::VaultLang(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
+    Vault{entryv,numv,resv,elem_id_,folder_}
 {
 }
 
-VaultTheme::VaultTheme(entry_t *entryv,int numv,int resv):
-    Vault{entryv,numv,resv}
+VaultTheme::VaultTheme(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
+    Vault{entryv,numv,resv,elem_id_,folder_}
 {
 }
 
@@ -371,7 +379,6 @@ int Vault::pickTheme()
 
     return f;
 }
-
 //}
 
 //{ Lang/theme
@@ -503,16 +510,16 @@ void VaultLang::startmonitor()
 {
     wchar_t buf[BUFLEN];
 
-    wsprintf(buf,L"%s\\langs",Settings.data_dir);
-    mon_lang=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
+    wsprintf(buf,L"%s\\%s",Settings.data_dir,folder);
+    mon=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
 }
 
 void VaultTheme::startmonitor()
 {
     wchar_t buf[BUFLEN];
 
-    wsprintf(buf,L"%s\\themes",Settings.data_dir);
-    mon_theme=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
+    wsprintf(buf,L"%s\\%s",Settings.data_dir,folder);
+    mon=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
 }
 
 void VaultLang::updateCallback(const wchar_t *szFile,int action,int lParam)

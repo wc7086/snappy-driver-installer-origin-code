@@ -81,7 +81,7 @@ public:
 class ClipRegion
 {
     ClipRegion(const ClipRegion&)=delete;
-    operator=(const ClipRegion&)=delete;
+    void operator=(const ClipRegion&)=delete;
 
 private:
     ClipRegionImp *imp;
@@ -100,7 +100,7 @@ public:
 class Font
 {
     Font(const Font&)=delete;
-    operator=(const Font&)=delete;
+    void operator=(const Font&)=delete;
 
 private:
     HFONT hFont;
