@@ -409,7 +409,6 @@ Canvas::~Canvas()
 
 void Canvas::begin(HWND nhwnd,int nx,int ny)
 {
-    HGDIOBJ r;
     unsigned r32;
 
     hwnd=nhwnd;
@@ -422,7 +421,7 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
         y=ny;
         if(bitmap)
         {
-            r=SelectObject(hdcMem,oldbitmap);
+            HGDIOBJ r=SelectObject(hdcMem,oldbitmap);
             if(!r)Log.print_err("ERROR in canvas_begin(): failed SelectObject(oldbitmap)\n");
             r32=DeleteObject(bitmap);
             if(!r32)Log.print_err("ERROR in canvas_begin(): failed DeleteObject\n");

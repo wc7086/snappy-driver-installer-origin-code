@@ -31,6 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global variables
 Filemon *mon_vir;
+int monitor_pause=0;
 Log_t Log;
 Timers_t Timers;
 //}

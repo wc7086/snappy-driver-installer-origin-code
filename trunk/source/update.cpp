@@ -1100,6 +1100,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 fi.dwTimeout=0;
                 FlashWindowEx(&fi);
                 downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
+                invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             }
         }
         // Download is completed
@@ -1107,7 +1108,6 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
         hSession->pause();
         Updater1->updateTorrentStatus();
         monitor_pause=0;
-        invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
         Log.print_con("}torrent_stop\n");
         ResetEvent(downloadmangar_event);
     }
@@ -1135,7 +1135,6 @@ void UpdaterImp::openDialog(){UpdateDialog.openDialog();}
 //}
 #else
 
-#include <windows.h>
 #include "update.h"
 
 Updater_t *Updater;

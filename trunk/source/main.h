@@ -102,7 +102,7 @@ extern CRITICAL_SECTION sync;
 class Popup_t
 {
     Popup_t(const Popup_t&)=delete;
-    operator=(const Popup_t&)=delete;
+    void operator=(const Popup_t&)=delete;
 
 public:
     HWND hPopup=nullptr;
@@ -127,7 +127,7 @@ extern class Popup_t Popup;
 class MainWindow_t
 {
     MainWindow_t(const MainWindow_t&)=delete;
-    operator=(const MainWindow_t&)=delete;
+    void operator=(const MainWindow_t&)=delete;
 
 public:
     int main1x_c,main1y_c;

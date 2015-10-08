@@ -15,18 +15,16 @@ set BOOST_VER=1_59_0
 set LIBTORRENT_VER2=1.0.6
 set LIBTORRENT_VER=1_0_6
 set LIBWEBP_VER=0.4.3
+set GCC_VERSION=5.2.0
+set GCC_VERSION2=52
 
 rem GCC 32-bit
 set GCC_PATH=c:\mingw_510\mingw32
-set GCC_VERSION=5.1.0
-set GCC_VERSION2=51
 set GCC_PREFIX1=/i686-w64-mingw32
 set GCC_PREFIX=\i686-w64-mingw32
 
 rem GCC 64-bit
 set GCC64_PATH=c:\mingw_510\mingw64
-set GCC64_VERSION=5.1.0
-set GCC64_VERSION2=51
 set GCC64_PREFIX1=/x86_64-w64-mingw32
 set GCC64_PREFIX=\x86_64-w64-mingw32
 
@@ -39,7 +37,7 @@ rem BOOST
 set BOOST_ROOT=%CD%\boost_%BOOST_VER%
 set BOOST_BUILD_PATH=%BOOST_ROOT%
 set BOOST_INSTALL_PATH=C:\BOOST32_%GCC_VERSION2%
-set BOOST64_INSTALL_PATH=C:\BOOST64_%GCC64_VERSION2%
+set BOOST64_INSTALL_PATH=C:\BOOST64_%GCC_VERSION2%
 
 rem Configure paths
 set LIBTORRENT_PATH=%CD%\libtorrent-libtorrent-%LIBTORRENT_VER%
@@ -362,9 +360,9 @@ set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 rem bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-copy ..\bin\gcc-mngw-%GCC64_VERSION%\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib /Y
-copy ..\bin\gcc-mngw-%GCC64_VERSION%\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC64_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC64_VERSION2%-mt-s-1_59.a %GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a /Y
+copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib /Y
+copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a /Y
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64
