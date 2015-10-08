@@ -32,7 +32,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
-#include <shlwapi.h>        // for StrFormatByteSizeW
 #include <webp\decode.h>
 #include <memory>
 
@@ -169,6 +168,194 @@ Panel panels[NUM_PANELS]=
     {panel12,11},
     {panel13,12},
 };
+
+WidgetComposite *wPanels=nullptr;
+
+class autorun
+{
+public:
+    autorun()
+    {
+        WidgetComposite *p;
+        int ind=0;
+        wPanels=new wCanvas;
+
+        // SysInfo
+        p=new wPanel{3,ind++};
+        p->Add(new wText    {STR_SHOW_SYSINFO});
+        wPanels->Add(p);
+
+        // Install
+        p=new wPanel{3,ind++};
+        wPanels->Add(p);
+
+        // Theme/lang
+        p=new wPanel{5,ind++};
+        p->Add(new wText    {STR_LANG});
+        p->Add(new wText    {0});
+        p->Add(new wText    {STR_THEME});
+        p->Add(new wText    {0});
+        p->Add(new wCheckbox{STR_EXPERT,            ID_EXPERT_MODE});
+        wPanels->Add(p);
+
+        // Theme/lang
+        /*p=new wPanel{3,ind++};
+        p->Add(new wText    {STR_LANG});
+        p->Add(new wText    {STR_LANG});
+        p->Add(new wCheckbox{STR_EXPERT,            ID_EXPERT_MODE});
+        wPanels->Add(p);*/
+
+        // Actions
+        p=new wPanel{4,ind++};
+        p->Add(new wButton  {STR_OPENLOGS,          ID_OPENLOGS});
+        p->Add(new wButton  {STR_SNAPSHOT,          ID_SNAPSHOT});
+        p->Add(new wButton  {STR_EXTRACT,           ID_EXTRACT});
+        p->Add(new wButton  {STR_DRVDIR,            ID_DRVDIR});
+        wPanels->Add(p);
+
+        // Filters (found)
+        p=new wPanel{7,ind++};
+        p->Add(new wText    {STR_SHOW_FOUND});
+        p->Add(new wCheckbox{STR_SHOW_MISSING,      ID_SHOW_MISSING});
+        p->Add(new wCheckbox{STR_SHOW_NEWER,        ID_SHOW_NEWER});
+        p->Add(new wCheckbox{STR_SHOW_CURRENT,      ID_SHOW_CURRENT});
+        p->Add(new wCheckbox{STR_SHOW_OLD,          ID_SHOW_OLD});
+        p->Add(new wCheckbox{STR_SHOW_BETTER,       ID_SHOW_BETTER});
+        p->Add(new wCheckbox{STR_SHOW_WORSE_RANK,   ID_SHOW_WORSE_RANK});
+        wPanels->Add(p);
+
+        // Filters (not found)
+        p=new wPanel{4,ind++};
+        p->Add(new wText    {STR_SHOW_NOTFOUND});
+        p->Add(new wCheckbox{STR_SHOW_NF_MISSING,   ID_SHOW_NF_MISSING});
+        p->Add(new wCheckbox{STR_SHOW_NF_UNKNOWN,   ID_SHOW_NF_UNKNOWN});
+        p->Add(new wCheckbox{STR_SHOW_NF_STANDARD,  ID_SHOW_NF_STANDARD});
+        wPanels->Add(p);
+
+        // Filters (special)
+        p=new wPanel{3,ind++};
+        p->Add(new wCheckbox{STR_SHOW_ONE,          ID_SHOW_ONE});
+        p->Add(new wCheckbox{STR_SHOW_DUP,          ID_SHOW_NF_UNKNOWN});
+        p->Add(new wCheckbox{STR_SHOW_INVALID,      ID_SHOW_DUP});
+        wPanels->Add(p);
+
+        // Revision
+        p=new wPanel{1,ind++};
+        p->Add(new wTextRev);
+        wPanels->Add(p);
+
+        // Install button
+        p=new wPanel{1,ind++};
+        p->Add(new wButtonInst{STR_INSTALL,         ID_INSTALL});
+        wPanels->Add(p);
+
+        // Select all button
+        p=new wPanel{1,ind++};
+        p->Add(new wButton  {STR_SELECT_ALL,        ID_SELECT_ALL});
+        wPanels->Add(p);
+
+        // Select none button
+        p=new wPanel{1,ind++};
+        p->Add(new wButton  {STR_SELECT_NONE,       ID_SELECT_NONE});
+        wPanels->Add(p);
+
+        // Options
+        p=new wPanel{3,ind++};
+        p->Add(new wText    {STR_OPTIONS});
+        p->Add(new wCheckbox{STR_RESTOREPOINT,      ID_RESTPNT});
+        p->Add(new wCheckbox{STR_REBOOT,            ID_REBOOT});
+        wPanels->Add(p);
+
+        // Logo
+        p=new wPanel{1,ind++};
+        p->Add(new wText    {0});
+        wPanels->Add(p);
+    }
+};
+autorun obj;
+void drawnew(Canvas &canvas)
+{
+    POINT p;
+    GetCursorPos(&p);
+    ScreenToClient(MainWindow.hMain,&p);
+    wPanels->hover(p.x,p.y);
+    wPanels->draw(canvas);
+}
+
+void wPanel::draw(Canvas &canvas)
+{
+    x1=Xm(D(PANEL_OFSX+indofs),D(PANEL_WX+indofs));;
+    y1=Ym(D(PANEL_OFSY+indofs));
+    wx=XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
+    int wy1=D(PANEL_WY+indofs);
+    wy=wy1*sz+D(PNLITEM_OFSY)*2;
+
+    if(wx<0)return;
+    if(!wy1)return;
+
+    int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
+    if(D(PANEL_OUTLINE_WIDTH+indofs)<0)
+        canvas.drawbox(x1+ofsx,y1+ofsy+0*D(PNLITEM_WY),x1+wx-ofsx,y1+wy-ofsy,isSelected?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
+    else
+        canvas.drawbox(x1,y1,x1+wx,y1+wy,BOX_PANEL+index*2+2);
+
+    for(int i=0;i<num;i++)
+    {
+        widgets[i]->setboundbox(x1+ofsx,y1+ofsy+i*D(PNLITEM_WY),wx-ofsx*2,wy1);
+        widgets[i]->draw(canvas);
+    }
+}
+
+void wText::draw(Canvas &canvas)
+{
+    canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+    canvas.TextOutH(mirw(x1,0,wx),y1+0,STR(str_id));
+    //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
+}
+
+void wTextRev::draw(Canvas &canvas)
+{
+    Version v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
+    wchar_t buf[BUFLEN];
+
+    wsprintf(buf,L"%s (",TEXT(SVN_REV2));
+    v.str_date(buf+wcslen(buf));
+    wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
+    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.TextOutH(mirw(x1,0,wx),y1,buf);
+}
+
+void wCheckbox::draw(Canvas &canvas)
+{
+    if(isSelected&&MainWindow.kbpanel)
+    {
+        //canvas.drawbox(x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
+        isSelected=false;
+    }
+    canvas.drawcheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,0,isSelected);
+    canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+    canvas.TextOutH(mirw(x1,D(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
+}
+
+void wButton::draw(Canvas &canvas)
+{
+    canvas.drawbox(x1,y1,x1+wx,y1+wy,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+
+    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.TextOutH(mirw(x1,wy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,STR(str_id));
+    //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
+}
+
+void wButtonInst::draw(Canvas &canvas)
+{
+    canvas.drawbox(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+
+    wchar_t buf[BUFLEN];
+    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
+    wsprintf(buf,L"%s (%d)",STR(str_id),manager_g->countItems());
+    int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
+    canvas.TextOutH(mirw(x1,nwy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,buf);
+}
 //}
 
 //{ Image

@@ -1133,6 +1133,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             {
                 panels[i].draw(*canvasMain);
             }
+            //drawnew(*canvasMain);
             canvasMain->end();
             break;
 
