@@ -19,12 +19,12 @@ set GCC_VERSION=5.2.0
 set GCC_VERSION2=52
 
 rem GCC 32-bit
-set GCC_PATH=c:\mingw_510\mingw32
+set GCC_PATH=c:\mingw\mingw32
 set GCC_PREFIX1=/i686-w64-mingw32
 set GCC_PREFIX=\i686-w64-mingw32
 
 rem GCC 64-bit
-set GCC64_PATH=c:\mingw_510\mingw64
+set GCC64_PATH=c:\mingw\mingw64
 set GCC64_PREFIX1=/x86_64-w64-mingw32
 set GCC64_PREFIX=\x86_64-w64-mingw32
 
