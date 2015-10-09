@@ -121,7 +121,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         Settings.load(L"tools\\SDI\\settings.cfg");
 
     Settings.parse(GetCommandLineW(),1);
-    panel_loadsettings(panels,Settings.filters);
     RUN_CLI();
 
     // Reset paths for GUI-less version of the app
@@ -1128,12 +1127,12 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
             canvasMain->drawbox(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
             canvasMain->setFont(hFont);
-            panels[7].draw(*canvasMain);// draw revision
+            //panels[7].draw(*canvasMain);// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
             {
-                panels[i].draw(*canvasMain);
+                //panels[i].draw(*canvasMain);
             }
-            //drawnew(*canvasMain);
+            drawnew(*canvasMain);
             canvasMain->end();
             break;
 
@@ -1141,36 +1140,18 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             return 1;
 
         case WM_MOUSEMOVE:
-            GetClientRect(hwnd,&rect);
-            i=panels_hitscan(x,y,&j);
-            wPanels->hover(x,y);
-
-            if(i>0)
             {
+                HoverVisiter hv{x,y};
+                wPanels->Accept(hv);
             }
-            else
-                drawpopup(-1,FLOATING_NONE,x,y,hwnd);
-
-            if(panel_lasti!=i+j*256)
-            {
-                if(j>=0)panels[j].draw_inv();
-                panels[panel_lasti/256].draw_inv();
-            }
-            if(j>=0)panel_lasti=i+j*256;else panel_lasti=0;
             break;
 
         case WM_LBUTTONUP:
-            if(!mouseclick)break;
-
-            i=panels_hitscan(x,y,&j);
-            if(i<0)break;
-
-            if(j==7||j==12)
-                System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
-            else if(i<4&&j==0)
-                System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
-            else
-                panels[j].click(i);
+            if(mouseclick)
+            {
+                ClickVisiter cv{x,y};
+                wPanels->Accept(cv);
+            }
             break;
 
         case WM_RBUTTONUP:
@@ -1345,7 +1326,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     selectDrpDir();
                     break;
 
-                case ID_SHOW_MISSING:
+                /*case ID_SHOW_MISSING:
                 case ID_SHOW_NEWER:
                 case ID_SHOW_CURRENT:
                 case ID_SHOW_OLD:
@@ -1361,7 +1342,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     for(i=0;i<NUM_PANELS;i++)Settings.filters+=panels[i].calcFilters();
                     manager_g->filter(Settings.filters);
                     manager_g->setpos();
-                    break;
+                    break;*/
 
                 case ID_RESTPNT:
                     manager_g->set_rstpnt(panels[11].isChecked(2));

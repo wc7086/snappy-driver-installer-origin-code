@@ -142,7 +142,6 @@ public:
     int offset_target;
     int kbpanel,kbitem[KB_PANEL_CHK+1];
 
-    int panel_lasti=0;
     int field_lasti,field_lastz;
 
     Canvas *canvasMain;
