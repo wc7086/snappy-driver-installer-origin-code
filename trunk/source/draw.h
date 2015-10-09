@@ -172,27 +172,50 @@ struct Panelitem
     int checked;
 };
 
+class WidgetVisitor;
+
+/*
+
+Widget
+    wCheckbox
+    wButton
+        wButtonInst
+    wText
+        wTextSys1
+            wTextSys2
+            wTextSys3
+        wTextRev
+    WidgetComposite
+        wPanel
+            wLogo
+*/
+
+// Widget
 class Widget
 {
 protected:
     int x1,y1,wx,wy;
-    bool isSelected=false;
-    int str_id;
 
 public:
-    Widget *parent;
-    int flags;
-    bool invalidated=true;
+    Widget *parent=nullptr;
+    bool isSelected=false;
+    int str_id;
+    int flags=0;
 
+public:
     Widget(int str_id_):str_id(str_id_){}
     virtual ~Widget(){}
-    //virtual void click(int x,int y);
     virtual void draw(Canvas &){}
     virtual void arrange(){}
-    virtual void hover(int x,int y);
-    virtual void setboundbox(int v1,int v2,int v3,int v4){x1=v1;y1=v2;wx=v3;wy=v4;}
+
+    void setboundbox(int v1,int v2,int v3,int v4){x1=v1;y1=v2;wx=v3;wy=v4;}
+    void hitscan(int x,int y);
+    void invalidate();
+
+    virtual void Accept(WidgetVisitor &);
 };
 
+// WidgetComposite
 class WidgetComposite:public Widget
 {
 protected:
@@ -206,6 +229,7 @@ public:
         widgets[num]->parent=this;
         num++;
     }
+    void Accept(WidgetVisitor &);
     WidgetComposite():Widget(0){}
     ~WidgetComposite()
     {
@@ -215,93 +239,100 @@ public:
     {
         for(int i=0;i<num;i++)widgets[i]->draw(canvas);
     }
-    void hover(int x,int y)
-    {
-        Widget::hover(x,y);
-        for(int i=0;i<num;i++)widgets[i]->hover(x,y);
-    }
     void arrange()
     {
         for(int i=0;i<num;i++)widgets[i]->arrange();
     }
 };
 
-class wCanvas:public WidgetComposite
-{
-};
-
+// wPanel
 class wPanel:public WidgetComposite
 {
     int sz,indofs,index;
+    bool isAdvanced;
 
 public:
-    wPanel(int sz_,int ofs):sz(sz_),indofs((ofs+1)*PAN_ENT),index(ofs){}
+    wPanel(int sz_,int ofs,bool isAdv=false):sz(sz_),indofs((ofs+1)*PAN_ENT),index(ofs),isAdvanced(isAdv){}
+    void Accept(WidgetVisitor &);
     void arrange();
     void draw(Canvas &canvas);
 };
 
+// wText
 class wText:public Widget
 {
 public:
-    void hover(int x,int y){Widget::hover(x,y);isSelected=0;}
+    void Accept(WidgetVisitor &visitor);
     void draw(Canvas &canvas);
     wText(int str_id_):Widget(str_id_){}
 };
 
+// wLogo
 class wLogo:public wPanel
 {
 public:
-    void hover(int x,int y);
+    void Accept(WidgetVisitor &visitor);
     wLogo(int sz_,int ofs):wPanel{sz_,ofs}{}
 };
 
+// wTextRev
 class wTextRev:public wText
 {
 public:
-    void hover(int x,int y);
+    void Accept(WidgetVisitor &visitor);
     void draw(Canvas &canvas);
     wTextRev():wText(0){}
 };
 
+// wTextSys1
 class wTextSys1:public wText
 {
 public:
+    void Accept(WidgetVisitor &visitor);
     void draw(Canvas &canvas);
-    void hover(int x,int y);
     wTextSys1():wText(0){}
 };
 
+// wTextSys2
 class wTextSys2:public wTextSys1
 {
 public:
     void draw(Canvas &canvas);
 };
 
+// wTextSys3
 class wTextSys3:public wTextSys1
 {
 public:
     void draw(Canvas &canvas);
 };
 
+// wCheckbox
 class wCheckbox:public Widget
 {
+public:
     int action_id;
+    bool checked=false;
 
 public:
     void draw(Canvas &canvas);
+    void Accept(WidgetVisitor &visitor);
     wCheckbox(int str_id_,int action_id_):Widget(str_id_),action_id(action_id_){}
 };
 
+// wButton
 class wButton:public Widget
 {
-protected:
+public:
     int action_id;
 
 public:
+    void Accept(WidgetVisitor &visitor);
     void draw(Canvas &canvas);
     wButton(int str_id_,int action_id_):Widget(str_id_),action_id(action_id_){}
 };
 
+// wButtonInst
 class wButtonInst:public wButton
 {
 public:
@@ -309,6 +340,56 @@ public:
     wButtonInst(int str_id_,int action_id_):wButton(str_id_,action_id_){}
 };
 extern WidgetComposite *wPanels;
+
+
+class WidgetVisitor
+{
+public:
+    virtual ~WidgetVisitor(){}
+
+    virtual void VisitWidget(Widget *){}
+    virtual void VisitWidgetComposite(WidgetComposite *a){VisitWidget(a);}
+    virtual void VisitwText(wText *a){VisitWidget(a);}
+    virtual void VisitwCheckbox(wCheckbox *a){VisitWidget(a);}
+    virtual void VisitwButton(wButton *a){VisitWidget(a);}
+    virtual void VisitwLogo(wLogo *a){VisitWidget(a);}
+    virtual void VisitwTextRev(wTextRev *a){VisitwText(a);}
+    virtual void VisitwTextSys1(wTextSys1 *a){VisitwText(a);}
+};
+
+class HoverVisiter:public WidgetVisitor
+{
+    int x,y;
+    bool popup_active=false;
+
+public:
+    HoverVisiter(int xv,int yv):x(xv),y(yv){}
+    ~HoverVisiter();
+
+    void VisitWidget(Widget *);
+    void VisitWidgetComposite(WidgetComposite *);
+    void VisitwText(wText *);
+    void VisitwLogo(wLogo *);
+    void VisitwTextRev(wTextRev *);
+    void VisitwTextSys1(wTextSys1 *);
+};
+
+class ClickVisiter:public WidgetVisitor
+{
+    int x,y;
+    bool popup_active=false;
+    int sum=0;
+
+public:
+    ClickVisiter(int xv,int yv):x(xv),y(yv){}
+    ~ClickVisiter();
+
+    void VisitwCheckbox(wCheckbox *);
+    void VisitwButton(wButton *);
+    void VisitwLogo(wLogo *);
+    void VisitwTextRev(wTextRev *);
+    void VisitwTextSys1(wTextSys1 *);
+};
 
 class Panel
 {
@@ -325,16 +406,10 @@ public:
     bool isChecked(int i)const{return items[i].checked;}
     void setChecked(int i,int val){items[i].checked=val;}
     void flipChecked(int i){items[i].checked^=1;}
-    int getStr(int i){return items[i].str_id;}
 
-    int calcFilters();
-    void setFilters(int filters);
     int  hitscan(int x,int y);
     void keybAdvance(int v);
-    void draw_inv();
-    void draw(Canvas &canvas);
     void moveWindow(HWND hwnd,int i,int j,int f);
-    void click(int i);
 
     friend class MainWindow_t;
 };
@@ -437,7 +512,6 @@ int XG(int x,int o);
 int YG(int y,int o);
 
 int  panels_hitscan(int hx,int hy,int *ii);
-void panel_loadsettings(Panel *panel,int filters);
 
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 HICON CreateMirroredIcon(HICON hiconOrg);

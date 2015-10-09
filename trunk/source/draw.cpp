@@ -176,9 +176,9 @@ class autorun
 public:
     autorun()
     {
-        WidgetComposite *p;
+        wPanel *p;
         int ind=0;
-        wPanels=new wCanvas;
+        wPanels=new WidgetComposite;
 
         // SysInfo
         p=new wPanel{3,ind++};
@@ -216,7 +216,7 @@ public:
         wPanels->Add(p);
 
         // Filters (found)
-        p=new wPanel{7,ind++};
+        p=new wPanel{7,ind++,true};
         p->Add(new wText    {STR_SHOW_FOUND});
         p->Add(new wCheckbox{STR_SHOW_MISSING,      ID_SHOW_MISSING});
         p->Add(new wCheckbox{STR_SHOW_NEWER,        ID_SHOW_NEWER});
@@ -227,7 +227,7 @@ public:
         wPanels->Add(p);
 
         // Filters (not found)
-        p=new wPanel{4,ind++};
+        p=new wPanel{4,ind++,true};
         p->Add(new wText    {STR_SHOW_NOTFOUND});
         p->Add(new wCheckbox{STR_SHOW_NF_MISSING,   ID_SHOW_NF_MISSING});
         p->Add(new wCheckbox{STR_SHOW_NF_UNKNOWN,   ID_SHOW_NF_UNKNOWN});
@@ -235,10 +235,10 @@ public:
         wPanels->Add(p);
 
         // Filters (special)
-        p=new wPanel{3,ind++};
+        p=new wPanel{3,ind++,true};
         p->Add(new wCheckbox{STR_SHOW_ONE,          ID_SHOW_ONE});
-        p->Add(new wCheckbox{STR_SHOW_DUP,          ID_SHOW_NF_UNKNOWN});
-        p->Add(new wCheckbox{STR_SHOW_INVALID,      ID_SHOW_DUP});
+        p->Add(new wCheckbox{STR_SHOW_DUP,          ID_SHOW_DUP});
+        p->Add(new wCheckbox{STR_SHOW_INVALID,      ID_SHOW_INVALID});
         wPanels->Add(p);
 
         // Revision
@@ -311,9 +311,35 @@ void wPanel::arrange()
         flags=0;
 }
 
+void Widget::hitscan(int x,int y)
+{
+    bool newisSelected=(x>=x1&&x<x1+wx&&y>=y1&&y<y1+wy);
+    if(newisSelected!=isSelected)
+    {
+        invalidate();
+        isSelected=newisSelected;
+    }
+}
+
+void Widget::invalidate()
+{
+    RECT rect;
+
+    rect.left=x1;
+    rect.top=y1;
+    rect.right=x1+wx;
+    rect.bottom=y1+wy;
+
+    if(rtl)
+        InvalidateRect(MainWindow.hMain,nullptr,0);
+    else
+        InvalidateRect(MainWindow.hMain,&rect,0);
+}
+
 void wPanel::draw(Canvas &canvas)
 {
     if(!wy)return;
+    if(!Settings.expertmode&&isAdvanced)return;
 
     // Draw panel
     canvas.drawbox(x1,y1,x1+wx,y1+wy,(isSelected&&flags)?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
@@ -352,7 +378,24 @@ void wCheckbox::draw(Canvas &canvas)
         //canvas.drawbox(x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
         //isSelected=false;
     }
-    canvas.drawcheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,0,isSelected);
+
+    switch(action_id)
+    {
+        case ID_EXPERT_MODE:
+            checked=Settings.expertmode;
+            break;
+        case ID_RESTPNT:
+            break;
+
+        case ID_REBOOT:
+            break;
+
+        default:
+            checked=(Settings.filters&(1<<action_id))?true:false;
+
+    }
+
+    canvas.drawcheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,checked,isSelected);
     canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
     canvas.TextOutH(mirw(x1,D(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
 }
@@ -412,42 +455,187 @@ void wTextSys3::draw(Canvas &canvas)
     canvas.TextOutH(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getTemp()));
 }
 
-void Widget::hover(int x,int y)
+//{ Accepters
+void Widget::Accept(WidgetVisitor &visitor)
 {
-    isSelected=(x>=x1&&x<x1+wx&&y>=y1&&y<y1+wy);
-    if(isSelected&&str_id)drawpopup(str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
+    visitor.VisitWidget(this);
 }
 
-void wTextRev::hover(int x,int y)
+void WidgetComposite::Accept(WidgetVisitor &visitor)
 {
-    Widget::hover(x,y);
-    if(isSelected)
+    visitor.VisitWidget(this);
+    for(int i=0;i<num;i++)widgets[i]->Accept(visitor);
+}
+
+void wPanel::Accept(WidgetVisitor &visitor)
+{
+    if(!Settings.expertmode&&isAdvanced)return;
+
+    visitor.VisitWidget(this);
+    for(int i=0;i<num;i++)widgets[i]->Accept(visitor);
+}
+
+void wText::Accept(WidgetVisitor &visitor)
+{
+    visitor.VisitwText(this);
+}
+
+void wCheckbox::Accept(WidgetVisitor &visitor)
+{
+    visitor.VisitwCheckbox(this);
+}
+
+void wButton::Accept(WidgetVisitor &visitor)
+{
+    visitor.VisitwButton(this);
+}
+
+void wLogo::Accept(WidgetVisitor &visitor)
+{
+    visitor.VisitwLogo(this);
+}
+
+void wTextRev::Accept(WidgetVisitor &visitor)
+{
+    visitor.VisitwTextRev(this);
+}
+
+void wTextSys1::Accept(WidgetVisitor &visitor)
+{
+    visitor.VisitwTextSys1(this);
+}
+//}
+
+//{ HoverVisiter
+HoverVisiter::~HoverVisiter()
+{
+    if(popup_active==false)
+        drawpopup(-1,FLOATING_NONE,x,y,MainWindow.hMain);
+}
+
+void HoverVisiter::VisitWidget(Widget *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected&&a->str_id)
+    {
+        drawpopup(a->str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
+        popup_active=true;
+    }
+}
+
+void HoverVisiter::VisitWidgetComposite(WidgetComposite *a)
+{
+    a->hitscan(x,y);
+}
+
+void HoverVisiter::VisitwText(wText *a)
+{
+    VisitWidget(a);
+    a->isSelected=0;
+}
+
+void HoverVisiter::VisitwLogo(wLogo *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
         drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
+        popup_active=true;
     }
 }
 
-void wLogo::hover(int x,int y)
+void HoverVisiter::VisitwTextRev(wTextRev *a)
 {
-    Widget::hover(x,y);
-    if(isSelected)
+    a->hitscan(x,y);
+    if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
         drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
+        popup_active=true;
     }
 }
 
-void wTextSys1::hover(int x,int y)
+void HoverVisiter::VisitwTextSys1(wTextSys1 *a)
 {
-    Widget::hover(x,y);
-    if(isSelected)
+    a->hitscan(x,y);
+    if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        drawpopup(str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
+        drawpopup(a->str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
+        popup_active=true;
+    }
+}
+//}
+
+//{ ClickVisitor
+ClickVisiter::~ClickVisiter()
+{
+    if(Settings.filters!=sum&&Settings.expertmode)
+    {
+        Settings.filters=sum;
+        manager_g->filter(Settings.filters);
+        manager_g->setpos();
     }
 }
 
+void ClickVisiter::VisitwCheckbox(wCheckbox *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected)
+    {
+        a->checked^=1;
+        a->invalidate();
+        InvalidateRect(MainWindow.hMain,nullptr,0);
+        if(a->action_id==ID_EXPERT_MODE)
+        {
+            Settings.expertmode=a->checked;
+            ShowWindow(GetConsoleWindow(),Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
+            InvalidateRect(MainWindow.hMain,nullptr,0);
+        }
+    }
+    if(a->checked)switch(a->action_id)
+    {
+        case ID_REBOOT:
+        case ID_RESTPNT:
+        case ID_EXPERT_MODE:
+            break;
+
+        default:
+            sum+=1<<a->action_id;
+    }
+}
+
+void ClickVisiter::VisitwButton(wButton *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected)
+    {
+        PostMessage(MainWindow.hMain,WM_COMMAND,a->action_id+(BN_CLICKED<<16),0);
+        InvalidateRect(MainWindow.hMain,nullptr,0);
+    }
+}
+
+void ClickVisiter::VisitwLogo(wLogo *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected)
+        System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
+}
+
+void ClickVisiter::VisitwTextRev(wTextRev *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected)
+        System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
+}
+
+void ClickVisiter::VisitwTextSys1(wTextSys1 *a)
+{
+    a->hitscan(x,y);
+    if(a->isSelected)
+        System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
+}
 //}
 
 //{ Image
@@ -789,7 +977,7 @@ void Panel::keybAdvance(int v)
 
 }
 
-void Panel::draw_inv()
+/*void Panel::draw_inv()
 {
     int x=Xp(),y=Yp();
     int wy=D(PANEL_WY+indofs);
@@ -805,9 +993,9 @@ void Panel::draw_inv()
         InvalidateRect(MainWindow.hMain,nullptr,0);
     else
         InvalidateRect(MainWindow.hMain,&rect,0);
-}
+}*/
 
-int Panel::calcFilters()
+/*int Panel::calcFilters()
 {
     int sum=0;
 
@@ -824,14 +1012,14 @@ void Panel::setFilters(int filters_)
     for(int i=0;i<items[0].action_id+1;i++)
         if(items[i].action_id>=ID_SHOW_MISSING&&items[i].action_id<=ID_SHOW_INVALID)
             items[i].checked=(filters_&(1<<items[i].action_id))?1:0;
-}
+}*/
 
 void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 {
     MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
 }
 
-void Panel::click(int i)
+/*void Panel::click(int i)
 {
     if(items[i].type==TYPE_CHECKBOX||items[i].type==TYPE_BUTTON)
     {
@@ -846,9 +1034,9 @@ void Panel::click(int i)
 
         InvalidateRect(MainWindow.hMain,nullptr,0);
     }
-}
+}*/
 
-void Panel::draw(Canvas &canvas)
+/*void Panel::draw(Canvas &canvas)
 {
     wchar_t buf[BUFLEN];
     POINT p;
@@ -942,9 +1130,6 @@ void Panel::draw(Canvas &canvas)
                 {
                     Version v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
 
-                    /*v.d=atoi(SVN_REV_D);
-                    v.m=atoi(SVN_REV_M);
-                    v.y=SVN_REV_Y;*/
 
                     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
                     v.str_date(buf+wcslen(buf));
@@ -973,7 +1158,7 @@ void Panel::draw(Canvas &canvas)
 
     }
     canvas.clearClipRegion();
-}
+}*/
 //}
 
 //{ Text
@@ -1188,15 +1373,6 @@ int panels_hitscan(int hx,int hy,int *ii)
         }
     }
     return -1;
-}
-
-void panel_loadsettings(Panel *panel,int filters_)
-{
-     // Expert mode
-    panel3[5].checked=Settings.expertmode;
-    panel3_w[3].checked=Settings.expertmode;
-
-    for(int j=0;j<7;j++)panel[j].setFilters(filters_);
 }
 
 //{ ClipRegion
