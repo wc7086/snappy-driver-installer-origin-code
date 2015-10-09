@@ -267,7 +267,7 @@ call :ColorText %c_do% "Downloading make"&echo.
 rem update toolchain
 call :ColorText %c_do% "Updating toolchain"&echo.
 %MSYS_BIN%\pacman.exe -Syu --noconfirm
-copy %GCC64_PATH%\bin\libwinpthread-1.dll %GCC64_PATH%\libexec\gcc\x86_64-w64-mingw32\5.1.0
+copy %GCC64_PATH%\bin\libwinpthread-1.dll %GCC64_PATH%\libexec\gcc\x86_64-w64-mingw32\%GCC_VERSION%
 
 rem download WebP
 if /I exist "%LIBTORRENT_PATH%\..\webp\mingw\msys\1.0\home\libwebp-%LIBWEBP_VER%.tar.gz" (call :ColorText %c_skip% "Skipping downloading WebP"&echo. & goto skipdownloadwebp)

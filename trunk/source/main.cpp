@@ -1143,14 +1143,10 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_MOUSEMOVE:
             GetClientRect(hwnd,&rect);
             i=panels_hitscan(x,y,&j);
-            if(j==0||j==7||j==12)SetCursor(LoadCursor(nullptr,IDC_HAND));
+            wPanels->hover(x,y);
 
             if(i>0)
             {
-                if((i==1&&j==7)||(j==12))
-                    drawpopup(-1,FLOATING_ABOUT,x,y,hwnd);
-                else
-                    drawpopup(panels[j].getStr(i)+1,i>0&&i<4&&j==0?FLOATING_SYSINFO:FLOATING_TOOLTIP,x,y,hwnd);
             }
             else
                 drawpopup(-1,FLOATING_NONE,x,y,hwnd);
