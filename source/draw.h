@@ -177,14 +177,19 @@ class Widget
 protected:
     int x1,y1,wx,wy;
     bool isSelected=false;
+    int str_id;
 
 public:
     Widget *parent;
+    int flags;
+    bool invalidated=true;
 
+    Widget(int str_id_):str_id(str_id_){}
     virtual ~Widget(){}
     //virtual void click(int x,int y);
     virtual void draw(Canvas &){}
-    virtual void hover(int x,int y){isSelected=(x>=x1&&x<=x1+wx&&y>=y1&&y<=y1+wy);}
+    virtual void arrange(){}
+    virtual void hover(int x,int y);
     virtual void setboundbox(int v1,int v2,int v3,int v4){x1=v1;y1=v2;wx=v3;wy=v4;}
 };
 
@@ -201,6 +206,7 @@ public:
         widgets[num]->parent=this;
         num++;
     }
+    WidgetComposite():Widget(0){}
     ~WidgetComposite()
     {
         for(int i=0;i<num;i++)delete widgets[i];
@@ -211,9 +217,13 @@ public:
     }
     void hover(int x,int y)
     {
+        Widget::hover(x,y);
         for(int i=0;i<num;i++)widgets[i]->hover(x,y);
     }
-
+    void arrange()
+    {
+        for(int i=0;i<num;i++)widgets[i]->arrange();
+    }
 };
 
 class wCanvas:public WidgetComposite
@@ -226,43 +236,70 @@ class wPanel:public WidgetComposite
 
 public:
     wPanel(int sz_,int ofs):sz(sz_),indofs((ofs+1)*PAN_ENT),index(ofs){}
+    void arrange();
     void draw(Canvas &canvas);
 };
 
 class wText:public Widget
 {
-    int str_id;
-
 public:
-    void hover(int,int){}
+    void hover(int x,int y){Widget::hover(x,y);isSelected=0;}
     void draw(Canvas &canvas);
-    wText(int str_id_):str_id(str_id_){}
+    wText(int str_id_):Widget(str_id_){}
+};
+
+class wLogo:public wPanel
+{
+public:
+    void hover(int x,int y);
+    wLogo(int sz_,int ofs):wPanel{sz_,ofs}{}
 };
 
 class wTextRev:public wText
 {
 public:
+    void hover(int x,int y);
     void draw(Canvas &canvas);
     wTextRev():wText(0){}
 };
 
+class wTextSys1:public wText
+{
+public:
+    void draw(Canvas &canvas);
+    void hover(int x,int y);
+    wTextSys1():wText(0){}
+};
+
+class wTextSys2:public wTextSys1
+{
+public:
+    void draw(Canvas &canvas);
+};
+
+class wTextSys3:public wTextSys1
+{
+public:
+    void draw(Canvas &canvas);
+};
+
 class wCheckbox:public Widget
 {
-    int str_id,action_id;
+    int action_id;
 
 public:
     void draw(Canvas &canvas);
-    wCheckbox(int str_id_,int action_id_):str_id(str_id_),action_id(action_id_){}
+    wCheckbox(int str_id_,int action_id_):Widget(str_id_),action_id(action_id_){}
 };
 
 class wButton:public Widget
 {
 protected:
-    int str_id,action_id;
+    int action_id;
 
 public:
     void draw(Canvas &canvas);
-    wButton(int str_id_,int action_id_):str_id(str_id_),action_id(action_id_){}
+    wButton(int str_id_,int action_id_):Widget(str_id_),action_id(action_id_){}
 };
 
 class wButtonInst:public wButton
@@ -271,6 +308,7 @@ public:
     void draw(Canvas &canvas);
     wButtonInst(int str_id_,int action_id_):wButton(str_id_,action_id_){}
 };
+extern WidgetComposite *wPanels;
 
 class Panel
 {

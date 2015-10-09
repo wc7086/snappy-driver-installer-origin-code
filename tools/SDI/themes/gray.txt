@@ -50,8 +50,7 @@ PANEL1_OFSY              = 14
 // Panel, install
 PANEL2_OFSX              = PANEL2_OFSX
 PANEL2_OFSY              = 186
-PANEL2_WY                = 27
-PANEL2_OUTLINE_WIDTH     = 0
+PANEL2_WY                = 0
 
 // Panel, lang_theme
 PANEL3_OFSY              = 98
@@ -81,7 +80,7 @@ PANEL9_OFSX              = 10
 PANEL9_OFSY              = 221
 PANEL9_WX                = 196
 PANEL9_WY                = 48
-PANEL9_OUTLINE_WIDTH     = 1
+PANEL9_OUTLINE_WIDTH     = 0
 
 // Panel, selectall button
 PANEL10_WY               = 26

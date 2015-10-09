@@ -182,7 +182,9 @@ public:
 
         // SysInfo
         p=new wPanel{3,ind++};
-        p->Add(new wText    {STR_SHOW_SYSINFO});
+        p->Add(new wTextSys1);
+        p->Add(new wTextSys2);
+        p->Add(new wTextSys3);
         wPanels->Add(p);
 
         // Install
@@ -267,7 +269,7 @@ public:
         wPanels->Add(p);
 
         // Logo
-        p=new wPanel{1,ind++};
+        p=new wLogo{1,ind++};
         p->Add(new wText    {0});
         wPanels->Add(p);
     }
@@ -275,35 +277,53 @@ public:
 autorun obj;
 void drawnew(Canvas &canvas)
 {
-    POINT p;
-    GetCursorPos(&p);
-    ScreenToClient(MainWindow.hMain,&p);
-    wPanels->hover(p.x,p.y);
+    wPanels->arrange();
     wPanels->draw(canvas);
+}
+
+void wPanel::arrange()
+{
+    int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
+    int wy1=D(PANEL_WY+indofs);
+
+    x1=Xm(D(PANEL_OFSX+indofs),D(PANEL_WX+indofs));
+    y1=Ym(D(PANEL_OFSY+indofs));
+    wx=XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
+    wy=wy1*sz+ofsy*2;
+
+    if(!wy1)wy=0;
+
+    for(int i=0;i<num;i++)
+    {
+        widgets[i]->flags=D(PANEL_OUTLINE_WIDTH+indofs)<0?1:0;
+        widgets[i]->setboundbox(x1+ofsx,y1+ofsy+i*D(PNLITEM_WY),wx-ofsx*2,wy1);
+    }
+
+    if(D(PANEL_OUTLINE_WIDTH+indofs)<0)
+    {
+        flags=1;
+        x1+=ofsx;
+        y1+=ofsy;
+        wx-=ofsx*2;
+        wy-=ofsy*2;
+    }
+    else
+        flags=0;
 }
 
 void wPanel::draw(Canvas &canvas)
 {
-    x1=Xm(D(PANEL_OFSX+indofs),D(PANEL_WX+indofs));;
-    y1=Ym(D(PANEL_OFSY+indofs));
-    wx=XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
-    int wy1=D(PANEL_WY+indofs);
-    wy=wy1*sz+D(PNLITEM_OFSY)*2;
+    if(!wy)return;
 
-    if(wx<0)return;
-    if(!wy1)return;
+    // Draw panel
+    canvas.drawbox(x1,y1,x1+wx,y1+wy,(isSelected&&flags)?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
 
-    int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
-    if(D(PANEL_OUTLINE_WIDTH+indofs)<0)
-        canvas.drawbox(x1+ofsx,y1+ofsy+0*D(PNLITEM_WY),x1+wx-ofsx,y1+wy-ofsy,isSelected?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
-    else
-        canvas.drawbox(x1,y1,x1+wx,y1+wy,BOX_PANEL+index*2+2);
-
-    for(int i=0;i<num;i++)
-    {
-        widgets[i]->setboundbox(x1+ofsx,y1+ofsy+i*D(PNLITEM_WY),wx-ofsx*2,wy1);
-        widgets[i]->draw(canvas);
-    }
+    // Draw childs
+    ClipRegion rgn;
+    rgn.setRegion(x1,y1,x1+wx,y1+wy);
+    canvas.setClipRegion(rgn);
+    for(int i=0;i<num;i++)widgets[i]->draw(canvas);
+    canvas.clearClipRegion();
 }
 
 void wText::draw(Canvas &canvas)
@@ -330,7 +350,7 @@ void wCheckbox::draw(Canvas &canvas)
     if(isSelected&&MainWindow.kbpanel)
     {
         //canvas.drawbox(x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
-        isSelected=false;
+        //isSelected=false;
     }
     canvas.drawcheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,0,isSelected);
     canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
@@ -339,7 +359,7 @@ void wCheckbox::draw(Canvas &canvas)
 
 void wButton::draw(Canvas &canvas)
 {
-    canvas.drawbox(x1,y1,x1+wx,y1+wy,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+    if(!flags)canvas.drawbox(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
     canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
     canvas.TextOutH(mirw(x1,wy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,STR(str_id));
@@ -348,7 +368,7 @@ void wButton::draw(Canvas &canvas)
 
 void wButtonInst::draw(Canvas &canvas)
 {
-    canvas.drawbox(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+    if(!flags)canvas.drawbox(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
     wchar_t buf[BUFLEN];
     canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
@@ -356,6 +376,78 @@ void wButtonInst::draw(Canvas &canvas)
     int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
     canvas.TextOutH(mirw(x1,nwy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,buf);
 }
+
+void wTextSys1::draw(Canvas &canvas)
+{
+    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.TextOutH(x1+10+SYSINFO_COL0,y1,STR(STR_SHOW_SYSINFO));
+    canvas.TextOutH(x1+10+SYSINFO_COL1,y1,STR(STR_SYSINF_MOTHERBOARD));
+    canvas.TextOutH(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_ENVIRONMENT));
+}
+
+void wTextSys2::draw(Canvas &canvas)
+{
+    State *state=manager_g->matcher->getState();
+    wchar_t buf[BUFLEN];
+
+    wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
+    if(rtl)wcscat(buf,L"\u200E");
+    canvas.TextOutH(x1+10+SYSINFO_COL0,y1,buf);
+    canvas.TextOutH(x1+10+SYSINFO_COL1,y1,state->getProduct());
+    canvas.TextOutH(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_WINDIR));
+    canvas.TextOutH(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getWindir()));
+}
+
+void wTextSys3::draw(Canvas &canvas)
+{
+    State *state=manager_g->matcher->getState();
+    wchar_t buf[BUFLEN];
+
+    wsprintf(buf,L"%s",(wx<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
+    if(rtl)wcscat(buf,L"\u200E");
+    canvas.TextOutH(x1+10+SYSINFO_COL0,y1,buf);
+    wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
+    canvas.TextOutH(x1+10+SYSINFO_COL1,y1,buf);
+    canvas.TextOutH(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_TEMP));
+    canvas.TextOutH(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getTemp()));
+}
+
+void Widget::hover(int x,int y)
+{
+    isSelected=(x>=x1&&x<x1+wx&&y>=y1&&y<y1+wy);
+    if(isSelected&&str_id)drawpopup(str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
+}
+
+void wTextRev::hover(int x,int y)
+{
+    Widget::hover(x,y);
+    if(isSelected)
+    {
+        SetCursor(LoadCursor(nullptr,IDC_HAND));
+        drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
+    }
+}
+
+void wLogo::hover(int x,int y)
+{
+    Widget::hover(x,y);
+    if(isSelected)
+    {
+        SetCursor(LoadCursor(nullptr,IDC_HAND));
+        drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
+    }
+}
+
+void wTextSys1::hover(int x,int y)
+{
+    Widget::hover(x,y);
+    if(isSelected)
+    {
+        SetCursor(LoadCursor(nullptr,IDC_HAND));
+        drawpopup(str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
+    }
+}
+
 //}
 
 //{ Image
@@ -774,11 +866,11 @@ void Panel::draw(Canvas &canvas)
     ScreenToClient(MainWindow.hMain,&p);
     cur_i=hitscan(p.x,p.y);
 
-    State *state=manager_g->matcher->getState();
     for(i=0;i<items[0].action_id+1;i++)
     {
         bool isSelected=i==cur_i;
 
+        State *state=manager_g->matcher->getState();
         canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
         // System Info (1st line)
         if(i==1&&index==0)
