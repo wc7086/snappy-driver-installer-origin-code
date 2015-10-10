@@ -392,7 +392,6 @@ void wCheckbox::draw(Canvas &canvas)
 
         default:
             checked=(Settings.filters&(1<<action_id))?true:false;
-
     }
 
     canvas.DrawCheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,checked,isSelected);
@@ -582,27 +581,65 @@ ClickVisiter::~ClickVisiter()
 void ClickVisiter::VisitwCheckbox(wCheckbox *a)
 {
     a->hitscan(x,y);
-    if(a->isSelected)
+    if(a->isSelected||action_id==a->action_id)
     {
-        a->checked^=1;
+        switch(act)
+        {
+            case CHECKBOX::SET:
+                if(a->checked)return;
+                a->checked=true;
+                break;
+
+            case CHECKBOX::CLEAR:
+                if(!a->checked)return;
+                a->checked=false;
+                break;
+
+            case CHECKBOX::TOGGLE:
+                a->checked^=1;
+                break;
+
+            default:
+            case CHECKBOX::GET:
+                goto skip;
+        }
         a->invalidate();
         InvalidateRect(MainWindow.hMain,nullptr,0);
-        if(a->action_id==ID_EXPERT_MODE)
+
+        switch(a->action_id)
         {
-            Settings.expertmode=a->checked;
-            ShowWindow(GetConsoleWindow(),Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
-            InvalidateRect(MainWindow.hMain,nullptr,0);
+            case ID_EXPERT_MODE:
+                Settings.expertmode=a->checked;
+                ShowWindow(GetConsoleWindow(),Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
+                InvalidateRect(MainWindow.hMain,nullptr,0);
+                break;
+
+            case ID_RESTPNT:
+                manager_g->set_rstpnt(a->checked);
+                break;
+
+            case ID_REBOOT:
+                if(a->checked)
+                    Settings.flags|=FLAG_AUTOINSTALL;
+                else
+                    Settings.flags&=~FLAG_AUTOINSTALL;
+                break;
+
+            default:
+                break;
         }
     }
-    if(a->checked)switch(a->action_id)
+
+    skip:
+    switch(a->action_id)
     {
-        case ID_REBOOT:
-        case ID_RESTPNT:
         case ID_EXPERT_MODE:
+        case ID_RESTPNT:
+        case ID_REBOOT:
             break;
 
         default:
-            sum+=1<<a->action_id;
+            if(a->checked)sum+=1<<a->action_id;
     }
 }
 
@@ -977,189 +1014,10 @@ void Panel::keybAdvance(int v)
 
 }
 
-/*void Panel::draw_inv()
-{
-    int x=Xp(),y=Yp();
-    int wy=D(PANEL_WY+indofs);
-    int ofsy=D(PNLITEM_OFSY);
-    RECT rect;
-
-    rect.left=x;
-    rect.top=y;
-    rect.right=x+XP();
-    rect.bottom=y+(wy+1)*items[0].action_id+ofsy*2;
-
-    if(rtl)
-        InvalidateRect(MainWindow.hMain,nullptr,0);
-    else
-        InvalidateRect(MainWindow.hMain,&rect,0);
-}*/
-
-/*int Panel::calcFilters()
-{
-    int sum=0;
-
-    for(int j=0;j<items[0].action_id+1;j++)
-        if(items[j].type==TYPE_CHECKBOX&&
-            items[j].checked&&
-            items[j].action_id!=ID_EXPERT_MODE)
-            sum+=1<<items[j].action_id;
-    return sum;
-}
-
-void Panel::setFilters(int filters_)
-{
-    for(int i=0;i<items[0].action_id+1;i++)
-        if(items[i].action_id>=ID_SHOW_MISSING&&items[i].action_id<=ID_SHOW_INVALID)
-            items[i].checked=(filters_&(1<<items[i].action_id))?1:0;
-}*/
-
 void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 {
     MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
 }
-
-/*void Panel::click(int i)
-{
-    if(items[i].type==TYPE_CHECKBOX||items[i].type==TYPE_BUTTON)
-    {
-        flipChecked(i);
-        if(items[i].action_id==ID_EXPERT_MODE)
-        {
-            Settings.expertmode=isChecked(i);
-            ShowWindow(GetConsoleWindow(),Settings.expertmode&&MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
-        }
-        else
-            PostMessage(MainWindow.hMain,WM_COMMAND,items[i].action_id+(BN_CLICKED<<16),0);
-
-        InvalidateRect(MainWindow.hMain,nullptr,0);
-    }
-}*/
-
-/*void Panel::draw(Canvas &canvas)
-{
-    wchar_t buf[BUFLEN];
-    POINT p;
-    ClipRegion rgn;
-    int cur_i;
-    int i;
-    int x=Xp(),y=Yp();
-    int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
-    int wy=D(PANEL_WY+indofs);
-
-    if(XP()<0)return;
-    if(!D(PANEL_WY+indofs))return;
-
-    GetCursorPos(&p);
-    ScreenToClient(MainWindow.hMain,&p);
-    cur_i=hitscan(p.x,p.y);
-
-    for(i=0;i<items[0].action_id+1;i++)
-    {
-        bool isSelected=i==cur_i;
-
-        State *state=manager_g->matcher->getState();
-        canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
-        // System Info (1st line)
-        if(i==1&&index==0)
-        {
-            canvas.TextOutH(x+ofsx+SYSINFO_COL1,y+ofsy,STR(STR_SYSINF_MOTHERBOARD));
-            canvas.TextOutH(x+ofsx+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_ENVIRONMENT));
-        }
-
-        // System Info (2nd line)
-        if(i==2&&index==0)
-        {
-            wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
-            if(rtl)wcscat(buf,L"\u200E");
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL1,y+ofsy,state->getProduct());
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_WINDIR));
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getWindir()));
-        }
-
-        // System Info (3rd line)
-        if(i==3&&index==0)
-        {
-            wsprintf(buf,L"%s",(XP()<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
-            if(rtl)wcscat(buf,L"\u200E");
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL0,y+ofsy,buf);
-            wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL1,y+ofsy,buf);
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL2,y+ofsy,STR(STR_SYSINF_TEMP));
-            canvas.TextOutH(x+ofsx+10+SYSINFO_COL3,y+ofsy,state->textas.getw(state->getTemp()));
-        }
-        if(items[i].type==TYPE_GROUP_BREAK&&!Settings.expertmode)break;
-        switch(items[i].type)
-        {
-            case TYPE_CHECKBOX:
-                if(isSelected&&MainWindow.kbpanel)
-                {
-                    canvas.drawbox(x+ofsx,y,x+XP()-ofsx,y+ofsy+wy,BOX_KBHLT);
-                    isSelected=false;
-                }
-                canvas.drawcheckbox(mirw(x,ofsx,XP()-D(CHKBOX_SIZE)-2),y+ofsy,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,items[i].checked,isSelected);
-                canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                canvas.TextOutH(mirw(x,D(CHKBOX_TEXT_OFSX)+ofsx,XP()-ofsx*2),y+ofsy,STR(items[i].str_id));
-                //if(i==cur_i&&kbpanel)drawrectsel(hdc,x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,0xff00,1);
-                y+=D(PNLITEM_WY);
-                break;
-
-            case TYPE_BUTTON:
-                if(index>=8&&index<=10&&D(PANEL_OUTLINE_WIDTH+indofs)<0)
-                    canvas.drawbox(x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy,isSelected?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
-                else
-                    canvas.drawbox(x+ofsx,y+ofsy,x+XP()-ofsx,y+ofsy+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
-
-                canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
-
-                if(i==1&&index==8) // Install button
-                {
-                    wsprintf(buf,L"%s (%d)",STR(items[i].str_id),manager_g->countItems());
-                    int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
-                    canvas.TextOutH(mirw(x,ofsx+nwy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,buf);
-                }
-                else
-                    canvas.TextOutH(mirw(x,ofsx+wy/2,XP()),y+ofsy+(wy-D(FONT_SIZE)-2)/2,STR(items[i].str_id));
-
-                y+=D(PNLITEM_WY);
-                break;
-
-            case TYPE_TEXT:
-                if(i==1&&index==7) // Revision number
-                {
-                    Version v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
-
-
-                    wsprintf(buf,L"%s (",TEXT(SVN_REV2));
-                    v.str_date(buf+wcslen(buf));
-                    wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
-                    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
-                    canvas.TextOutH(mirw(x,ofsx,XP()),y+ofsy,buf);
-                }
-                canvas.setTextColor(D(isSelected&&i>11?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-                canvas.TextOutH(mirw(x,ofsx,XP()),y+ofsy,STR(items[i].str_id));
-                y+=D(PNLITEM_WY);
-                break;
-
-            case TYPE_GROUP_BREAK:
-            case TYPE_GROUP:
-                if(index>=8&&index<=10)break;
-                if(i)y+=D(PNLITEM_WY);
-                canvas.drawbox(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2,
-                         BOX_PANEL+index*2+2);
-                rgn.setRegion(x,y,x+XP(),y+(wy)*items[i].action_id+ofsy*2);
-                canvas.setClipRegion(rgn);
-                break;
-
-            default:
-                break;
-        }
-
-    }
-    canvas.clearClipRegion();
-}*/
-//}
 
 //{ Text
 textdata_t::textdata_t(Canvas &canvas_,int xofs):
@@ -1355,6 +1213,13 @@ int Xg(int x,int o)
 int Yg(int y){return y>=0?y:(MainWindow.mainy_c+y);}
 int XG(int x,int o){return x>=0?x:(MainWindow.mainx_c+x-o);}
 int YG(int y,int o){return y>=0?y:(MainWindow.mainy_c+y-o);}
+
+bool isRebootDesired()
+{
+    ClickVisiter cv{ID_REBOOT,CHECKBOX::GET};
+    wPanels->Accept(cv);
+    return cv.GetValue();
+}
 
 int panels_hitscan(int hx,int hy,int *ii)
 {

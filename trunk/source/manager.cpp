@@ -1138,8 +1138,10 @@ void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int va
 
 void Manager::set_rstpnt(int checked)
 {
-    panels[11].setChecked(2,items_list[SLOT_RESTORE_POINT].checked=checked);
-    //if(D(PANEL12_WY))manager_g->items_list[SLOT_RESTORE_POINT].isactive=checked;
+    ClickVisiter cv{ID_RESTPNT,checked?CHECKBOX::SET:CHECKBOX::CLEAR};
+    wPanels->Accept(cv);
+
+    items_list[SLOT_RESTORE_POINT].checked=checked;
     setpos();
     MainWindow.redrawfield();
 }
@@ -1657,7 +1659,7 @@ void Manager::restorepos1(Manager *manager_prev)
         int cnt=0;
         if(installmode==MODE_SCANNING)
         {
-            if(!panels[11].isChecked(3))selectall();
+            if(!isRebootDesired())selectall();
             itembar_t *itembar=&items_list[RES_SLOTS];
             for(i=RES_SLOTS;(unsigned)i<items_list.size();i++,itembar++)
                 if(itembar->checked)
@@ -1671,7 +1673,7 @@ void Manager::restorepos1(Manager *manager_prev)
 
         if(installmode==MODE_NONE||(installmode==MODE_SCANNING&&cnt))
         {
-            if(!panels[11].isChecked(3))selectall();
+            if(!isRebootDesired())selectall();
             if((Settings.flags&FLAG_EXTRACTONLY)==0)
             wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.get(matcher->getState()->getTemp()));
             install(INSTALLDRIVERS);
@@ -1681,12 +1683,12 @@ void Manager::restorepos1(Manager *manager_prev)
             wchar_t buf[BUFLEN];
 
             installmode=MODE_NONE;
-            if(panels[11].isChecked(3))
+            if(isRebootDesired())
                 wcscpy(buf,L" /c Shutdown.exe -r -t 3");
             else
                 wsprintf(buf,L" /c %s",needreboot?Settings.finish_rb:Settings.finish);
 
-            if(*(needreboot?Settings.finish_rb:Settings.finish)||panels[11].isChecked(3))
+            if(*(needreboot?Settings.finish_rb:Settings.finish)||isRebootDesired())
                 System.run_command(L"cmd",buf,SW_HIDE,0);
 
             if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
