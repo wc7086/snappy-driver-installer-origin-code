@@ -190,7 +190,7 @@
 			<Add directory="../external" />
 		</Linker>
 		<ExtraCommands>
-			<Add before="..\SubWCRev32.exe .. ..\source\svnrev_template.h ..\source\svnrev.h" />
+			<Add before="SubWCRev.exe .. ..\source\svnrev_template.h ..\source\svnrev.h" />
 		</ExtraCommands>
 		<Unit filename="../resources/cli.txt" />
 		<Unit filename="../resources/resources.h" />

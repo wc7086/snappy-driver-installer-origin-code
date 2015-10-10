@@ -1125,8 +1125,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             GetClientRect(hwnd,&rect);
             canvasMain->begin(hwnd,rect.right,rect.bottom);
 
-            canvasMain->drawbox(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
-            canvasMain->setFont(hFont);
+            canvasMain->DrawWidget(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
+            canvasMain->SetFont(hFont);
             //panels[7].draw(*canvasMain);// draw revision
             for(i=0;i<NUM_PANELS;i++)if(i!=7)
             {
@@ -1396,10 +1396,8 @@ int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPA
 
             GetClientRect(hwnd,&rect);
             canvasField->begin(hwnd,rect.right,rect.bottom);
-
-            BitBlt(canvasField->getDC(),0,0,rect.right,rect.bottom,canvasMain->getDC(),Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)),SRCCOPY);
+            canvasField->CopyCanvas(canvasMain,Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)));
             manager_g->draw(*canvasField,y);
-
             canvasField->end();
             break;
 
@@ -1584,8 +1582,8 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
             rect.right=D(POPUP_WX);
             rect.bottom=floating_y;
 
-            canvasPopup->setFont(Popup.hFontP);
-            canvasPopup->calcRect(STR(floating_itembar),&rect);
+            canvasPopup->SetFont(Popup.hFontP);
+            canvasPopup->CalcBoundingBox(STR(floating_itembar),&rect);
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
             popup_resize(rect.right-rect.left+D(POPUP_OFSX)*2,rect.bottom-rect.top+D(POPUP_OFSY)*2);
@@ -1605,11 +1603,11 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
             GetClientRect(hwnd,&rect);
             canvasPopup->begin(hwnd,rect.right,rect.bottom);
 
-            canvasPopup->drawbox(0,0,rect.right,rect.bottom,BOX_POPUP);
+            canvasPopup->DrawWidget(0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
-                    canvasPopup->setFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup.hFontP);
                     manager_g->matcher->getState()->popup_sysinfo(*canvasPopup);
                     break;
 
@@ -1618,28 +1616,28 @@ int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
                     rect.top+=D(POPUP_OFSY);
                     rect.right-=D(POPUP_OFSX);
                     rect.bottom-=D(POPUP_OFSY);
-                    canvasPopup->setFont(Popup.hFontP);
-                    canvasPopup->setTextColor(D(POPUP_TEXT_COLOR));
-                    DrawText(canvasPopup->getDC(),STR(floating_itembar),-1,&rect,DT_WORDBREAK);
+                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetTextColor(D(POPUP_TEXT_COLOR));
+                    canvasPopup->DrawTextRect(STR(floating_itembar),&rect);
                     break;
 
                 case FLOATING_CMPDRIVER:
-                    canvasPopup->setFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup.hFontP);
                     manager_g->popup_drivercmp(manager_g,*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:
-                    canvasPopup->setFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup.hFontP);
                     manager_g->popup_driverlist(*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:
-                    canvasPopup->setFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup.hFontP);
                     popup_about(*canvasPopup);
                     break;
 
                 case FLOATING_DOWNLOAD:
-                    canvasPopup->setFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup.hFontP);
                     #ifdef USE_TORRENT
                     Updater->showPopup(*canvasPopup);
                     #endif

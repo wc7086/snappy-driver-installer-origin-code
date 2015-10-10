@@ -658,10 +658,10 @@ void State::popup_sysinfo(Canvas &canvas)
 
     textdata_vert td(canvas);
     td.ret();
-    canvas.setFont(Popup.hFontBold);
+    canvas.SetFont(Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_WINDOWS));
     td.ret_ofs(10);
-    canvas.setFont(Popup.hFontP);
+    canvas.SetFont(Popup.hFontP);
 
     td.TextOutSF(STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
     td.TextOutSF(STR(STR_SYSINF_UPDATE),L"%s",platform.szCSDVersion);
@@ -675,28 +675,28 @@ void State::popup_sysinfo(Canvas &canvas)
         td.TextOutSF(STR(STR_SYSINF_PRODUCTTYPE),L"%d",platform.wProductType);
     }*/
     td.ret();
-    canvas.setFont(Popup.hFontBold);
+    canvas.SetFont(Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_ENVIRONMENT));
     td.ret_ofs(10);
-    canvas.setFont(Popup.hFontP);
+    canvas.SetFont(Popup.hFontP);
     td.TextOutSF(STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
     td.TextOutSF(STR(STR_SYSINF_TEMP),L"%s",textas.get(temp));
 
     td.ret();
-    canvas.setFont(Popup.hFontBold);
+    canvas.SetFont(Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_MOTHERBOARD));
     td.ret_ofs(10);
-    canvas.setFont(Popup.hFontP);
+    canvas.SetFont(Popup.hFontP);
     td.TextOutSF(STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
     td.TextOutSF(STR(STR_SYSINF_MODEL),L"%s",getModel());
     td.TextOutSF(STR(STR_SYSINF_MANUF),L"%s",getManuf());
     td.TextOutSF(STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
 
     td.ret();
-    canvas.setFont(Popup.hFontBold);
+    canvas.SetFont(Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_BATTERY));
     td.ret_ofs(10);
-    canvas.setFont(Popup.hFontP);
+    canvas.SetFont(Popup.hFontP);
     SYSTEM_POWER_STATUS *battery_loc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
     switch(battery_loc->ACLineStatus)
     {
@@ -726,10 +726,10 @@ void State::popup_sysinfo(Canvas &canvas)
 
     wchar_t *buf=(wchar_t *)(textas.get(monitors));
     td.ret();
-    canvas.setFont(Popup.hFontBold);
+    canvas.SetFont(Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_MONITORS));
     td.ret_ofs(10);
-    canvas.setFont(Popup.hFontP);
+    canvas.SetFont(Popup.hFontP);
     for(i=0;i<buf[0];i++)
     {
         int x,y;
