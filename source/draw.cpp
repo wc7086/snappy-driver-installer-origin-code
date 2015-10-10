@@ -342,20 +342,20 @@ void wPanel::draw(Canvas &canvas)
     if(!Settings.expertmode&&isAdvanced)return;
 
     // Draw panel
-    canvas.drawbox(x1,y1,x1+wx,y1+wy,(isSelected&&flags)?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
+    canvas.DrawWidget(x1,y1,x1+wx,y1+wy,(isSelected&&flags)?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
 
     // Draw childs
     ClipRegion rgn;
     rgn.setRegion(x1,y1,x1+wx,y1+wy);
-    canvas.setClipRegion(rgn);
+    canvas.SetClipRegion(rgn);
     for(int i=0;i<num;i++)widgets[i]->draw(canvas);
-    canvas.clearClipRegion();
+    canvas.ClearClipRegion();
 }
 
 void wText::draw(Canvas &canvas)
 {
-    canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-    canvas.TextOutH(mirw(x1,0,wx),y1+0,STR(str_id));
+    canvas.SetTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(mirw(x1,0,wx),y1+0,STR(str_id));
     //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
 }
 
@@ -367,8 +367,8 @@ void wTextRev::draw(Canvas &canvas)
     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
     v.str_date(buf+wcslen(buf));
     wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
-    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
-    canvas.TextOutH(mirw(x1,0,wx),y1,buf);
+    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(mirw(x1,0,wx),y1,buf);
 }
 
 void wCheckbox::draw(Canvas &canvas)
@@ -395,37 +395,37 @@ void wCheckbox::draw(Canvas &canvas)
 
     }
 
-    canvas.drawcheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,checked,isSelected);
-    canvas.setTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-    canvas.TextOutH(mirw(x1,D(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
+    canvas.DrawCheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,checked,isSelected);
+    canvas.SetTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(mirw(x1,D(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
 }
 
 void wButton::draw(Canvas &canvas)
 {
-    if(!flags)canvas.drawbox(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+    if(!flags)canvas.DrawWidget(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
-    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
-    canvas.TextOutH(mirw(x1,wy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,STR(str_id));
+    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(mirw(x1,wy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,STR(str_id));
     //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
 }
 
 void wButtonInst::draw(Canvas &canvas)
 {
-    if(!flags)canvas.drawbox(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
+    if(!flags)canvas.DrawWidget(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
     wchar_t buf[BUFLEN];
-    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
     wsprintf(buf,L"%s (%d)",STR(str_id),manager_g->countItems());
     int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
-    canvas.TextOutH(mirw(x1,nwy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,buf);
+    canvas.DrawTextXY(mirw(x1,nwy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,buf);
 }
 
 void wTextSys1::draw(Canvas &canvas)
 {
-    canvas.setTextColor(D(CHKBOX_TEXT_COLOR));
-    canvas.TextOutH(x1+10+SYSINFO_COL0,y1,STR(STR_SHOW_SYSINFO));
-    canvas.TextOutH(x1+10+SYSINFO_COL1,y1,STR(STR_SYSINF_MOTHERBOARD));
-    canvas.TextOutH(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_ENVIRONMENT));
+    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,STR(STR_SHOW_SYSINFO));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,STR(STR_SYSINF_MOTHERBOARD));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_ENVIRONMENT));
 }
 
 void wTextSys2::draw(Canvas &canvas)
@@ -435,10 +435,10 @@ void wTextSys2::draw(Canvas &canvas)
 
     wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
     if(rtl)wcscat(buf,L"\u200E");
-    canvas.TextOutH(x1+10+SYSINFO_COL0,y1,buf);
-    canvas.TextOutH(x1+10+SYSINFO_COL1,y1,state->getProduct());
-    canvas.TextOutH(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_WINDIR));
-    canvas.TextOutH(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getWindir()));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf);
+    canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,state->getProduct());
+    canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_WINDIR));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getWindir()));
 }
 
 void wTextSys3::draw(Canvas &canvas)
@@ -448,11 +448,11 @@ void wTextSys3::draw(Canvas &canvas)
 
     wsprintf(buf,L"%s",(wx<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
     if(rtl)wcscat(buf,L"\u200E");
-    canvas.TextOutH(x1+10+SYSINFO_COL0,y1,buf);
+    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf);
     wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
-    canvas.TextOutH(x1+10+SYSINFO_COL1,y1,buf);
-    canvas.TextOutH(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_TEMP));
-    canvas.TextOutH(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getTemp()));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,buf);
+    canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_TEMP));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getTemp()));
 }
 
 //{ Accepters
@@ -826,7 +826,7 @@ void Image::draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 //}
 
 //{ Canvas
-void Canvas::drawconnection(int x1,int pos,int ofsy,int curpos)
+void Canvas::DrawConnection(int x1,int pos,int ofsy,int curpos)
 {
     HPEN oldpen,newpen;
 
@@ -1163,7 +1163,6 @@ void Panel::moveWindow(HWND hwnd,int i,int j,int f)
 
 //{ Text
 textdata_t::textdata_t(Canvas &canvas_,int xofs):
-    hdcMem(canvas_.getDC()),
     pcanvas(&canvas_),
     ofsx(xofs),
     wy(D(POPUP_WY)),
@@ -1199,13 +1198,12 @@ void textdata_vert::shift_l(){maxsz-=POPUP_SYSINFO_OFS;}
 
 void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
 {
-    SIZE ss;
-    GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
-    if(ss.cx>*maxsz1)*maxsz1=ss.cx;
+    int ss=pcanvas->GetTextExtent(str);
+    if(ss>*maxsz1)*maxsz1=ss;
 
     if(!mode1)return;
-    pcanvas->setTextColor(color);
-    pcanvas->TextOutH(x1,y1,str);
+    pcanvas->SetTextColor(color);
+    pcanvas->DrawTextXY(x1,y1,str);
 }
 
 void textdata_horiz_t::TextOutP(const wchar_t *format,...)
@@ -1286,8 +1284,8 @@ void popup_about(Canvas &canvas)
     rect.top=td.getY();
     rect.right=D(POPUP_WX)-D(POPUP_OFSX)*2;
     rect.bottom=900;
-    DrawText(canvas.getDC(),STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK|DT_CALCRECT);
-    DrawText(canvas.getDC(),STR(STR_ABOUT_LICENSE),-1,&rect,DT_WORDBREAK);
+    canvas.CalcBoundingBox(STR(STR_ABOUT_LICENSE),&rect);
+    canvas.DrawTextRect(STR(STR_ABOUT_LICENSE),&rect);
 
     td.nl();
     td.nl();
@@ -1336,7 +1334,7 @@ int mirw(int x,int ofs,int w)
     UNREFERENCED_PARAMETER(w)
     return x+ofs;
 }
-void Canvas::TextOutH(int x1,int y1,LPCTSTR buf)
+void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
 {
     TextOut(hdcMem,x1,y1,buf,wcslen(buf));
 }
@@ -1442,29 +1440,51 @@ Font::~Font()
         Log.print_err("ERROR in manager_free(): failed DeleteObject\n");
 }
 
-void Canvas::setTextColor(int color)
+void Canvas::SetTextColor(int color)
 {
-    SetTextColor(hdcMem,color);
+    ::SetTextColor(hdcMem,color);
 }
 
-void Canvas::setFont(Font *font)
+void Canvas::SetFont(Font *font)
 {
     SelectObject(hdcMem,font->hFont);
 }
 
-void Canvas::setClipRegion(ClipRegion &clip)
+void Canvas::SetClipRegion(ClipRegion &clip)
 {
     SelectClipRgn(hdcMem,clip.imp->hrgn);
 }
 
-void Canvas::clearClipRegion()
+void Canvas::ClearClipRegion()
 {
     SelectClipRgn(hdcMem,nullptr);
 }
 
-void Canvas::calcRect(const wchar_t *str,RECT *rect)
+void Canvas::CalcBoundingBox(const wchar_t *str,RECT *rect)
 {
     DrawText(hdcMem,str,-1,rect,DT_WORDBREAK|DT_CALCRECT);
+}
+
+void Canvas::DrawTextRect(const wchar_t *bufw,RECT *rect)
+{
+    DrawText(hdcMem,bufw,-1,rect,DT_WORDBREAK);
+}
+
+int  Canvas::GetTextExtent(const wchar_t *str)
+{
+    SIZE ss;
+    GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
+    return ss.cx;
+}
+
+void Canvas::DrawImage(Image &image,int x1,int y1,int wx,int wy,int flags1,int flags2)
+{
+    image.draw(hdcMem,x1,y1,wx,wy,flags1,flags2);
+}
+
+void Canvas::CopyCanvas(Canvas *source,int x1,int y1)
+{
+    BitBlt(hdcMem,0,0,x,y,source->hdcMem,x1,y1,SRCCOPY);
 }
 
 void loadGUID(GUID *g,const char *s)
@@ -1490,7 +1510,7 @@ void loadGUID(GUID *g,const char *s)
         (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
 }
 
-void Canvas::drawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
+void Canvas::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
 {
     HICON hIcon;
     bool ret=false;
@@ -1515,7 +1535,7 @@ void Canvas::drawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid
     }
 }
 
-void Canvas::drawRect(int x1,int y1,int x2,int y2,int color)
+void Canvas::DrawEmptyRect(int x1,int y1,int x2,int y2,int color)
 {
     SelectObject(hdcMem,GetStockObject(DC_BRUSH));
     SelectObject(hdcMem,GetStockObject(DC_PEN));
@@ -1523,13 +1543,13 @@ void Canvas::drawRect(int x1,int y1,int x2,int y2,int color)
     Rectangle(hdcMem,x1,y1,x2,y2);
 }
 
-void Canvas::drawLine(int x1,int y1,int x2,int y2)
+void Canvas::DrawLine(int x1,int y1,int x2,int y2)
 {
     MoveToEx(hdcMem,x1,y1,nullptr);
     LineTo(hdcMem,x2,y2);
 }
 
-void Canvas::drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
+void Canvas::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
     HBRUSH newbrush,oldbrush;
@@ -1565,7 +1585,7 @@ void Canvas::drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,in
     if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
 }
 
-void Canvas::drawbox(int x1,int y1,int x2,int y2,int id)
+void Canvas::DrawWidget(int x1,int y1,int x2,int y2,int id)
 {
     if(id<0||id>=BOX_NUM)
     {
@@ -1578,11 +1598,11 @@ void Canvas::drawbox(int x1,int y1,int x2,int y2,int id)
         Log.print_err("ERROR in box_draw(): invalid index=%d\n",i);
         return;
     }
-    drawrect(x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
+    DrawFilledRect(x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
     box[id].draw(hdcMem,x1,y1,x2,y2,D(i+5),D(i+6));
 }
 
-void Canvas::drawcheckbox(int x1,int y1,int wx,int wy,int checked,int active)
+void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
 {
     RECT rect;
     int i=4+(active?1:0)+(checked?2:0);

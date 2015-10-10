@@ -28,6 +28,7 @@ class Image;
 class Panel;
 class Panelitem;
 class ClipRegionImp;
+class WidgetVisitor;
 
 // Global vars
 extern int rtl;
@@ -104,6 +105,7 @@ class Font
 
 private:
     HFONT hFont;
+
 public:
     Font():hFont(nullptr){}
     ~Font();
@@ -116,6 +118,9 @@ public:
 // Canvas
 class Canvas
 {
+    Canvas(const Canvas &)=delete;
+    Canvas &operator=(const Canvas &)=delete;
+
     int x,y;
     HDC localDC;
     HDC hdcMem;
@@ -127,52 +132,30 @@ class Canvas
 public:
     Canvas();
     ~Canvas();
-    Canvas(const Canvas &)=delete;
-    Canvas &operator=(const Canvas &)=delete;
 
-    void drawrect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
-    void drawbox(int x1,int y1,int x2,int y2,int i);
-    void drawcheckbox(int x,int y,int wx,int wy,int checked,int active);
-    void drawrevision(int y);
-    void drawconnection(int x,int pos,int ofsy,int curpos);
-    void TextOutH(int x,int y,LPCTSTR buf);
-    void drawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device);
-    void drawTextRect(LPCTSTR bufw,RECT *rect){DrawText(hdcMem,bufw,-1,rect,DT_WORDBREAK);}
-    void drawLine(int x1,int y1,int x2,int y2);
-    void drawRect(int x1,int y1,int x2,int y2,int color);
-    void drawImage(Image &image,int x1,int y1,int wx,int wy,int flags1,int flags2){image.draw(hdcMem,x1,y1,wx,wy,flags1,flags2);}
-
-    HDC getDC(){return hdcMem;}
-    void setTextColor(int color);
-    void setFont(Font *font);
-
-    void setClipRegion(ClipRegion &clip);
-    void clearClipRegion();
-    void calcRect(const wchar_t *str,RECT *rect);
-
+    void CopyCanvas(Canvas *source,int x1,int y1);
     void begin(HWND hwnd,int x,int y);
     void end();
-};
 
-// Panel
-enum panel_type
-{
-    TYPE_GROUP         = 1,
-    TYPE_TEXT          = 2,
-    TYPE_CHECKBOX      = 3,
-    TYPE_BUTTON        = 4,
-    TYPE_GROUP_BREAK   = 5,
-};
+    void SetClipRegion(ClipRegion &clip);
+    void ClearClipRegion();
 
-struct Panelitem
-{
-    int type;
-    int str_id;
-    int action_id;
-    int checked;
-};
+    void DrawEmptyRect(int x1,int y1,int x2,int y2,int color);
+    void DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int r);
+    void DrawWidget(int x1,int y1,int x2,int y2,int i);
+    void DrawImage(Image &image,int x1,int y1,int wx,int wy,int flags1,int flags2);
+    void DrawLine(int x1,int y1,int x2,int y2);
+    void DrawCheckbox(int x,int y,int wx,int wy,int checked,int active);
+    void DrawConnection(int x,int pos,int ofsy,int curpos);
+    void DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device);
 
-class WidgetVisitor;
+    void SetTextColor(int color);
+    void SetFont(Font *font);
+    void DrawTextXY(int x,int y,const wchar_t *buf);
+    void DrawTextRect(const wchar_t *bufw,RECT *rect);
+    void CalcBoundingBox(const wchar_t *str,RECT *rect);
+    int  GetTextExtent(const wchar_t *str);
+};
 
 /*
 
@@ -391,6 +374,24 @@ public:
     void VisitwTextSys1(wTextSys1 *);
 };
 
+// Panel
+enum panel_type
+{
+    TYPE_GROUP         = 1,
+    TYPE_TEXT          = 2,
+    TYPE_CHECKBOX      = 3,
+    TYPE_BUTTON        = 4,
+    TYPE_GROUP_BREAK   = 5,
+};
+
+struct Panelitem
+{
+    int type;
+    int str_id;
+    int action_id;
+    int checked;
+};
+
 class Panel
 {
     Panelitem *items;
@@ -439,7 +440,6 @@ public:
 class textdata_t
 {
 protected:
-    HDC hdcMem;
     Canvas *pcanvas;
 
     int ofsx;
