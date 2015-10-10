@@ -19,7 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 #include "common.h"
 #include "settings.h"
-#include "guicon.h"
+#include "logging.h"
 #include "matcher.h"
 #include "indexing.h"
 

@@ -16,7 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "guicon.h"
+#include "logging.h"
 
 #include <windows.h>
 #include <process.h>
