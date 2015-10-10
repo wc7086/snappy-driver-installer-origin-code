@@ -357,15 +357,28 @@ public:
     void VisitwTextSys1(wTextSys1 *);
 };
 
+enum class CHECKBOX
+{
+    SET,
+    CLEAR,
+    TOGGLE,
+    GET,
+};
+
 class ClickVisiter:public WidgetVisitor
 {
     int x,y;
-    bool popup_active=false;
+    int action_id;
     int sum=0;
 
+    CHECKBOX act;
+    int value=0;
+
 public:
-    ClickVisiter(int xv,int yv):x(xv),y(yv){}
+    ClickVisiter(int xv,int yv):x(xv),y(yv),action_id(0),act(CHECKBOX::TOGGLE){}
+    ClickVisiter(int id,CHECKBOX c=CHECKBOX::TOGGLE):x(0),y(0),action_id(id),act(c){}
     ~ClickVisiter();
+    int GetValue(){return value;}
 
     void VisitwCheckbox(wCheckbox *);
     void VisitwButton(wButton *);
@@ -404,9 +417,6 @@ class Panel
 
 public:
     Panel(Panelitem *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
-    bool isChecked(int i)const{return items[i].checked;}
-    void setChecked(int i,int val){items[i].checked=val;}
-    void flipChecked(int i){items[i].checked^=1;}
 
     int  hitscan(int x,int y);
     void keybAdvance(int v);
@@ -518,5 +528,6 @@ HICON CreateMirroredIcon(HICON hiconOrg);
 void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited=0,long long total=0);
 void loadGUID(GUID *g,const char *s);
 void drawnew(Canvas &canvas);
+bool isRebootDesired();
 
 #endif

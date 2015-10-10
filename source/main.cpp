@@ -1032,15 +1032,13 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             if(ctrl_down&&wParam==L'I')PostMessage(hMain,WM_COMMAND,ID_INSTALL,0);
             if(ctrl_down&&wParam==L'P')
             {
-                panels[11].flipChecked(2);
-                PostMessage(hMain,WM_COMMAND,ID_RESTPNT,0);
-                redrawmainwnd();
+                ClickVisiter cv{ID_RESTPNT};
+                wPanels->Accept(cv);
             }
             if(ctrl_down&&wParam==L'R')
             {
-                panels[11].flipChecked(3);
-                PostMessage(hMain,WM_COMMAND,ID_REBOOT,0);
-                redrawmainwnd();
+                ClickVisiter cv{ID_REBOOT};
+                wPanels->Accept(cv);
             }
             if(wParam==VK_F5&&ctrl_down)
                 invalidate(INVALIDATE_DEVICES);else
@@ -1162,11 +1160,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                 Popup.floating_itembar=SLOT_RESTORE_POINT;
                 manager_g->contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
             }
-            break;
-
-        case WM_RBUTTONDOWN:
-            i=panels_hitscan(x,y,&j);
-            if(i>=0&&i<4&&j==0)manager_g->matcher->getState()->contextmenu2(x,y);
+            if(i>=0&&i<4&&j==0)
+                manager_g->matcher->getState()->contextmenu2(x,y);
             break;
 
         case WM_MOUSEWHEEL:
@@ -1324,35 +1319,6 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
                 case ID_DRVDIR:
                     selectDrpDir();
-                    break;
-
-                /*case ID_SHOW_MISSING:
-                case ID_SHOW_NEWER:
-                case ID_SHOW_CURRENT:
-                case ID_SHOW_OLD:
-                case ID_SHOW_BETTER:
-                case ID_SHOW_WORSE_RANK:
-                case ID_SHOW_NF_MISSING:
-                case ID_SHOW_NF_UNKNOWN:
-                case ID_SHOW_NF_STANDARD:
-                case ID_SHOW_ONE:
-                case ID_SHOW_DUP:
-                case ID_SHOW_INVALID:
-                    Settings.filters=0;
-                    for(i=0;i<NUM_PANELS;i++)Settings.filters+=panels[i].calcFilters();
-                    manager_g->filter(Settings.filters);
-                    manager_g->setpos();
-                    break;*/
-
-                case ID_RESTPNT:
-                    manager_g->set_rstpnt(panels[11].isChecked(2));
-                    break;
-
-                case ID_REBOOT:
-                    if(panels[11].isChecked(3))
-                        Settings.flags|=FLAG_AUTOINSTALL;
-                    else
-                        Settings.flags&=~FLAG_AUTOINSTALL;
                     break;
 
                 default:

@@ -207,7 +207,11 @@ unsigned int __stdcall Manager::thread_install(void *arg)
         (instflag&INSTALLDRIVERS)?STR_INST_INSTALLING:STR_EXTR_EXTRACTING;
     manager_g->items_list[SLOT_EXTRACTING].isactive=1;
     manager_g->setpos();
-    if(panels[11].isChecked(3))Settings.flags|=FLAG_AUTOINSTALL;
+
+    ClickVisiter cv{ID_REBOOT,CHECKBOX::GET};
+    wPanels->Accept(cv);
+
+    if(isRebootDesired())Settings.flags|=FLAG_AUTOINSTALL;
 
     // Download driverpacks
 #ifdef USE_TORRENT
