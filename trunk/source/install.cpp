@@ -16,7 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "guicon.h"
+#include "logging.h"
 #include "cli.h"
 #include "matcher.h"
 #include "settings.h"
@@ -24,6 +24,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "manager.h"
 #include "install.h"
+#include "gui.h"
 
 #include <windows.h>
 #include <SRRestorePtAPI.h> // for RestorePoint

@@ -20,7 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef USE_TORRENT
 #include "common.h"
 #include "settings.h"
-#include "guicon.h"
+#include "logging.h"
 #include "matcher.h"
 #include "update.h"
 #include "manager.h"

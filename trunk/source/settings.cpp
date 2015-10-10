@@ -20,7 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "settings.h"
 #include "cli.h"
-#include "guicon.h"
+#include "logging.h"
 #include "update.h"
 #include "install.h"
 
