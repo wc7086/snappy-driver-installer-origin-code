@@ -725,7 +725,7 @@ void MainWindow_t::arrowsAdvance(int v)
         return;
     }
 
-    for(int i=0;i<NUM_PANELS;i++)panels[i].keybAdvance(v);
+    //for(int i=0;i<NUM_PANELS;i++)panels[i].keybAdvance(v);
     redrawmainwnd();
 }
 //}
@@ -819,7 +819,7 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     short x,y;
 
     int i;
-    int j,f;
+    int f;
     int wp;
     long long timer=GetTickCount();
 
@@ -1027,9 +1027,9 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             }
 
         case WM_KEYUP:
-            if(ctrl_down&&wParam==L'A')PostMessage(hMain,WM_COMMAND,ID_SELECT_ALL,0);
-            if(ctrl_down&&wParam==L'N')PostMessage(hMain,WM_COMMAND,ID_SELECT_NONE,0);
-            if(ctrl_down&&wParam==L'I')PostMessage(hMain,WM_COMMAND,ID_INSTALL,0);
+            if(ctrl_down&&wParam==L'A'){SelectAllCommand c;c.LeftClick();}
+            if(ctrl_down&&wParam==L'N'){SelectNoneCommand c;c.LeftClick();}
+            if(ctrl_down&&wParam==L'I'){InstallCommand c;c.LeftClick();}
             if(ctrl_down&&wParam==L'P')
             {
                 ClickVisiter cv{ID_RESTPNT};
@@ -1100,13 +1100,10 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             main1y_c=y;
 
             i=D(PNLITEM_OFSX)+D(PANEL_LIST_OFSX);
-            j=D(PANEL_LIST_OFSX)?0:1;
             f=D(PANEL_LIST_OFSX)?4:0;
             MoveWindow(hField,Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)),XM(D(DRVLIST_WX),D(DRVLIST_OFSX)),YM(D(DRVLIST_WY),D(DRVLIST_OFSY)),TRUE);
 
-            panels[2].moveWindow(hLang,i,j,f);
-            j=D(PANEL_LIST_OFSX)?1:3;
-            panels[2].moveWindow(hTheme,i,j,f);
+            wPanels->arrange();
             manager_g->setpos();
 
             redrawmainwnd();
@@ -1125,11 +1122,6 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 
             canvasMain->DrawWidget(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
             canvasMain->SetFont(hFont);
-            //panels[7].draw(*canvasMain);// draw revision
-            for(i=0;i<NUM_PANELS;i++)if(i!=7)
-            {
-                //panels[i].draw(*canvasMain);
-            }
             drawnew(*canvasMain);
             canvasMain->end();
             break;
@@ -1153,15 +1145,10 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
 
         case WM_RBUTTONUP:
-            i=panels_hitscan(x,y,&j);
-            if(i<0)break;
-            if(i==2&&j==11)
             {
-                Popup.floating_itembar=SLOT_RESTORE_POINT;
-                manager_g->contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
+                ClickVisiter cv{x,y,true};
+                wPanels->Accept(cv);
             }
-            if(i>=0&&i<4&&j==0)
-                manager_g->matcher->getState()->contextmenu2(x,y);
             break;
 
         case WM_MOUSEWHEEL:
@@ -1280,50 +1267,6 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
                     theme_refresh();
                 }
             }
-
-            if(HIWORD(wParam)==BN_CLICKED)
-            switch(wp)
-            {
-                case ID_INSTALL:
-                    if(installmode==MODE_NONE)
-                    {
-                        if((Settings.flags&FLAG_EXTRACTONLY)==0)
-                        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
-                        manager_g->install(INSTALLDRIVERS);
-                    }
-                    break;
-
-                case ID_SELECT_NONE:
-                    manager_g->selectnone();
-                    redrawmainwnd();
-                    redrawfield();
-                    break;
-
-                case ID_SELECT_ALL:
-                    manager_g->selectall();
-                    redrawmainwnd();
-                    redrawfield();
-                    break;
-
-                case ID_OPENLOGS:
-                    ShellExecute(hwnd,L"explore",Settings.log_dir,nullptr,nullptr,SW_SHOW);
-                    break;
-
-                case ID_SNAPSHOT:
-                    snapshot();
-                    break;
-
-                case ID_EXTRACT:
-                    extractto();
-                    break;
-
-                case ID_DRVDIR:
-                    selectDrpDir();
-                    break;
-
-                default:
-                    break;
-            }
             break;
 
         default:
@@ -1334,6 +1277,58 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
     checktimer(L"Main",timer,uMsg);
     return 0;
 }
+
+void RestPointCheckboxCommand::RightClick(int x,int y)
+{
+    Popup.floating_itembar=SLOT_RESTORE_POINT;
+    manager_g->contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
+}
+
+//{ Buttons
+void OpenLogsCommand::LeftClick(bool)
+{
+    ShellExecute(MainWindow.hMain,L"explore",Settings.log_dir,nullptr,nullptr,SW_SHOW);
+}
+
+void SnapshotCommand::LeftClick(bool)
+{
+    MainWindow.snapshot();
+}
+
+void ExtractCommand::LeftClick(bool)
+{
+    MainWindow.extractto();
+}
+
+void DrvDirCommand::LeftClick(bool)
+{
+    MainWindow.selectDrpDir();
+}
+
+void InstallCommand::LeftClick(bool)
+{
+    if(installmode==MODE_NONE)
+    {
+        if((Settings.flags&FLAG_EXTRACTONLY)==0)
+        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
+        manager_g->install(INSTALLDRIVERS);
+    }
+}
+
+void SelectAllCommand::LeftClick(bool)
+{
+    manager_g->selectall();
+    MainWindow.redrawmainwnd();
+    MainWindow.redrawfield();
+}
+
+void SelectNoneCommand::LeftClick(bool)
+{
+    manager_g->selectnone();
+    MainWindow.redrawmainwnd();
+    MainWindow.redrawfield();
+}
+//}
 
 LRESULT CALLBACK MainWindow_t::WindowGraphProcedure(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {

@@ -39,137 +39,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 int rtl=0;
 Image box[BOX_NUM];
 Image icon[ICON_NUM];
-
-Panelitem panel1[]=
-{
-    {TYPE_GROUP,0,3,0},
-    {TYPE_TEXT,STR_SHOW_SYSINFO,0,0},
-    {TYPE_TEXT,0,0,0},
-    {TYPE_TEXT,0,0,0},
-};
-
-Panelitem panel2[]=
-{
-    {TYPE_GROUP,0,3,0},
-    {0,STR_INSTALL,               ID_INSTALL,0},
-    {0,STR_SELECT_ALL,            ID_SELECT_ALL,0},
-    {0,STR_SELECT_NONE,           ID_SELECT_NONE,0},
-};
-
-Panelitem panel3[]=
-{
-    {TYPE_GROUP,KB_EXPERT,5,0},
-    {TYPE_TEXT,STR_LANG,0,0},
-    {TYPE_TEXT,0,0,0},
-    {TYPE_TEXT,STR_THEME,0,0},
-    {TYPE_TEXT,0,0,0},
-    {TYPE_CHECKBOX,STR_EXPERT,              ID_EXPERT_MODE,0},
-};
-
-Panelitem panel3_w[]=
-{
-    {TYPE_GROUP,0,3,0},
-    {TYPE_TEXT,STR_LANG,0,0},
-    {TYPE_TEXT,STR_THEME,0,0},
-    {TYPE_CHECKBOX,STR_EXPERT,              ID_EXPERT_MODE,0},
-};
-
-Panelitem panel4[]=
-{
-    {TYPE_GROUP_BREAK,KB_ACTIONS,4,0},
-    {TYPE_BUTTON,STR_OPENLOGS,              ID_OPENLOGS,0},
-    {TYPE_BUTTON,STR_SNAPSHOT,              ID_SNAPSHOT,0},
-    {TYPE_BUTTON,STR_EXTRACT,               ID_EXTRACT,0},
-    {TYPE_BUTTON,STR_DRVDIR,                ID_DRVDIR,0},
-};
-
-Panelitem panel5[]=
-{
-    {TYPE_GROUP_BREAK,KB_PANEL1,7,0},
-    {TYPE_TEXT,STR_SHOW_FOUND,0,0},
-    {TYPE_CHECKBOX, STR_SHOW_MISSING,       ID_SHOW_MISSING,0},
-    {TYPE_CHECKBOX, STR_SHOW_NEWER,         ID_SHOW_NEWER,0},
-    {TYPE_CHECKBOX, STR_SHOW_CURRENT,       ID_SHOW_CURRENT,0},
-    {TYPE_CHECKBOX, STR_SHOW_OLD,           ID_SHOW_OLD,0},
-    {TYPE_CHECKBOX, STR_SHOW_BETTER,        ID_SHOW_BETTER,0},
-    {TYPE_CHECKBOX, STR_SHOW_WORSE_RANK,    ID_SHOW_WORSE_RANK,0},
-};
-
-Panelitem panel6[]=
-{
-    {TYPE_GROUP_BREAK,KB_PANEL2,4,0},
-    {TYPE_TEXT,STR_SHOW_NOTFOUND,0,0},
-    {TYPE_CHECKBOX, STR_SHOW_NF_MISSING,    ID_SHOW_NF_MISSING,0},
-    {TYPE_CHECKBOX, STR_SHOW_NF_UNKNOWN,    ID_SHOW_NF_UNKNOWN,0},
-    {TYPE_CHECKBOX, STR_SHOW_NF_STANDARD,   ID_SHOW_NF_STANDARD,0},
-};
-
-Panelitem panel7[]=
-{
-    {TYPE_GROUP_BREAK,KB_PANEL3,3,0},
-    {TYPE_CHECKBOX, STR_SHOW_ONE,           ID_SHOW_ONE,0},
-    {TYPE_CHECKBOX, STR_SHOW_DUP,           ID_SHOW_DUP,0},
-    {TYPE_CHECKBOX, STR_SHOW_INVALID,       ID_SHOW_INVALID,0},
-
-};
-
-Panelitem panel8[]=
-{
-    {TYPE_GROUP,0,1,0},
-    {TYPE_TEXT,0,0,0},
-};
-
-Panelitem panel9[]=
-{
-
-    {TYPE_GROUP,KB_INSTALL,1,0},
-    {TYPE_BUTTON,STR_INSTALL,               ID_INSTALL,0},
-};
-
-Panelitem panel10[]=
-{
-    {TYPE_GROUP,KB_INSTALL,1,0},
-    {TYPE_BUTTON,STR_SELECT_ALL,            ID_SELECT_ALL,0},
-};
-
-Panelitem panel11[]=
-{
-    {TYPE_GROUP,KB_INSTALL,1,0},
-    {TYPE_BUTTON,STR_SELECT_NONE,           ID_SELECT_NONE,0},
-};
-
-Panelitem panel12[]=
-{
-    {TYPE_GROUP,KB_PANEL_CHK,3,0},
-    {TYPE_TEXT,STR_OPTIONS,0,0},
-    {TYPE_CHECKBOX,STR_RESTOREPOINT,        ID_RESTPNT,0},
-    {TYPE_CHECKBOX,STR_REBOOT,              ID_REBOOT,0},
-};
-
-Panelitem panel13[]=
-{
-    {TYPE_GROUP,0,1,0},
-    {TYPE_TEXT,0,0,0},
-};
-
-Panel panels[NUM_PANELS]=
-{
-    {panel1,  0},
-    {panel2,  1},
-    {panel3,  2},
-    {panel4,  3},
-    {panel5,  4},
-    {panel6,  5},
-    {panel7,  6},
-    {panel8,  7},
-    {panel9,  8},
-    {panel10, 9},
-    {panel11,10},
-    {panel12,11},
-    {panel13,12},
-};
-
 WidgetComposite *wPanels=nullptr;
+//}
 
 class autorun
 {
@@ -194,51 +65,44 @@ public:
         // Theme/lang
         p=new wPanel{5,ind++};
         p->Add(new wText    {STR_LANG});
-        p->Add(new wText    {0});
+        p->Add(new wLang);
         p->Add(new wText    {STR_THEME});
-        p->Add(new wText    {0});
-        p->Add(new wCheckbox{STR_EXPERT,            ID_EXPERT_MODE});
+        p->Add(new wTheme);
+        p->Add(new wCheckbox{STR_EXPERT,            new ExpertmodeCheckboxCommand});
         wPanels->Add(p);
-
-        // Theme/lang
-        /*p=new wPanel{3,ind++};
-        p->Add(new wText    {STR_LANG});
-        p->Add(new wText    {STR_LANG});
-        p->Add(new wCheckbox{STR_EXPERT,            ID_EXPERT_MODE});
-        wPanels->Add(p);*/
 
         // Actions
         p=new wPanel{4,ind++};
-        p->Add(new wButton  {STR_OPENLOGS,          ID_OPENLOGS});
-        p->Add(new wButton  {STR_SNAPSHOT,          ID_SNAPSHOT});
-        p->Add(new wButton  {STR_EXTRACT,           ID_EXTRACT});
-        p->Add(new wButton  {STR_DRVDIR,            ID_DRVDIR});
+        p->Add(new wButton  {STR_OPENLOGS,          new OpenLogsCommand});
+        p->Add(new wButton  {STR_SNAPSHOT,          new SnapshotCommand});
+        p->Add(new wButton  {STR_EXTRACT,           new ExtractCommand});
+        p->Add(new wButton  {STR_DRVDIR,            new DrvDirCommand});
         wPanels->Add(p);
 
         // Filters (found)
         p=new wPanel{7,ind++,true};
         p->Add(new wText    {STR_SHOW_FOUND});
-        p->Add(new wCheckbox{STR_SHOW_MISSING,      ID_SHOW_MISSING});
-        p->Add(new wCheckbox{STR_SHOW_NEWER,        ID_SHOW_NEWER});
-        p->Add(new wCheckbox{STR_SHOW_CURRENT,      ID_SHOW_CURRENT});
-        p->Add(new wCheckbox{STR_SHOW_OLD,          ID_SHOW_OLD});
-        p->Add(new wCheckbox{STR_SHOW_BETTER,       ID_SHOW_BETTER});
-        p->Add(new wCheckbox{STR_SHOW_WORSE_RANK,   ID_SHOW_WORSE_RANK});
+        p->Add(new wCheckbox{STR_SHOW_MISSING,      new FiltersCommand{ID_SHOW_MISSING}});
+        p->Add(new wCheckbox{STR_SHOW_NEWER,        new FiltersCommand{ID_SHOW_NEWER}});
+        p->Add(new wCheckbox{STR_SHOW_CURRENT,      new FiltersCommand{ID_SHOW_CURRENT}});
+        p->Add(new wCheckbox{STR_SHOW_OLD,          new FiltersCommand{ID_SHOW_OLD}});
+        p->Add(new wCheckbox{STR_SHOW_BETTER,       new FiltersCommand{ID_SHOW_BETTER}});
+        p->Add(new wCheckbox{STR_SHOW_WORSE_RANK,   new FiltersCommand{ID_SHOW_WORSE_RANK}});
         wPanels->Add(p);
 
         // Filters (not found)
         p=new wPanel{4,ind++,true};
         p->Add(new wText    {STR_SHOW_NOTFOUND});
-        p->Add(new wCheckbox{STR_SHOW_NF_MISSING,   ID_SHOW_NF_MISSING});
-        p->Add(new wCheckbox{STR_SHOW_NF_UNKNOWN,   ID_SHOW_NF_UNKNOWN});
-        p->Add(new wCheckbox{STR_SHOW_NF_STANDARD,  ID_SHOW_NF_STANDARD});
+        p->Add(new wCheckbox{STR_SHOW_NF_MISSING,   new FiltersCommand{ID_SHOW_NF_MISSING}});
+        p->Add(new wCheckbox{STR_SHOW_NF_UNKNOWN,   new FiltersCommand{ID_SHOW_NF_UNKNOWN}});
+        p->Add(new wCheckbox{STR_SHOW_NF_STANDARD,  new FiltersCommand{ID_SHOW_NF_STANDARD}});
         wPanels->Add(p);
 
         // Filters (special)
         p=new wPanel{3,ind++,true};
-        p->Add(new wCheckbox{STR_SHOW_ONE,          ID_SHOW_ONE});
-        p->Add(new wCheckbox{STR_SHOW_DUP,          ID_SHOW_DUP});
-        p->Add(new wCheckbox{STR_SHOW_INVALID,      ID_SHOW_INVALID});
+        p->Add(new wCheckbox{STR_SHOW_ONE,          new FiltersCommand{ID_SHOW_ONE}});
+        p->Add(new wCheckbox{STR_SHOW_DUP,          new FiltersCommand{ID_SHOW_DUP}});
+        p->Add(new wCheckbox{STR_SHOW_INVALID,      new FiltersCommand{ID_SHOW_INVALID}});
         wPanels->Add(p);
 
         // Revision
@@ -248,24 +112,24 @@ public:
 
         // Install button
         p=new wPanel{1,ind++};
-        p->Add(new wButtonInst{STR_INSTALL,         ID_INSTALL});
+        p->Add(new wButtonInst{STR_INSTALL,         new InstallCommand});
         wPanels->Add(p);
 
         // Select all button
         p=new wPanel{1,ind++};
-        p->Add(new wButton  {STR_SELECT_ALL,        ID_SELECT_ALL});
+        p->Add(new wButton  {STR_SELECT_ALL,        new SelectAllCommand});
         wPanels->Add(p);
 
         // Select none button
         p=new wPanel{1,ind++};
-        p->Add(new wButton  {STR_SELECT_NONE,       ID_SELECT_NONE});
+        p->Add(new wButton  {STR_SELECT_NONE,       new SelectNoneCommand});
         wPanels->Add(p);
 
         // Options
         p=new wPanel{3,ind++};
         p->Add(new wText    {STR_OPTIONS});
-        p->Add(new wCheckbox{STR_RESTOREPOINT,      ID_RESTPNT});
-        p->Add(new wCheckbox{STR_REBOOT,            ID_REBOOT});
+        p->Add(new wCheckbox{STR_RESTOREPOINT,      new RestPointCheckboxCommand});
+        p->Add(new wCheckbox{STR_REBOOT,            new RebootCheckboxCommand});
         wPanels->Add(p);
 
         // Logo
@@ -277,7 +141,7 @@ public:
 autorun obj;
 void drawnew(Canvas &canvas)
 {
-    wPanels->arrange();
+    //wPanels->arrange();
     wPanels->draw(canvas);
 }
 
@@ -297,6 +161,7 @@ void wPanel::arrange()
     {
         widgets[i]->flags=D(PANEL_OUTLINE_WIDTH+indofs)<0?1:0;
         widgets[i]->setboundbox(x1+ofsx,y1+ofsy+i*D(PNLITEM_WY),wx-ofsx*2,wy1);
+        widgets[i]->arrange();
     }
 
     if(D(PANEL_OUTLINE_WIDTH+indofs)<0)
@@ -334,6 +199,16 @@ void Widget::invalidate()
         InvalidateRect(MainWindow.hMain,nullptr,0);
     else
         InvalidateRect(MainWindow.hMain,&rect,0);
+}
+
+void wLang::arrange()
+{
+    MoveWindow(MainWindow.hLang,x1,y1-5,wx,360,false);
+}
+
+void wTheme::arrange()
+{
+    MoveWindow(MainWindow.hTheme,x1,y1-5,wx,360,false);
 }
 
 void wPanel::draw(Canvas &canvas)
@@ -379,20 +254,7 @@ void wCheckbox::draw(Canvas &canvas)
         //isSelected=false;
     }
 
-    switch(action_id)
-    {
-        case ID_EXPERT_MODE:
-            checked=Settings.expertmode;
-            break;
-        case ID_RESTPNT:
-            break;
-
-        case ID_REBOOT:
-            break;
-
-        default:
-            checked=(Settings.filters&(1<<action_id))?true:false;
-    }
+    command->UpdateCheckbox(&checked);
 
     canvas.DrawCheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,checked,isSelected);
     canvas.SetTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
@@ -581,89 +443,80 @@ ClickVisiter::~ClickVisiter()
 void ClickVisiter::VisitwCheckbox(wCheckbox *a)
 {
     a->hitscan(x,y);
-    if(a->isSelected||action_id==a->action_id)
+    if(a->isSelected||action_id==a->command->GetActionID())
     {
-        switch(act)
+        if(right)
         {
-            case CHECKBOX::SET:
-                if(a->checked)return;
-                a->checked=true;
-                break;
-
-            case CHECKBOX::CLEAR:
-                if(!a->checked)return;
-                a->checked=false;
-                break;
-
-            case CHECKBOX::TOGGLE:
-                a->checked^=1;
-                break;
-
-            default:
-            case CHECKBOX::GET:
-                goto skip;
-        }
-        a->invalidate();
-        InvalidateRect(MainWindow.hMain,nullptr,0);
-
-        switch(a->action_id)
+            a->command->RightClick(x,y);
+        }else
+        if(act!=CHECKBOX::GET)
         {
-            case ID_EXPERT_MODE:
-                Settings.expertmode=a->checked;
-                ShowWindow(GetConsoleWindow(),Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
-                InvalidateRect(MainWindow.hMain,nullptr,0);
-                break;
+            switch(act)
+            {
+                case CHECKBOX::SET:
+                    if(a->checked)return;
+                    a->checked=true;
+                    break;
 
-            case ID_RESTPNT:
-                manager_g->set_rstpnt(a->checked);
-                break;
+                case CHECKBOX::CLEAR:
+                    if(!a->checked)return;
+                    a->checked=false;
+                    break;
 
-            case ID_REBOOT:
-                if(a->checked)
-                    Settings.flags|=FLAG_AUTOINSTALL;
-                else
-                    Settings.flags&=~FLAG_AUTOINSTALL;
-                break;
+                case CHECKBOX::TOGGLE:
+                    a->checked^=1;
+                    break;
 
-            default:
-                break;
+                case CHECKBOX::GET:
+                default:
+                    break;
+            }
+            a->invalidate();
+            a->command->LeftClick(a->checked);
         }
     }
 
-    skip:
-    switch(a->action_id)
-    {
-        case ID_EXPERT_MODE:
-        case ID_RESTPNT:
-        case ID_REBOOT:
-            break;
+    // Calc filters
+    if(a->checked)sum+=a->command->GetBitfieldState();
+}
 
-        default:
-            if(a->checked)sum+=1<<a->action_id;
-    }
+void ExpertmodeCheckboxCommand::LeftClick(bool checked)
+{
+    Settings.expertmode=checked;
+    ShowWindow(GetConsoleWindow(),Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
+    InvalidateRect(MainWindow.hMain,nullptr,0);
+}
+
+void RestPointCheckboxCommand::LeftClick(bool checked)
+{
+    manager_g->set_rstpnt(checked);
+}
+
+void RebootCheckboxCommand::LeftClick(bool checked)
+{
+    if(checked)
+        Settings.flags|=FLAG_AUTOINSTALL;
+    else
+        Settings.flags&=~FLAG_AUTOINSTALL;
 }
 
 void ClickVisiter::VisitwButton(wButton *a)
 {
     a->hitscan(x,y);
-    if(a->isSelected)
-    {
-        PostMessage(MainWindow.hMain,WM_COMMAND,a->action_id+(BN_CLICKED<<16),0);
-        InvalidateRect(MainWindow.hMain,nullptr,0);
-    }
+    if(a->isSelected&&!right)a->command->LeftClick();
 }
 
 void ClickVisiter::VisitwLogo(wLogo *a)
 {
     a->hitscan(x,y);
-    if(a->isSelected)
+    if(a->isSelected&&!right)
         System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
 }
 
 void ClickVisiter::VisitwTextRev(wTextRev *a)
 {
     a->hitscan(x,y);
-    if(a->isSelected)
+    if(a->isSelected&&!right)
         System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
 }
 
@@ -671,7 +524,12 @@ void ClickVisiter::VisitwTextSys1(wTextSys1 *a)
 {
     a->hitscan(x,y);
     if(a->isSelected)
-        System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
+    {
+        if(right)
+            manager_g->matcher->getState()->contextmenu2(x,y);
+        else
+            System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
+    }
 }
 //}
 
@@ -960,65 +818,6 @@ void Canvas::end()
 }
 //}
 
-//{ Panel
-int Panel::Xp(){return Xm(D(PANEL_OFSX+indofs),D(PANEL_WX+indofs));}
-int Panel::Yp(){return Ym(D(PANEL_OFSY+indofs));}
-int Panel::XP(){return XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));}
-int Panel::YP(){return YM(D(PANEL_WY+indofs),D(PANEL_OFSY+indofs));}
-
-int Panel::hitscan(int hx,int hy)
-{
-    int wy=D(PANEL_WY+indofs);
-
-    if(MainWindow.kbpanel&&items[0].str_id==MainWindow.kbpanel)
-    {
-        if(MainWindow.kbpanel==KB_INSTALL)
-        {
-            if(MainWindow.kbitem[MainWindow.kbpanel]>2)MainWindow.kbitem[MainWindow.kbpanel]=0;
-            if(index-8!=MainWindow.kbitem[MainWindow.kbpanel])return -1;
-            return index-8==MainWindow.kbitem[MainWindow.kbpanel];
-        }
-        if(MainWindow.kbitem[MainWindow.kbpanel]>items[0].action_id)MainWindow.kbitem[MainWindow.kbpanel]=0;
-        while(items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_CHECKBOX&&
-              items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_BUTTON)MainWindow.kbitem[MainWindow.kbpanel]++;
-
-        return MainWindow.kbitem[MainWindow.kbpanel];
-    }
-
-    if(!wy)return -1;
-    hx-=Xp()+D(PNLITEM_OFSX);
-    hy-=Yp()+D(PNLITEM_OFSY);
-
-    if(!Settings.expertmode&&items[0].type==TYPE_GROUP_BREAK)return -2;
-    if(hx<0||hy<0||hx>XP()-D(PNLITEM_OFSX)*2)return -3;
-    if(hy/wy>=items[0].action_id)return -4;
-    int r=hy/wy+1;
-    if(r>=0&&!items[r].type)return -1;
-    return r;
-}
-
-void Panel::keybAdvance(int v)
-{
-    if(MainWindow.kbpanel&&items[0].str_id==MainWindow.kbpanel)
-    {
-        MainWindow.kbitem[MainWindow.kbpanel]+=v;
-
-        while(MainWindow.kbitem[MainWindow.kbpanel]>=0&&MainWindow.kbitem[MainWindow.kbpanel]<=items[0].action_id&&
-              items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_CHECKBOX&&
-              items[MainWindow.kbitem[MainWindow.kbpanel]].type!=TYPE_BUTTON)
-              MainWindow.kbitem[MainWindow.kbpanel]+=v;
-
-        if(MainWindow.kbitem[MainWindow.kbpanel]>items[0].action_id)MainWindow.kbitem[MainWindow.kbpanel]=0;
-        if(MainWindow.kbitem[MainWindow.kbpanel]<0)MainWindow.kbitem[MainWindow.kbpanel]=items[0].action_id;
-    }
-
-}
-
-void Panel::moveWindow(HWND hwnd,int i,int j,int f)
-{
-    MoveWindow(hwnd,Xp()+i,Yp()+j*D(PNLITEM_WY)-2+f,XP()-i-D(PNLITEM_OFSX),190*2,0);
-}
-
 //{ Text
 textdata_t::textdata_t(Canvas &canvas_,int xofs):
     pcanvas(&canvas_),
@@ -1219,23 +1018,6 @@ bool isRebootDesired()
     ClickVisiter cv{ID_REBOOT,CHECKBOX::GET};
     wPanels->Accept(cv);
     return cv.GetValue();
-}
-
-int panels_hitscan(int hx,int hy,int *ii)
-{
-    int i;
-
-    *ii=-1;
-    for(i=0;i<NUM_PANELS;i++)
-    {
-        int r=panels[i].hitscan(hx,hy);
-        if(r>=0)
-        {
-            *ii=i;
-            return r;
-        }
-    }
-    return -1;
 }
 
 //{ ClipRegion

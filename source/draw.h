@@ -18,9 +18,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DRAW_H
 #define DRAW_H
 
-#define NUM_PANELS  13
-#define PAN_ENT     18
-
 #include "themelist.h"
 
 // Declarations
@@ -29,17 +26,15 @@ class Panel;
 class Panelitem;
 class ClipRegionImp;
 class WidgetVisitor;
+class WidgetComposite;
 
 // Global vars
 extern int rtl;
 extern Image box[BOX_NUM];
 extern Image icon[ICON_NUM];
+extern WidgetComposite *wPanels;
 
-extern Panelitem panel3[];
-extern Panelitem panel3_w[];
-extern Panel panels[NUM_PANELS];
-
-// Image
+//{ Image
 class Image
 {
     HBITMAP bitmap;
@@ -77,8 +72,9 @@ public:
     bool isLoaded()const{return ldc;}
     void draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
+//}
 
-// ClipRegion
+//{ ClipRegion
 class ClipRegion
 {
     ClipRegion(const ClipRegion&)=delete;
@@ -96,8 +92,9 @@ public:
 
     friend class Canvas;
 };
+//}
 
-// Font
+//{ Font
 class Font
 {
     Font(const Font&)=delete;
@@ -114,8 +111,9 @@ public:
 
     friend class Canvas;
 };
+//}
 
-// Canvas
+//{ Canvas
 class Canvas
 {
     Canvas(const Canvas &)=delete;
@@ -156,30 +154,140 @@ public:
     void CalcBoundingBox(const wchar_t *str,RECT *rect);
     int  GetTextExtent(const wchar_t *str);
 };
+//}
 
+//{ ### Command ###
+class Command
+{
+public:
+    virtual ~Command(){}
+    virtual void LeftClick(bool=false){}
+    virtual void RightClick(int,int){}
+
+    virtual void UpdateCheckbox(bool *){}
+    virtual int  GetBitfieldState(){return 0;}
+    virtual int  GetActionID(){return -1;}
+};
+
+// Checkboxes
+class FiltersCommand:public Command
+{
+public:
+    int action_id;
+
+public:
+    FiltersCommand(int a):action_id(a){}
+    void UpdateCheckbox(bool *checked){*checked=(Settings.filters&(1<<action_id))?true:false;}
+    int  GetBitfieldState(){return 1<<action_id;}
+    int  GetActionID(){return action_id;}
+};
+
+class ExpertmodeCheckboxCommand:public Command
+{
+public:
+    void UpdateCheckbox(bool *checked){*checked=Settings.expertmode;}
+    void LeftClick(bool);
+    int  GetActionID(){return ID_EXPERT_MODE;}
+};
+
+class RestPointCheckboxCommand:public Command
+{
+public:
+    void LeftClick(bool);
+    void RightClick(int x,int y);
+    int  GetActionID(){return ID_RESTPNT;}
+};
+
+class RebootCheckboxCommand:public Command
+{
+public:
+    void LeftClick(bool);
+    int  GetActionID(){return ID_REBOOT;}
+};
+
+// Misc
+class AboutCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class SysInfoCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+    void RightClick(bool=false);
+};
+
+// Buttons
+class OpenLogsCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class SnapshotCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class ExtractCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class DrvDirCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class InstallCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class SelectAllCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
+class SelectNoneCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+//}
+
+//{ ### Widget ###
 /*
-
-Widget
-    wCheckbox
-    wButton
-        wButtonInst
-    wText
-        wTextSys1
-            wTextSys2
-            wTextSys3
-        wTextRev
-    WidgetComposite
-        wPanel
-            wLogo
+    Widget
+    ├───wLang
+    │   └───wTheme
+    ├───wCheckbox
+    ├───wButton
+    │   └───wButtonInst
+    ├───wText
+    │   ├───wTextSys1
+    │   │   ├───wTextSys2
+    │   │   └───wTextSys3
+    │   └────TextRev
+    └───WidgetComposite
+        └───wPanel
+            └───wLogo
 */
 
-// Widget
 class Widget
 {
 protected:
     int x1,y1,wx,wy;
 
 public:
+    Command *command=nullptr;
     Widget *parent=nullptr;
     bool isSelected=false;
     int str_id;
@@ -187,7 +295,7 @@ public:
 
 public:
     Widget(int str_id_):str_id(str_id_){}
-    virtual ~Widget(){}
+    virtual ~Widget(){delete command;}
     virtual void draw(Canvas &){}
     virtual void arrange(){}
 
@@ -235,7 +343,7 @@ class wPanel:public WidgetComposite
     bool isAdvanced;
 
 public:
-    wPanel(int sz_,int ofs,bool isAdv=false):sz(sz_),indofs((ofs+1)*PAN_ENT),index(ofs),isAdvanced(isAdv){}
+    wPanel(int sz_,int ofs,bool isAdv=false):sz(sz_),indofs((ofs+1)*18),index(ofs),isAdvanced(isAdv){}
     void Accept(WidgetVisitor &);
     void arrange();
     void draw(Canvas &canvas);
@@ -256,6 +364,22 @@ class wLogo:public wPanel
 public:
     void Accept(WidgetVisitor &visitor);
     wLogo(int sz_,int ofs):wPanel{sz_,ofs}{}
+};
+
+// wLang
+class wLang:public Widget
+{
+public:
+    void arrange();
+    wLang():Widget(0){}
+};
+
+// wLang
+class wTheme:public wLang
+{
+public:
+    void arrange();
+    wTheme():wLang(){}
 };
 
 // wTextRev
@@ -294,25 +418,21 @@ public:
 class wCheckbox:public Widget
 {
 public:
-    int action_id;
     bool checked=false;
 
 public:
     void draw(Canvas &canvas);
     void Accept(WidgetVisitor &visitor);
-    wCheckbox(int str_id_,int action_id_):Widget(str_id_),action_id(action_id_){}
+    wCheckbox(int str_id_,Command *c):Widget(str_id_){command=c;}
 };
 
 // wButton
 class wButton:public Widget
 {
 public:
-    int action_id;
-
-public:
     void Accept(WidgetVisitor &visitor);
     void draw(Canvas &canvas);
-    wButton(int str_id_,int action_id_):Widget(str_id_),action_id(action_id_){}
+    wButton(int str_id_,Command *c):Widget(str_id_){command=c;}
 };
 
 // wButtonInst
@@ -320,11 +440,11 @@ class wButtonInst:public wButton
 {
 public:
     void draw(Canvas &canvas);
-    wButtonInst(int str_id_,int action_id_):wButton(str_id_,action_id_){}
+    wButtonInst(int str_id_,Command *c):wButton(str_id_,c){}
 };
-extern WidgetComposite *wPanels;
+//}
 
-
+//{ ### Visiters ###
 class WidgetVisitor
 {
 public:
@@ -373,10 +493,11 @@ class ClickVisiter:public WidgetVisitor
 
     CHECKBOX act;
     int value=0;
+    bool right;
 
 public:
-    ClickVisiter(int xv,int yv):x(xv),y(yv),action_id(0),act(CHECKBOX::TOGGLE){}
-    ClickVisiter(int id,CHECKBOX c=CHECKBOX::TOGGLE):x(0),y(0),action_id(id),act(c){}
+    ClickVisiter(int xv,int yv,int rightv=false):x(xv),y(yv),action_id(0),act(CHECKBOX::TOGGLE),right(rightv){}
+    ClickVisiter(int id,CHECKBOX c=CHECKBOX::TOGGLE):x(0),y(0),action_id(id),act(c),right(0){}
     ~ClickVisiter();
     int GetValue(){return value;}
 
@@ -386,67 +507,9 @@ public:
     void VisitwTextRev(wTextRev *);
     void VisitwTextSys1(wTextSys1 *);
 };
+//}
 
-// Panel
-enum panel_type
-{
-    TYPE_GROUP         = 1,
-    TYPE_TEXT          = 2,
-    TYPE_CHECKBOX      = 3,
-    TYPE_BUTTON        = 4,
-    TYPE_GROUP_BREAK   = 5,
-};
-
-struct Panelitem
-{
-    int type;
-    int str_id;
-    int action_id;
-    int checked;
-};
-
-class Panel
-{
-    Panelitem *items;
-    int index,indofs;
-
-    int Xp();
-    int Yp();
-    int XP();
-    int YP();
-
-public:
-    Panel(Panelitem *itemsA,int indexA):items(itemsA),index(indexA),indofs((indexA+1)*PAN_ENT){}
-
-    int  hitscan(int x,int y);
-    void keybAdvance(int v);
-    void moveWindow(HWND hwnd,int i,int j,int f);
-
-    friend class MainWindow_t;
-};
-
-// Combobox
-class Combobox
-{
-    HWND handle;
-
-public:
-    /*Combobox(HWND hwnd,int id)
-    {
-        handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
-    }*/
-    void reset()
-    {
-        SendMessage(handle,CB_RESETCONTENT,0,0);
-    }
-    int finditem(const wchar_t *str)
-    {
-        return SendMessage(handle,CB_FINDSTRINGEXACT,-1,(LPARAM)str);
-    }
-
-};
-
-// Text
+//{ ### Text ###
 class textdata_t
 {
 protected:
@@ -501,6 +564,7 @@ public:
     int getMaxsz(){return maxsz;}
     void TextOutSF(const wchar_t *str,const wchar_t *format,...);
 };
+//}
 
 // Popup
 void popup_resize(int x,int y);
@@ -521,13 +585,33 @@ int Yg(int y);
 int XG(int x,int o);
 int YG(int y,int o);
 
-int  panels_hitscan(int hx,int hy,int *ii);
-
 void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 HICON CreateMirroredIcon(HICON hiconOrg);
 void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited=0,long long total=0);
 void loadGUID(GUID *g,const char *s);
 void drawnew(Canvas &canvas);
 bool isRebootDesired();
+
+//{ Combobox
+class Combobox
+{
+    HWND handle;
+
+public:
+    /*Combobox(HWND hwnd,int id)
+    {
+        handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
+    }*/
+    void reset()
+    {
+        SendMessage(handle,CB_RESETCONTENT,0,0);
+    }
+    int finditem(const wchar_t *str)
+    {
+        return SendMessage(handle,CB_FINDSTRINGEXACT,-1,(LPARAM)str);
+    }
+
+};
+//}
 
 #endif

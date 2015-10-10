@@ -249,6 +249,165 @@ int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int w
     return ret;
 }
 
+//{ FileMonitor
+struct FilemonDataPOD
+{
+	OVERLAPPED ol;
+	HANDLE     hDir;
+	BYTE       buffer[32*1024];
+	LPARAM     lParam;
+	DWORD      notifyFilter;
+	BOOL       fStop;
+	wchar_t      dir[BUFLEN];
+	int        subdirs;
+	FileChangeCallback callback;
+};
+
+class FilemonImp:public Filemon
+{
+    FilemonDataPOD data;
+
+private:
+    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
+    static int refresh(FilemonDataPOD &data);
+
+public:
+    FilemonImp(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
+    ~FilemonImp();
+};
+
+Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback)
+{
+    return new FilemonImp(szDirectory,notifyFilter,subdirs,callback);
+}
+
+FilemonImp::FilemonImp(const wchar_t *szDirectory, int notifyFilter_, int subdirs_, FileChangeCallback callback_)
+{
+	wcscpy(data.dir,szDirectory);
+
+	data.hDir=CreateFile(szDirectory,FILE_LIST_DIRECTORY,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,
+	                            nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OVERLAPPED,nullptr);
+
+	if(data.hDir!=INVALID_HANDLE_VALUE)
+	{
+		data.ol.hEvent    = CreateEvent(nullptr,TRUE,FALSE,nullptr);
+		data.notifyFilter = notifyFilter_;
+		data.callback     = callback_;
+		data.subdirs      = subdirs_;
+
+		if(refresh(data))
+		{
+			return;
+		}
+		else
+		{
+			CloseHandle(data.ol.hEvent);
+			CloseHandle(data.hDir);
+			data.hDir=INVALID_HANDLE_VALUE;
+		}
+	}
+}
+
+int FilemonImp::refresh(FilemonDataPOD &data1)
+{
+	return ReadDirectoryChangesW(data1.hDir,data1.buffer,sizeof(data1.buffer),data1.subdirs,
+	                      data1.notifyFilter,nullptr,&data1.ol,monitor_callback);
+}
+
+void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped)
+{
+    UNREFERENCED_PARAMETER(dwNumberOfBytesTransfered);
+
+	TCHAR szFile[MAX_PATH];
+	PFILE_NOTIFY_INFORMATION pNotify;
+	FilemonDataPOD *pMonitor=reinterpret_cast<FilemonDataPOD*>(lpOverlapped);
+
+	if(dwErrorCode==ERROR_SUCCESS)
+	{
+        size_t offset=0;
+        do
+		{
+			pNotify=(PFILE_NOTIFY_INFORMATION)&pMonitor->buffer[offset];
+			offset+=pNotify->NextEntryOffset;
+
+            lstrcpynW(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(wchar_t)+1);
+
+			if(!monitor_pause)
+			{
+                FILE *f;
+                wchar_t buf[BUFLEN];
+                int m=0,sz=-1,flag;
+
+                errno=0;
+                wsprintf(buf,L"%ws\\%ws",pMonitor->dir,szFile);
+                Log.print_con("{\n  changed'%S'\n",buf);
+                f=_wfsopen(buf,L"rb",0x10); //deny read/write mode
+                if(f)m=2;
+                if(!f)
+                {
+                    f=_wfopen(buf,L"rb");
+                    if(f)m=1;
+                }
+                if(f)
+                {
+                    fseek(f,0,SEEK_END);
+                    sz=ftell(f);
+                    fclose(f);
+                }
+                /*
+                    m0: failed to open
+                    m1: opened(normal)
+                    m2: opened(exclusive)
+                */
+                switch(pNotify->Action)
+                {
+                    case 1: // Added
+                        flag=errno?0:1;
+                        break;
+
+                    case 2: // Removed
+                        flag=1;
+                        break;
+
+                    case 3: // Modifed
+                        flag=errno?0:1;
+                        break;
+
+                    case 4: // Renamed(old name)
+                        flag=0;
+                        break;
+
+                    case 5: // Renamed(new name)
+                        flag=1;
+                        break;
+
+                    default:
+                        flag=0;
+                }
+
+                Log.print_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
+
+                if(flag)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
+                Log.print_con("}\n\n");
+			}
+		}while(pNotify->NextEntryOffset!=0);
+	}
+	if(!pMonitor->fStop)refresh(*pMonitor);
+}
+
+FilemonImp::~FilemonImp()
+{
+	if(data.hDir!=INVALID_HANDLE_VALUE)
+    {
+        data.fStop=TRUE;
+        CancelIo(data.hDir);
+        if(!HasOverlappedIoCompleted(&data.ol))SleepEx(5,TRUE);
+        CloseHandle(data.ol.hEvent);
+        CloseHandle(data.hDir);
+    }
+}
+//}
+
 #ifdef BENCH_MODE
 void SystemImp::benchmark()
 {

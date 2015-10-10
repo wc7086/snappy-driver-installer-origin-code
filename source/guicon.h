@@ -122,15 +122,4 @@ void viruscheck(const wchar_t *szFile,int action,int lParam);
 void virusmonitor_start();
 void virusmonitor_stop();
 
-// FileMonitor
-class Filemon
-{
-public:
-    virtual ~Filemon(){}
-};
-
-typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
-Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
-extern int monitor_pause;
-
 #endif
