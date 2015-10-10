@@ -69,6 +69,17 @@ public:
     void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
     void UnregisterClass_log(const wchar_t *lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
 };
-
 extern SystemImp System;
+
+// FileMonitor
+class Filemon
+{
+public:
+    virtual ~Filemon(){}
+};
+
+typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
+Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
+extern int monitor_pause;
+
 #endif
