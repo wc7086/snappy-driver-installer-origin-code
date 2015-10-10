@@ -17,7 +17,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 #include "common.h"
-#include "guicon.h"
+#include "logging.h"
 #include "settings.h"
 
 #include <windows.h>
@@ -400,13 +400,13 @@ void VaultTheme::switchdata(int i)
         for(j=0;j<i;j++)
             if(!wcscmp(str,D_STR(boxindex[j]+4)))
         {
-            box[i].makecopy(box[j]);
+            box[i].MakeCopy(box[j]);
             //Log.print_con("%d Copy %S %d\n",i,str,j);
             break;
         }
         if(i==j)
         {
-            box[i].load(boxindex[i]+4);
+            box[i].Load(boxindex[i]+4);
             //Log.print_con("%d New  %S\n",i,str);
         }
     }
@@ -417,13 +417,13 @@ void VaultTheme::switchdata(int i)
         for(j=0;j<i;j++)
             if(!wcscmp(str,D_STR(iconindex[j])))
         {
-            icon[i].makecopy(icon[j]);
+            icon[i].MakeCopy(icon[j]);
             //Log.print_con("%d Copy %S %d\n",i,str,j);
             break;
         }
         if(i==j)
         {
-            icon[i].load(iconindex[i]);
+            icon[i].Load(iconindex[i]);
             //Log.print_con("%d New  %S\n",i,str);
         }
     }

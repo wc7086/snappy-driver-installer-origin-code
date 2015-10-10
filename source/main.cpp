@@ -16,7 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "guicon.h"
+#include "logging.h"
 #include "common.h"
 #include "matcher.h"
 #include "settings.h"
@@ -25,6 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "update.h"
 #include "install.h"
+#include "gui.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -206,8 +207,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Free allocated resources
     int i;
-    for(i=0;i<BOX_NUM;i++)box[i].release();
-    for(i=0;i<ICON_NUM;i++)icon[i].release();
+    for(i=0;i<BOX_NUM;i++)box[i].Release();
+    for(i=0;i<ICON_NUM;i++)icon[i].Release();
     delete vLang;
     delete vTheme;
 
