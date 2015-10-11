@@ -33,6 +33,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <shobjidl.h>
+#ifdef _MSC_VER 
+#include <process.h>
+#endif
 
 #include "main.h"
 #include "system.h"
@@ -217,7 +220,7 @@ static bool yes1(libtorrent::torrent_status const&){return true;}
 
 int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
 {
-    UNREFERENCED_PARAMETER(lParamSort)
+	UNREFERENCED_PARAMETER(lParamSort);
     return lParam1-lParam2;
 }
 
@@ -998,7 +1001,7 @@ void UpdaterImp::resumeDownloading()
 
 unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 {
-    UNREFERENCED_PARAMETER(arg)
+	UNREFERENCED_PARAMETER(arg);
 
     // Wait till is allowed to download the torrent
     Log.print_con("{thread_download\n");

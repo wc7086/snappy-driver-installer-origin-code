@@ -368,7 +368,7 @@ class ClickVisiter:public WidgetVisitor
     bool right;
 
 public:
-    ClickVisiter(int xv,int yv,int rightv=false):x(xv),y(yv),action_id(0),act(CHECKBOX::TOGGLE),right(rightv){}
+    ClickVisiter(int xv,int yv,bool rightv=false):x(xv),y(yv),action_id(0),act(CHECKBOX::TOGGLE),right(rightv){}
     ClickVisiter(int id,CHECKBOX c=CHECKBOX::TOGGLE):x(0),y(0),action_id(id),act(c),right(0){}
     ~ClickVisiter();
     int GetValue(){return value;}

@@ -144,7 +144,7 @@ void FiltersCommand::UpdateCheckbox(bool *checked)
 
 void ExpertmodeCheckboxCommand::UpdateCheckbox(bool *checked)
 {
-    *checked=Settings.expertmode;
+    *checked=Settings.expertmode!=0;
 }
 
 void wPanel::arrange()

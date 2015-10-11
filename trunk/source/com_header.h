@@ -27,6 +27,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 //#undef __STRICT_ANSI__
 //#define BENCH_MODE
 
+#define _CONSOLE
+#define EXCLUDE_COM
+#define NO_REGISTRY
+#define _MBCS
+#define _NO_CRYPTO
+#define EXTRACT_ONLY
+
 // BOOST
 #define BOOST_ALL_NO_LIB
 #define BOOST_ASIO_ENABLE_CANCELIO
