@@ -22,6 +22,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <ctime>
+#ifdef _MSC_VER 
+#include <cerrno>
+#include <clocale>
+#endif
 
 // Depend on Win32API
 #include "system.h"
@@ -38,10 +42,18 @@ Timers_t Timers;
 
 //{ Logging
 
+#ifdef _MSC_VER
+Timers_t::Timers_t()
+{
+	timers[0]=timers[1]=timers[2]=timers[3]=timers[4]=
+	timers[5]=timers[6]=timers[7]=timers[8]=timers[9]=0;
+}
+#else
 Timers_t::Timers_t():
     timers{0,0,0,0,0,0,0,0,0,0}
 {
 }
+#endif
 
 void Timers_t::start(int a)
 {

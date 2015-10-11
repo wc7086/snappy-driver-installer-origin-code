@@ -27,6 +27,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "gui.h"
 
 #include <windows.h>
+#ifdef _MSC_VER 
+#include <process.h>
+#endif
 
 #include "enum.h"
 #include "main.h"
@@ -1810,7 +1813,7 @@ void Manager::restorepos(Manager *manager_old)
 //{ Popup
 void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
 {
-    UNREFERENCED_PARAMETER(wy)
+	UNREFERENCED_PARAMETER(wy);
 
     itembar_t *itembar;
     POINT p;
