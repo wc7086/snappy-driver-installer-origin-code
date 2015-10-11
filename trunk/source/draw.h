@@ -184,7 +184,7 @@ public:
 class textdata_horiz_t:public textdata_t
 {
     int i;
-    int *limits;
+	int *limits;
     int mode;
 
 public:
@@ -250,7 +250,7 @@ public:
     }
     int finditem(const wchar_t *str)
     {
-        return SendMessage(handle,CB_FINDSTRINGEXACT,-1,(LPARAM)str);
+        return SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
     }
 
 };

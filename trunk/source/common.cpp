@@ -34,43 +34,43 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 //{ Txt
-int Txt::strcpy(const char *str)
+size_t Txt::strcpy(const char *str)
 {
-    int r=text.size();
+    size_t r=text.size();
     text.insert(text.end(),str,str+strlen(str)+1);
     return r;
 }
 
-int Txt::strcpyw(const wchar_t *str)
+size_t Txt::strcpyw(const wchar_t *str)
 {
-    int r=text.size();
+	size_t r = text.size();
     text.insert(text.end(),(char *)str,(char *)(str+wcslen(str)+1));
     return r;
 }
 
-int Txt::t_memcpy(const char *mem,int sz)
+size_t Txt::t_memcpy(const char *mem, int sz)
 {
-    int r=text.size();
+	size_t r = text.size();
     text.insert(text.end(),mem,mem+sz);
     return r;
 }
 
-int Txt::t_memcpyz(const char *mem,int sz)
+size_t Txt::t_memcpyz(const char *mem, int sz)
 {
-    int r=text.size();
+	size_t r = text.size();
     text.insert(text.end(),mem,mem+sz);
     text.insert(text.end(),0);
     return r;
 }
 
-int Txt::memcpyz_dup(const char *mem,int sz)
+size_t Txt::memcpyz_dup(const char *mem, int sz)
 {
     std::string str(mem,sz);
     auto it=dub.find(str);
 
     if(it==dub.end())
     {
-        int r=text.size();
+		size_t r = text.size();
         text.insert(text.end(),mem,mem+sz);
         text.insert(text.end(),0);
 
@@ -263,21 +263,21 @@ void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
     }
 }
 
-void strtoupper(char *s,int len)
+void strtoupper(char *s,size_t len)
 {
     while(len--)
     {
-        *s=toupper(*s);
+        *s=(char)toupper(*s);
         s++;
     }
 }
 
-void strtolower(char *s,int len)
+void strtolower(char *s,size_t len)
 {
     if(len)
     while(len--)
     {
-        *s=tolower(*s);
+        *s=(char)tolower(*s);
         s++;
     }
 }

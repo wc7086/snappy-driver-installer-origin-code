@@ -28,8 +28,8 @@ extern int trap_mode;
 template <class T>
 char *vector_save(std::vector<T> *v,char *p)
 {
-    int used=v->size()*sizeof(T);
-    int val=v->size();
+	size_t used = v->size()*sizeof(T);
+    size_t val=v->size();
 
     memcpy(p,&used,sizeof(int));p+=sizeof(int);
     memcpy(p,&val,sizeof(int));p+=sizeof(int);
@@ -89,16 +89,16 @@ class Txt
     loadable_vector<char> text;
 
 public:
-    unsigned getSize()const{return text.size();}
+    size_t getSize()const{return text.size();}
     char *get(int offset){return &text[offset];}
     wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
     wchar_t *getw2(int offset){return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
 
-    int strcpy(const char *mem);
-    int strcpyw(const wchar_t *mem);
-    int t_memcpy(const char *mem,int sz);
-    int t_memcpyz(const char *mem,int sz);
-    int memcpyz_dup(const char *mem,int sz);
+	size_t strcpy(const char *mem);
+	size_t strcpyw(const wchar_t *mem);
+	size_t t_memcpy(const char *mem, int sz);
+	size_t t_memcpyz(const char *mem, int sz);
+	size_t memcpyz_dup(const char *mem, int sz);
     int alloc(int sz);
 
     char *savedata(char *p){return text.savedata(p);}
@@ -131,7 +131,7 @@ class Hashtable
     loadable_vector<Hashitem> items;
 
 public:
-    int getSize(){return items.size();}
+	size_t getSize(){ return items.size(); }
 
     static unsigned gethashcode(const char *s,int sz);
     void reset(int size);
@@ -144,8 +144,8 @@ public:
 
 // Strings
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
-void strtoupper(char *s,int len);
-void strtolower(char *s,int len);
+void strtoupper(char *s,size_t len);
+void strtolower(char *s,size_t len);
 int  unicode2ansi(char *s,char *out,int size);
 int _wtoi_my(const wchar_t *str);
 

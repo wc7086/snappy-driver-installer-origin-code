@@ -52,7 +52,7 @@ class TorrentStatus_t
 {
     long long downloaded,downloadsize;
     long long uploaded;
-    int elapsed,remaining;
+    __int64 elapsed,remaining;
 
     const wchar_t *status;
     wchar_t error[BUFLEN];
@@ -61,7 +61,7 @@ class TorrentStatus_t
     int peerstotal,peersconnected;
     int wasted,wastedhashfailes;
 
-    int sessionpaused,torrentpaused;
+    bool sessionpaused,torrentpaused;
 
     friend class UpdaterImp;
 };
@@ -102,8 +102,8 @@ class UpdaterImp:public Updater_t
     static HANDLE thandle_download;
 
     static int downloadmangar_exitflag;
-    static int finishedupdating;
-    static int finisheddownloading;
+    static bool finishedupdating;
+    static bool finisheddownloading;
 
     int averageSpeed=0;
     long long torrenttime=0;
@@ -170,8 +170,8 @@ int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
 int UpdaterImp::downloadmangar_exitflag;
-int UpdaterImp::finishedupdating;
-int UpdaterImp::finisheddownloading;
+bool UpdaterImp::finishedupdating;
+bool UpdaterImp::finisheddownloading;
 HANDLE UpdaterImp::downloadmangar_event=nullptr;
 HANDLE UpdaterImp::thandle_download=nullptr;
 //}
@@ -503,8 +503,8 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     // Calculate size and progress for the app and indexes
     int missingindexes=0;
     int newver=0;
-    int basesize=0,basedownloaded=0;
-    int indexsize=0,indexdownloaded=0;
+    __int64 basesize=0,basedownloaded=0;
+    __int64 indexsize=0,indexdownloaded=0;
     for(int i=0;i<Updater->numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
@@ -826,7 +826,7 @@ void UpdaterImp::showPopup(Canvas &canvas)
     textdata_vert td(canvas);
     TorrentStatus_t t;
     int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
-    int per=0;
+    long long per=0;
     wchar_t num1[BUFLEN],num2[BUFLEN];
 
     td.y=D(POPUP_OFSY);

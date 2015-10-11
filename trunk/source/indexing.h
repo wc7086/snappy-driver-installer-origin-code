@@ -236,7 +236,7 @@ public:
     wchar_t *getDriverpack_dir()const{return driverpack_dir;}
     const wchar_t *getIndex_bin_dir()const{return index_bin_dir;}
     const wchar_t *getIndex_linear_dir()const{return index_linear_dir;}
-    int size(){return driverpack_list.size();}
+	size_t size(){ return driverpack_list.size(); }
     std::vector<Driverpack> *getList(){return &driverpack_list;}
 
     void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
@@ -287,7 +287,7 @@ public:
     wchar_t *getPath(){return text_ind.getw2(drppath);}
     wchar_t *getFilename(){return text_ind.getw2(drpfilename);}
     int getType(){return type;}
-    int getSize(){return HWID_list.size();}
+	size_t getSize(){ return HWID_list.size(); }
     int setType(int val){return type=val;}
     int find(int key,int *isFound){return indexes.find(key,isFound);}
     int findnext(int *isFound){return indexes.findnext(isFound);}

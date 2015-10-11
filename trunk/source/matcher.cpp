@@ -358,7 +358,7 @@ public:
     Collection *getCol(){return col;}
     unsigned getDwidmatch_list(){return devicematch_list.size();}
     Devicematch *getDevicematch_i(int i){return &devicematch_list[i];}
-    unsigned getHwidmatch_list(){return hwidmatch_list.size();}
+    size_t getHwidmatch_list(){return hwidmatch_list.size();}
     void Insert(const Hwidmatch &a){hwidmatch_list.push_back(a);}
     Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
 };
@@ -375,9 +375,9 @@ void MatcherImp::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,i
     char hwid[BUFLEN];
     wsprintfA(hwid,"%ws",hwidv);
 
-    int sz=strlen(hwid);
+	size_t sz = strlen(hwid);
     strtoupper(hwid,sz);
-    int code=Hashtable::gethashcode(hwid,sz);
+	size_t code = Hashtable::gethashcode(hwid, sz);
 
     for(auto &drp:*col->getList())
     {
@@ -482,7 +482,8 @@ void MatcherImp::sorta(int *v)
 {
     Devicematch *devicematch_i,*devicematch_j;
     Hwidmatch *hwidmatch_i,*hwidmatch_j;
-    int i,j,num;
+    unsigned i,j;
+	size_t num;
 
     num=devicematch_list.size();
 
@@ -756,7 +757,7 @@ Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1):
 
 void Hwidmatch::minlen(char *s,int *len)
 {
-    int l=strlen(s);
+	int l=strlen(s);
     if(*len<l)*len=l;
 }
 

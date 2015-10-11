@@ -31,7 +31,8 @@ void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long tot
 int init=0;
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type)
 {
-    *manuf=*model=*product=*cs_model=*type=0;
+    *manuf=*model=*product=*cs_model=0;
+	*type=0;
 
     int hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))

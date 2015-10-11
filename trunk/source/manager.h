@@ -68,8 +68,8 @@ public:
 
     wchar_t txt1[1024];
     int install_status;
-    int val1,val2;
-    int percent;
+    __int64 val1,val2;
+	__int64 percent;
 
     int isactive;
     int checked;
@@ -140,7 +140,7 @@ public:
     int  manager_drplive(wchar_t *s);
     void set_rstpnt(int checked);
     void itembar_settext(int i,const wchar_t *txt1,int percent);
-    void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,int val1v=0,int val2v=1,int percent=-1);
+    void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,__int64 val1v=0,__int64 val2v=1,__int64 percent=-1);
     void itembar_setactive(int i,int val);
     void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index);
     void contextmenu(int x,int y);

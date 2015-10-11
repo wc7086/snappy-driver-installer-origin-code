@@ -82,7 +82,7 @@ void get_resource(int id,void **data,int *size)
     *size=SizeofResource(nullptr,myResource);
     *data=LoadResource(nullptr,myResource);
 }
-void StrFormatSize(int val,wchar_t *buf,int len)
+void StrFormatSize(long long val,wchar_t *buf,int len)
 {
     StrFormatByteSizeW(val,buf,len);
 }
@@ -185,7 +185,7 @@ void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,HINSTANCE hInstan
 
 bool SystemImp::FileExists(const wchar_t *path)
 {
-    return PathFileExists(path);
+    return PathFileExists(path)!=0;
 }
 
 void SystemImp::ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize)
