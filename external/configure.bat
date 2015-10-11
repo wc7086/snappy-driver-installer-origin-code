@@ -21,7 +21,7 @@ set MSVC_VERSION=12.0
 
 rem Toolset
 set TOOLSET=gcc
-set TOOLSET=msvc
+rem set TOOLSET=msvc
 
 rem GCC (common)
 if %TOOLSET%==gcc set TOOLSET2=mingw
