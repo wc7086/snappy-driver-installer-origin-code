@@ -118,7 +118,7 @@ public:
     int floating_x=0,floating_y=0;
     int horiz_sh=0;
 
-    int PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
+    LRESULT PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 };
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 extern class Popup_t Popup;
@@ -178,8 +178,8 @@ public:
     static LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
 
     int WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-    int WndProc2(HWND,UINT,WPARAM,LPARAM);
-    int WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
+    LRESULT WndProc2(HWND,UINT,WPARAM,LPARAM);
+    LRESULT WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
 
     MainWindow_t();
     ~MainWindow_t();

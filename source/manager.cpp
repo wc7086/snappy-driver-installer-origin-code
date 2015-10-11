@@ -754,7 +754,7 @@ void Manager::filter(int options)
 
 void Manager::print_tbl()
 {
-    int limits[7];
+	int limits[7];
 
     if(Log.isHidden(LOG_VERBOSE_MANAGER))return;
     Log.print_file("{manager_print\n");
@@ -935,7 +935,7 @@ void Manager::updateoverall()
     }
     if(_totalitems)
     {
-        int d=items_list[itembar_act].percent/_totalitems;
+        __int64 d=items_list[itembar_act].percent/_totalitems;
         if(items_list[itembar_act].checked==0)d=0;
         if(itembar_act==SLOT_RESTORE_POINT)d=0;
         items_list[SLOT_EXTRACTING].percent=_processeditems*1000/_totalitems+d;
@@ -1127,7 +1127,7 @@ void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
     MainWindow.redrawfield();
 }
 
-void Manager::itembar_settext(int i,int act,const wchar_t *txt1,int val1v,int val2v,int percent)
+void Manager::itembar_settext(int i,int act,const wchar_t *txt1,__int64 val1v,__int64 val2v,__int64 percent)
 {
     itembar_t *itembar=&items_list[i];
     if(txt1)wcscpy(itembar->txt1,txt1);
@@ -1775,7 +1775,7 @@ void Manager::restorepos(Manager *manager_old)
 
             if(itembar_new->hwidmatch)
             {
-                int limits[7];
+				int limits[7];
                 memset(limits,0,sizeof(limits));
                 Log.print_con("%d|\n",itembar_new->hwidmatch->getHWID_index());
                 itembar_new->hwidmatch->print_tbl(limits);
@@ -1795,7 +1795,7 @@ void Manager::restorepos(Manager *manager_old)
                     t_old+itembar_old->devicematch->device->getDescr());
             if(itembar_old->hwidmatch)
             {
-                int limits[7];
+				int limits[7];
                 memset(limits,0,sizeof(limits));
                 Log.print_con("%d|\n",itembar_old->hwidmatch->getHWID_index());
                 itembar_old->hwidmatch->print_tbl(limits);
@@ -1822,7 +1822,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     int lne=D(POPUP_WY);
     unsigned k;
     int maxsz=0;
-    int limits[30];
+	int limits[30];
     int c0=D(POPUP_TEXT_COLOR);
     textdata_horiz_t td(canvas,Popup.horiz_sh,limits,1);
 

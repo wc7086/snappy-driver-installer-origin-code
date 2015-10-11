@@ -819,13 +819,13 @@ LRESULT CALLBACK MainWindow_t::WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM 
     return MainWindow.WndProc2(hwnd,uMsg,wParam,lParam);
 }
 
-int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     RECT rect;
     short x,y;
 
     int i;
-    int f;
+	LRESULT f;
     int wp;
     long long timer=GetTickCount();
 
@@ -892,9 +892,9 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_UPDATELANG:
             SendMessage(hLang,CB_RESETCONTENT,0,0);
             vLang->enumfiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
-            f=SendMessage(hLang,CB_FINDSTRINGEXACT,-1,(LPARAM)Settings.curlang);
+            f=SendMessage(hLang,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)Settings.curlang);
             if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
-            vLang->switchdata(f);
+            vLang->switchdata((int)f);
             SendMessage(hLang,CB_SETCURSEL,f,0);
             lang_refresh();
             break;
@@ -902,9 +902,9 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
         case WM_UPDATETHEME:
             SendMessage(hTheme,CB_RESETCONTENT,0,0);
             vTheme->enumfiles(hTheme,L"themes");
-            f=SendMessage(hTheme,CB_FINDSTRINGEXACT,-1,(LPARAM)Settings.curtheme);
+            f=SendMessage(hTheme,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)Settings.curtheme);
             if(f==CB_ERR)f=vTheme->pickTheme();
-            vTheme->switchdata(f);
+			vTheme->switchdata((int)f);
             if(Settings.wndwx)D(MAINWND_WX)=Settings.wndwx;
             if(Settings.wndwy)D(MAINWND_WY)=Settings.wndwy;
             SendMessage(hTheme,CB_SETCURSEL,f,0);
@@ -1098,8 +1098,8 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             break;
 
         case WM_SIZE:
-            SetLayeredWindowAttributes(hMain,0,D(MAINWND_TRANSPARENCY),LWA_ALPHA);
-            SetLayeredWindowAttributes(Popup.hPopup,0,D(POPUP_TRANSPARENCY),LWA_ALPHA);
+            SetLayeredWindowAttributes(hMain,0,(BYTE)D(MAINWND_TRANSPARENCY),LWA_ALPHA);
+            SetLayeredWindowAttributes(Popup.hPopup,0,(BYTE)D(POPUP_TRANSPARENCY),LWA_ALPHA);
 
             GetWindowRect(hwnd,&rect);
             main1x_c=x;
@@ -1259,24 +1259,24 @@ int MainWindow_t::WndProc2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
             {
                 if(wp==ID_LANG)
                 {
-                    i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
+					LRESULT i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curlang);
-                    vLang->switchdata(i);
+                    vLang->switchdata((int)i);
                     lang_refresh();
                 }
 
                 if(wp==ID_THEME)
                 {
-                    i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
+					LRESULT i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curtheme);
-                    vTheme->switchdata(i);
+					vTheme->switchdata((int)i);
                     theme_refresh();
                 }
             }
             break;
 
         default:
-            i=DefWindowProc(hwnd,uMsg,wParam,lParam);
+			LRESULT i = DefWindowProc(hwnd, uMsg, wParam, lParam);
             checktimer(L"MainD",timer,uMsg);
             return i;
     }
@@ -1341,11 +1341,11 @@ LRESULT CALLBACK MainWindow_t::WindowGraphProcedure(HWND hwnd,UINT uMsg,WPARAM w
     return MainWindow.WindowGraphProcedure2(hwnd,uMsg,wParam,lParam);
 }
 
-int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
+LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
     SCROLLINFO si;
     RECT rect;
-    short x,y;
+    int x,y;
     long long timer=GetTickCount();
     int i;
 
@@ -1510,9 +1510,11 @@ int MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPA
             break;
 
         default:
-            i=DefWindowProc(hwnd,message,wParam,lParam);
-            checktimer(L"ListD",timer,message);
-            return i;
+			{
+				LRESULT i=DefWindowProc(hwnd,message,wParam,lParam);
+				checktimer(L"ListD",timer,message);
+				return i;
+			}
     }
     checktimer(L"List",timer,message);
     return 0;
@@ -1534,7 +1536,7 @@ Popup_t::~Popup_t()
     delete hFontBold;
 }
 
-int Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
+LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
     RECT rect;
     WINDOWPOS *wp;

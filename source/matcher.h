@@ -82,7 +82,7 @@ public:
     virtual Collection *getCol()=0;
     virtual unsigned getDwidmatch_list()=0;
     virtual Devicematch *getDevicematch_i(int i)=0;
-    virtual unsigned getHwidmatch_list()=0;
+	virtual size_t getHwidmatch_list() = 0;
     virtual void Insert(const Hwidmatch &a)=0;
     virtual Hwidmatch *getHwidmatch_i(int i)=0;
 

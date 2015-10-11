@@ -153,18 +153,13 @@ void *mySzAlloc(void *p,size_t size)
 void mySzFree(void *p,void *address)
 {
 	UNREFERENCED_PARAMETER(p);
-    try
-    {
-        delete[] (char*)(address);
-    }catch(...)
-    {
-        Log.print_err("Failed to free\n");
-    }
+
+    delete[] (char*)(address);
 }
 
 void findosattr(char *bufa,char *adr,int len)
 {
-    unsigned bufal=0;
+    size_t bufal=0;
     char *p=adr;
     static wchar_t osatt[]={L'O',L'S',L'A',L't',L't'}; // OSAtt
 
@@ -1999,7 +1994,7 @@ void Driverpack::print_index_hr()
 {
     int pos;
     unsigned inffile_index,manuf_index,HWID_index,desc_index;
-    unsigned n=inffile.size();
+	size_t n = inffile.size();
     Version *t;
     data_inffile_t *d_i;
     Hwidmatch hwidmatch(this,0);

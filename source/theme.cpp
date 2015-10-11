@@ -261,7 +261,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
         int szo;
         fread(datav,1,1,f);
         sz-=3;
-        int q=fread(datav,1,sz,f);
+        size_t q=fread(datav,1,sz,f);
         szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,nullptr,0);
         wchar_t *dataloc1=new wchar_t[szo+1];
         sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,dataloc1,szo);
