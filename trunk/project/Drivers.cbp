@@ -155,14 +155,8 @@
 			<Add option="-Wunused" />
 			<Add option="-mthreads" />
 			<Add option="-DWIN32" />
-			<Add option="-D_CONSOLE" />
-			<Add option="-DEXCLUDE_COM" />
-			<Add option="-DNO_REGISTRY" />
-			<Add option="-D_MBCS" />
 			<Add option="-DUNICODE" />
 			<Add option="-D_UNICODE" />
-			<Add option="-D_NO_CRYPTO" />
-			<Add option="-DEXTRACT_ONLY" />
 			<Add option="-D_WIN32_WINNT=0x0500" />
 			<Add option="-DWINVER=0x0500" />
 			<Add directory="../resources" />

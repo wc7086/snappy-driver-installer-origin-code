@@ -1,15 +1,20 @@
 echo Using %TOOLSET%
+
+if "%TOOLSET%"=="msvc" goto msvc
+
 set HOME=%CD%\home
 
 set MSYSTEM=MINGW32
 set PREFIX=%2
-%1\sh --login -i %~dp0\home\makewebp.bat
+%1\sh --login -i %~dp0home\makewebp.bat
 
 set MSYSTEM=MINGW64
 set PREFIX=%3
-%1\sh --login -i %~dp0\home\makewebp.bat
+%1\sh --login -i %~dp0home\makewebp.bat
+goto skip
 
-if "%TOOLSET%"=="msvc" goto skip
+:msvc
+%1\sh --login -i %~dp0home\unpack.bat
 cd home\libwebp-%LIBWEBP_VER%
 call "%MSVC_PATH%\VC\vcvarsall"
 nmake /f Makefile.vc CFG=release-static RTLIBCFG=static OBJDIR=output ARCH=x32
