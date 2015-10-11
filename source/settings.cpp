@@ -26,6 +26,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
+#ifdef _MSC_VER 
+#include <shellapi.h>
+#endif
 
 #include "system.h"
 #include "main.h"
@@ -290,10 +293,10 @@ void Settings_t::save()
     FILE *f=_wfopen(L"sdi.cfg",L"wt");
     if(!f)return;
     fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
-              "\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
-              "\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n\"-finish_upd_cmd:%s\"\n\n"
-              "\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-filters:%d\n\n"
-              "-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
+              L"\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
+              L"\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n\"-finish_upd_cmd:%s\"\n\n"
+              L"\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-filters:%d\n\n"
+              L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,

@@ -70,7 +70,7 @@ int Txt::memcpyz_dup(const char *mem,int sz)
         text.insert(text.end(),mem,mem+sz);
         text.insert(text.end(),0);
 
-        dub.insert({{std::move(str),r}});
+		dub.insert({ std::move(str), r });
         return r;
     }
     else

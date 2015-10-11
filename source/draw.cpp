@@ -33,7 +33,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
+#ifdef _MSC_VER 
+#include "webp\decode.h"
+#else
 #include <webp\decode.h>
+#endif
 #include <memory>
 
 //{ Global vars
@@ -468,7 +472,7 @@ void format_size(wchar_t *buf,long long val,int isspeed)
     StrFormatSize(val,buf,BUFLEN);
 #else
     buf[0]=0;
-    UNREFERENCED_PARAMETER(val)
+	UNREFERENCED_PARAMETER(val);
 #endif
     if(isspeed)wcscat(buf,STR(STR_UPD_SEC));
 }
@@ -497,7 +501,7 @@ void format_time(wchar_t *buf,long long val)
 //{ Draw
 int mirw(int x,int ofs,int w)
 {
-    UNREFERENCED_PARAMETER(w)
+	UNREFERENCED_PARAMETER(w);
     return x+ofs;
 }
 void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
@@ -506,7 +510,7 @@ void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
 }
 int Xm(int x,int o)
 {
-    UNREFERENCED_PARAMETER(o)
+	UNREFERENCED_PARAMETER(o);
     return x>=0?x:(MainWindow.main1x_c+x);
 }
 int Ym(int y){return y>=0?y:(MainWindow.main1y_c+y);}
@@ -515,7 +519,7 @@ int YM(int y,int o){return y>=0?y:(MainWindow.main1y_c+y-o);}
 
 int Xg(int x,int o)
 {
-    UNREFERENCED_PARAMETER(o)
+	UNREFERENCED_PARAMETER(o);
     return x>=0?x:(MainWindow.mainx_c+x);
 }
 int Yg(int y){return y>=0?y:(MainWindow.mainy_c+y);}
@@ -533,7 +537,7 @@ bool isRebootDesired()
 class ClipRegionImp
 {
     ClipRegionImp(const ClipRegionImp&)=delete;
-    operator=(const ClipRegionImp&)=delete;
+	ClipRegionImp &operator = (const ClipRegionImp&) = delete;
 
 private:
     HRGN hrgn;

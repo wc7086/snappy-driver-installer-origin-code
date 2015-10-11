@@ -19,6 +19,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 
 #include <windows.h>
+#ifdef _MSC_VER 
+#include <commdlg.h>
+#include <direct.h>
+#include <shellapi.h>
+#endif
+
 #include <process.h>
 #include <errno.h>
 #include <setupapi.h>       // for SHELLEXECUTEINFO
@@ -109,7 +115,7 @@ void mkdir_r(const wchar_t *path)
 class EventImp:public Event
 {
     EventImp(const EventImp&)=delete;
-    operator=(const EventImp&)=delete;
+	EventImp &operator = (const EventImp&) = delete;
 
     HANDLE h;
 

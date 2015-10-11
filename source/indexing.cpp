@@ -24,6 +24,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "indexing.h"
 
 #include "7zip.h"
+#ifdef _MSC_VER 
+#include <process.h>
+#endif
 
 // Depend on Win32API
 #include "manager.h"
@@ -71,7 +74,7 @@ template<typename Data>
 class concurrent_queue
 {
     concurrent_queue(const concurrent_queue&)=delete;
-    operator=(const concurrent_queue&)=delete;
+	concurrent_queue &operator = (const concurrent_queue&) = delete;
 
 private:
     std::queue<Data> the_queue;
@@ -123,7 +126,7 @@ public:
 //{ Misc functions
 void *mySzAlloc(void *p,size_t size)
 {
-    UNREFERENCED_PARAMETER(p)
+	UNREFERENCED_PARAMETER(p);
 
     void *mem=nullptr;
 
@@ -149,7 +152,7 @@ void *mySzAlloc(void *p,size_t size)
 
 void mySzFree(void *p,void *address)
 {
-    UNREFERENCED_PARAMETER(p)
+	UNREFERENCED_PARAMETER(p);
     try
     {
         delete[] (char*)(address);

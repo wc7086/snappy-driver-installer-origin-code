@@ -27,8 +27,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "gui.h"
 
 #include <windows.h>
+#ifdef _MSC_VER
+#include <process.h>
+#include <shellapi.h>
+#endif
 #include <SRRestorePtAPI.h> // for RestorePoint
-typedef WINBOOL (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
+typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 #include "device.h"
 
 #include "enum.h"
@@ -184,7 +188,7 @@ void removeextrainfs(wchar_t *inf)
 
 unsigned int __stdcall Manager::thread_install(void *arg)
 {
-    UNREFERENCED_PARAMETER(arg)
+	UNREFERENCED_PARAMETER(arg);
 
     itembar_t *itembar,*itembar1;
     wchar_t cmd[BUFLEN];

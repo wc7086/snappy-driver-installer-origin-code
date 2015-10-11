@@ -35,10 +35,10 @@ static void print_error(int r,const WCHAR *s)
 
 int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrevInstance,LPSTR lpszArgument,int nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hThisInstance)
-	UNREFERENCED_PARAMETER(hPrevInstance)
-	UNREFERENCED_PARAMETER(lpszArgument)
-	UNREFERENCED_PARAMETER(nCmdShow)
+	UNREFERENCED_PARAMETER(hThisInstance);
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpszArgument);
+	UNREFERENCED_PARAMETER(nCmdShow);
 
 	WCHAR **argv;
     int argc;

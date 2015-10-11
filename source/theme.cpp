@@ -143,7 +143,7 @@ wchar_t *Vault::findstr(wchar_t *str)
 
 int Vault::readvalue(const wchar_t *str)
 {
-    wchar_t *p;
+    const wchar_t *p;
 
     p=wcsstr(str,L"0x");
     return p?wcstol(str,nullptr,16):_wtoi_my(str);
@@ -475,7 +475,7 @@ void VaultLang::enumfiles(HWND hwnd,const wchar_t *path,int locale)
 
 void VaultTheme::enumfiles(HWND hwnd,const wchar_t *path,int arg)
 {
-    UNREFERENCED_PARAMETER(arg)
+	UNREFERENCED_PARAMETER(arg);
 
     wchar_t buf[BUFLEN];
     HANDLE hFind;

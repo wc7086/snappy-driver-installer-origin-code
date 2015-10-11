@@ -226,7 +226,7 @@ public:
     int getLocale(){return locale;}
     int getArchitecture(){return architecture;}
     void getWinVer(int *major,int *minor);
-    wchar_t *get_szCSDVersion(){return platform.szCSDVersion;}
+    const wchar_t *get_szCSDVersion(){return platform.szCSDVersion;}
     std::vector<Device> *getDevices_list(){return &Devices_list;}
     Driver *getCurrentDriver(Device *dev){return (dev->getDriverIndex()>=0)?&Drivers_list[dev->getDriverIndex()]:nullptr;}
 

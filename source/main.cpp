@@ -29,6 +29,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
+#ifdef _MSC_VER 
+#include <shellapi.h>
+#include <process.h>
+#include <signal.h>
+#endif
 
 #include "system.h"
 #include "enum.h"
