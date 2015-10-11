@@ -1327,7 +1327,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
         int a=BOX_PROGR;
         //if(index==SLOT_EXTRACTING&&installmode==MODE_STOPPING)a=BOX_PROGR_S;
         //if(index>=RES_SLOTS&&(!itembar->checked||installmode==MODE_STOPPING))a=BOX_PROGR_S;
-        canvas.DrawWidget(x,pos,x+wx*itembar->percent/1000.,pos+D(DRVITEM_WY),a);
+        canvas.DrawWidget(x,pos,x+wx*itembar->percent/1000,pos+D(DRVITEM_WY),a);
     }
 
     canvas.SetTextColor(0); // todo: color

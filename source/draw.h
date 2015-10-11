@@ -64,7 +64,7 @@ public:
     void Release();
     void MakeCopy(Image &t);
     void Load(int i);
-    bool IsLoaded()const{return ldc;}
+    bool IsLoaded()const{return ldc!=nullptr;}
     void Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
 //}

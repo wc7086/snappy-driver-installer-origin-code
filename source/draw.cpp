@@ -530,7 +530,7 @@ bool isRebootDesired()
 {
     ClickVisiter cv{ID_REBOOT,CHECKBOX::GET};
     wPanels->Accept(cv);
-    return cv.GetValue();
+    return cv.GetValue()!=0;
 }
 
 //{ ClipRegion
@@ -652,16 +652,16 @@ void loadGUID(GUID *g,const char *s)
     char d[3];
     d[2]=0;
     g->Data1=strtol(s+1,nullptr,16);
-    g->Data2=strtol(s+10,nullptr,16);
-    g->Data3=strtol(s+15,nullptr,16);
-    memcpy(d,s+15+5,2);g->Data4[0]=strtol(d,nullptr,16);
-    memcpy(d,s+15+5+2,2);g->Data4[1]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+4,2);g->Data4[2]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+6,2);g->Data4[3]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+8,2);g->Data4[4]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+10,2);g->Data4[5]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+12,2);g->Data4[6]=strtol(d,nullptr,16);
-    memcpy(d,s+15+6+14,2);g->Data4[7]=strtol(d,nullptr,16);
+    g->Data2=strtol(s+10,nullptr,16)&0xFFFF;
+    g->Data3=strtol(s+15,nullptr,16)&0xFFFF;
+    memcpy(d,s+15+5,2);g->Data4[0]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+5+2,2);g->Data4[1]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+6+4,2);g->Data4[2]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+6+6,2);g->Data4[3]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+6+8,2);g->Data4[4]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+6+10,2);g->Data4[5]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+6+12,2);g->Data4[6]=strtol(d,nullptr,16)&0xFF;
+    memcpy(d,s+15+6+14,2);g->Data4[7]=strtol(d,nullptr,16)&0xFF;
 
     /*Log.print_con("%s\n",s);
     Log.print_con("{%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\n\n",g->Data1,g->Data2,g->Data3,
@@ -673,7 +673,7 @@ void loadGUID(GUID *g,const char *s)
 void Canvas::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
 {
     HICON hIcon;
-    bool ret=false;
+    BOOL ret=false;
     if(guid_driverpack)
     {
         GUID gd;

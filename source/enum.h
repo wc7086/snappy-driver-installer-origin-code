@@ -54,11 +54,15 @@ struct SP_DEVINFO_DATA_32
     DWORD     DevInst;
     int       Reserved;
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 //warning: 'class Driverpack' has pointer data members
+#endif
     SP_DEVINFO_DATA_32():cbSize(sizeof(SP_DEVINFO_DATA_32)),DevInst(0),Reserved(0){}
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 };
 
 // Device

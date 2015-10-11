@@ -22,12 +22,16 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "7zip.h"
 #include "system.h"
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
 #define BOOST_SYSTEM_NO_DEPRECATED
 #include <boost/thread/condition_variable.hpp>
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 //{ Txt
 int Txt::strcpy(const char *str)

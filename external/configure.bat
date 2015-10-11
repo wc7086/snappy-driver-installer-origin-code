@@ -17,6 +17,15 @@ set LIBTORRENT_VER=1_0_6
 set LIBWEBP_VER=0.4.3
 set GCC_VERSION=5.2.0
 set GCC_VERSION2=52
+set MSVC_VERSION=12.0
+
+rem Toolset
+set TOOLSET=gcc
+set TOOLSET=msvc
+
+rem GCC (common)
+if %TOOLSET%==gcc set TOOLSET2=mingw
+set EXTRA_OPTIONS="cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 
 rem GCC 32-bit
 set GCC_PATH=c:\mingw\mingw32
@@ -42,7 +51,15 @@ set BOOST64_INSTALL_PATH=C:\BOOST64_%GCC_VERSION2%
 rem Configure paths
 set LIBTORRENT_PATH=%CD%\libtorrent-libtorrent-%LIBTORRENT_VER%
 set WEBP_PATH=%CD%\webp
-set path=%GCC_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
+set path=%BOOST_ROOT%;%MSYS_BIN%;%path%
+if %TOOLSET%==gcc set path=%GCC_PATH%\bin;%path%
+
+rem Visual Studio
+if %TOOLSET%==msvc set TOOLSET2=msvc
+if %TOOLSET%==msvc set EXTRA_OPTIONS=
+if %TOOLSET%==msvc set LIBDIR=%CD%\..\lib
+if %TOOLSET%==msvc set MSVC_PATH=C:\Program Files (x86)\Microsoft Visual Studio %MSVC_VERSION%
+if %TOOLSET%==msvc call "%MSVC_PATH%\VC\vcvarsall"
 
 rem Check for MinGW
 if /I not exist "%GCC_PATH%\bin" (color %c_fail%&echo ERROR: MinGW not found in %GCC_PATH% & goto fatalError)
@@ -88,7 +105,7 @@ if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (call :ColorText %c
 copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
-bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH%
+bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH%
 popd
 :skipinstallboost32
 
@@ -98,7 +115,7 @@ pushd %BOOST_ROOT%
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 call :ColorText %c_do% "Installing BOOST64"&echo.
-bjam.exe install toolset=gcc release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64
+bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64
 set path=%oldpath%
 popd
 :skipinstallboost64
@@ -289,6 +306,12 @@ call :ColorText %c_do% "Downloading libtorrent"&echo.
 :skipdownloadlibtorrent
 if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS_BIN%\tar -xf "libtorrent-rasterbar-%LIBTORRENT_VER%.tar.gz" -v)
 
+rem Creating dirs for libs
+mkdir %LIBDIR%\Release_Win32 2>nul
+mkdir %LIBDIR%\Release_x64 2>nul
+mkdir %LIBDIR%\Debug_Win32 2>nul
+mkdir %LIBDIR%\Debug_x64 2>nul
+
 rem Install webp
 if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a" (call :ColorText %c_skip% "Skipping installing WebP"&echo. & goto skipprepwebp)
 :installwebp
@@ -297,7 +320,12 @@ xcopy webp\mingw\msys\1.0 %MSYS_PATH% /E /I /Y
 echo %GCC_PATH% /mingw32> %MSYS_PATH%\etc\fstab
 echo %GCC64_PATH% /mingw64>> %MSYS_PATH%\etc\fstab
 pushd %MSYS_PATH%
+rem if "%TOOLSET%"=="msvc" del %MSYS_PATH%\etc\fstab 2>nul
 call makewebp.bat %MSYS_BIN% /mingw32%GCC_PREFIX1% /mingw64%GCC64_PREFIX1%
+copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\release-static\x64\lib\libwebp.lib %LIBDIR%\Release_x64\libwebp.lib /Y
+copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\debug-static\x64\lib\libwebp_debug.lib %LIBDIR%\Debug_x64\libwebp.lib /Y
+copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\release-static\x32\lib\libwebp.lib %LIBDIR%\Release_Win32\libwebp.lib /Y
+copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\debug-static\x32\lib\libwebp_debug.lib %LIBDIR%\Debug_Win32\libwebp.lib /Y
 popd
 if /I "%menu%"=="W" (echo. & call :ColorText %c_done% "DONE"&echo. & echo. & pause&goto mainmenu)
 :skipprepwebp
@@ -306,7 +334,7 @@ rem Build bjam.exe
 if /I exist "%BOOST_ROOT%\bjam.exe" (call :ColorText %c_skip% "Skipping building bjam.exe"&echo. & goto skipbuildbjam)
 call :ColorText %c_do% "Building BJAM"&echo.
 pushd %BOOST_ROOT%
-call bootstrap.bat mingw
+call bootstrap.bat %TOOLSET2%
 popd
 :skipbuildbjam
 
@@ -339,11 +367,18 @@ goto skipbuildlibtorrent
 call :ColorText %c_do% "Building libtorrent32"&echo.
 copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 pushd "%LIBTORRENT_PATH%\examples"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc myrelease exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-rem bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=gcc mydebug exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% myrelease exception-handling=on %EXTRA_OPTIONS%
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% mydebug exception-handling=on %EXTRA_OPTIONS%
+
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib /Y
 copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a /Y
+copy ..\bin\msvc-%MSVC_VERSION%\myrls\libtorrent.lib %LIBDIR%\Release_Win32 /Y
+copy ..\bin\msvc-%MSVC_VERSION%\mydbg\libtorrent.lib %LIBDIR%\Debug_Win32 /Y
+
 copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls\libboost_system-vc120-mt-s-1_59.lib %LIBDIR%\Release_Win32\libboost_system.lib /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg\libboost_system-vc120-mt-sg-1_59.lib %LIBDIR%\Debug_Win32\libboost_system.lib /Y
 popd
 :skipbuildlibtorrent
 
@@ -358,11 +393,17 @@ copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc myrelease64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-rem bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=gcc mydebug64 exception-handling=on "cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib /Y
-copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\adrs-mdl-64\libtorrent.a  %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% myrelease64 exception-handling=on %EXTRA_OPTIONS%
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% mydebug64 exception-handling=on %EXTRA_OPTIONS%
+
+copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib /Y
+copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
+copy ..\bin\msvc-%MSVC_VERSION%\myrls\adrs-mdl-64\libtorrent.lib %LIBDIR%\Release_x64 /Y
+copy ..\bin\msvc-%MSVC_VERSION%\mydbg\adrs-mdl-64\libtorrent.lib %LIBDIR%\Debug_x64 /Y
+
 copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls%ADR64%\libboost_system-vc120-mt-s-1_59.lib %LIBDIR%\Release_x64\libboost_system.lib /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg%ADR64%\libboost_system-vc120-mt-sg-1_59.lib %LIBDIR%\Debug_x64\libboost_system.lib /Y
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64

@@ -35,13 +35,17 @@ class concurrent_queue;
 #include <queue>
 #include <unordered_map>
 
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #pragma GCC diagnostic ignored "-Weffc++"
+#endif
 #define BOOST_SYSTEM_NO_DEPRECATED
 #include <boost/thread/condition_variable.hpp>
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#endif
 
 typedef unsigned ofst;
 typedef concurrent_queue<driverpack_task> drplist_t;
