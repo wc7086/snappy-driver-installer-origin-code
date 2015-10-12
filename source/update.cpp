@@ -79,7 +79,7 @@ class UpdateDialog_t
 private:
     int  getnewver(const char *ptr);
     int  getcurver(const char *ptr);
-    static int CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
+    static LPARAM CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
     void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,const wchar_t *str);
     void calctotalsize();
     void updateTexts();
@@ -218,7 +218,7 @@ int UpdateDialog_t::getcurver(const char *ptr)
 
 static bool yes1(libtorrent::torrent_status const&){return true;}
 
-int CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
+LPARAM CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
 {
 	UNREFERENCED_PARAMETER(lParamSort);
     return lParam1-lParam2;

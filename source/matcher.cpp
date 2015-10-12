@@ -355,7 +355,7 @@ public:
     wchar_t *finddrp(wchar_t *s) override{return col->finddrp(s);}
     State *getState(){return state;}
     Collection *getCol(){return col;}
-    unsigned getDwidmatch_list(){return devicematch_list.size();}
+    size_t getDwidmatch_list() { return devicematch_list.size(); }
     Devicematch *getDevicematch_i(int i){return &devicematch_list[i];}
     size_t getHwidmatch_list(){return hwidmatch_list.size();}
     void Insert(const Hwidmatch &a){hwidmatch_list.push_back(a);}
