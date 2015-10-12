@@ -22,8 +22,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <Wbemidl.h>        // for IWbemLocator
 #include <shobjidl.h>       // for TBPF_NORMAL
 
-const IID IID_ITaskbarList3 = {0xea1afb91, 0x9e28, 0x4b86, {0x90, 0xe9, 0x9e, 0x9f, 0x8a, 0x5e, 0xef, 0xaf}};
-const IID my_CLSID_TaskbarList = { 0x56fdf344, 0xfd6d, 0x11d0, { 0x95, 0x8a, 0x00, 0x60, 0x97, 0xc9, 0xa0, 0x90 } };
+const IID IID_ITaskbarList3={0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf}};
+const IID my_CLSID_TaskbarList={0x56fdf344,0xfd6d,0x11d0,{0x95,0x8a,0x00,0x60,0x97,0xc9,0xa0,0x90}};
 
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long total);
@@ -32,9 +32,9 @@ int init=0;
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type)
 {
     *manuf=*model=*product=*cs_model=0;
-	*type=0;
+    *type=0;
 
-    int hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
+    HRESULT hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))
     {
         printf("FAILED to initialize COM library. Error code = 0x%X\n",hres);
@@ -44,7 +44,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     if(!init)
     {
         hres=CoInitializeSecurity(nullptr,-1,nullptr,nullptr,RPC_C_AUTHN_LEVEL_DEFAULT,
-                                RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE,nullptr);
+                                  RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE,nullptr);
         if(FAILED(hres))
         {
             printf("FAILED to initialize security. Error code = 0x%X\n",hres);
@@ -75,7 +75,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     //printf("Connected to ROOT\\CIMV2 WMI namespace\n");
 
     hres=CoSetProxyBlanket(pSvc,RPC_C_AUTHN_WINNT,RPC_C_AUTHZ_NONE,nullptr,
-       RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE);
+                           RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE);
     if(FAILED(hres))
     {
         printf("FAILED to set proxy blanket. Error code = 0x%X\n",hres);
@@ -110,12 +110,15 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
             VARIANT vtProp1,vtProp2,vtProp3;
 
+            vtProp1.bstrVal=nullptr;
             pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
             if(vtProp1.bstrVal)wcscpy(manuf,vtProp1.bstrVal);
 
-            pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
+            vtProp2.bstrVal=nullptr;
+            hres=pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
             if(vtProp2.bstrVal)wcscpy(model,vtProp2.bstrVal);
 
+            vtProp3.bstrVal=nullptr;
             pclsObj->Get(L"Product",0,&vtProp3,nullptr,nullptr);
             if(vtProp3.bstrVal)wcscpy(product,vtProp3.bstrVal);
         }
@@ -145,9 +148,11 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
             VARIANT vtProp1,vtProp2;
 
+            vtProp1.bstrVal=nullptr;
             pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
             if(vtProp1.bstrVal)wcscpy(cs_manuf,vtProp1.bstrVal);
 
+            vtProp2.bstrVal=nullptr;
             pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
             if(vtProp2.bstrVal)wcscpy(cs_model,vtProp2.bstrVal);
         }

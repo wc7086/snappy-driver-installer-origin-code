@@ -181,7 +181,7 @@ public:
     char *getdrp_drvinstallPicked();
     int   getdrp_drvfeature();
     //HWID
-    short getdrp_drvinfpos();
+    int   getdrp_drvinfpos();
     char *getdrp_drvHWID();
 // <<< GETTERS
 };

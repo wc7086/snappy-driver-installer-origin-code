@@ -104,21 +104,14 @@ public:
     {
         boost::mutex::scoped_lock lock(the_mutex);
 
-        while(1)
+        while(the_queue.empty())
         {
-            if(the_queue.empty())
-            {
-                lock.unlock();
-                WaitForSingleObject(notification,INFINITE);
-                lock.lock();
-            }
-            else
-            {
-                popped_value=the_queue.front();
-                the_queue.pop();
-                return;
-            }
+            lock.unlock();
+            WaitForSingleObject(notification,INFINITE);
+            lock.lock();
         }
+        popped_value=the_queue.front();
+        the_queue.pop();
     }
 };
 //}
@@ -222,9 +215,9 @@ void Version::str_date(wchar_t *buf)
     FILETIME ft;
 
     memset(&tm,0,sizeof(SYSTEMTIME));
-    tm.wDay=d;
-    tm.wMonth=m;
-    tm.wYear=y;
+    tm.wDay=(WORD)d;
+    tm.wMonth=(WORD)m;
+    tm.wYear=(WORD)y;
     SystemTimeToFileTime(&tm,&ft);
     FileTimeToSystemTime(&ft,&tm);
 
@@ -1276,8 +1269,7 @@ int Driverpack::genindex()
                     if(StrStrIW(infname,L".inf"))
                         driverpack_indexinf_async(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
                     else
-                        parsecat(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
-                        //driverpack_parsecat_async(this,infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
+                        driverpack_parsecat_async(infpath,infname,(char *)(outBuffer+offset),outSizeProcessed);
                 }
             }
         }
@@ -1299,6 +1291,8 @@ void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const 
     data.adr=new char[len];
     memmove(data.adr,adr,len);
     data.len=len;
+    data.pathinf=new wchar_t[wcslen(pathinf)+1];
+    data.inffile=new wchar_t[wcslen(inffile1)+1];
     wcscpy(data.pathinf,pathinf);
     wcscpy(data.inffile,inffile1);
     data.drp=this;
@@ -1380,6 +1374,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     wchar_t inffull[BUFLEN];
     wcscpy(inffull,drpdir);
     wcscat(inffull,inffilename);
+
+	for (int i=0; i < NUM_VER_NAMES; i++)cur_inffile->fields[i] = cur_inffile->cats[i] = 0;
 
     Parser parse_info{this,string_list,inffull};
     Parser parse_info2{this,string_list,inffull};
@@ -1853,7 +1849,7 @@ int Driverpack::loadindex()
     wchar_t filename[BUFLEN];
     CHAR buf[3];
     FILE *f;
-    int sz;
+    size_t sz;
     int version;
     char *mem,*p,*mem_unpack=nullptr;
 
@@ -1878,9 +1874,11 @@ int Driverpack::loadindex()
 
     if(Settings.flags&COLLECTION_USE_LZMA)
     {
-        UInt64 sz_unpack;
+        UInt64 val;
+        size_t sz_unpack;
 
-        Lzma86_GetUnpackSize((Byte *)p,sz,&sz_unpack);
+        Lzma86_GetUnpackSize((Byte *)p,sz,&val);
+        sz_unpack=(size_t)val;
         mem_unpack=new char[sz_unpack];
         decode(mem_unpack,sz_unpack,mem,sz);
         p=mem_unpack;
@@ -2100,10 +2098,10 @@ void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_po
     //log_file("Search[%s,%s,%d]\n",sect,hwid,start_index);
     for(unsigned HWID_index=start_index;HWID_index<HWID_list.size();HWID_index++)
     {
-        if(!strcmpi(text_ind.get(HWID_list[HWID_index].getHWID()),hwid))
+        if(!_strcmpi(text_ind.get(HWID_list[HWID_index].getHWID()),hwid))
         {
             Hwidmatch hwidmatch(this,HWID_index);
-            if(!strcmpi(hwidmatch.getdrp_drvinstallPicked(),sect)||
+            if(!_strcmpi(hwidmatch.getdrp_drvinstallPicked(),sect)||
                StrStrIA(hwidmatch.getdrp_drvinstall(),sect))
             {
                 if(*inf_pos<0||*inf_pos>hwidmatch.getdrp_drvinfpos())

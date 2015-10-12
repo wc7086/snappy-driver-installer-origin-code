@@ -752,7 +752,7 @@ void State::popup_sysinfo(Canvas &canvas)
     td.TextOutF(D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
     td.ret_ofs(10);
     td.shift_l();
-    popup_resize((td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
+    popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
 }
 
 void State::contextmenu2(int x,int y)
@@ -838,7 +838,7 @@ int  State::load(const wchar_t *filename)
 {
     char buf[BUFLEN];
     FILE *f;
-    int sz;
+    size_t sz;
     int version;
 
     Log.print_con("Loading state from '%S'...",filename);
@@ -872,8 +872,10 @@ int  State::load(const wchar_t *filename)
     char *p=mem.get();
     fread(mem.get(),sz,1,f);
 
-    UInt64 sz_unpack;
-    Lzma86_GetUnpackSize((Byte *)p,sz,&sz_unpack);
+    size_t sz_unpack;
+    UInt64 val;
+    Lzma86_GetUnpackSize((Byte *)p,sz,&val);
+    sz_unpack=(size_t)val;
     std::unique_ptr<char[]> mem_unpack(new char[sz_unpack]);
     decode(mem_unpack.get(),sz_unpack,mem.get(),sz);
     p=mem_unpack.get();
@@ -911,8 +913,8 @@ void State::getsysinfo_fast()
         GetMonitorSizeFromEDID(DispDev.DeviceName,&x,&y);
         if(x&&y)
         {
-            buf[buf[0]*2+1]=x;
-            buf[buf[0]*2+2]=y;
+            buf[buf[0]*2+1]=(short)x;
+            buf[buf[0]*2+2]=(short)y;
             buf[0]++;
         }
         i++;
@@ -1139,7 +1141,7 @@ void State::isnotebook_a()
     {
         int x=buf[1+i*2];
         int y=buf[2+i*2];
-        int diag=sqrt(x*x+y*y)/2.54;
+        int diag=(int)(sqrt(x*x+y*y)/2.54);
 
         if(diag<min_v||(diag==min_v&&iswide(x,y)))
         {

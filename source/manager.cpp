@@ -376,7 +376,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         int i;
         cur_driver=devicematch_f->driver;
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
-        for(i=0;bufw[i];i++)i_hwid[i]=toupper(bufw[i]);i_hwid[i]=0;
+        for(i=0;bufw[i];i++)i_hwid[i]=(char)toupper(bufw[i]);i_hwid[i]=0;
     }
     if(hwidmatch_f)
     {
@@ -618,7 +618,8 @@ void Manager::filter(int options)
     int ontorrent;
     int o1=options&FILTER_SHOW_ONE;
 
-    itembar=&items_list[RES_SLOTS];
+	if(items_list.size()<=RES_SLOTS)return;
+	itembar=&items_list[RES_SLOTS];
 
     for(i=RES_SLOTS;i<items_list.size();)
     {
@@ -1269,7 +1270,8 @@ int Manager::countItems()
     unsigned j,cnt=0;
     itembar_t *itembar;
 
-    itembar=&items_list[RES_SLOTS];
+	if(items_list.size()<=RES_SLOTS)return 0;
+	itembar=&items_list[RES_SLOTS];
     for(j=RES_SLOTS;j<items_list.size();j++,itembar++)
     if(itembar->checked)cnt++;
     return cnt;
@@ -1327,7 +1329,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
         int a=BOX_PROGR;
         //if(index==SLOT_EXTRACTING&&installmode==MODE_STOPPING)a=BOX_PROGR_S;
         //if(index>=RES_SLOTS&&(!itembar->checked||installmode==MODE_STOPPING))a=BOX_PROGR_S;
-        canvas.DrawWidget(x,pos,x+wx*itembar->percent/1000,pos+D(DRVITEM_WY),a);
+        canvas.DrawWidget(x,pos,(int)(x+wx*itembar->percent/1000),pos+D(DRVITEM_WY),a);
     }
 
     canvas.SetTextColor(0); // todo: color
@@ -1850,7 +1852,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     if(cur_driver)
     {
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
-        for(k=0;bufw[k];k++)i_hwid[k]=toupper(bufw[k]);i_hwid[k]=0;
+        for(k=0;bufw[k];k++)i_hwid[k]=(char)toupper(bufw[k]);i_hwid[k]=0;
         cur_driver->version.str_date(bufw);
 
         td.TextOutP(L"$%04d",i);

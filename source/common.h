@@ -94,11 +94,11 @@ public:
     wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
     wchar_t *getw2(int offset){return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
 
-	size_t strcpy(const char *mem);
-	size_t strcpyw(const wchar_t *mem);
-	size_t t_memcpy(const char *mem, int sz);
-	size_t t_memcpyz(const char *mem, int sz);
-	size_t memcpyz_dup(const char *mem, int sz);
+    ofst strcpy(const char *mem);
+	ofst strcpyw(const wchar_t *mem);
+    ofst t_memcpy(const char *mem,int sz);
+    ofst t_memcpyz(const char *mem,int sz);
+    ofst memcpyz_dup(const char *mem,int sz);
     int alloc(int sz);
 
     char *savedata(char *p){return text.savedata(p);}
@@ -150,8 +150,8 @@ int  unicode2ansi(char *s,char *out,int size);
 int _wtoi_my(const wchar_t *str);
 
 // 7-zip
-int  encode(char *dest,int dest_sz,char *src,int src_sz);
-int  decode(char *dest,int dest_sz,char *src,int src_sz);
+size_t  encode(char *dest,size_t dest_sz,char *src,size_t src_sz);
+size_t  decode(char *dest,size_t dest_sz,char *src,size_t src_sz);
 void registerall();
 
 namespace NArchive{

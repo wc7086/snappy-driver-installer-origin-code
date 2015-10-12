@@ -1052,7 +1052,7 @@ int Hwidmatch::getdrp_drvfeature()
 }
 
 //HWID
-short Hwidmatch::getdrp_drvinfpos()
+int Hwidmatch::getdrp_drvinfpos()
 {
     return drp->HWID_list[HWID_index].inf_pos;
 }

@@ -283,10 +283,12 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             if(Settings.flags&FLAG_DISABLEINSTALL)
                 Sleep(2000);
             else
+            {
                 r=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
+                Log.print_con("rt rest point{ %d(%d)\n",r,pSMgrStatus.nStatus);
+            }
             EnterCriticalSection(&sync);
 
-            Log.print_con("rt rest point{ %d(%d)\n",r,pSMgrStatus.nStatus);
             manager_g->items_list[SLOT_RESTORE_POINT].percent=1000;
             if(r)
             {
