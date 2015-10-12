@@ -74,7 +74,7 @@ template<typename Data>
 class concurrent_queue
 {
     concurrent_queue(const concurrent_queue&)=delete;
-	concurrent_queue &operator = (const concurrent_queue&) = delete;
+    concurrent_queue &operator = (const concurrent_queue&)=delete;
 
 private:
     std::queue<Data> the_queue;
@@ -119,19 +119,21 @@ public:
 //{ Misc functions
 void *mySzAlloc(void *p,size_t size)
 {
-	UNREFERENCED_PARAMETER(p);
+    UNREFERENCED_PARAMETER(p);
 
     void *mem=nullptr;
 
-    if (size == 0)return nullptr;
+    if(size==0)return nullptr;
     try
     {
         mem=((void*)(new char[size]));
-    }catch(std::bad_alloc)
+    }
+    catch(std::bad_alloc)
     {
         Log.print_err("Failed to alloc\n");
         //Log.log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
-    }catch(...)
+    }
+    catch(...)
     {
         Log.print_err("Failed to alloc\n");
     }
@@ -145,9 +147,9 @@ void *mySzAlloc(void *p,size_t size)
 
 void mySzFree(void *p,void *address)
 {
-	UNREFERENCED_PARAMETER(p);
+    UNREFERENCED_PARAMETER(p);
 
-    delete[] (char*)(address);
+    delete[](char*)(address);
 }
 
 void findosattr(char *bufa,char *adr,size_t len)
@@ -560,17 +562,18 @@ int Collection::scanfolder_count(const wchar_t *path)
             if(lstrcmp(FindFileData.cFileName,L"..")==0)continue;
             wsprintf(buf,L"%ws\\%ws",path,FindFileData.cFileName);
             cnt+=scanfolder_count(buf);
-        } else
+        }
+        else
         {
             int i,len=lstrlenW(FindFileData.cFileName);
             for(i=0;i<6;i++)
-            if(StrStrIW(FindFileData.cFileName,olddrps[i]))
-            {
-                if(Settings.flags&(FLAG_AUTOINSTALL|FLAG_NOGUI))break;
-                wsprintf(buf,L" /c del \"%s\\%s*.7z\" /Q /F",driverpack_dir,olddrps[i]);
-                System.run_command(L"cmd",buf,SW_HIDE,1);
-                break;
-            }
+                if(StrStrIW(FindFileData.cFileName,olddrps[i]))
+                {
+                    if(Settings.flags&(FLAG_AUTOINSTALL|FLAG_NOGUI))break;
+                    wsprintf(buf,L" /c del \"%s\\%s*.7z\" /Q /F",driverpack_dir,olddrps[i]);
+                    System.run_command(L"cmd",buf,SW_HIDE,1);
+                    break;
+                }
             if(i==6&&StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 Driverpack drp{path,FindFileData.cFileName,this};
@@ -597,37 +600,39 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
             if(lstrcmp(FindFileData.cFileName,L"..")==0)continue;
             wsprintf(buf,L"%s\\%s",path,FindFileData.cFileName);
             scanfolder(buf,arg);
-        } else
+        }
+        else
         {
             int len=lstrlenW(FindFileData.cFileName);
             if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
                 reinterpret_cast<drplist_t *>(arg)->push(driverpack_task{&driverpack_list.back()});
-            }else
-            if((StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0||
-               StrCmpIW(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
-            {
-                wsprintf(buf,L"%s\\%s",path,FindFileData.cFileName);
-                FILE *f=_wfopen(buf,L"rb");
-                fseek(f,0,SEEK_END);
-                len=ftell(f);
-                fseek(f,0,SEEK_SET);
-                char *buft=new char[len];
-                fread(buft,len,1,f);
-                fclose(f);
-                wsprintf(buf,L"%s\\",path+pathlen);
-
-                if(len)
-                {
-                    if(StrCmpIW(FindFileData.cFileName+lstrlenW(FindFileData.cFileName)-4,L".inf")==0)
-                        driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
-                    else
-                        driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
-                }
-
-                delete []buft;
             }
+            else
+                if((StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0||
+                    StrCmpIW(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
+                {
+                    wsprintf(buf,L"%s\\%s",path,FindFileData.cFileName);
+                    FILE *f=_wfopen(buf,L"rb");
+                    fseek(f,0,SEEK_END);
+                    len=ftell(f);
+                    fseek(f,0,SEEK_SET);
+                    char *buft=new char[len];
+                    fread(buft,len,1,f);
+                    fclose(f);
+                    wsprintf(buf,L"%s\\",path+pathlen);
+
+                    if(len)
+                    {
+                        if(StrCmpIW(FindFileData.cFileName+lstrlenW(FindFileData.cFileName)-4,L".inf")==0)
+                            driverpack_list[0].indexinf(buf,FindFileData.cFileName,buft,len);
+                        else
+                            driverpack_list[0].parsecat(buf,FindFileData.cFileName,buft,len);
+                    }
+
+                    delete[]buft;
+                }
         }
     }
     FindClose(hFind);
@@ -771,8 +776,8 @@ void Collection::save()
     for(int i=0;i<num_cores;i++)
         thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::savedrp_thread,&queuedriverpack_loc,0,nullptr);
     for(auto &driverpack:driverpack_list)
-    if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)
-        queuedriverpack_loc.push(driverpack_task{&driverpack});
+        if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)
+            queuedriverpack_loc.push(driverpack_task{&driverpack});
 
     for(int i=0;i<num_cores;i++)queuedriverpack_loc.push(driverpack_task{nullptr});
     for(int i=0;i<num_cores;i++)
@@ -902,8 +907,8 @@ public:
     void find_dups();
     int combine(std::wstring dir1,std::wstring dir2,int sz);
     void process_file(int i,unsigned *CRC,int *size,
-                  std::wstring &_filename,std::wstring &_filepath,
-                  std::wstring &_subdir1,std::wstring &_subdir2);
+                      std::wstring &_filename,std::wstring &_filepath,
+                      std::wstring &_subdir1,std::wstring &_subdir2);
 };
 
 Merger::Merger(CSzArEx *_db,const wchar_t *fullname)
@@ -919,8 +924,8 @@ Merger::~Merger()
 }
 
 void Merger::process_file(int i,unsigned *CRC,int *size,
-                  std::wstring &_filename,std::wstring &_filepath,
-                  std::wstring &_subdir1,std::wstring &_subdir2)
+                          std::wstring &_filename,std::wstring &_filepath,
+                          std::wstring &_subdir1,std::wstring &_subdir2)
 {
     *CRC=db->CRCs.Vals[i];
     *size=SzArEx_GetFileSize(db,i);
@@ -1007,14 +1012,14 @@ int Merger::checkfolders(const std::wstring &dir1,const std::wstring &dir2,int s
         for(auto it2=range2.first;it2!=range2.second;it2++)
         {
             Filedata *d2=&it2->second;
-        //Log.print_con("* %ws,%ws\n",it2->second.getStr(),dir2);
+            //Log.print_con("* %ws,%ws\n",it2->second.getStr(),dir2);
             if(d2->str==dir2)
             {
                 if(d1->size==d2->size&&d1->crc==d2->crc)
                     sizecom+=d1->size;
                 else
                     sizedif+=d1->size;
-        //Log.print_con("* %ws\n",d1->getStr());
+                //Log.print_con("* %ws\n",d1->getStr());
 
             }
         }
@@ -1214,10 +1219,10 @@ int Driverpack::genindex()
         for(unsigned i=0;i<db.NumFiles;i++)if(!SzArEx_IsDir(&db,i))merger.makerecords(i);
         merger.find_dups();
 #endif
-      /*
-      if you need cache, use these 3 variables.
-      if you use external function, you can make these variable as static.
-      */
+        /*
+        if you need cache, use these 3 variables.
+        if you use external function, you can make these variable as static.
+        */
         UInt32 blockIndex=0xFFFFFFFF; /* it can have any value before first call (if outBuffer = 0) */
         Byte *outBuffer=nullptr; /* it must be 0 before first call for each new archive. */
         size_t outBufferSize=0;  /* it can have any value before first call (if outBuffer = 0) */
@@ -1238,15 +1243,15 @@ int Driverpack::genindex()
 
             size_t namelen=wcslen(fullname)-4;
             if(StrCmpIW(fullname+namelen,L".inf")==0||
-                StrCmpIW(fullname+namelen,L".cat")==0)
+               StrCmpIW(fullname+namelen,L".cat")==0)
             {
                 //Log.print_con("{");
 
-                tryagain:
-                res = SzArEx_Extract(&db,&lookStream.s,i,
-                    &blockIndex,&outBuffer,&outBufferSize,
-                    &offset,&outSizeProcessed,
-                    &allocImp,&allocTempImp);
+            tryagain:
+                res=SzArEx_Extract(&db,&lookStream.s,i,
+                                   &blockIndex,&outBuffer,&outBufferSize,
+                                   &offset,&outSizeProcessed,
+                                   &allocImp,&allocTempImp);
                 //Log.print_con("}");
                 if(res==SZ_ERROR_MEM)
                 {
@@ -1375,7 +1380,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     wcscpy(inffull,drpdir);
     wcscat(inffull,inffilename);
 
-	for (int i=0; i < NUM_VER_NAMES; i++)cur_inffile->fields[i] = cur_inffile->cats[i] = 0;
+    for(int i=0; i<NUM_VER_NAMES; i++)cur_inffile->fields[i]=cur_inffile->cats[i]=0;
 
     Parser parse_info{this,string_list,inffull};
     Parser parse_info2{this,string_list,inffull};
@@ -1400,12 +1405,12 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 if(lnk_s2)
                     lnk_s2->blockend=p;
 #ifdef DEBUG_EXTRACHECKS
-/*					char *strings_base=inf_base+(*it).second.ofs;
-					int strings_len=(*it).second.len-(*it).second.ofs;
-					if(*(strings_base-1)!=']')
-						log_file("B'%.*s'\n",1,strings_base-1);
-					if(*(strings_base+strings_len)!='[')
-						log_file("E'%.*s'\n",1,strings_base+strings_len);*/
+                /*					char *strings_base=inf_base+(*it).second.ofs;
+                                    int strings_len=(*it).second.len-(*it).second.ofs;
+                                    if(*(strings_base-1)!=']')
+                                    log_file("B'%.*s'\n",1,strings_base-1);
+                                    if(*(strings_base+strings_len)!='[')
+                                    log_file("E'%.*s'\n",1,strings_base+strings_len);*/
 #endif
                 p++;
                 p2=p;
@@ -1414,9 +1419,9 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 {
 #ifdef DEBUG_EXTRACHECKS
                     if(*p2=='\\')log_file("Err \\\n");else
-                    if(*p2=='"')log_file("Err \"\n");else
-                    if(*p2=='%')log_file("Err %\n");else
-                    if(*p2==';')log_file("Err ;\n");
+                        if(*p2=='"')log_file("Err \"\n");else
+                            if(*p2=='%')log_file("Err %\n");else
+                                if(*p2==';')log_file("Err ;\n");
 #endif
                     cur_inffile->infcrc+=*p2++;
                 }
@@ -1484,10 +1489,10 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             int i;
             size_t sz=s1e-s1b;
             for(i=0;i<NUM_VER_NAMES;i++)
-            if(table_version[i].sz==sz&&!memcmp(s1b,table_version[i].s,sz))
-            {
-                if(i==DriverVer)
+                if(table_version[i].sz==sz&&!memcmp(s1b,table_version[i].s,sz))
                 {
+                    if(i==DriverVer)
+                    {
                         // date
                         if(parse_info.parseField())
                         {
@@ -1502,16 +1507,17 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             parse_info.readVersion(cur_ver);
                         }
 
-                }else
-                {
-                    if(parse_info.parseField())
-                    {
-                        parse_info.readStr(&s1b,&s1e);
-                        cur_inffile->fields[i]=text_ind.t_memcpyz(s1b,s1e-s1b);
                     }
+                    else
+                    {
+                        if(parse_info.parseField())
+                        {
+                            parse_info.readStr(&s1b,&s1e);
+                            cur_inffile->fields[i]=text_ind.t_memcpyz(s1b,s1e-s1b);
+                        }
+                    }
+                    break;
                 }
-                break;
-            }
             if(i==NUM_VER_NAMES)
             {
                 //s1e=parse_info.se;
@@ -1552,8 +1558,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                 {
                     if(cur_manuf->sections_n>1)
                         wsprintfA(secttry,"%s.%s",
-                                text_ind.get(strs[0]),
-                                text_ind.get(strs[cur_manuf->sections_n-1]));
+                        text_ind.get(strs[0]),
+                        text_ind.get(strs[cur_manuf->sections_n-1]));
                     else
                         wsprintfA(secttry,"%s",text_ind.get(strs[0]));
 
@@ -1594,8 +1600,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             {
                                 if(cur_manuf->sections_n>1)
                                 {
-                                        memcpy(installsection,s1b,s1e-s1b);installsection[s1e-s1b]=0;
-                                        strcat(installsection,".");strcat(installsection,text_ind.get(strs[cur_manuf->sections_n-1]));
+                                    memcpy(installsection,s1b,s1e-s1b);installsection[s1e-s1b]=0;
+                                    strcat(installsection,".");strcat(installsection,text_ind.get(strs[cur_manuf->sections_n-1]));
                                 }
                                 else
                                 {
@@ -1984,7 +1990,7 @@ void Driverpack::print_index_hr()
 {
     int pos;
     unsigned inffile_index,manuf_index,HWID_index,desc_index;
-	size_t n = inffile.size();
+    size_t n=inffile.size();
     Version *t;
     data_inffile_t *d_i;
     Hwidmatch hwidmatch(this,0);
@@ -2022,63 +2028,63 @@ void Driverpack::print_index_hr()
         memset(cnts,-1,sizeof(cnts));plain=0;
         for(manuf_index=manuf_index_last;manuf_index<manufacturer_list.size();manuf_index++)
             if(manufacturer_list[manuf_index].inffile_index==inffile_index)
-        {
-            manuf_index_last=manuf_index;
-            //hwidmatch.HWID_index=HWID_index_last;
-            if(manufacturer_list[manuf_index].manufacturer)
-                fprintf(f,"      {%s}\n",text_ind.get(manufacturer_list[manuf_index].manufacturer));
-            for(pos=0;pos<manufacturer_list[manuf_index].sections_n;pos++)
             {
-                getdrp_drvsectionAtPos(buf,pos,manuf_index);
-                i=calc_secttype(buf);
-                if(i>=0&&cnts[i]<0)cnts[i]=0;
-                if(i<0&&pos>0)fprintf(f,"!!![%s]\n",buf);
-                fprintf(f,"        [%s]\n",buf);
-
-                for(desc_index=0;desc_index<desc_list.size();desc_index++)
-                    if(desc_list[desc_index].manufacturer_index==manuf_index&&
-                       desc_list[desc_index].sect_pos==pos)
+                manuf_index_last=manuf_index;
+                //hwidmatch.HWID_index=HWID_index_last;
+                if(manufacturer_list[manuf_index].manufacturer)
+                    fprintf(f,"      {%s}\n",text_ind.get(manufacturer_list[manuf_index].manufacturer));
+                for(pos=0;pos<manufacturer_list[manuf_index].sections_n;pos++)
                 {
-                    for(HWID_index=HWID_index_last;HWID_index<HWID_list.size();HWID_index++)
-                        if(HWID_list[HWID_index].desc_index==desc_index)
-                    {
-                        if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%u,%u\n",HWID_index_last,HWID_index);
-                        HWID_index_last=HWID_index;
-                        hwidmatch.setHWID_index(HWID_index_last);
+                    getdrp_drvsectionAtPos(buf,pos,manuf_index);
+                    i=calc_secttype(buf);
+                    if(i>=0&&cnts[i]<0)cnts[i]=0;
+                    if(i<0&&pos>0)fprintf(f,"!!![%s]\n",buf);
+                    fprintf(f,"        [%s]\n",buf);
 
-                //if(text+manufacturer_list[manuf_index].manufacturer!=get_manufacturer(&hwidmatch))
-                //fprintf(f,"*%s\n",get_manufacturer(&hwidmatch));
-                //get_section(&hwidmatch,buf+500);
-                //fprintf(f,"*%s,%s\n",buf+1000,buf+500);
-                        if(i>=0)cnts[i]++;
-                        if(pos==0&&i<0)plain++;
+                    for(desc_index=0;desc_index<desc_list.size();desc_index++)
+                        if(desc_list[desc_index].manufacturer_index==manuf_index&&
+                           desc_list[desc_index].sect_pos==pos)
+                        {
+                            for(HWID_index=HWID_index_last;HWID_index<HWID_list.size();HWID_index++)
+                                if(HWID_list[HWID_index].desc_index==desc_index)
+                                {
+                                    if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%u,%u\n",HWID_index_last,HWID_index);
+                                    HWID_index_last=HWID_index;
+                                    hwidmatch.setHWID_index(HWID_index_last);
 
-                        if(hwidmatch.getdrp_drvinfpos())
-                            wsprintfA(buf,"%-2d",hwidmatch.getdrp_drvinfpos());
-                        else
-                            wsprintfA(buf,"  ");
+                                    //if(text+manufacturer_list[manuf_index].manufacturer!=get_manufacturer(&hwidmatch))
+                                    //fprintf(f,"*%s\n",get_manufacturer(&hwidmatch));
+                                    //get_section(&hwidmatch,buf+500);
+                                    //fprintf(f,"*%s,%s\n",buf+1000,buf+500);
+                                    if(i>=0)cnts[i]++;
+                                    if(pos==0&&i<0)plain++;
 
-                        fprintf(f,"       %s %-50s%-20s\t%s\n",buf,
-                            hwidmatch.getdrp_drvHWID(),
-                            hwidmatch.getdrp_drvinstall(),
-                            hwidmatch.getdrp_drvdesc());
-                        fprintf(f,"          feature:%-42hX%-20s\n\n",
-                            hwidmatch.getdrp_drvfeature()&0xFF,
-                            hwidmatch.getdrp_drvinstallPicked());
-                    }
-                    else if(HWID_index!=HWID_index_last)break;
+                                    if(hwidmatch.getdrp_drvinfpos())
+                                        wsprintfA(buf,"%-2d",hwidmatch.getdrp_drvinfpos());
+                                    else
+                                        wsprintfA(buf,"  ");
+
+                                    fprintf(f,"       %s %-50s%-20s\t%s\n",buf,
+                                            hwidmatch.getdrp_drvHWID(),
+                                            hwidmatch.getdrp_drvinstall(),
+                                            hwidmatch.getdrp_drvdesc());
+                                    fprintf(f,"          feature:%-42hX%-20s\n\n",
+                                            hwidmatch.getdrp_drvfeature()&0xFF,
+                                            hwidmatch.getdrp_drvinstallPicked());
+                                }
+                                else if(HWID_index!=HWID_index_last)break;
+                        }
                 }
             }
-        }
-        else if(manuf_index!=manuf_index_last)break;
+            else if(manuf_index!=manuf_index_last)break;
 
-        fprintf(f,"  Decors:\n");
-        fprintf(f,"    %-15s%d\n","plain",plain);
-        for(i=0;i<NUM_DECS;i++)
-        {
-            if(cnts[i]>=0)fprintf(f,"    %-15s%d\n",nts[i],cnts[i]);
-        }
-        fprintf(f,"\n");
+            fprintf(f,"  Decors:\n");
+            fprintf(f,"    %-15s%d\n","plain",plain);
+            for(i=0;i<NUM_DECS;i++)
+            {
+                if(cnts[i]>=0)fprintf(f,"    %-15s%d\n",nts[i],cnts[i]);
+            }
+            fprintf(f,"\n");
     }
     fprintf(f,"  HWIDS:%u/%u\n",HWID_index_last+1,(unsigned)HWID_list.size());
     fclose(f);

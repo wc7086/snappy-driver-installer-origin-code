@@ -57,7 +57,7 @@ void SaveHWID(wchar_t *hwid)
     {
         FILE *f=_wfopen(CLIParam.SaveInstalledFileName,L"a+");
         if(!f)
-          Log.print_err("Failed to create '%S'\n",CLIParam.SaveInstalledFileName);
+            Log.print_err("Failed to create '%S'\n",CLIParam.SaveInstalledFileName);
         fwprintf(f,L"%s",hwid);
         fwprintf(f,L"\n");
         fclose(f);
@@ -71,8 +71,8 @@ void Parse_save_installed_id_swith(const wchar_t *ParamStr)
     if(wcslen(ParamStr)>tmpLen)
     {
         if(ParamStr[tmpLen]==L':')wcscpy(CLIParam.SaveInstalledFileName,ParamStr+tmpLen+1);else
-        if(ParamStr[tmpLen]==L' ')wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
-        else return;
+            if(ParamStr[tmpLen]==L' ')wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
+            else return;
     }
     else
         wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
@@ -96,16 +96,16 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
         wcscpy(buf,ParamStr+tmpLen);
         wchar_t *chB;
 
-        chB=wcsrchr (buf,'=');
-        if (chB==NULL)
+        chB=wcsrchr(buf,'=');
+        if(chB==NULL)
             wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
         else
         {
             tmpLen=chB-buf+1;
             wcscpy(CLIParam.SaveInstalledFileName,buf+tmpLen);
-            buf [tmpLen-1]=0;
+            buf[tmpLen-1]=0;
         }
-        wcscpy(CLIParam.HWIDSTR, buf);
+        wcscpy(CLIParam.HWIDSTR,buf);
         CLIParam.HWIDInstalled=true;
     }
 }
@@ -122,32 +122,32 @@ void RUN_CLI()
     if(CLIParam.SaveInstalledHWD)
     {
         ExpandPath(CLIParam.SaveInstalledFileName);
-        wcscpy(buf, CLIParam.SaveInstalledFileName);
+        wcscpy(buf,CLIParam.SaveInstalledFileName);
         System.fileDelSpec(buf);
         System.CreateDir(buf);
         System.deletefile(CLIParam.SaveInstalledFileName);
     }
     else
-    if(CLIParam.HWIDInstalled)
-    {
-        ExpandPath(CLIParam.SaveInstalledFileName);
-        FILE *f;
-        f=_wfopen(CLIParam.SaveInstalledFileName,L"rt");
-        if(!f)Log.print_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
-        else
+        if(CLIParam.HWIDInstalled)
         {
-            while(fgetws(buf,sizeof(buf),f))
+            ExpandPath(CLIParam.SaveInstalledFileName);
+            FILE *f;
+            f=_wfopen(CLIParam.SaveInstalledFileName,L"rt");
+            if(!f)Log.print_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
+            else
             {
-                //Log.print_con("'%S'\n", buf);
-                if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)
+                while(fgetws(buf,sizeof(buf),f))
                 {
-                    ret_global=1;
-                    break;
+                    //Log.print_con("'%S'\n", buf);
+                    if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)
+                    {
+                        ret_global=1;
+                        break;
+                    }
                 }
+                fclose(f);
             }
-            fclose(f);
+            Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
+            Settings.statemode=STATEMODE_EXIT;
         }
-        Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
-        Settings.statemode=STATEMODE_EXIT;
-    }
 }
