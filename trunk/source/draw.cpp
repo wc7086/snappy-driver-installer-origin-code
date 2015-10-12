@@ -76,9 +76,9 @@ void Image::Release()
     {
         SelectObject(ldc,oldbitmap);
         int r=DeleteDC(ldc);
-            if(!r)Log.print_err("ERROR in box_init(): failed DeleteDC\n");
+        if(!r)Log.print_err("ERROR in box_init(): failed DeleteDC\n");
         r=DeleteObject(bitmap);
-            if(!r)Log.print_err("ERROR in box_init(): failed DeleteObject\n");
+        if(!r)Log.print_err("ERROR in box_init(): failed DeleteObject\n");
     }
     bitmap=nullptr;
     ldc=nullptr;
@@ -183,7 +183,7 @@ void Image::CreateMyBitmap(BYTE *data,size_t sz)
     }
     SelectObject(ldc,bitmap);
     free(big);
-//    Log.print_con("%dx%d:%d,%d\n",sx,sy,hasalpha,index);
+    //    Log.print_con("%dx%d:%d,%d\n",sx,sy,hasalpha,index);
 }
 
 void Image::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
@@ -319,10 +319,10 @@ void Canvas::end()
     int r;
 
     r=BitBlt(localDC,
-            ps.rcPaint.left,ps.rcPaint.top,ps.rcPaint.right,ps.rcPaint.bottom,
-            hdcMem,
-            ps.rcPaint.left,ps.rcPaint.top,
-            SRCCOPY);
+             ps.rcPaint.left,ps.rcPaint.top,ps.rcPaint.right,ps.rcPaint.bottom,
+             hdcMem,
+             ps.rcPaint.left,ps.rcPaint.top,
+             SRCCOPY);
     SelectClipRgn(hdcMem,nullptr);
     if(!r)Log.print_err("ERROR in canvas_end(): failed BitBlt\n");
     r=DeleteObject(clipping);
@@ -418,7 +418,7 @@ void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
     wchar_t buffer[BUFLEN];
     va_list args;
     va_start(args,format);
-    _vsnwprintf (buffer,BUFLEN,format,args);
+    _vsnwprintf(buffer,BUFLEN,format,args);
     TextOut_CM(x,y,str,col,&maxsz,1);
     TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer,col,&maxsz,1);
     y+=wy;
@@ -472,7 +472,7 @@ void format_size(wchar_t *buf,long long val,int isspeed)
     StrFormatSize(val,buf,BUFLEN);
 #else
     buf[0]=0;
-	UNREFERENCED_PARAMETER(val);
+    UNREFERENCED_PARAMETER(val);
 #endif
     if(isspeed)wcscat(buf,STR(STR_UPD_SEC));
 }
@@ -501,7 +501,7 @@ void format_time(wchar_t *buf,long long val)
 //{ Draw
 int mirw(int x,int ofs,int w)
 {
-	UNREFERENCED_PARAMETER(w);
+    UNREFERENCED_PARAMETER(w);
     return x+ofs;
 }
 void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
@@ -510,7 +510,7 @@ void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
 }
 int Xm(int x,int o)
 {
-	UNREFERENCED_PARAMETER(o);
+    UNREFERENCED_PARAMETER(o);
     return x>=0?x:(MainWindow.main1x_c+x);
 }
 int Ym(int y){return y>=0?y:(MainWindow.main1y_c+y);}
@@ -519,7 +519,7 @@ int YM(int y,int o){return y>=0?y:(MainWindow.main1y_c+y-o);}
 
 int Xg(int x,int o)
 {
-	UNREFERENCED_PARAMETER(o);
+    UNREFERENCED_PARAMETER(o);
     return x>=0?x:(MainWindow.mainx_c+x);
 }
 int Yg(int y){return y>=0?y:(MainWindow.mainy_c+y);}
@@ -537,7 +537,7 @@ bool isRebootDesired()
 class ClipRegionImp
 {
     ClipRegionImp(const ClipRegionImp&)=delete;
-	ClipRegionImp &operator = (const ClipRegionImp&) = delete;
+    ClipRegionImp &operator = (const ClipRegionImp&)=delete;
 
 private:
     HRGN hrgn;
@@ -589,7 +589,7 @@ void Font::SetFont(const wchar_t *name,int size,int bold)
         Log.print_err("ERROR in setfont(): failed DeleteObject\n");
 
     hFont=CreateFont(-size,0,0,0,bold?FW_BOLD:FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
-                CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,name);
+                     CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,name);
 
     if(!hFont)Log.print_err("ERROR in setfont(): failed CreateFont\n");
 }
@@ -665,9 +665,9 @@ void loadGUID(GUID *g,const char *s)
 
     /*Log.print_con("%s\n",s);
     Log.print_con("{%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}\n\n",g->Data1,g->Data2,g->Data3,
-        (int)(g->Data4[0]),(int)(g->Data4[1]),
-        (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
-        (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
+    (int)(g->Data4[0]),(int)(g->Data4[1]),
+    (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
+    (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
 }
 
 void Canvas::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)

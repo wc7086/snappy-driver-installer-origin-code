@@ -180,8 +180,8 @@ void Device::print(State *state)
     Log.print_file("  HWID_reg      %S\n",s+Driver);
     Log.print_file("  Class:        ");print_guid(&DeviceInfoData.ClassGuid);
     Log.print_file("  Location:     \n");
-    Log.print_file("  ConfigFlags:  %d\n", ConfigFlags);
-    Log.print_file("  Capabilities: %d\n", Capabilities);
+    Log.print_file("  ConfigFlags:  %d\n",ConfigFlags);
+    Log.print_file("  Capabilities: %d\n",Capabilities);
 }
 
 void Device::printHWIDS(State *state)
@@ -406,7 +406,7 @@ void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos
 unsigned Driver::calc_score_h(State *state)
 {
     return calc_score(catalogfile,feature,identifierscore, // TODO: check signature
-        state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")||StrStrIW(state->textas.getw(InfSection),L".nt")?1:0);
+                      state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")||StrStrIW(state->textas.getw(InfSection),L".nt")?1:0);
 }
 
 int Driver::isvalidcat(State *state)
@@ -737,11 +737,11 @@ void State::popup_sysinfo(Canvas &canvas)
         y=buf[2+i*2];
         td.shift_r();
         td.TextOutF(L"%d%s x %d%s (%.1f %s) %.3f %s",
-                  x,STR(STR_SYSINF_CM),
-                  y,STR(STR_SYSINF_CM),
-                  sqrt(x*x+y*y)/2.54,STR(STR_SYSINF_INCH),
-                  (double)y/x,
-                  iswide(x,y)?STR(STR_SYSINF_WIDE):L"");
+                    x,STR(STR_SYSINF_CM),
+                    y,STR(STR_SYSINF_CM),
+                    sqrt(x*x+y*y)/2.54,STR(STR_SYSINF_INCH),
+                    (double)y/x,
+                    iswide(x,y)?STR(STR_SYSINF_WIDE):L"");
 
         td.shift_l();
     }
@@ -927,7 +927,7 @@ void State::getsysinfo_fast()
     {
         platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
         if(!GetVersionEx((OSVERSIONINFO*)&platform))
-        Log.print_syserr(GetLastError(),L"GetVersionEx()");
+            Log.print_syserr(GetLastError(),L"GetVersionEx()");
     }
     locale=GetUserDefaultLCID();
 
@@ -1174,20 +1174,20 @@ void State::isnotebook_a()
             isLaptop=0;
     }
     else
-       isLaptop=0;
+        isLaptop=0;
 }
 //}
 
 //{ Monitor info
 int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon)
 {
-    DWORD devMon = 0;
+    DWORD devMon=0;
 
     while(EnumDisplayDevices(adapterName,devMon,ddMon,0))
     {
-        if (ddMon->StateFlags&DISPLAY_DEVICE_ACTIVE&&
-            ddMon->StateFlags&DISPLAY_DEVICE_ATTACHED) // for ATI, Windows XP
-                break;
+        if(ddMon->StateFlags&DISPLAY_DEVICE_ACTIVE&&
+           ddMon->StateFlags&DISPLAY_DEVICE_ATTACHED) // for ATI, Windows XP
+           break;
         devMon++;
     }
     return *ddMon->DeviceID!=0;
@@ -1211,7 +1211,7 @@ int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
 
         wchar_t *path=wcschr(ddMon.DeviceID,L'\\')+1;
         wchar_t str[MAX_PATH]=L"SYSTEM\\CurrentControlSet\\Enum\\DISPLAY\\";
-        wcsncat(str,path,wcschr(path, L'\\')-path);
+        wcsncat(str,path,wcschr(path,L'\\')-path);
         path=wcschr(path,L'\\')+1;
         HKEY hKey;
         if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,str,0,KEY_READ,&hKey)==ERROR_SUCCESS)
@@ -1225,7 +1225,7 @@ int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
                 if(RegOpenKeyEx(hKey,str,0,KEY_READ,&hKey2)==ERROR_SUCCESS)
                 {
                     size=MAX_PATH;
-                    if(RegQueryValueEx(hKey2, L"Driver",nullptr,nullptr,(LPBYTE)&str,&size)==ERROR_SUCCESS)
+                    if(RegQueryValueEx(hKey2,L"Driver",nullptr,nullptr,(LPBYTE)&str,&size)==ERROR_SUCCESS)
                     {
                         if(wcscmp(str,path)==0)
                         {

@@ -43,21 +43,21 @@ ofst Txt::strcpy(const char *str)
 
 ofst Txt::strcpyw(const wchar_t *str)
 {
-	size_t r = text.size();
+    size_t r=text.size();
     text.insert(text.end(),(char *)str,(char *)(str+wcslen(str)+1));
     return (ofst)r;
 }
 
 ofst Txt::t_memcpy(const char *mem,size_t sz)
 {
-	size_t r = text.size();
+    size_t r=text.size();
     text.insert(text.end(),mem,mem+sz);
     return (ofst)r;
 }
 
 ofst Txt::t_memcpyz(const char *mem,size_t sz)
 {
-	size_t r = text.size();
+    size_t r=text.size();
     text.insert(text.end(),mem,mem+sz);
     text.insert(text.end(),0);
     return (ofst)r;
@@ -70,11 +70,11 @@ ofst Txt::memcpyz_dup(const char *mem,size_t sz)
 
     if(it==dub.end())
     {
-		size_t r = text.size();
+        size_t r=text.size();
         text.insert(text.end(),mem,mem+sz);
         text.insert(text.end(),0);
 
-		dub.insert({std::move(str),(int)r});
+        dub.insert({std::move(str),(int)r});
         return (ofst)r;
     }
     else
@@ -217,8 +217,7 @@ int Hashtable::find(int key,int *isfound)
             *isfound=1;
             return cur->value;
         }
-    }
-    while((curi=cur->next)>0);
+    } while((curi=cur->next)>0);
 
     *isfound=0;
     return 0;
@@ -242,8 +241,7 @@ int Hashtable::findnext(int *isfound)
             *isfound=1;
             return cur->value;
         }
-    }
-    while((curi=cur->next)>0);
+    } while((curi=cur->next)>0);
     return 0;
 }
 //}

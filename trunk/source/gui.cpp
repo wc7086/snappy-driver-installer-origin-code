@@ -450,32 +450,33 @@ void ClickVisiter::VisitwCheckbox(wCheckbox *a)
         if(right)
         {
             a->command->RightClick(x,y);
-        }else
-        if(act!=CHECKBOX::GET)
-        {
-            switch(act)
-            {
-                case CHECKBOX::SET:
-                    if(a->checked)return;
-                    a->checked=true;
-                    break;
-
-                case CHECKBOX::CLEAR:
-                    if(!a->checked)return;
-                    a->checked=false;
-                    break;
-
-                case CHECKBOX::TOGGLE:
-                    a->checked^=1;
-                    break;
-
-                case CHECKBOX::GET:
-                default:
-                    break;
-            }
-            a->invalidate();
-            a->command->LeftClick(a->checked);
         }
+        else
+            if(act!=CHECKBOX::GET)
+            {
+                switch(act)
+                {
+                    case CHECKBOX::SET:
+                        if(a->checked)return;
+                        a->checked=true;
+                        break;
+
+                    case CHECKBOX::CLEAR:
+                        if(!a->checked)return;
+                        a->checked=false;
+                        break;
+
+                    case CHECKBOX::TOGGLE:
+                        a->checked^=1;
+                        break;
+
+                    case CHECKBOX::GET:
+                    default:
+                        break;
+                }
+                a->invalidate();
+                a->command->LeftClick(a->checked);
+            }
     }
 
     // Calc filters
