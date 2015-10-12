@@ -381,7 +381,7 @@ void MatcherImp::findHWIDs(Devicematch *devicematch,wchar_t *hwidv,int dev_pos,i
     for(auto &drp:*col->getList())
     {
         int isfound;
-        int val=drp.find(code,&isfound);
+        int val=drp.find((int)code,&isfound);
         while(isfound)
         {
             hwidmatch_list.push_back(Hwidmatch(&drp,val,dev_pos,ishw,state,devicematch));

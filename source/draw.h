@@ -248,7 +248,7 @@ public:
     {
         SendMessage(handle,CB_RESETCONTENT,0,0);
     }
-    int finditem(const wchar_t *str)
+    LRESULT finditem(const wchar_t *str)
     {
         return SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
     }

@@ -104,7 +104,7 @@ class inffile_task
     wchar_t *pathinf;
     wchar_t *inffile;
     char *adr;
-    int len;
+    size_t len;
 
     friend class Driverpack;
 };
@@ -274,9 +274,9 @@ class Driverpack
 
 private:
     int  genindex();
-    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
+    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
+    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
+    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,size_t inf_len);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index);
 
     static unsigned int __stdcall loaddrp_thread(void *arg);

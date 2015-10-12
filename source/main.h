@@ -24,6 +24,7 @@ class Font;
 class Matcher;
 class Hwidmatch;
 class Canvas;
+class Console_t;
 
 #include "resources.h"
 
@@ -97,6 +98,7 @@ extern int invaidate_set;
 extern int num_cores;
 extern HINSTANCE ghInst;
 extern CRITICAL_SECTION sync;
+extern Console_t *Console;
 
 // Window
 class Popup_t
@@ -122,6 +124,15 @@ public:
 };
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 extern class Popup_t Popup;
+
+// Console
+class Console_t
+{
+public:
+    virtual ~Console_t(){}
+    virtual void Show()=0;
+    virtual void Hide()=0;
+};
 
 // Window
 class MainWindow_t
