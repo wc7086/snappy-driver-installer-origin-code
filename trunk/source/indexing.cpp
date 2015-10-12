@@ -150,7 +150,7 @@ void mySzFree(void *p,void *address)
     delete[] (char*)(address);
 }
 
-void findosattr(char *bufa,char *adr,int len)
+void findosattr(char *bufa,char *adr,size_t len)
 {
     size_t bufal=0;
     char *p=adr;
@@ -1660,7 +1660,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                                 {
                                     parse_info3.readStr(&s1b,&s1e);
                                     strtolower(s1b,s1e-s1b);
-                                    int sz=s1e-s1b;
+                                    size_t sz=s1e-s1b;
                                     if(sz==12&&!memcmp(s1b,"featurescore",sz))
                                     {
                                         parse_info3.parseField();
@@ -1728,11 +1728,8 @@ unsigned int __stdcall Driverpack::loaddrp_thread(void *arg)
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     driverpack_task data;
 
-    while(1)
+    while(drplist->wait_and_pop(data),data.drp)
     {
-        drplist->wait_and_pop(data);
-        if(data.drp==nullptr)break;
-
         Driverpack *drp=data.drp;
         if(Settings.flags&COLLECTION_FORCE_REINDEXING||!drp->loadindex())
         {
@@ -1752,11 +1749,8 @@ unsigned int __stdcall Driverpack::indexinf_thread(void *arg)
     driverpack_task data;
     long long tm=0,last=0;
 
-    while(1)
+    while(drplist->wait_and_pop(data),data.drp)
     {
-        drplist->wait_and_pop(data);
-        if(!data.drp)break;
-
         wchar_t bufw2[BUFLEN];
         if(!drp_count)drp_count=1;
         wsprintf(bufw2,L"%s\\%s",data.drp->getPath(),data.drp->getFilename());
@@ -1798,11 +1792,8 @@ unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
     drplist_t *drplist=reinterpret_cast<drplist_t *>(arg);
     driverpack_task data;
 
-    while(1)
+    while(drplist->wait_and_pop(data),data.drp)
     {
-        drplist->wait_and_pop(data);
-        if(!data.drp)break;
-
         wchar_t bufw2[BUFLEN];
         wsprintf(bufw2,L"%ws\\%ws",data.drp->getPath(),data.drp->getFilename());
         Log.print_con("Saving indexes for '%S'\n",bufw2);
@@ -1905,7 +1896,7 @@ void Driverpack::saveindex()
 {
     wchar_t filename[BUFLEN];
     FILE *f;
-    int sz;
+    size_t sz;
     int version=VER_INDEX;
     char *mem,*p,*mem_pack;
 
@@ -1980,9 +1971,9 @@ void Driverpack::genhashes()
     }
 }
 
-int Driverpack::printstats()
+size_t Driverpack::printstats()
 {
-    int sum=0;
+    size_t sum=0;
 
     Log.print_file("  %6d  %S\\%S\n",HWID_list.size(),getPath(),getFilename());
     sum+=HWID_list.size();
@@ -2128,7 +2119,7 @@ void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t 
 {
     wchar_t *p;
     wchar_t buf[BUFLEN];
-    int len=wcslen(getFilename());
+    size_t len=wcslen(getFilename());
 
     wsprintf(buf,L"%s",getFilename());
 
@@ -2142,7 +2133,7 @@ void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t 
     wsprintf(indfile,L"%s\\%s",dir,buf);
 }
 
-void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char *adr,int len)
+void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char *adr,size_t len)
 {
     CHAR bufa[BUFLEN];
 
@@ -2162,11 +2153,11 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
 
 }
 
-void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char *bb,int inf_len)
+void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char *bb,size_t inf_len)
 {
     if(inf_len>4&&((bb[0]==-1&&bb[3]==0)||bb[0]==0))
     {
-        int size=inf_len;
+        size_t size=inf_len;
 
         char *buf_out=new char[size+2];
         size=unicode2ansi(bb,buf_out,size);

@@ -822,13 +822,13 @@ void State::save(const wchar_t *filename)
     p=Drivers_list.savedata(p);
     p=textas.savedata(p);
 
-    if(1)
+    //if(1)
     {
         std::unique_ptr<char[]> mem_pack(new char[sz]);
         sz=encode(mem_pack.get(),sz,mem.get(),sz);
         fwrite(mem_pack.get(),sz,1,f);
     }
-    else fwrite(mem.get(),sz,1,f);
+    //else fwrite(mem.get(),sz,1,f);
 
     fclose(f);
     Log.print_con("OK\n");

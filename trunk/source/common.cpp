@@ -122,7 +122,7 @@ unsigned Hashtable::gethashcode(const char *s,size_t sz)
     return h;
 }
 
-void Hashtable::reset(int size1)
+void Hashtable::reset(size_t size1)
 {
     size=size1;
     if(!size)size=1;
