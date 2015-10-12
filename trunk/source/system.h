@@ -18,7 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include <shlwapi.h>
 #else
 #ifndef _INC_SHLWAPI

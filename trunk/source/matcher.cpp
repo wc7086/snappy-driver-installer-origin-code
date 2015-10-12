@@ -23,7 +23,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 
 #include <windows.h>
-#include <shlwapi.h>        // for StrCmpIA
 
 #include "system.h"
 #include "enum.h"
@@ -265,7 +264,7 @@ int calc_secttype(const char *s)
         if((p=strchr(p+1,'.')))
             if((p=strchr(p+1,'.')))*p=0;
 
-    for(int i=0;i<NUM_DECS;i++)if(!StrCmpIA(buf+3,nts[i]+2))return i;
+    for(int i=0;i<NUM_DECS;i++)if(!_strcmpi(buf+3,nts[i]+2))return i;
     return -1;
 }
 

@@ -37,7 +37,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     HRESULT hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))
     {
-        printf("FAILED to initialize COM library. Error code = 0x%X\n",hres);
+        printf("FAILED to initialize COM library. Error code = 0x%lX\n",hres);
         return 0;
     }
 
@@ -47,7 +47,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
                                   RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE,nullptr);
         if(FAILED(hres))
         {
-            printf("FAILED to initialize security. Error code = 0x%X\n",hres);
+            printf("FAILED to initialize security. Error code = 0x%lX\n",hres);
             CoUninitialize();
             return 0;
         }
@@ -57,7 +57,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     hres=CoCreateInstance(CLSID_WbemLocator,nullptr,CLSCTX_INPROC_SERVER,IID_IWbemLocator,(LPVOID *)&pLoc);
     if(FAILED(hres))
     {
-        printf("FAILED to create IWbemLocator object. Error code = 0x%X\n",hres);
+        printf("FAILED to create IWbemLocator object. Error code = 0x%lX\n",hres);
         CoUninitialize();
         return 0;
     }
@@ -66,7 +66,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     hres=pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),nullptr,nullptr,nullptr,0,nullptr,nullptr,&pSvc);
     if(FAILED(hres))
     {
-        printf("FAILED to connect to root\\cimv2. Error code = 0x%X\n",hres);
+        printf("FAILED to connect to root\\cimv2. Error code = 0x%lX\n",hres);
         pLoc->Release();
         CoUninitialize();
         return 0;
@@ -78,7 +78,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
                            RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE);
     if(FAILED(hres))
     {
-        printf("FAILED to set proxy blanket. Error code = 0x%X\n",hres);
+        printf("FAILED to set proxy blanket. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -92,7 +92,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
-        printf("FAILED to query for Win32_BaseBoard. Error code = 0x%X\n",hres);
+        printf("FAILED to query for Win32_BaseBoard. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -130,7 +130,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
-        printf("FAILED to query for Win32_ComputerSystem. Error code = 0x%X\n",hres);
+        printf("FAILED to query for Win32_ComputerSystem. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -164,7 +164,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
-        printf("FAILED to query for Win32_SystemEnclosure. Error code = 0x%X\n",hres);
+        printf("FAILED to query for Win32_SystemEnclosure. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
