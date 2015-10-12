@@ -48,14 +48,14 @@ ofst Txt::strcpyw(const wchar_t *str)
     return (ofst)r;
 }
 
-ofst Txt::t_memcpy(const char *mem,int sz)
+ofst Txt::t_memcpy(const char *mem,size_t sz)
 {
 	size_t r = text.size();
     text.insert(text.end(),mem,mem+sz);
     return (ofst)r;
 }
 
-ofst Txt::t_memcpyz(const char *mem,int sz)
+ofst Txt::t_memcpyz(const char *mem,size_t sz)
 {
 	size_t r = text.size();
     text.insert(text.end(),mem,mem+sz);
@@ -63,7 +63,7 @@ ofst Txt::t_memcpyz(const char *mem,int sz)
     return (ofst)r;
 }
 
-ofst Txt::memcpyz_dup(const char *mem,int sz)
+ofst Txt::memcpyz_dup(const char *mem,size_t sz)
 {
     std::string str(mem,sz);
     auto it=dub.find(str);
@@ -74,7 +74,7 @@ ofst Txt::memcpyz_dup(const char *mem,int sz)
         text.insert(text.end(),mem,mem+sz);
         text.insert(text.end(),0);
 
-		dub.insert({ std::move(str), r });
+		dub.insert({std::move(str),(int)r});
         return (ofst)r;
     }
     else
@@ -83,11 +83,11 @@ ofst Txt::memcpyz_dup(const char *mem,int sz)
     }
 }
 
-int Txt::alloc(int sz)
+ofst Txt::alloc(size_t sz)
 {
-    int r=text.size();
+    size_t r=text.size();
     text.resize(r+sz);
-    return r;
+    return (ofst)r;
 }
 
 Txt::Txt()
@@ -110,7 +110,7 @@ void Txt::shrink()
 //}
 
 //{ Hashtable
-unsigned Hashtable::gethashcode(const char *s,int sz)
+unsigned Hashtable::gethashcode(const char *s,size_t sz)
 {
     int h=5381;
 
@@ -170,7 +170,7 @@ void Hashtable::additem(int key,int value)
     {
         items.emplace_back(Hashitem());
         cur=&items.back();
-        curi=items.size()-1;
+        curi=(int)(items.size()-1);
     }
 
     cur->key=key;
@@ -282,14 +282,14 @@ void strtolower(char *s,size_t len)
     }
 }
 
-int unicode2ansi(char *s,char *out,int size)
+int unicode2ansi(char *s,char *out,size_t size)
 {
     int ret,flag;
     size/=2;
     /*if(!out)Log.log_err("Error out:\n");
     if(!s)Log.log_err("Error in:\n");
     if(size<0)Log.log_err("Error size:\n");*/
-    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),size-(s[0]==-1?1:0),out,size,nullptr,&flag);
+    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),(int)(size-(s[0]==-1?1:0)),out,(int)size,nullptr,&flag);
     if(!ret)Log.print_syserr(GetLastError(),L"unicode2ansi()");
     out[size]=0;
     return ret;

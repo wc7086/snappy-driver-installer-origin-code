@@ -787,7 +787,7 @@ void State::contextmenu2(int x,int y)
 void State::save(const wchar_t *filename)
 {
     FILE *f;
-    int sz;
+    size_t sz;
     int version=VER_STATE;
 
     if(Settings.flags&FLAG_NOSNAPSHOT)return;

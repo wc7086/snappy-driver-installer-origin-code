@@ -485,7 +485,12 @@ void ClickVisiter::VisitwCheckbox(wCheckbox *a)
 void ExpertmodeCheckboxCommand::LeftClick(bool checked)
 {
     Settings.expertmode=checked;
-    ShowWindow(GetConsoleWindow(),Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
+
+    if(Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole)
+        Console->Show();
+    else
+        Console->Hide();
+
     InvalidateRect(MainWindow.hMain,nullptr,0);
 }
 

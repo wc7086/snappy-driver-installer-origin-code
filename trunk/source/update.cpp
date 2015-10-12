@@ -590,7 +590,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 
             wsprintf(buf,L"%S",filename);
             lvI.pszText=buf;
-            int sz=fe.size/1024/1024;
+            int sz=(int)(fe.size/1024/1024);
             if(!sz)sz=1;
 
             newver=getnewver(filenamefull);
@@ -695,8 +695,8 @@ void UpdaterImp::updateTorrentStatus()
     t->seedsconnected=st.num_seeds;
     t->peersconnected=st.num_peers;
 
-    t->wasted=st.total_redundant_bytes;
-    t->wastedhashfailes=st.total_failed_bytes;
+    t->wasted=(int)st.total_redundant_bytes;
+    t->wastedhashfailes=(int)st.total_failed_bytes;
 
     if(torrenttime)t->elapsed=GetTickCount()-torrenttime;
     if(t->downloadspeed)
@@ -867,7 +867,7 @@ void UpdaterImp::showPopup(Canvas &canvas)
     td.TextOutSF(STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
 
 //    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
-    popup_resize((td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+    popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
 }
 
 UpdaterImp::UpdaterImp()

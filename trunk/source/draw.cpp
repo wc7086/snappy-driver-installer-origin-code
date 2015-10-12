@@ -420,7 +420,7 @@ void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
     va_start(args,format);
     _vsnwprintf (buffer,BUFLEN,format,args);
     TextOut_CM(x,y,str,col,&maxsz,1);
-    TextOut_CM(x+POPUP_SYSINFO_OFS,y,buffer,col,&maxsz,1);
+    TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer,col,&maxsz,1);
     y+=wy;
     va_end(args);
 }

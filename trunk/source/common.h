@@ -96,10 +96,10 @@ public:
 
     ofst strcpy(const char *mem);
 	ofst strcpyw(const wchar_t *mem);
-    ofst t_memcpy(const char *mem,int sz);
-    ofst t_memcpyz(const char *mem,int sz);
-    ofst memcpyz_dup(const char *mem,int sz);
-    int alloc(int sz);
+    ofst t_memcpy(const char *mem,size_t sz);
+    ofst t_memcpyz(const char *mem,size_t sz);
+    ofst memcpyz_dup(const char *mem,size_t sz);
+    ofst alloc(size_t sz);
 
     char *savedata(char *p){return text.savedata(p);}
     char *loaddata(char *p){return text.loaddata(p);};
@@ -133,7 +133,7 @@ class Hashtable
 public:
 	size_t getSize(){ return items.size(); }
 
-    static unsigned gethashcode(const char *s,int sz);
+    static unsigned gethashcode(const char *s,size_t sz);
     void reset(int size);
     char *savedata(char *p);
     char *loaddata(char *p);
@@ -146,7 +146,7 @@ public:
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,size_t len);
 void strtolower(char *s,size_t len);
-int  unicode2ansi(char *s,char *out,int size);
+int  unicode2ansi(char *s,char *out,size_t size);
 int _wtoi_my(const wchar_t *str);
 
 // 7-zip

@@ -1511,8 +1511,8 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
 
                 if(Settings.flags&FLAG_SHOWDRPNAMES1)
                 {
-                    int len=wcslen(matcher->getCol()->getDriverpack_dir());
-                    int lnn=len-wcslen(itembar->hwidmatch->getdrp_packpath());
+                    size_t len=wcslen(matcher->getCol()->getDriverpack_dir());
+                    size_t lnn=len-wcslen(itembar->hwidmatch->getdrp_packpath());
 
                     canvas.SetTextColor(0);// todo: color
                     wsprintf(bufw,L"%ws%ws%ws",

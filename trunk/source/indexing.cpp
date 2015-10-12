@@ -324,7 +324,7 @@ void Parser::subStr()
     if(*v1b=='%')
     {
         v1b++;
-        int vers_len=strEnd-v1b-1;
+        size_t vers_len=strEnd-v1b-1;
         if(strEnd[-1]!='%')vers_len++;
         if(vers_len<0)vers_len=0;
 
@@ -588,7 +588,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
     wsprintf(buf,L"%s\\*.*",path);
     WIN32_FIND_DATA FindFileData;
     HANDLE hFind=FindFirstFile(buf,&FindFileData);
-    int pathlen=wcslen(driverpack_dir)+1;
+    size_t pathlen=wcslen(driverpack_dir)+1;
 
     while(FindNextFile(hFind,&FindFileData)!=0)
     {
@@ -1236,7 +1236,7 @@ int Driverpack::genindex()
             }
             SzArEx_GetFileNameUtf16(&db,i,(UInt16 *)fullname);
 
-            int namelen=wcslen(fullname)-4;
+            size_t namelen=wcslen(fullname)-4;
             if(StrCmpIW(fullname+namelen,L".inf")==0||
                 StrCmpIW(fullname+namelen,L".cat")==0)
             {
@@ -1284,7 +1284,7 @@ int Driverpack::genindex()
     return 1;
 }
 
-void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,int len)
+void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,size_t len)
 {
     inffile_task data;
 
@@ -1299,7 +1299,7 @@ void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const 
     objs_new->push(data);
 }
 
-void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,int len)
+void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,size_t len)
 {
     inffile_task data;
 
@@ -1339,7 +1339,7 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
     objs_new->push(data);
 }
 
-void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,char *inf_base,int inf_len)
+void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,char *inf_base,size_t inf_len)
 {
     // http://msdn.microsoft.com/en-us/library/ff547485(v=VS.85).aspx
     Version *cur_ver;
@@ -1481,7 +1481,8 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             //Log.print_con("%s,%d,%d: tolower '%.10s'\n",line,s1b,s1e,s1b);
             strtolower(s1b,s1e-s1b);
 
-            int i,sz=s1e-s1b;
+            int i;
+            size_t sz=s1e-s1b;
             for(i=0;i<NUM_VER_NAMES;i++)
             if(table_version[i].sz==sz&&!memcmp(s1b,table_version[i].s,sz))
             {

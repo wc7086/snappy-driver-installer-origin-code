@@ -46,6 +46,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
+Console_t *Console;
 
 volatile int deviceupdate_exitflag=0;
 Event *deviceupdate_event;
@@ -87,6 +88,50 @@ MainWindow_t MainWindow;
 Settings_t Settings;
 //}
 
+class Console1:public Console_t
+{
+public:
+    Console1()
+    {
+        DWORD dwProcessId;
+        GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
+        if(GetCurrentProcessId()!=dwProcessId)MainWindow.hideconsole=SW_SHOWNOACTIVATE;
+        ShowWindow(GetConsoleWindow(),MainWindow.hideconsole);
+    }
+    ~Console1()
+    {
+        ShowWindow(GetConsoleWindow(),1);
+    }
+    void Show()
+    {
+        ShowWindow(GetConsoleWindow(),1);
+    }
+    void Hide()
+    {
+        ShowWindow(GetConsoleWindow(),0);
+    }
+};
+
+class Console2:public Console_t
+{
+public:
+    ~Console2()
+    {
+        FreeConsole();
+    }
+    void Show()
+    {
+        AllocConsole();
+        freopen("CONIN$","r",stdin);
+        freopen("CONOUT$","w",stdout);
+        freopen("CONOUT$","w",stderr);
+    }
+    void Hide()
+    {
+        FreeConsole();
+    }
+};
+
 //{  Main
 int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 {
@@ -97,12 +142,11 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     Timers.start(time_total);
 
     // Hide the console window as soon as possible
-    #ifndef CONSOLE_MODE
-    DWORD dwProcessId;
-    GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
-    if(GetCurrentProcessId()!=dwProcessId)MainWindow.hideconsole=SW_SHOWNOACTIVATE;
-    ShowWindow(GetConsoleWindow(),MainWindow.hideconsole);
-    #endif
+#ifdef _MSC_VER
+    Console=new Console2;
+#else
+    Console=new Console1;
+#endif
 
     // Determine number of CPU cores
     SYSTEM_INFO siSysInfo;
@@ -142,13 +186,16 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     if(Settings.statemode==STATEMODE_EXIT)
     {
         if(backtrace)FreeLibrary(backtrace);
-        ShowWindow(GetConsoleWindow(),SW_SHOW);
+        delete Console;
         return ret_global;
     }
 
     // Bring back the console window
     #ifndef CONSOLE_MODE
-    ShowWindow(GetConsoleWindow(),(Settings.expertmode&&Settings.flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:MainWindow.hideconsole);
+    if((Settings.expertmode&&Settings.flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:MainWindow.hideconsole)
+        Console->Show();
+    else
+        Console->Hide();
     #endif
 
     // Start logging
@@ -239,6 +286,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     //time_total=GetTickCount()-time_total;
     Timers.print();
     Log.stop();
+    delete Console;
 
     // Exit
     return ret_global;

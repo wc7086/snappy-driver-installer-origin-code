@@ -199,8 +199,8 @@ void Vault::parse()
                     *yy=1;
                 }
                 {
-                    int l=wcslen(r1);
-                    for(int i=0;i<l;i++)if(r1[i]==1)r1[i]=0;
+                    size_t l=wcslen(r1);
+                    for(size_t i=0;i<l;i++)if(r1[i]==1)r1[i]=0;
                 }
                 entry[r].valstr=r1;
                 entry[r].init=1;
@@ -262,9 +262,9 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
         fread(datav,1,1,f);
         sz-=3;
         size_t q=fread(datav,1,sz,f);
-        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,nullptr,0);
+        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,(int)q,nullptr,0);
         wchar_t *dataloc1=new wchar_t[szo+1];
-        sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,q,dataloc1,szo);
+        sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,(int)q,dataloc1,szo);
         fclose(f);
         dataloc1[sz]=0;
         datav_ptr.reset(dataloc1);
@@ -372,7 +372,7 @@ void Vault::load(int i)
 int Vault::pickTheme()
 {
     int f=0;
-    int j=SendMessage(MainWindow.hTheme,CB_GETCOUNT,0,0);
+    LRESULT j=SendMessage(MainWindow.hTheme,CB_GETCOUNT,0,0);
     for(int i=0;i<j;i++)
         if(StrStrIW(namelist[i],D_STR(THEME_NAME))&&
             StrStrIW(namelist[i],L"big")==nullptr){f=i;break;}
