@@ -82,7 +82,7 @@ enum DRIVERPACK_TYPE
 };
 
 // Misc functions
-void findosattr(char *bufa,char *adr,int len);
+void findosattr(char *bufa,char *adr,size_t len);
 void *mySzAlloc(void *p,size_t size);
 void mySzFree(void *p,void *address);
 
@@ -300,13 +300,13 @@ public:
     int  loadindex();
     void saveindex();
     void genhashes();
-    int  printstats();
+    size_t printstats();
     void print_index_hr();
 
     void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
     void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
-    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,int len);
-    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,int inf_len);
+    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
+    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,size_t inf_len);
 
     friend class Hwidmatch;
     friend class Collection;

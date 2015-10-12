@@ -134,7 +134,7 @@ public:
 	size_t getSize(){ return items.size(); }
 
     static unsigned gethashcode(const char *s,size_t sz);
-    void reset(int size);
+    void reset(size_t size);
     char *savedata(char *p);
     char *loaddata(char *p);
     void additem(int key,int value);

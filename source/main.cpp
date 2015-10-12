@@ -1292,7 +1292,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 else
                 {
                     const wchar_t *str=manager_g->getHWIDby(id);
-                    int len=wcslen(str)*2+2;
+                    size_t len=wcslen(str)*2+2;
                     HGLOBAL hMem=GlobalAlloc(GMEM_MOVEABLE,len);
                     memcpy(GlobalLock(hMem),str,len);
                     GlobalUnlock(hMem);

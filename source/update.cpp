@@ -701,7 +701,7 @@ void UpdaterImp::updateTorrentStatus()
     if(torrenttime)t->elapsed=GetTickCount()-torrenttime;
     if(t->downloadspeed)
     {
-        averageSpeed=SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed;
+        averageSpeed=(int)(SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed);
         if(averageSpeed)t->remaining=(t->downloadsize-t->downloaded)/averageSpeed*1000;
     }
 

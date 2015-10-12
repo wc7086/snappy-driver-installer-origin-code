@@ -89,7 +89,7 @@ void Image::LoadFromFile(wchar_t *filename)
 {
     wchar_t buf[BUFLEN];
     FILE *f;
-    int sz;
+    size_t sz;
 
     if(!filename||!*filename)return;
     wsprintf(buf,L"%s\\themes\\%s",Settings.data_dir,filename);
