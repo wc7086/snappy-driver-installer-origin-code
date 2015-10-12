@@ -41,7 +41,7 @@ class Image
 private:
     void LoadFromFile(wchar_t *filename);
     void LoadFromRes(int id);
-    void CreateBitmap(BYTE *data,int sz);
+    void CreateMyBitmap(BYTE *data,int sz);
 
 public:
     enum align

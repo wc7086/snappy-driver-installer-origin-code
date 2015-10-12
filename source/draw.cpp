@@ -33,7 +33,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include "webp\decode.h"
 #else
 #include <webp\decode.h>
@@ -111,7 +111,7 @@ void Image::LoadFromFile(wchar_t *filename)
         return;
     }
     fclose(f);
-    CreateBitmap(imgbuf.get(),sz);
+    CreateMyBitmap(imgbuf.get(),sz);
 }
 
 void Image::LoadFromRes(int id)
@@ -125,10 +125,10 @@ void Image::LoadFromRes(int id)
         Log.print_err("ERROR in image_loadRes(): failed get_resource\n");
         return;
     }
-    CreateBitmap((BYTE *)myResourceData,sz);
+    CreateMyBitmap((BYTE *)myResourceData,sz);
 }
 
-void Image::CreateBitmap(BYTE *data,int sz)
+void Image::CreateMyBitmap(BYTE *data,int sz)
 {
     BYTE *big;
     hasalpha=sx=sy=0;

@@ -27,7 +27,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "gui.h"
 
 #include <windows.h>
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include <process.h>
 #endif
 
@@ -1346,8 +1346,8 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
 
         case SLOT_INDEXING:
             wsprintf(bufw,L"%s (%d%s%d)",STR(itembar->isactive==2?STR_INDEXLZMA:STR_INDEXING),
-                        items_list[SLOT_INDEXING].val1,STR(STR_OF),
-                        items_list[SLOT_INDEXING].val2);
+                        (int)items_list[SLOT_INDEXING].val1,STR(STR_OF),
+                        (int)items_list[SLOT_INDEXING].val2);
             canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,bufw);
 
             if(*itembar->txt1)
@@ -1364,8 +1364,8 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 if(installmode==MODE_INSTALLING)
                 {
                 wsprintf(bufw,L"%s (%d%s%d)",STR(itembar->install_status),
-                        items_list[SLOT_EXTRACTING].val1+1,STR(STR_OF),
-                        items_list[SLOT_EXTRACTING].val2);
+                        (int)items_list[SLOT_EXTRACTING].val1+1,STR(STR_OF),
+                        (int)items_list[SLOT_EXTRACTING].val2);
 
                 }
                 else

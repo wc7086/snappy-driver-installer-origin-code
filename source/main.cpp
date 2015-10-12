@@ -29,7 +29,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include <shellapi.h>
 #include <process.h>
 #include <signal.h>
@@ -161,7 +161,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     #ifdef BENCH_MODE
-    benchmark();
+    System.benchmark();
     #endif
 
     // Make dirs
@@ -1259,26 +1259,28 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             {
                 if(wp==ID_LANG)
                 {
-					LRESULT i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
-                    SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curlang);
-                    vLang->switchdata((int)i);
+					LRESULT j=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
+                    SendMessage((HWND)lParam,CB_GETLBTEXT,j,(LPARAM)Settings.curlang);
+                    vLang->switchdata((int)j);
                     lang_refresh();
                 }
 
                 if(wp==ID_THEME)
                 {
-					LRESULT i=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
-                    SendMessage((HWND)lParam,CB_GETLBTEXT,i,(LPARAM)Settings.curtheme);
-					vTheme->switchdata((int)i);
+					LRESULT j=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
+                    SendMessage((HWND)lParam,CB_GETLBTEXT,j,(LPARAM)Settings.curtheme);
+					vTheme->switchdata((int)j);
                     theme_refresh();
                 }
             }
             break;
 
         default:
-			LRESULT i = DefWindowProc(hwnd, uMsg, wParam, lParam);
-            checktimer(L"MainD",timer,uMsg);
-            return i;
+            {
+                LRESULT j=DefWindowProc(hwnd,uMsg,wParam,lParam);
+                checktimer(L"MainD",timer,uMsg);
+                return j;
+            }
     }
     checktimer(L"Main",timer,uMsg);
     return 0;
@@ -1511,9 +1513,9 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
         default:
 			{
-				LRESULT i=DefWindowProc(hwnd,message,wParam,lParam);
+				LRESULT j=DefWindowProc(hwnd,message,wParam,lParam);
 				checktimer(L"ListD",timer,message);
-				return i;
+				return j;
 			}
     }
     checktimer(L"List",timer,message);

@@ -19,7 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 
 #include <windows.h>
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include <commdlg.h>
 #include <direct.h>
 #include <shellapi.h>
@@ -440,6 +440,15 @@ void SystemImp::benchmark()
     tm2=GetTickCount()-tm2;
     Log.print_con("%c wsprintfW \t%ld\n",tm1<tm2?'+':' ',tm1);
     Log.print_con("%c swprintf  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
+
+    tm1=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)_strcmpi("Test str %ws","wchar str");
+    tm1=GetTickCount()-tm1;
+    tm2=GetTickCount();
+    for(i=0;i<1024*1024*5;i++)strcmpi("Test str %ws","wchar str");
+    tm2=GetTickCount()-tm2;
+    Log.print_con("%c _strcmpi \t%ld\n",tm1<tm2?'+':' ',tm1);
+    Log.print_con("%c strcmpi  \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 
     tm1=GetTickCount();
     for(i=0;i<1024*1024*5;i++)strcasecmp("Test str %ws","wchar str");
