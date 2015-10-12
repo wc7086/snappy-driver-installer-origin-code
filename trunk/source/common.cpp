@@ -34,36 +34,36 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 //{ Txt
-size_t Txt::strcpy(const char *str)
+ofst Txt::strcpy(const char *str)
 {
     size_t r=text.size();
     text.insert(text.end(),str,str+strlen(str)+1);
-    return r;
+    return (ofst)r;
 }
 
-size_t Txt::strcpyw(const wchar_t *str)
+ofst Txt::strcpyw(const wchar_t *str)
 {
 	size_t r = text.size();
     text.insert(text.end(),(char *)str,(char *)(str+wcslen(str)+1));
-    return r;
+    return (ofst)r;
 }
 
-size_t Txt::t_memcpy(const char *mem, int sz)
+ofst Txt::t_memcpy(const char *mem,int sz)
 {
 	size_t r = text.size();
     text.insert(text.end(),mem,mem+sz);
-    return r;
+    return (ofst)r;
 }
 
-size_t Txt::t_memcpyz(const char *mem, int sz)
+ofst Txt::t_memcpyz(const char *mem,int sz)
 {
 	size_t r = text.size();
     text.insert(text.end(),mem,mem+sz);
     text.insert(text.end(),0);
-    return r;
+    return (ofst)r;
 }
 
-size_t Txt::memcpyz_dup(const char *mem, int sz)
+ofst Txt::memcpyz_dup(const char *mem,int sz)
 {
     std::string str(mem,sz);
     auto it=dub.find(str);
@@ -75,11 +75,11 @@ size_t Txt::memcpyz_dup(const char *mem, int sz)
         text.insert(text.end(),0);
 
 		dub.insert({ std::move(str), r });
-        return r;
+        return (ofst)r;
     }
     else
     {
-        return it->second;
+        return (ofst)it->second;
     }
 }
 
@@ -304,13 +304,13 @@ int _wtoi_my(const wchar_t *str)
 //}
 
 //{ 7-zip
-int encode(char *dest,int dest_sz,char *src,int src_sz)
+size_t encode(char *dest,size_t dest_sz,char *src,size_t src_sz)
 {
     Lzma86_Encode((Byte *)dest,(SizeT *)&dest_sz,(const Byte *)src,src_sz,0,1<<23,SZ_FILTER_AUTO);
     return dest_sz;
 }
 
-int decode(char *dest,int dest_sz,char *src,int src_sz)
+size_t decode(char *dest,size_t dest_sz,char *src,size_t src_sz)
 {
     Lzma86_Decode((Byte *)dest,(SizeT *)&dest_sz,(const Byte *)src,(SizeT *)&src_sz);
     return dest_sz;

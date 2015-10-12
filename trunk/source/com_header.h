@@ -20,6 +20,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "svnrev.h"
 
+typedef unsigned ofst;
+
 // Misc
 #define BUFLEN 4096
 #define WIN32_LEAN_AND_MEAN
