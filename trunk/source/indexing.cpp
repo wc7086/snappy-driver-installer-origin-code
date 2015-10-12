@@ -816,7 +816,7 @@ void Collection::printstats()
 {
     if(Log.isHidden(LOG_VERBOSE_DRP))return;
 
-    int sum=0;
+    size_t sum=0;
     Log.print_file("Driverpacks\n");
     for(auto &drp:driverpack_list)
         sum+=drp.printstats();

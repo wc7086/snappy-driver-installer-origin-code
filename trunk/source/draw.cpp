@@ -128,7 +128,7 @@ void Image::LoadFromRes(int id)
     CreateMyBitmap((BYTE *)myResourceData,sz);
 }
 
-void Image::CreateMyBitmap(BYTE *data,int sz)
+void Image::CreateMyBitmap(BYTE *data,size_t sz)
 {
     BYTE *big;
     hasalpha=sx=sy=0;
@@ -199,8 +199,8 @@ void Image::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
     wy=(fill&VSTR)?y2-y1:sy;
     if(fill&ASPECT)
     {
-        if(fill&HSTR)wy=sy*((double)wx/sx);
-        if(fill&VSTR)wx=sx*((double)wy/sy);
+        if(fill&HSTR)wy=(int)(sy*((double)wx/sx));
+        if(fill&VSTR)wx=(int)(sx*((double)wy/sy));
     }
 
     for(xi=0;xi<x2;xi+=wx)
@@ -363,8 +363,8 @@ void textdata_horiz_t::limitskip()
     x+=limits[i++];
 }
 
-void textdata_vert::shift_r(){maxsz+=POPUP_SYSINFO_OFS;}
-void textdata_vert::shift_l(){maxsz-=POPUP_SYSINFO_OFS;}
+void textdata_vert::shift_r(){maxsz+=(int)POPUP_SYSINFO_OFS;}
+void textdata_vert::shift_l(){maxsz-=(int)POPUP_SYSINFO_OFS;}
 
 void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
 {
@@ -506,7 +506,7 @@ int mirw(int x,int ofs,int w)
 }
 void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
 {
-    TextOut(hdcMem,x1,y1,buf,wcslen(buf));
+    TextOut(hdcMem,x1,y1,buf,(int)wcslen(buf));
 }
 int Xm(int x,int o)
 {
@@ -633,7 +633,7 @@ void Canvas::DrawTextRect(const wchar_t *bufw,RECT *rect)
 int  Canvas::GetTextExtent(const wchar_t *str)
 {
     SIZE ss;
-    GetTextExtentPoint32(hdcMem,str,wcslen(str),&ss);
+    GetTextExtentPoint32(hdcMem,str,(int)wcslen(str),&ss);
     return ss.cx;
 }
 
