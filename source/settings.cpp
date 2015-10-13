@@ -380,7 +380,7 @@ bool Settings_t::loadCFGFile(const wchar_t *FileName,wchar_t *DestStr)
         return false;
     }
 
-    while(fgetws(Buff,sizeof(Buff),f))
+    while(fgetws(Buff,sizeof(Buff)/2,f))
     {
         wcscpy(Buff,ltrim(Buff));       //  trim spaces
         if(*Buff=='#')continue;         // comments

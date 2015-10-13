@@ -164,6 +164,12 @@ void Image::CreateMyBitmap(BYTE *data,size_t sz)
     BYTE *bits;
     ldc=CreateCompatibleDC(nullptr);
     bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,nullptr,0);
+    if(!bitmap)
+    {
+        Log.print_err("ERROR in CreateMyBitmap(): failed CreateDIBSection\n");
+        free(big);
+        return;
+    }
 
     BYTE *p2=big;
     for(int i=0;i<sy*sx;i++)
@@ -258,9 +264,13 @@ Canvas::Canvas():
     hwnd(nullptr),
     clipping(nullptr)
 {
-    if(!hdcMem)Log.print_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
-    int r=SetBkMode(hdcMem,TRANSPARENT);
-    if(!r)Log.print_err("ERROR in canvas_init(): failed SetBkMode\n");
+    if(!hdcMem)
+        Log.print_err("ERROR in canvas_init(): failed CreateCompatibleDC\n");
+    else
+    {
+        int r=SetBkMode(hdcMem,TRANSPARENT);
+        if(!r)Log.print_err("ERROR in canvas_init(): failed SetBkMode\n");
+    }
 }
 
 Canvas::~Canvas()
@@ -302,9 +312,13 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
             if(!r32)Log.print_err("ERROR in canvas_begin(): failed DeleteObject\n");
         }
         bitmap=CreateCompatibleBitmap(localDC,x,y);
-        if(!bitmap)Log.print_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
-        oldbitmap=(HBITMAP)SelectObject(hdcMem,bitmap);
-        if(!oldbitmap)Log.print_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
+        if(!bitmap)
+            Log.print_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
+        else
+        {
+            oldbitmap=(HBITMAP)SelectObject(hdcMem,bitmap);
+            if(!oldbitmap)Log.print_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
+        }
     }
     clipping=CreateRectRgnIndirect(&ps.rcPaint);
     if(!clipping)Log.print_err("ERROR in canvas_begin(): failed BeginPaint\n");
@@ -735,11 +749,14 @@ void Canvas::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,in
     else
         Rectangle(hdcMem,x1,y1,x2,y2);
 
-    r=SelectObject(hdcMem,oldpen);
-    if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
+    if(oldpen)
+    {
+        r=SelectObject(hdcMem,oldpen);
+        if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
+    }
     r=SelectObject(hdcMem,oldbrush);
     if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
-    r32=DeleteObject(newpen);
+    if(newpen)r32=DeleteObject(newpen);
     if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
     r32=DeleteObject(newbrush);
     if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");

@@ -42,13 +42,11 @@ CommandLineParam_t CLIParam;
 
 static void ExpandPath(wchar_t *Apath)
 {
-    #define INFO_BUFFER_SIZE 32767
-    wchar_t infoBuf[INFO_BUFFER_SIZE];
+    wchar_t infoBuf[BUFLEN];
 
-    memset(infoBuf,0,sizeof(infoBuf));
-    System.ExpandEnvVar(Apath,infoBuf,INFO_BUFFER_SIZE);
+    memset(infoBuf,0,sizeof(BUFLEN));
+    System.ExpandEnvVar(Apath,infoBuf,BUFLEN);
     wcscpy(Apath,infoBuf);
-    #undef INFO_BUFFER_SIZE
 }
 
 void SaveHWID(wchar_t *hwid)
@@ -57,7 +55,10 @@ void SaveHWID(wchar_t *hwid)
     {
         FILE *f=_wfopen(CLIParam.SaveInstalledFileName,L"a+");
         if(!f)
+        {
             Log.print_err("Failed to create '%S'\n",CLIParam.SaveInstalledFileName);
+            return;
+        }
         fwprintf(f,L"%s",hwid);
         fwprintf(f,L"\n");
         fclose(f);
@@ -136,7 +137,7 @@ void RUN_CLI()
             if(!f)Log.print_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
             else
             {
-                while(fgetws(buf,sizeof(buf),f))
+                while(fgetws(buf,sizeof(buf)/2,f))
                 {
                     //Log.print_con("'%S'\n", buf);
                     if(wcsstr(buf,CLIParam.HWIDSTR)!=NULL)

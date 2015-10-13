@@ -123,12 +123,14 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
         Log.print_con("Dir: (%S)\n",extractdir);
         f=_wfopen(cmd,L"wb");
         if(f)
+        {
             Log.print_con("Created '%S'\n",cmd);
+            get_resource(IDR_INSTALL64,&install64bin,&size);
+            fwrite(install64bin,1,size,f);
+            fclose(f);
+        }
         else
             Log.print_con("Failed to create '%S'\n",cmd);
-        get_resource(IDR_INSTALL64,&install64bin,&size);
-        fwrite(install64bin,1,size,f);
-        fclose(f);
     }
 
     Autoclicker.setflag(1);
@@ -358,8 +360,7 @@ goaround:
         else
         {
             wsprintf(cmd,L"app x -y \"%s\\%s\" -o\"%s\"",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname(),
-                    extractdir,
-                    hwidmatch->getdrp_infpath());
+                    extractdir);
 
             itembar1=itembar;
             for(j=i;j<manager_g->items_list.size();j++,itembar1++)
