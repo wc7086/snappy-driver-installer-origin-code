@@ -1411,7 +1411,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
 #ifdef USE_TORRENT
             if(!Updater->isPaused())
             {
-                Updater->showProgress(bufw);
+                Updater->ShowProgress(bufw);
                 itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_MODIFY));
             }
             else
@@ -1565,7 +1565,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
             if(groupsize(itembar->index)>1&&itembar->first&1)
             {
                 int xo=x+wx-D(ITEM_ICON_SIZE)*2+10;
-                canvas.DrawImage(icon[(itembar->isactive&2?0:2)+(zone==2?1:0)],xo,pos,xo+32,pos+32,0,Image::HSTR|Image::VSTR);
+                canvas.DrawImage(*vTheme->GetIcon((itembar->isactive&2?0:2)+(zone==2?1:0)),xo,pos,xo+32,pos+32,0,Image::HSTR|Image::VSTR);
             }
             break;
 
@@ -1658,7 +1658,7 @@ void Manager::restorepos1(Manager *manager_prev)
     LeaveCriticalSection(&sync);
 
     #ifdef USE_TORRENT
-    Updater->populate(0);
+    Updater->Populate(0);
     #endif
     //Log.print_con("Mode in WM_BUNDLEREADY: %d\n",installmode);
     if(Settings.flags&FLAG_AUTOINSTALL)

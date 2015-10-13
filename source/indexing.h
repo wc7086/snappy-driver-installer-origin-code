@@ -54,7 +54,7 @@ typedef concurrent_queue<driverpack_task> drplist_t;
 struct tbl_t
 {
     const char *s;
-    int sz;
+    size_t sz;
 };
 enum
 {

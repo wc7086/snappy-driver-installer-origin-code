@@ -219,7 +219,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Load text
     vLang=CreateVaultLang(language,STR_NM,IDR_LANG);
     vTheme=CreateVaultTheme(theme,THEME_NM,IDR_THEME);
-    vLang->load(0);
 
     // Allocate resources
     Bundle bundle[2];
@@ -258,9 +257,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Free allocated resources
-    int i;
-    for(i=0;i<BOX_NUM;i++)box[i].Release();
-    for(i=0;i<ICON_NUM;i++)icon[i].Release();
     delete vLang;
     delete vTheme;
 
@@ -905,8 +901,8 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             PostMessage(hwnd,WM_UPDATETHEME,1,0);
 
             // Misc
-            vLang->startmonitor();
-            vTheme->startmonitor();
+            vLang->StartMonitor();
+            vTheme->StartMonitor();
             DragAcceptFiles(hwnd,1);
 
             manager_g->populate();
@@ -931,28 +927,28 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             Settings.wndwx=rect.right-rect.left;
             Settings.wndwy=rect.bottom-rect.top;
 
-            vLang->stopmonitor();
-            vTheme->stopmonitor();
+            vLang->StopMonitor();
+            vTheme->StopMonitor();
             delete canvasMain;
             PostQuitMessage(0);
             break;
 
         case WM_UPDATELANG:
             SendMessage(hLang,CB_RESETCONTENT,0,0);
-            vLang->enumfiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
+            vLang->EnumFiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
             f=SendMessage(hLang,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)Settings.curlang);
             if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
-            vLang->switchdata((int)f);
+            vLang->SwitchData((int)f);
             SendMessage(hLang,CB_SETCURSEL,f,0);
             lang_refresh();
             break;
 
         case WM_UPDATETHEME:
             SendMessage(hTheme,CB_RESETCONTENT,0,0);
-            vTheme->enumfiles(hTheme,L"themes");
+            vTheme->EnumFiles(hTheme,L"themes");
             f=SendMessage(hTheme,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)Settings.curtheme);
-            if(f==CB_ERR)f=vTheme->pickTheme();
-			vTheme->switchdata((int)f);
+            if(f==CB_ERR)f=vTheme->PickTheme();
+			vTheme->SwitchData((int)f);
             if(Settings.wndwx)D(MAINWND_WX)=Settings.wndwx;
             if(Settings.wndwy)D(MAINWND_WY)=Settings.wndwy;
             SendMessage(hTheme,CB_SETCURSEL,f,0);
@@ -1309,7 +1305,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 {
 					LRESULT j=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,j,(LPARAM)Settings.curlang);
-                    vLang->switchdata((int)j);
+                    vLang->SwitchData((int)j);
                     lang_refresh();
                 }
 
@@ -1317,7 +1313,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 {
 					LRESULT j=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,j,(LPARAM)Settings.curtheme);
-					vTheme->switchdata((int)j);
+					vTheme->SwitchData((int)j);
                     theme_refresh();
                 }
             }
@@ -1473,7 +1469,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
             if(Popup.floating_itembar==SLOT_DOWNLOAD)
             {
                 #ifdef USE_TORRENT
-                Updater->openDialog();
+                Updater->OpenDialog();
                 #endif
                 break;
             }
@@ -1658,7 +1654,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
                 case FLOATING_DOWNLOAD:
                     canvasPopup->SetFont(Popup.hFontP);
                     #ifdef USE_TORRENT
-                    Updater->showPopup(*canvasPopup);
+                    Updater->ShowPopup(*canvasPopup);
                     #endif
                     break;
 

@@ -33,7 +33,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <shobjidl.h>
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include <process.h>
 #endif
 
@@ -118,8 +118,8 @@ public:
     UpdaterImp();
     ~UpdaterImp();
 
-    void showProgress(wchar_t *buf);
-    void showPopup(Canvas &canvas);
+    void ShowProgress(wchar_t *buf);
+    void ShowPopup(Canvas &canvas);
 
     void downloadTorrent();
     void checkUpdates();
@@ -130,9 +130,9 @@ public:
     bool isPaused();
     bool isUpdateCompleted();
 
-    int  populate(int flags);
-    void setFilePriority(const wchar_t *name,int pri);
-    void openDialog();
+    int  Populate(int flags);
+    void SetFilePriority(const wchar_t *name,int pri);
+    void OpenDialog();
 };
 Updater_t *CreateUpdater(){return new UpdaterImp;}
 
@@ -812,7 +812,7 @@ void UpdaterImp::checkUpdates()
     }
 }
 
-void UpdaterImp::showProgress(wchar_t *buf)
+void UpdaterImp::ShowProgress(wchar_t *buf)
 {
     wchar_t num1[64],num2[64];
 
@@ -823,7 +823,7 @@ void UpdaterImp::showProgress(wchar_t *buf)
                 (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
 }
 
-void UpdaterImp::showPopup(Canvas &canvas)
+void UpdaterImp::ShowPopup(Canvas &canvas)
 {
     textdata_vert td(canvas);
     TorrentStatus_t t;
@@ -1134,9 +1134,9 @@ bool UpdaterImp::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 bool UpdaterImp::isPaused(){return TorrentStatus.sessionpaused;}
 bool UpdaterImp::isUpdateCompleted(){return finishedupdating;}
 
-int  UpdaterImp::populate(int flags){return UpdateDialog.populate(flags);}
-void UpdaterImp::setFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
-void UpdaterImp::openDialog(){UpdateDialog.openDialog();}
+int  UpdaterImp::Populate(int flags){return UpdateDialog.populate(flags);}
+void UpdaterImp::SetFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
+void UpdaterImp::OpenDialog(){UpdateDialog.openDialog();}
 //}
 #else
 

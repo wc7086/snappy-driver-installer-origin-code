@@ -26,22 +26,24 @@ class ClipRegionImp;
 
 // Global vars
 extern int rtl;
-extern Image box[BOX_NUM];
-extern Image icon[ICON_NUM];
 
 //{ Image
 class Image
 {
-    HBITMAP bitmap;
-    HGDIOBJ oldbitmap;
-    HDC ldc;
-    int sx,sy,hasalpha;
-    int iscopy;
+    HBITMAP bitmap=nullptr;
+    HGDIOBJ oldbitmap=nullptr;
+    HDC ldc=nullptr;
+    int sx=0,sy=0,hasalpha=0;
+    int iscopy=0;
 
 private:
     void LoadFromFile(wchar_t *filename);
     void LoadFromRes(int id);
     void CreateMyBitmap(BYTE *data,size_t sz);
+    void Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
+    void Release();
+    bool IsLoaded()const;
+    friend class Canvas;
 
 public:
     enum align
@@ -60,12 +62,9 @@ public:
         ASPECT  = 16,
     };
 
-    Image():bitmap(nullptr),oldbitmap(nullptr),ldc(nullptr),sx(0),sy(0),hasalpha(0),iscopy(0){}
-    void Release();
+    ~Image(){Release();}
+    void Load(int strid);
     void MakeCopy(Image &t);
-    void Load(int i);
-    bool IsLoaded()const{return ldc!=nullptr;}
-    void Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
 };
 //}
 
@@ -77,6 +76,7 @@ class ClipRegion
 
 private:
     ClipRegionImp *imp;
+    friend class Canvas;
 
 public:
     ClipRegion();
@@ -84,8 +84,6 @@ public:
     ClipRegion(int x1,int y1,int x2,int y2,int r);
     void setRegion(int x1,int y1,int x2,int y2);
     ~ClipRegion();
-
-    friend class Canvas;
 };
 //}
 
@@ -97,14 +95,13 @@ class Font
 
 private:
     HFONT hFont;
+    friend class Canvas;
 
 public:
     Font():hFont(nullptr){}
     ~Font();
     void SetFont(const wchar_t *name,int size,int bold=false);
     HFONT get(){return hFont;}
-
-    friend class Canvas;
 };
 //}
 
