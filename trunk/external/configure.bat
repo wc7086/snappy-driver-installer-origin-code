@@ -1,6 +1,10 @@
 @echo off
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (set "DEL=%%a")
 
+rem Toolset
+set TOOLSET=gcc
+//set TOOLSET=msvc
+
 rem Colors
 set c_menu=03
 set c_normal=07
@@ -19,14 +23,6 @@ set GCC_VERSION=5.2.0
 set GCC_VERSION2=52
 set MSVC_VERSION=12.0
 
-rem Toolset
-set TOOLSET=gcc
-rem set TOOLSET=msvc
-
-rem GCC (common)
-if %TOOLSET%==gcc set TOOLSET2=mingw
-set EXTRA_OPTIONS="cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
-
 rem GCC 32-bit
 set GCC_PATH=c:\mingw\mingw32
 set GCC_PREFIX1=/i686-w64-mingw32
@@ -36,6 +32,15 @@ rem GCC 64-bit
 set GCC64_PATH=c:\mingw\mingw64
 set GCC64_PREFIX1=/x86_64-w64-mingw32
 set GCC64_PREFIX=\x86_64-w64-mingw32
+
+rem GCC (common)
+if %TOOLSET%==gcc set TOOLSET2=mingw
+set EXTRA_OPTIONS="cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+set LIBBOOST32="%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a"
+set LIBBOOST64="%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a"
+set LIBWEBP="%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a"
+set LIBTORREN32="%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a"
+set LIBTORREN64="%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a"
 
 rem MSYS
 set MSYS_PATH=C:\msys32
@@ -55,11 +60,18 @@ set path=%BOOST_ROOT%;%MSYS_BIN%;%path%
 if %TOOLSET%==gcc set path=%GCC_PATH%\bin;%path%
 
 rem Visual Studio
-if %TOOLSET%==msvc set TOOLSET2=msvc
-if %TOOLSET%==msvc set EXTRA_OPTIONS=
-if %TOOLSET%==msvc set LIBDIR=%CD%\..\lib
-if %TOOLSET%==msvc set MSVC_PATH=C:\Program Files (x86)\Microsoft Visual Studio %MSVC_VERSION%
-if %TOOLSET%==msvc call "%MSVC_PATH%\VC\vcvarsall"
+if %TOOLSET%==gcc goto skipmscv
+set TOOLSET2=msvc
+set EXTRA_OPTIONS=
+set LIBDIR=%CD%\..\lib
+set MSVC_PATH=C:\Program Files (x86)\Microsoft Visual Studio %MSVC_VERSION%
+msvc call "%MSVC_PATH%\VC\vcvarsall"
+set LIBBOOST32=%LIBDIR%\Release_Win32\libboost_system.lib
+set LIBBOOST64=%LIBDIR%\Release_x64\libboost_system.lib
+set LIBWEBP=%LIBDIR%\Release_x64\libwebp.lib
+set LIBTORREN32=%LIBDIR%\Release_Win32\libtorrent.lib
+set LIBTORREN64=%LIBDIR%\Release_x64\libtorrent.lib
+:skipmscv
 
 rem Check for MinGW
 if /I not exist "%GCC_PATH%\bin" (color %c_fail%&echo ERROR: MinGW not found in %GCC_PATH% & goto fatalError)
@@ -135,17 +147,17 @@ rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" 2>nul
 echo|set /p=.
 rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\libtorrent" 2>nul
 echo|set /p=.
-del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" 2>nul
+del %LIBTORREN32% 2>nul
 echo|set /p=.
 del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a" 2>nul
 echo|set /p=.
-del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" 2>nul
+del %LIBTORREN64% 2>nul
 echo|set /p=.
 del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a" 2>nul
 echo|set /p=.
-del "%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a" 2>nul
+del %LIBBOOST32% 2>nul
 echo|set /p=.
-del "%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a" 2>nul
+del %LIBBOOST64% 2>nul
 echo|set /p=.
 rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
 echo|set /p=.
@@ -190,8 +202,10 @@ goto :eof
 
 :checkall
 echo.
-echo GCC (32 bit):  %GCC_PATH%
-echo GCC (64 bit):  %GCC64_PATH%
+echo Toolset:       %TOOLSET%
+if %TOOLSET%==msvc echo MSVC:          %MSVC_PATH%
+if %TOOLSET%==gcc echo GCC (32 bit):  %GCC_PATH%
+if %TOOLSET%==gcc echo GCC (64 bit):  %GCC64_PATH%
 echo MSYS:          %MSYS_PATH%
 echo WebP:          %WEBP_PATH%
 echo libtorrent:    %LIBTORRENT_PATH%
@@ -229,11 +243,11 @@ if /I exist "%BOOST_ROOT%\boost.png" (call :ColorText %c_done% "OK") else (call 
 echo.
 
 echo|set /p=Checking BOOST(binaries32)......
-if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a" (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
+if /I exist %LIBBOOST32% (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
 echo.
 
 echo|set /p=Checking BOOST(binaries64)......
-if /I exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a" (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
+if /I exist %LIBBOOST64% (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
 echo.
 
 echo|set /p=Checking BJAM...................
@@ -241,7 +255,7 @@ if /I exist "%BOOST_ROOT%\bjam.exe" (call :ColorText %c_done% "OK") else (call :
 echo.
 
 echo|set /p=Checking WebP...................
-if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a" (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
+if /I exist %LIBWEBP% (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
 echo.
 
 echo|set /p=Checking libtorrent(source).....
@@ -249,11 +263,11 @@ if /I exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (call :ColorText %c_don
 echo.
 
 echo|set /p=Checking libtorrent(binaries32).
-if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
+if /I exist %LIBTORREN32% (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
 echo.
 
 echo|set /p=Checking libtorrent(binaries64).
-if /I exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
+if /I exist %LIBTORREN64% (call :ColorText %c_done% "OK") else (call :ColorText %c_fail% "FAIL")
 echo.
 
 echo.
@@ -313,7 +327,7 @@ mkdir %LIBDIR%\Debug_Win32 2>nul
 mkdir %LIBDIR%\Debug_x64 2>nul
 
 rem Install webp
-if /I exist "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a" (call :ColorText %c_skip% "Skipping installing WebP"&echo. & goto skipprepwebp)
+if /I exist %LIBWEBP% (call :ColorText %c_skip% "Skipping installing WebP"&echo. & goto skipprepwebp)
 :installwebp
 call :ColorText %c_do% "Installing WebP"&echo.
 xcopy webp\mingw\msys\1.0 %MSYS_PATH% /E /I /Y
@@ -347,8 +361,8 @@ rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" 2>nul
 rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\libtorrent" 2>nul
 rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
 rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul
-del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" 2>nul
-del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" 2>nul
+del %LIBTORREN32% 2>nul
+del %LIBTORREN64% 2>nul
 :skiprebuild
 
 rem Copy libtorrent headers
@@ -359,8 +373,8 @@ xcopy %LIBTORRENT_PATH%\include %GCC64_PATH%%GCC64_PREFIX%\include /E /I /Y >nul
 :skipcopylibtorrentinc
 
 rem Build libtorrent.a (32-bit)
-if /I not exist "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent.a" goto buildtorrent32
-if /I not exist "%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a" goto buildtorrent32
+if /I not exist %LIBTORREN32% goto buildtorrent32
+if /I not exist %LIBBOOST32% goto buildtorrent32
 call :ColorText %c_skip% "Skipping building libtorrent[32-bit]"&echo.
 goto skipbuildlibtorrent
 :buildtorrent32
@@ -376,15 +390,15 @@ copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib
 copy ..\bin\msvc-%MSVC_VERSION%\myrls\libtorrent.lib %LIBDIR%\Release_Win32 /Y
 copy ..\bin\msvc-%MSVC_VERSION%\mydbg\libtorrent.lib %LIBDIR%\Debug_Win32 /Y
 
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %LIBBOOST32% /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls\libboost_system-vc120-mt-s-1_59.lib %LIBDIR%\Release_Win32\libboost_system.lib /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg\libboost_system-vc120-mt-sg-1_59.lib %LIBDIR%\Debug_Win32\libboost_system.lib /Y
 popd
 :skipbuildlibtorrent
 
 rem Build libtorrent.a (64-bit)
-if /I not exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent.a" goto buildtorrent64
-if /I not exist "%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a" goto buildtorrent64
+if /I not exist %LIBTORREN64% goto buildtorrent64
+if /I not exist %LIBBOOST64% goto buildtorrent64
 call :ColorText %c_skip% "Skipping building libtorrent[64-bit]"&echo.
 goto skipbuildlibtorrent64
 :buildtorrent64
@@ -401,7 +415,7 @@ copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\adrs-mdl-64\libtorrent.a %GCC64_PATH%%G
 copy ..\bin\msvc-%MSVC_VERSION%\myrls\adrs-mdl-64\libtorrent.lib %LIBDIR%\Release_x64 /Y
 copy ..\bin\msvc-%MSVC_VERSION%\mydbg\adrs-mdl-64\libtorrent.lib %LIBDIR%\Debug_x64 /Y
 
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %LIBBOOST64% /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls%ADR64%\libboost_system-vc120-mt-s-1_59.lib %LIBDIR%\Release_x64\libboost_system.lib /Y
 copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg%ADR64%\libboost_system-vc120-mt-sg-1_59.lib %LIBDIR%\Debug_x64\libboost_system.lib /Y
 set path=%oldpath%

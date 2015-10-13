@@ -87,7 +87,7 @@ void itembar_t::str_status(wchar_t *buf)
         else
         {
             if(status&STATUS_MISSING)
-                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING),devicematch->device->getProblem());
+                wsprintf(buf,L"%s",STR(STR_STATUS_MISSING));
             else
             {
                 if(status&STATUS_BETTER&&status&STATUS_NEW)        wcscat(buf,STR(STR_STATUS_BETTER_NEW));
@@ -367,6 +367,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     textdata_vert td(canvas);
     Version *a_v=nullptr;
     unsigned score=0;
+    *i_hwid=*a_hwid=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
     int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
     int p0=D(POPUP_OFSX);

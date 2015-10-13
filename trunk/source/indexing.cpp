@@ -221,9 +221,9 @@ void Version::str_date(wchar_t *buf)
     tm.wMonth=(WORD)m;
     tm.wYear=(WORD)y;
     SystemTimeToFileTime(&tm,&ft);
-    FileTimeToSystemTime(&ft,&tm);
+    int r=FileTimeToSystemTime(&ft,&tm);
 
-    if(y<1000)
+    if(y<1000||!r)
         wsprintf(buf,STR(STR_HINT_UNKNOWN));
     else
         GetDateFormat(manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf,100);

@@ -228,6 +228,7 @@ void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem
 {
     wchar_t buf[BUFLEN];
 
+    *buf=0;
     ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
     if(wcscmp(str,buf)!=0)
         ListView_SetItemText(hwnd,iItem,iSubItem,const_cast<wchar_t *>(str));
@@ -470,6 +471,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                 case IDCHECKTHISPC:
                     for(i=0;i<ListView_GetItemCount(hListg);i++)
                     {
+                        *buf=0;
                         ListView_GetItemText(hListg,i,5,buf,32);
                         ListView_SetCheckState(hListg,i,StrStrIW(buf,STR(STR_UPD_YES))?1:0);
                     }
@@ -550,9 +552,9 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
         if(!update)row=ListView_InsertItem(hListg,&lvI);
-        wsprintf(buf,L"%d %s",basesize/1024/1024,STR(STR_UPD_MB));
+        wsprintf(buf,L"%d %s",(int)(basesize/1024/1024),STR(STR_UPD_MB));
         ListView_SetItemTextUpdate(hListg,row,1,buf);
-        wsprintf(buf,L"%d%%",basedownloaded*100/basesize);
+        wsprintf(buf,L"%d%%",(int)(basedownloaded*100/basesize));
         ListView_SetItemTextUpdate(hListg,row,2,buf);
         wsprintf(buf,L" SDI_R%d",newver);
         ListView_SetItemTextUpdate(hListg,row,3,buf);
@@ -568,9 +570,9 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_INDEXES));
         if(!update)row=ListView_InsertItem(hListg,&lvI);
-        wsprintf(buf,L"%d %s",indexsize/1024/1024,STR(STR_UPD_MB));
+        wsprintf(buf,L"%d %s",(int)(indexsize/1024/1024),STR(STR_UPD_MB));
         ListView_SetItemTextUpdate(hListg,row,1,buf);
-        wsprintf(buf,L"%d%%",indexdownloaded*100/indexsize);
+        wsprintf(buf,L"%d%%",(int)(indexdownloaded*100/indexsize));
         ListView_SetItemTextUpdate(hListg,row,2,buf);
         ListView_SetItemTextUpdate(hListg,row,5,STR(STR_UPD_YES));
         row++;
@@ -607,7 +609,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
                 if(!update)row=ListView_InsertItem(hListg,&lvI);
                 wsprintf(buf,L"%d %s",sz,STR(STR_UPD_MB));
                 ListView_SetItemTextUpdate(hListg,row,1,buf);
-                wsprintf(buf,L"%d%%",file_progress[i]*100/ti->file_at(i).size);
+                wsprintf(buf,L"%d%%",(int)(file_progress[i]*100/ti->file_at(i).size));
                 ListView_SetItemTextUpdate(hListg,row,2,buf);
                 wsprintf(buf,L"%d",newver);
                 ListView_SetItemTextUpdate(hListg,row,3,buf);

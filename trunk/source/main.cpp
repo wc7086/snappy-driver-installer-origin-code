@@ -1715,26 +1715,27 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
 
         case WM_WINDOWPOSCHANGED:
             wpos=(WINDOWPOS*)lParam;
-
-            SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
-            if(wpos->cy-rect.bottom>0)
             {
-                sz=rect.bottom-20-wpos->cy;
-                wpos->y=10;
-                wpos->cy=rect.bottom-20;
-                MoveWindow(hwnd,wpos->x,wpos->y,wpos->cx,wpos->cy,1);
+                int r=SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
+                if(r&&wpos->cy-rect.bottom>0)
+                {
+                    sz=rect.bottom-20-wpos->cy;
+                    wpos->y=10;
+                    wpos->cy=rect.bottom-20;
+                    MoveWindow(hwnd,wpos->x,wpos->y,wpos->cx,wpos->cy,1);
 
-                GetRelativeCtrlRect(GetDlgItem(hwnd,IDC_EDIT1),&rect);
-                rect.bottom+=sz;
-                MoveWindow(GetDlgItem(hwnd,IDC_EDIT1),rect.left,rect.top,rect.right,rect.bottom,1);
+                    GetRelativeCtrlRect(GetDlgItem(hwnd,IDC_EDIT1),&rect);
+                    rect.bottom+=sz;
+                    MoveWindow(GetDlgItem(hwnd,IDC_EDIT1),rect.left,rect.top,rect.right,rect.bottom,1);
 
-                GetRelativeCtrlRect(GetDlgItem(hwnd,IDOK),&rect);
-                rect.top+=sz;
-                MoveWindow(GetDlgItem(hwnd,IDOK),rect.left,rect.top,rect.right,rect.bottom,1);
+                    GetRelativeCtrlRect(GetDlgItem(hwnd,IDOK),&rect);
+                    rect.top+=sz;
+                    MoveWindow(GetDlgItem(hwnd,IDOK),rect.left,rect.top,rect.right,rect.bottom,1);
 
-                GetRelativeCtrlRect(GetDlgItem(hwnd,IDCANCEL),&rect);
-                rect.top+=sz;
-                MoveWindow(GetDlgItem(hwnd,IDCANCEL),rect.left,rect.top,rect.right,rect.bottom,1);
+                    GetRelativeCtrlRect(GetDlgItem(hwnd,IDCANCEL),&rect);
+                    rect.top+=sz;
+                    MoveWindow(GetDlgItem(hwnd,IDCANCEL),rect.left,rect.top,rect.right,rect.bottom,1);
+                }
             }
             return TRUE;
 
