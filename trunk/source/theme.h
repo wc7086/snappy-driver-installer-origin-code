@@ -31,6 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define DEF_STR(a) {TEXT_1(a),0,0},
 
 // Declarations
+class Image;
 class VaultInt;
 struct entry_t;
 
@@ -57,13 +58,15 @@ class VaultInt
 {
 public:
     virtual ~VaultInt(){}
-    virtual void load(int i)=0;
-    virtual int pickTheme()=0;
+    virtual void SwitchData(int i)=0;
+    virtual void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
 
-    virtual void switchdata(int i)=0;
-    virtual void enumfiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
-    virtual void startmonitor()=0;
-    virtual void stopmonitor()=0;
+    virtual int PickTheme()=0;
+    virtual Image *GetIcon(int i)=0;
+    virtual Image *GetImage(int i)=0;
+
+    virtual void StartMonitor()=0;
+    virtual void StopMonitor()=0;
 };
 VaultInt *CreateVaultLang(entry_t *entry,int num,int res);
 VaultInt *CreateVaultTheme(entry_t *entry,int num,int res);

@@ -35,8 +35,8 @@ public:
 public:
     virtual ~Updater_t(){}
 
-    virtual void showProgress(wchar_t *buf)=0;
-    virtual void showPopup(Canvas &canvas)=0;
+    virtual void ShowProgress(wchar_t *buf)=0;
+    virtual void ShowPopup(Canvas &canvas)=0;
 
     virtual void downloadTorrent()=0;
     virtual void checkUpdates()=0;
@@ -47,9 +47,9 @@ public:
     virtual bool isPaused()=0;
     virtual bool isUpdateCompleted()=0;
 
-    virtual int  populate(int flags)=0;
-    virtual void setFilePriority(const wchar_t *name,int pri)=0;
-    virtual void openDialog()=0;
+    virtual int  Populate(int flags)=0;
+    virtual void SetFilePriority(const wchar_t *name,int pri)=0;
+    virtual void OpenDialog()=0;
 };
 Updater_t *CreateUpdater();
 

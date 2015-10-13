@@ -26,11 +26,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 // Depend on Win32API
+#include "draw.h"     // todo: lots of Win32
 #include "system.h"
 #include "theme.h"    // todo: HWND
 #include "enum.h"     // needs Version from indexing.h
 #include "main.h"     // todo: lots of Win32
-#include "draw.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
 #ifdef _MSC_VER
@@ -42,8 +42,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Global vars
 int rtl=0;
-Image box[BOX_NUM];
-Image icon[ICON_NUM];
 //}
 
 //{ Image
@@ -69,6 +67,8 @@ void Image::Load(int i)
     else
         LoadFromFile(filename);
 }
+
+bool Image::IsLoaded()const{return ldc!=nullptr;}
 
 void Image::Release()
 {
@@ -776,7 +776,7 @@ void Canvas::DrawWidget(int x1,int y1,int x2,int y2,int id)
         return;
     }
     DrawFilledRect(x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
-    box[id].Draw(hdcMem,x1,y1,x2,y2,D(i+5),D(i+6));
+    DrawImage(*vTheme->GetImage(id),x1,y1,x2,y2,D(i+5),D(i+6));
 }
 
 void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
@@ -789,8 +789,8 @@ void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
     rect.right=x1+wx;
     rect.bottom=y1+wy;
 
-    if(icon[i].IsLoaded())
-        icon[i].Draw(hdcMem,x1,y1,x1+wx,y1+wy,0,Image::HSTR|Image::VSTR);
+    if(vTheme->GetIcon(i)->IsLoaded())
+        DrawImage(*vTheme->GetIcon(i),x1,y1,x1+wx,y1+wy,0,Image::HSTR|Image::VSTR);
     else
         DrawFrameControl(hdcMem,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
 }

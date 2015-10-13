@@ -326,7 +326,7 @@ void Parser::subStr()
     if(*v1b=='%')
     {
         v1b++;
-        size_t vers_len=strEnd-v1b-1;
+        int vers_len=strEnd-v1b-1;
         if(strEnd[-1]!='%')vers_len++;
         if(vers_len<0)vers_len=0;
 

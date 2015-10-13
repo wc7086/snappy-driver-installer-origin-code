@@ -242,7 +242,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             }
             if(!Updater->isTorrentReady())break;
         }
-        Updater->setFilePriority(itembar->hwidmatch->getdrp_packname(),1);
+        Updater->SetFilePriority(itembar->hwidmatch->getdrp_packname(),1);
         downdrivers++;
     }
     if(downdrivers)

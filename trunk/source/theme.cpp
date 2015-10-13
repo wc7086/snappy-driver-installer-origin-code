@@ -68,12 +68,12 @@ public:
     Vault(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
     virtual ~Vault(){}
     void load(int i);
-    int pickTheme();
+    int PickTheme();
 
-    virtual void switchdata(int i)=0;
-    virtual void enumfiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
-    virtual void startmonitor()=0;
-    virtual void stopmonitor(){delete mon;};
+    virtual void SwitchData(int i)=0;
+    virtual void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
+    virtual void StartMonitor()=0;
+    virtual void StopMonitor(){delete mon;};
     void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
 //}
@@ -83,19 +83,37 @@ class VaultLang:public Vault
 {
 public:
     VaultLang(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
-    void switchdata(int i);
-    void enumfiles(HWND hwnd,const wchar_t *path,int arg=0);
-    void startmonitor();
+    void SwitchData(int i);
+    void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0);
+    void StartMonitor();
+    Image *GetIcon(int){return nullptr;}
+    Image *GetImage(int){return nullptr;}
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
 
 class VaultTheme:public Vault
 {
+    Image *box;
+    Image *icon;
+
 public:
-    VaultTheme(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
-    void switchdata(int i);
-    void enumfiles(HWND hwnd,const wchar_t *path,int arg=0);
-    void startmonitor();
+    void SwitchData(int i);
+    void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0);
+    void StartMonitor();
+    Image *GetIcon(int i){return &icon[i];}
+    Image *GetImage(int i){return &box[i];}
+
+    VaultTheme(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
+        Vault{entryv,numv,resv,elem_id_,folder_}
+    {
+        box=new Image[BOX_NUM];
+        icon=new Image[ICON_NUM];
+    }
+    ~VaultTheme()
+    {
+        delete[] box;
+        delete[] icon;
+    }
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
 VaultInt *CreateVaultLang(entry_t *entry,int num,int res)
@@ -354,12 +372,9 @@ Vault::Vault(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folde
 VaultLang::VaultLang(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
     Vault{entryv,numv,resv,elem_id_,folder_}
 {
+    load(0);
 }
 
-VaultTheme::VaultTheme(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
-    Vault{entryv,numv,resv,elem_id_,folder_}
-{
-}
 
 void Vault::load(int i)
 {
@@ -369,7 +384,7 @@ void Vault::load(int i)
     loadFromFile(namelist[i]);
 }
 
-int Vault::pickTheme()
+int Vault::PickTheme()
 {
     int f=0;
     LRESULT j=SendMessage(MainWindow.hTheme,CB_GETCOUNT,0,0);
@@ -382,13 +397,13 @@ int Vault::pickTheme()
 //}
 
 //{ Lang/theme
-void VaultLang::switchdata(int i)
+void VaultLang::SwitchData(int i)
 {
     if(Settings.flags&FLAG_NOGUI)return;
     load(i);
 }
 
-void VaultTheme::switchdata(int i)
+void VaultTheme::SwitchData(int i)
 {
     if(Settings.flags&FLAG_NOGUI)return;
     load(i);
@@ -429,7 +444,7 @@ void VaultTheme::switchdata(int i)
     }
 }
 
-void VaultLang::enumfiles(HWND hwnd,const wchar_t *path,int locale)
+void VaultLang::EnumFiles(HWND hwnd,const wchar_t *path,int locale)
 {
     wchar_t buf[BUFLEN];
     HANDLE hFind;
@@ -473,7 +488,7 @@ void VaultLang::enumfiles(HWND hwnd,const wchar_t *path,int locale)
     }
 }
 
-void VaultTheme::enumfiles(HWND hwnd,const wchar_t *path,int arg)
+void VaultTheme::EnumFiles(HWND hwnd,const wchar_t *path,int arg)
 {
 	UNREFERENCED_PARAMETER(arg);
 
@@ -506,7 +521,7 @@ void VaultTheme::enumfiles(HWND hwnd,const wchar_t *path,int arg)
     load(-1);
 }
 
-void VaultLang::startmonitor()
+void VaultLang::StartMonitor()
 {
     wchar_t buf[BUFLEN];
 
@@ -514,7 +529,7 @@ void VaultLang::startmonitor()
     mon=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
 }
 
-void VaultTheme::startmonitor()
+void VaultTheme::StartMonitor()
 {
     wchar_t buf[BUFLEN];
 
