@@ -25,6 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "install.h"
 #include "gui.h"
+#include "theme.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -39,7 +40,6 @@ typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtS
 #include "main.h"
 #include "draw.h"
 #include "system.h"
-#include "theme.h"
 
 // Autoclicker
 #define AUTOCLICKER_CONFIRM

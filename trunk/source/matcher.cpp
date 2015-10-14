@@ -21,6 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "logging.h"
 #include "settings.h"
+#include "theme.h"
 
 #include <windows.h>
 
@@ -28,7 +29,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "enum.h"
 #include "main.h"
 #include "draw.h"
-#include "theme.h"
 #include "device.h"
 
 //{ Global variables

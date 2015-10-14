@@ -19,12 +19,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "logging.h"
 #include "settings.h"
+#include "theme.h"
 
 #include <windows.h>
 
 #include "draw.h"
 #include "main.h"
-#include "theme.h"
 #include "system.h"
 
 #include <memory>
@@ -71,7 +71,7 @@ public:
     int PickTheme();
 
     virtual void SwitchData(int i)=0;
-    virtual void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
+    virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
     virtual void StartMonitor()=0;
     virtual void StopMonitor(){delete mon;};
     void updateCallback(const wchar_t *szFile,int action,int lParam);
@@ -84,7 +84,7 @@ class VaultLang:public Vault
 public:
     VaultLang(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
     void SwitchData(int i);
-    void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0);
+    void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
     Image *GetIcon(int){return nullptr;}
     Image *GetImage(int){return nullptr;}
@@ -98,7 +98,7 @@ class VaultTheme:public Vault
 
 public:
     void SwitchData(int i);
-    void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0);
+    void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
     Image *GetIcon(int i){return &icon[i];}
     Image *GetImage(int i){return &box[i];}
@@ -387,7 +387,7 @@ void Vault::load(int i)
 int Vault::PickTheme()
 {
     int f=0;
-    LRESULT j=SendMessage(MainWindow.hTheme,CB_GETCOUNT,0,0);
+    int j=MainWindow.hTheme->GetNumItems();
     for(int i=0;i<j;i++)
         if(StrStrIW(namelist[i],D_STR(THEME_NAME))&&
             StrStrIW(namelist[i],L"big")==nullptr){f=i;break;}
@@ -444,7 +444,7 @@ void VaultTheme::SwitchData(int i)
     }
 }
 
-void VaultLang::EnumFiles(HWND hwnd,const wchar_t *path,int locale)
+void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
 {
     wchar_t buf[BUFLEN];
     HANDLE hFind;
@@ -470,7 +470,7 @@ void VaultLang::EnumFiles(HWND hwnd,const wchar_t *path,int locale)
             wsprintf(lang_auto_str,L"Auto (%s)",STR(STR_LANG_NAME));
             lang_auto=i;
         }
-        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)STR(STR_LANG_NAME));
+        lst->AddItem(STR(STR_LANG_NAME));
         wcscpy(namelist[i],buf);
         i++;
     }
@@ -479,16 +479,16 @@ void VaultLang::EnumFiles(HWND hwnd,const wchar_t *path,int locale)
 
     if(!i)
     {
-        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)L"English");
+        lst->AddItem(L"English");
         namelist[i][0]=0;
     }else
     {
-        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)lang_auto_str);
+        lst->AddItem(lang_auto_str);
         wcscpy(namelist[i],(lang_auto>=0)?namelist[lang_auto]:L"");
     }
 }
 
-void VaultTheme::EnumFiles(HWND hwnd,const wchar_t *path,int arg)
+void VaultTheme::EnumFiles(Combobox *lst,const wchar_t *path,int arg)
 {
 	UNREFERENCED_PARAMETER(arg);
 
@@ -506,7 +506,7 @@ void VaultTheme::EnumFiles(HWND hwnd,const wchar_t *path,int arg)
     {
         wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
         loadFromFile(buf);
-        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)D(THEME_NAME));
+        lst->AddItem(D_STR(THEME_NAME));
         wcscpy(namelist[i],buf);
         i++;
     }
@@ -515,7 +515,7 @@ void VaultTheme::EnumFiles(HWND hwnd,const wchar_t *path,int arg)
 
     if(!i)
     {
-        SendMessage(hwnd,CB_ADDSTRING,0,(LPARAM)L"(default)");
+        lst->AddItem(L"(default)");
         namelist[i][0]=0;
     }
     load(-1);
@@ -526,7 +526,7 @@ void VaultLang::StartMonitor()
     wchar_t buf[BUFLEN];
 
     wsprintf(buf,L"%s\\%s",Settings.data_dir,folder);
-    mon=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
+    mon=CreateFilemon(buf,1,updateCallback);
 }
 
 void VaultTheme::StartMonitor()
@@ -534,7 +534,7 @@ void VaultTheme::StartMonitor()
     wchar_t buf[BUFLEN];
 
     wsprintf(buf,L"%s\\%s",Settings.data_dir,folder);
-    mon=CreateFilemon(buf,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,updateCallback);
+    mon=CreateFilemon(buf,1,updateCallback);
 }
 
 void VaultLang::updateCallback(const wchar_t *szFile,int action,int lParam)

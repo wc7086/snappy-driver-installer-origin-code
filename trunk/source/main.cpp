@@ -24,8 +24,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "indexing.h"
 #include "manager.h"
 #include "update.h"
-#include "install.h"
+#include "install.h"    // non-portable
 #include "gui.h"
+#include "theme.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -35,12 +36,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <signal.h>
 #endif
 
-#include "system.h"
-#include "enum.h"
+#include "enum.h"   // non-portable
 #include "main.h"
+#include "system.h" // non-portable
+#include "draw.h"   // non-portable
+
 #include "model.h"
-#include "draw.h"
-#include "theme.h"
 
 //{ Global variables
 
@@ -237,8 +238,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Start folder monitors
-    Filemon *mon_drp=CreateFilemon(Settings.drp_dir,FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME,1,drp_callback);
-    virusmonitor_start();
+    Filemon *mon_drp=CreateFilemon(Settings.drp_dir,1,drp_callback);
+    Filemon *mon_vir=CreateFilemon(L"\\",0,viruscheck);
     viruscheck(L"",0,0);
 
     // MAIN GUI LOOP
@@ -267,7 +268,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Stop folder monitors
     delete mon_drp;
-    virusmonitor_stop();
+    delete mon_vir;
 
     // Bring the console window back
     ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
@@ -480,6 +481,8 @@ const wchar_t MainWindow_t::classPopup[]=L"classSDIPopup";
 MainWindow_t::MainWindow_t()
 {
     hFont=new Font;
+    hLang=nullptr;
+    hTheme=nullptr;
 
     Popup.floating_itembar=-1;
     Popup.floating_x=1;
@@ -495,6 +498,8 @@ MainWindow_t::MainWindow_t()
 MainWindow_t::~MainWindow_t()
 {
     delete hFont;
+    delete hLang;
+    delete hTheme;
 }
 
 void MainWindow_t::lang_refresh()
@@ -507,8 +512,8 @@ void MainWindow_t::lang_refresh()
 
     rtl=language[STR_RTL].val;
     setMirroring(hMain);
-    setMirroring(hLang);
-    setMirroring(hTheme);
+    hLang->SetMirroring();
+    hTheme->SetMirroring();
     setMirroring(hField);
     setMirroring(Popup.hPopup);
 
@@ -525,8 +530,8 @@ void MainWindow_t::theme_refresh()
     Popup.hFontP->SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE));
     Popup.hFontBold->SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE),true);
 
-    SendMessage(hTheme,WM_SETFONT,(WPARAM)hFont->get(),MAKELPARAM(FALSE,0));
-    SendMessage(hLang,WM_SETFONT,(WPARAM)hFont->get(),MAKELPARAM(FALSE,0));
+    hLang->SetFont(hFont);
+    hTheme->SetFont(hFont);
 
     if(!hMain||!hField)
     {
@@ -745,9 +750,9 @@ void MainWindow_t::tabadvance(int v)
     }
 
     if(kbpanel==KB_LANG)
-        SetFocus(hLang);
+        hLang->Focus();
     else if(kbpanel==KB_THEME)
-        SetFocus(hTheme);
+        hTheme->Focus();
     else
         SetFocus(hMain);
 
@@ -893,11 +898,11 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 0,0,0,0,hwnd,(HMENU)nullptr,ghInst,nullptr);
 
             // Lang
-            hLang=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)ID_LANG,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
+            hLang=new Combobox(hwnd,ID_LANG);
             PostMessage(hwnd,WM_UPDATELANG,0,0);
 
             // Theme
-            hTheme=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)ID_THEME,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
+            hTheme=new Combobox(hwnd,ID_THEME);
             PostMessage(hwnd,WM_UPDATETHEME,1,0);
 
             // Misc
@@ -934,24 +939,25 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             break;
 
         case WM_UPDATELANG:
-            SendMessage(hLang,CB_RESETCONTENT,0,0);
+            hLang->Clear();
             vLang->EnumFiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
-            f=SendMessage(hLang,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)Settings.curlang);
-            if(f==CB_ERR)f=SendMessage(hLang,CB_GETCOUNT,0,0)-1;
+            f=hLang->FindItem(Settings.curlang);
+            if(f==CB_ERR)f=hLang->GetNumItems()-1;
             vLang->SwitchData((int)f);
-            SendMessage(hLang,CB_SETCURSEL,f,0);
+            hLang->SetCurSel(f);
+            //SendMessage(hLang,CB_SETCURSEL,f,0);
             lang_refresh();
             break;
 
         case WM_UPDATETHEME:
-            SendMessage(hTheme,CB_RESETCONTENT,0,0);
+            hTheme->Clear();
             vTheme->EnumFiles(hTheme,L"themes");
-            f=SendMessage(hTheme,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)Settings.curtheme);
+            f=hTheme->FindItem(Settings.curtheme);
             if(f==CB_ERR)f=vTheme->PickTheme();
 			vTheme->SwitchData((int)f);
             if(Settings.wndwx)D(MAINWND_WX)=Settings.wndwx;
             if(Settings.wndwy)D(MAINWND_WY)=Settings.wndwy;
-            SendMessage(hTheme,CB_SETCURSEL,f,0);
+            hTheme->SetCurSel(f);
             theme_refresh();
 
             // Move to the center of the screen

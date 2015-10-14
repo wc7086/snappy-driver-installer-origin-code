@@ -33,8 +33,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "system.h"
 #include "main.h"
+#include "settings.h"
+#include "manager.h"
 
 SystemImp System;
+int monitor_pause=0;
 
 bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)
 {
@@ -278,16 +281,16 @@ private:
     static int refresh(FilemonDataPOD &data);
 
 public:
-    FilemonImp(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
+    FilemonImp(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback);
     ~FilemonImp();
 };
 
-Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback)
+Filemon *CreateFilemon(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback)
 {
-    return new FilemonImp(szDirectory,notifyFilter,subdirs,callback);
+    return new FilemonImp(szDirectory,subdirs,callback);
 }
 
-FilemonImp::FilemonImp(const wchar_t *szDirectory, int notifyFilter_, int subdirs_, FileChangeCallback callback_)
+FilemonImp::FilemonImp(const wchar_t *szDirectory, int subdirs_, FileChangeCallback callback_)
 {
 	wcscpy(data.dir,szDirectory);
 
@@ -297,7 +300,7 @@ FilemonImp::FilemonImp(const wchar_t *szDirectory, int notifyFilter_, int subdir
 	if(data.hDir!=INVALID_HANDLE_VALUE)
 	{
 		data.ol.hEvent    = CreateEvent(nullptr,TRUE,FALSE,nullptr);
-		data.notifyFilter = notifyFilter_;
+		data.notifyFilter = FILE_NOTIFY_CHANGE_LAST_WRITE|FILE_NOTIFY_CHANGE_FILE_NAME;
 		data.callback     = callback_;
 		data.subdirs      = subdirs_;
 
@@ -541,4 +544,74 @@ void SystemImp::benchmark()
     Log.print_con("%c strcpy \t%ld\n\n",tm1>tm2?'+':' ',tm2);
 }
 #endif
+//}
+
+//{ Virus detection
+void viruscheck(const wchar_t *szFile,int action,int lParam)
+{
+    UNREFERENCED_PARAMETER(szFile);
+    UNREFERENCED_PARAMETER(action);
+    UNREFERENCED_PARAMETER(lParam);
+
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    WIN32_FIND_DATA FindFileData;
+    int type;
+    int update=0;
+
+    if(Settings.flags&FLAG_NOVIRUSALERTS)return;
+    type=GetDriveType(nullptr);
+
+    // autorun.inf
+    if(type!=DRIVE_CDROM)
+    {
+        if(System.FileExists(L"\\autorun.inf"))
+        {
+            FILE *f;
+            f=_wfopen(L"\\autorun.inf",L"rb");
+            if(f)
+            {
+                char buf[BUFLEN];
+                fread(buf,BUFLEN,1,f);
+                fclose(f);
+                buf[BUFLEN-1]=0;
+                if(!StrStrIA(buf,"[NOT_A_VIRUS]")&&StrStrIA(buf,"open"))
+                    manager_g->itembar_setactive(SLOT_VIRUS_AUTORUN,update=1);
+            }
+            else
+                Log.print_con("NOTE: cannot open autorun.inf [error: %d]\n",errno);
+        }
+    }
+
+    // RECYCLER
+    if(type==DRIVE_REMOVABLE)
+        if(System.FileExists(L"\\RECYCLER")&&!System.FileExists(L"\\RECYCLER\\not_a_virus.txt"))
+            manager_g->itembar_setactive(SLOT_VIRUS_RECYCLER,update=1);
+
+    // Hidden folders
+    hFind=FindFirstFile(L"\\*.*",&FindFileData);
+    if(type==DRIVE_REMOVABLE)
+    while(FindNextFile(hFind,&FindFileData)!=0)
+    {
+        if(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
+        {
+            if(lstrcmp(FindFileData.cFileName,L"..")==0)continue;
+            if(lstrcmpi(FindFileData.cFileName,L"System Volume Information")==0)continue;
+
+            if(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_HIDDEN)
+            {
+                wchar_t bufw[BUFLEN];
+                wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
+                if(System.FileExists(bufw))continue;
+                Log.print_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
+                manager_g->itembar_setactive(SLOT_VIRUS_HIDDEN,update=1);
+            }
+        }
+    }
+    FindClose(hFind);
+    if(update)
+    {
+        manager_g->setpos();
+        SetTimer(MainWindow.hMain,1,1000/60,nullptr);
+    }
+}
 //}

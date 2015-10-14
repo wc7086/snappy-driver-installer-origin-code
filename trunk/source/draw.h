@@ -87,6 +87,7 @@ public:
 };
 //}
 
+
 //{ Font
 class Font
 {
@@ -96,6 +97,7 @@ class Font
 private:
     HFONT hFont;
     friend class Canvas;
+    friend class Combobox;
 
 public:
     Font():hFont(nullptr){}
@@ -237,19 +239,42 @@ class Combobox
     HWND handle;
 
 public:
-    /*Combobox(HWND hwnd,int id)
-    {
-        handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
-    }*/
-    void reset()
+    Combobox(HWND hwnd,int id);
+    HWND gethandle(){return handle;}
+    void Clear()
     {
         SendMessage(handle,CB_RESETCONTENT,0,0);
     }
-    LRESULT finditem(const wchar_t *str)
+    void AddItem(const wchar_t *str)
+    {
+        SendMessage(handle,CB_ADDSTRING,0,(LPARAM)str);
+    }
+    int FindItem(const wchar_t *str)
     {
         return SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
     }
+    int GetNumItems()
+    {
+        return SendMessage(handle,CB_GETCOUNT,0,0);
+    }
+    void SetCurSel(int i)
+    {
+        SendMessage(handle,CB_SETCURSEL,i,0);
+    }
 
+    void Focus()
+    {
+        SetFocus(handle);
+    }
+    void SetFont(Font *font)
+    {
+        SendMessage(handle,WM_SETFONT,(WPARAM)font->hFont,MAKELPARAM(FALSE,0));
+    }
+    void Move(int x1,int y1,int wx,int wy)
+    {
+        MoveWindow(handle,x1,y1,wx,wy,false);
+    }
+    void SetMirroring();
 };
 //}
 

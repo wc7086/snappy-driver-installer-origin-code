@@ -24,6 +24,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "update.h"
 #include "manager.h"
+#include "theme.h"
 
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
@@ -40,7 +41,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 #include "system.h"
 #include "draw.h"
-#include "theme.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005

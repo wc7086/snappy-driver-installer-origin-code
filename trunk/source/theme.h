@@ -32,6 +32,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 // Declarations
 class Image;
+class Combobox;
 class VaultInt;
 struct entry_t;
 
@@ -59,7 +60,7 @@ class VaultInt
 public:
     virtual ~VaultInt(){}
     virtual void SwitchData(int i)=0;
-    virtual void EnumFiles(HWND hwnd,const wchar_t *path,int arg=0)=0;
+    virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
 
     virtual int PickTheme()=0;
     virtual Image *GetIcon(int i)=0;
