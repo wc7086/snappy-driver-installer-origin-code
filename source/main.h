@@ -25,6 +25,7 @@ class Matcher;
 class Hwidmatch;
 class Canvas;
 class Console_t;
+class Combobox;
 
 #include "resources.h"
 
@@ -144,7 +145,9 @@ public:
     int main1x_c,main1y_c;
     int mainx_c,mainy_c;
     Font *hFont;
-    HWND hMain,hField,hLang,hTheme;
+    HWND hMain,hField;
+    Combobox *hLang;
+    Combobox *hTheme;
     int ctrl_down;
     int space_down;
     int shift_down;

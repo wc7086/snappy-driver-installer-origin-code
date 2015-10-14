@@ -22,11 +22,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "common.h"
 #include "manager.h"
+#include "theme.h"
 
 #include <windows.h>
 
 #include "system.h"
-#include "theme.h"
 #include "enum.h"
 #include "main.h"
 #include "draw.h"
@@ -205,12 +205,12 @@ void Widget::invalidate()
 
 void wLang::arrange()
 {
-    MoveWindow(MainWindow.hLang,x1,y1-5,wx,360,false);
+    MainWindow.hLang->Move(x1,y1-5,wx,360);
 }
 
 void wTheme::arrange()
 {
-    MoveWindow(MainWindow.hTheme,x1,y1-5,wx,360,false);
+    MainWindow.hTheme->Move(x1,y1-5,wx,360);
 }
 
 void wPanel::draw(Canvas &canvas)

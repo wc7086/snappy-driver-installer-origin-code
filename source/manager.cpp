@@ -25,6 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "install.h"
 #include "gui.h"
+#include "theme.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -35,7 +36,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 #include "system.h"
 #include "draw.h"
-#include "theme.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=

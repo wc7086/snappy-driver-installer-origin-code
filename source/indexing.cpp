@@ -22,6 +22,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 #include "matcher.h"
 #include "indexing.h"
+#include "theme.h"
 
 #include "7zip.h"
 #ifdef _MSC_VER
@@ -33,7 +34,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "system.h"
 #include "enum.h"
 #include "main.h"
-#include "theme.h"
 
 #include <queue>
 

@@ -22,13 +22,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "manager.h"
 #include "gui.h"
+#include "theme.h"
 
 #include <windows.h>
 
 // Depend on Win32API
 #include "draw.h"     // todo: lots of Win32
 #include "system.h"
-#include "theme.h"    // todo: HWND
 #include "enum.h"     // needs Version from indexing.h
 #include "main.h"     // todo: lots of Win32
 
@@ -43,6 +43,18 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 //{ Global vars
 int rtl=0;
 //}
+
+//{ ComboBox
+Combobox::Combobox(HWND hwnd,int id)
+{
+    handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
+}
+void Combobox::SetMirroring()
+{
+    setMirroring(handle);
+}
+//}
+
 
 //{ Image
 void Image::MakeCopy(Image &t)

@@ -119,7 +119,5 @@ void SignalHandler(int signum);
 
 // Virus detection
 void viruscheck(const wchar_t *szFile,int action,int lParam);
-void virusmonitor_start();
-void virusmonitor_stop();
 
 #endif

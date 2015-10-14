@@ -83,7 +83,7 @@ public:
 };
 
 typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
-Filemon *CreateFilemon(const wchar_t *szDirectory,int notifyFilter,int subdirs,FileChangeCallback callback);
+Filemon *CreateFilemon(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback);
 extern int monitor_pause;
 
 #endif
