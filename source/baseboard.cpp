@@ -21,6 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <comdef.h>         // for _bstr_t
 #include <Wbemidl.h>        // for IWbemLocator
 #include <shobjidl.h>       // for TBPF_NORMAL
+#include "main.h"
 
 const IID IID_ITaskbarList3={0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf}};
 const IID my_CLSID_TaskbarList={0x56fdf344,0xfd6d,0x11d0,{0x95,0x8a,0x00,0x60,0x97,0xc9,0xa0,0x90}};
@@ -215,7 +216,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     return 1;
 }
 
-void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long total)
+void MainWindow_t::ShowProgressInTaskbar(bool show,long long complited,long long total)
 {
     int hres;
     ITaskbarList3 *pTL;
@@ -229,8 +230,8 @@ void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long tot
         return;
     }
     //printf("%d,%d\n",flags,complited);
-    pTL->SetProgressValue(hwnd,complited,total);
-    pTL->SetProgressState(hwnd,show?TBPF_NORMAL:TBPF_NOPROGRESS);
+    pTL->SetProgressValue(hMain,complited,total);
+    pTL->SetProgressState(hMain,show?TBPF_NORMAL:TBPF_NOPROGRESS);
     pTL->Release();
     CoUninitialize();
 }

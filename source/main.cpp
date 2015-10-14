@@ -243,7 +243,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     viruscheck(L"",0,0);
 
     // MAIN GUI LOOP
-    MainWindow.gui(nCmd);
+    MainWindow.MainLoop(nCmd);
 
     // Wait till the device scan thread is finished
     if(MainWindow.hMain)deviceupdate_exitflag=1;
@@ -289,7 +289,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     return ret_global;
 }
 
-void MainWindow_t::gui(int nCmd)
+void MainWindow_t::MainLoop(int nCmd)
 {
     if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)return;
 
@@ -444,7 +444,7 @@ void MainWindow_t::gui(int nCmd)
                 {
                     if(msg.wParam==VK_CONTROL||msg.wParam==VK_SPACE)
                     {
-                        drawpopup(-1,FLOATING_NONE,0,0,hField);
+                        Popup.drawpopup(-1,FLOATING_NONE,0,0,hField);
                     }
                     if(msg.wParam==VK_CONTROL)ctrl_down=0;
                     if(msg.wParam==VK_SPACE)  space_down=0;
@@ -484,9 +484,6 @@ MainWindow_t::MainWindow_t()
     hLang=nullptr;
     hTheme=nullptr;
 
-    Popup.floating_itembar=-1;
-    Popup.floating_x=1;
-    Popup.floating_y=1;
     hideconsole=SW_HIDE;
 
     mousex=-1;
@@ -681,11 +678,6 @@ void escapeAmp(wchar_t *buf,const wchar_t *source)
 //}
 
 //{ GUI Helpers
-HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id)
-{
-    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE,0,0,0,0,hwnd,id,ghInst,NULL);
-}
-
 HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f)
 {
     return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,id,ghInst,NULL);
@@ -808,8 +800,7 @@ int MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam
             break;
 
         case WM_MOUSEHOVER:
-            InvalidateRect(Popup.hPopup,nullptr,0);
-            ShowWindow(Popup.hPopup,Popup.floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
+            Popup.onHover();
             break;
 
         case WM_ACTIVATE:
@@ -1416,6 +1407,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
             GetClientRect(hwnd,&rect);
             canvasField->begin(hwnd,rect.right,rect.bottom);
             canvasField->CopyCanvas(canvasMain,Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)));
+            canvasField->SetFont(hFont);
             manager_g->draw(*canvasField,y);
             canvasField->end();
             break;
@@ -1537,23 +1529,23 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
                 manager_g->hitscan(x,y,&itembar_i,&i);
                 if(i==0&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||Settings.expertmode))
-                    drawpopup(itembar_i,type,x,y,hField);
+                    Popup.drawpopup(itembar_i,type,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_AUTORUN)
-                    drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup.drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_RECYCLER)
-                    drawpopup(STR_VIRUS_RECYCLER_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup.drawpopup(STR_VIRUS_RECYCLER_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_HIDDEN)
-                    drawpopup(STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup.drawpopup(STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_EXTRACTING&&installmode)
-                    drawpopup((instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
+                    Popup.drawpopup((instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_RESTORE_POINT)
-                    drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup.drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
-                    drawpopup(-1,FLOATING_DOWNLOAD,x,y,hField);
+                    Popup.drawpopup(-1,FLOATING_DOWNLOAD,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
-                    drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
+                    Popup.drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
-                    drawpopup(-1,FLOATING_NONE,0,0,hField);
+                    Popup.drawpopup(-1,FLOATING_NONE,0,0,hField);
 
                 if(itembar_i!=field_lasti||i!=field_lastz)redrawfield();
                 field_lasti=itembar_i;

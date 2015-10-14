@@ -25,6 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "manager.h"
 #include "theme.h"
+#include "gui.h"
 
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
@@ -345,7 +346,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
     switch(uMsg)
     {
         case WM_MOUSEMOVE:
-            drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
+            Popup.drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
             ShowWindow(Popup.hPopup,SW_SHOWNOACTIVATE);
             if(!bMouseInWindow)
             {
@@ -360,7 +361,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
 
         case WM_MOUSELEAVE:
             bMouseInWindow=0;
-            drawpopup(-1,FLOATING_NONE,0,0,hWnd);
+            Popup.drawpopup(-1,FLOATING_NONE,0,0,hWnd);
             break;
 
         default:
@@ -869,7 +870,7 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
     td.TextOutSF(STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
 
 //    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
-    popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
 }
 
 UpdaterImp::UpdaterImp()
@@ -1043,7 +1044,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
             // Show progress
             Updater1->updateTorrentStatus();
-            ShowProgressInTaskbar(MainWindow.hMain,true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
+            MainWindow.ShowProgressInTaskbar(true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
             InvalidateRect(Popup.hPopup,nullptr,0);
 
             // Send libtorrent messages to log
@@ -1096,7 +1097,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
 
                 // Flash in taskbar
-                ShowProgressInTaskbar(MainWindow.hMain,false);
+                MainWindow.ShowProgressInTaskbar(false);
                 FLASHWINFO fi;
                 fi.cbSize=sizeof(FLASHWINFO);
                 fi.hwnd=MainWindow.hMain;

@@ -373,7 +373,7 @@ void wTextSys1::Accept(WidgetVisitor &visitor)
 HoverVisiter::~HoverVisiter()
 {
     if(popup_active==false)
-        drawpopup(-1,FLOATING_NONE,x,y,MainWindow.hMain);
+        Popup.drawpopup(-1,FLOATING_NONE,x,y,MainWindow.hMain);
 }
 
 void HoverVisiter::VisitWidget(Widget *a)
@@ -381,7 +381,7 @@ void HoverVisiter::VisitWidget(Widget *a)
     a->hitscan(x,y);
     if(a->isSelected&&a->str_id)
     {
-        drawpopup(a->str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
+        Popup.drawpopup(a->str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -403,7 +403,7 @@ void HoverVisiter::VisitwLogo(wLogo *a)
     if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
+        Popup.drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -414,7 +414,7 @@ void HoverVisiter::VisitwTextRev(wTextRev *a)
     if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
+        Popup.drawpopup(-1,FLOATING_ABOUT,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -425,7 +425,7 @@ void HoverVisiter::VisitwTextSys1(wTextSys1 *a)
     if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        drawpopup(a->str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
+        Popup.drawpopup(a->str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -540,3 +540,128 @@ void ClickVisiter::VisitwTextSys1(wTextSys1 *a)
     }
 }
 //}
+
+//{ Text
+textdata_t::textdata_t(Canvas &canvas_,int xofs):
+    pcanvas(&canvas_),
+    ofsx(xofs),
+    wy(D(POPUP_WY)),
+    maxsz(0),
+    col(D(POPUP_TEXT_COLOR)),
+    x(D(POPUP_OFSX)+xofs),
+    y(D(POPUP_OFSY))
+{
+}
+
+void textdata_t::ret()
+{
+    x=D(POPUP_OFSX)+ofsx;
+}
+
+void textdata_t::ret_ofs(int a)
+{
+    x=D(POPUP_OFSX)+a;
+}
+
+void textdata_t::nl()
+{
+    y+=wy;
+}
+
+void textdata_horiz_t::limitskip()
+{
+    x+=limits[i++];
+}
+
+void textdata_vert::shift_r(){maxsz+=(int)POPUP_SYSINFO_OFS;}
+void textdata_vert::shift_l(){maxsz-=(int)POPUP_SYSINFO_OFS;}
+
+void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
+{
+    int ss=pcanvas->GetTextExtent(str);
+    if(ss>*maxsz1)*maxsz1=ss;
+
+    if(!mode1)return;
+    pcanvas->SetTextColor(color);
+    pcanvas->DrawTextXY(x1,y1,str);
+}
+
+void textdata_horiz_t::TextOutP(const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+
+    TextOut_CM(x,y,buffer,col,&limits[i],mode);
+    x+=limits[i];
+    i++;
+    va_end(args);
+}
+
+void textdata_t::TextOutF(int col1,const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+
+    TextOut_CM(x,y,buffer,col1,&maxsz,1);
+    y+=wy;
+    va_end(args);
+}
+
+void textdata_t::TextOutF(const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+
+    TextOut_CM(x,y,buffer,col,&maxsz,1);
+    y+=wy;
+    va_end(args);
+}
+
+void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
+{
+    wchar_t buffer[BUFLEN];
+    va_list args;
+    va_start(args,format);
+    _vsnwprintf(buffer,BUFLEN,format,args);
+    TextOut_CM(x,y,str,col,&maxsz,1);
+    TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer,col,&maxsz,1);
+    y+=wy;
+    va_end(args);
+}
+//}
+
+int mirw(int x,int ofs,int w)
+{
+    UNREFERENCED_PARAMETER(w);
+    return x+ofs;
+}
+int Xm(int x,int o)
+{
+    UNREFERENCED_PARAMETER(o);
+    return x>=0?x:(MainWindow.main1x_c+x);
+}
+int Ym(int y){return y>=0?y:(MainWindow.main1y_c+y);}
+int XM(int w,int x){return w>=0?w:(w+MainWindow.main1x_c-x);}
+int YM(int y,int o){return y>=0?y:(MainWindow.main1y_c+y-o);}
+
+int Xg(int x,int o)
+{
+    UNREFERENCED_PARAMETER(o);
+    return x>=0?x:(MainWindow.mainx_c+x);
+}
+int Yg(int y){return y>=0?y:(MainWindow.mainy_c+y);}
+int XG(int x,int o){return x>=0?x:(MainWindow.mainx_c+x-o);}
+int YG(int y,int o){return y>=0?y:(MainWindow.mainy_c+y-o);}
+
+bool isRebootDesired()
+{
+    ClickVisiter cv{ID_REBOOT,CHECKBOX::GET};
+    wPanels->Accept(cv);
+    return cv.GetValue()!=0;
+}
