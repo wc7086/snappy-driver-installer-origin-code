@@ -511,7 +511,7 @@ goaround:
             needreboot?STR_INST_COMPLITED_RB:STR_INST_COMPLITED;
         installmode=MODE_SCANNING;
 
-        ShowProgressInTaskbar(MainWindow.hMain,false);
+        MainWindow.ShowProgressInTaskbar(false);
         FLASHWINFO fi;
         fi.cbSize=sizeof(FLASHWINFO);
         fi.hwnd=MainWindow.hMain;
@@ -526,7 +526,7 @@ goaround:
     ret_global=installed+(failed<<16);
     if(needreboot)ret_global|=0x40<<24;
     LeaveCriticalSection(&sync);
-    ShowProgressInTaskbar(MainWindow.hMain,false);
+    MainWindow.ShowProgressInTaskbar(false);
     invalidate(INVALIDATE_DEVICES);
     MainWindow.redrawmainwnd();
 

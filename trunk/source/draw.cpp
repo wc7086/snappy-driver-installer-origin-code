@@ -28,8 +28,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 // Depend on Win32API
 #include "draw.h"     // todo: lots of Win32
-#include "system.h"
 #include "enum.h"     // needs Version from indexing.h
+#include "system.h"
 #include "main.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
@@ -49,6 +49,39 @@ Combobox::Combobox(HWND hwnd,int id)
 {
     handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
 }
+void Combobox::Clear()
+{
+    SendMessage(handle,CB_RESETCONTENT,0,0);
+}
+void Combobox::AddItem(const wchar_t *str)
+{
+    SendMessage(handle,CB_ADDSTRING,0,(LPARAM)str);
+}
+int Combobox::FindItem(const wchar_t *str)
+{
+    return SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
+}
+int Combobox::GetNumItems()
+{
+    return SendMessage(handle,CB_GETCOUNT,0,0);
+}
+void Combobox::SetCurSel(int i)
+{
+    SendMessage(handle,CB_SETCURSEL,i,0);
+}
+void Combobox::Focus()
+{
+    SetFocus(handle);
+}
+void Combobox::SetFont(Font *font)
+{
+    SendMessage(handle,WM_SETFONT,(WPARAM)font->hFont,MAKELPARAM(FALSE,0));
+}
+void Combobox::Move(int x1,int y1,int wx,int wy)
+{
+    MoveWindow(handle,x1,y1,wx,wy,false);
+}
+
 void Combobox::SetMirroring()
 {
     setMirroring(handle);
@@ -357,110 +390,15 @@ void Canvas::end()
 }
 //}
 
-//{ Text
-textdata_t::textdata_t(Canvas &canvas_,int xofs):
-    pcanvas(&canvas_),
-    ofsx(xofs),
-    wy(D(POPUP_WY)),
-    maxsz(0),
-    col(D(POPUP_TEXT_COLOR)),
-    x(D(POPUP_OFSX)+xofs),
-    y(D(POPUP_OFSY))
-{
-}
-
-void textdata_t::ret()
-{
-    x=D(POPUP_OFSX)+ofsx;
-}
-
-void textdata_t::ret_ofs(int a)
-{
-    x=D(POPUP_OFSX)+a;
-}
-
-void textdata_t::nl()
-{
-    y+=wy;
-}
-
-void textdata_horiz_t::limitskip()
-{
-    x+=limits[i++];
-}
-
-void textdata_vert::shift_r(){maxsz+=(int)POPUP_SYSINFO_OFS;}
-void textdata_vert::shift_l(){maxsz-=(int)POPUP_SYSINFO_OFS;}
-
-void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
-{
-    int ss=pcanvas->GetTextExtent(str);
-    if(ss>*maxsz1)*maxsz1=ss;
-
-    if(!mode1)return;
-    pcanvas->SetTextColor(color);
-    pcanvas->DrawTextXY(x1,y1,str);
-}
-
-void textdata_horiz_t::TextOutP(const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
-
-    TextOut_CM(x,y,buffer,col,&limits[i],mode);
-    x+=limits[i];
-    i++;
-    va_end(args);
-}
-
-void textdata_t::TextOutF(int col1,const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
-
-    TextOut_CM(x,y,buffer,col1,&maxsz,1);
-    y+=wy;
-    va_end(args);
-}
-
-void textdata_t::TextOutF(const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
-
-    TextOut_CM(x,y,buffer,col,&maxsz,1);
-    y+=wy;
-    va_end(args);
-}
-
-void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
-{
-    wchar_t buffer[BUFLEN];
-    va_list args;
-    va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
-    TextOut_CM(x,y,str,col,&maxsz,1);
-    TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer,col,&maxsz,1);
-    y+=wy;
-    va_end(args);
-}
-//}
-
 //{Popup
-void popup_resize(int x,int y)
+void Popup_t::popup_resize(int x,int y)
 {
-    if(Popup.floating_x!=x||Popup.floating_y!=y)
+    if(floating_x!=x||floating_y!=y)
     {
         POINT p1;
 
-        Popup.floating_x=x;
-        Popup.floating_y=y;
+        floating_x=x;
+        floating_y=y;
         GetCursorPos(&p1);
         SetCursorPos(p1.x+1,p1.y);
         SetCursorPos(p1.x,p1.y);
@@ -489,7 +427,7 @@ void popup_about(Canvas &canvas)
     td.TextOutF(L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
     td.TextOutF(L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
 
-    popup_resize(D(POPUP_WX),rect.bottom+D(POPUP_OFSY));
+    Popup.popup_resize(D(POPUP_WX),rect.bottom+D(POPUP_OFSY));
 }
 
 void format_size(wchar_t *buf,long long val,int isspeed)
@@ -525,38 +463,9 @@ void format_time(wchar_t *buf,long long val)
 //}
 
 //{ Draw
-int mirw(int x,int ofs,int w)
-{
-    UNREFERENCED_PARAMETER(w);
-    return x+ofs;
-}
 void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
 {
     TextOut(hdcMem,x1,y1,buf,(int)wcslen(buf));
-}
-int Xm(int x,int o)
-{
-    UNREFERENCED_PARAMETER(o);
-    return x>=0?x:(MainWindow.main1x_c+x);
-}
-int Ym(int y){return y>=0?y:(MainWindow.main1y_c+y);}
-int XM(int w,int x){return w>=0?w:(w+MainWindow.main1x_c-x);}
-int YM(int y,int o){return y>=0?y:(MainWindow.main1y_c+y-o);}
-
-int Xg(int x,int o)
-{
-    UNREFERENCED_PARAMETER(o);
-    return x>=0?x:(MainWindow.mainx_c+x);
-}
-int Yg(int y){return y>=0?y:(MainWindow.mainy_c+y);}
-int XG(int x,int o){return x>=0?x:(MainWindow.mainx_c+x-o);}
-int YG(int y,int o){return y>=0?y:(MainWindow.mainy_c+y-o);}
-
-bool isRebootDesired()
-{
-    ClickVisiter cv{ID_REBOOT,CHECKBOX::GET};
-    wPanels->Accept(cv);
-    return cv.GetValue()!=0;
 }
 
 //{ ClipRegion
@@ -673,7 +582,7 @@ void Canvas::CopyCanvas(Canvas *source,int x1,int y1)
     BitBlt(hdcMem,0,0,x,y,source->hdcMem,x1,y1,SRCCOPY);
 }
 
-void loadGUID(GUID *g,const char *s)
+void Canvas::loadGUID(GUID *g,const char *s)
 {
     char d[3];
     d[2]=0;
@@ -807,7 +716,7 @@ void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
         DrawFrameControl(hdcMem,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
 }
 
-void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
+void Popup_t::drawpopup(int itembar,int type,int x,int y,HWND hwnd)
 {
     POINT p={x,y};
     HMONITOR hMonitor;
@@ -817,11 +726,11 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
     if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar<0)type=FLOATING_NONE;
     if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
 
-    if(rtl)p.x+=Popup.floating_x;
+    if(rtl)p.x+=floating_x;
     ClientToScreen(hwnd,&p);
-    needupdate=Popup.floating_itembar!=itembar||Popup.floating_type!=type;
-    Popup.floating_itembar=itembar;
-    Popup.floating_type=type;
+    needupdate=floating_itembar!=itembar||floating_type!=type;
+    floating_itembar=itembar;
+    floating_type=type;
 
     if(type!=FLOATING_NONE)
     {
@@ -833,14 +742,14 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
             GetMonitorInfo(hMonitor,&mi);
 
             mi.rcWork.right-=15;
-            if(p.x+Popup.floating_x>mi.rcWork.right)p.x=mi.rcWork.right-Popup.floating_x;
+            if(p.x+floating_x>mi.rcWork.right)p.x=mi.rcWork.right-floating_x;
             if(p.x<5)p.x=5;
-            if(p.y+Popup.floating_y>mi.rcWork.bottom-20)p.y=p.y-Popup.floating_y-30;
+            if(p.y+floating_y>mi.rcWork.bottom-20)p.y=p.y-floating_y-30;
             if(p.y<5)p.y=5;
         }
 
-        MoveWindow(Popup.hPopup,p.x+10,p.y+20,Popup.floating_x,Popup.floating_y,1);
-        if(needupdate)InvalidateRect(Popup.hPopup,nullptr,0);
+        MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
+        if(needupdate)InvalidateRect(hPopup,nullptr,0);
 
         TRACKMOUSEEVENT tme;
         tme.cbSize=sizeof(tme);
@@ -849,10 +758,16 @@ void drawpopup(int itembar,int type,int x,int y,HWND hwnd)
         tme.dwHoverTime=(MainWindow.ctrl_down||MainWindow.space_down)?1:Settings.hintdelay;
         TrackMouseEvent(&tme);
     }
-    if(type==FLOATING_NONE)ShowWindow(Popup.hPopup,SW_HIDE);
+    if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
 }
 
-HICON CreateMirroredIcon(HICON hiconOrg)
+void Popup_t::onHover()
+{
+    InvalidateRect(hPopup,nullptr,0);
+    ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
+}
+
+HICON Canvas::CreateMirroredIcon(HICON hiconOrg)
 {
     HDC hdcScreen,hdcBitmap,hdcMask=nullptr;
     HBITMAP hbm,hbmMask,hbmOld,hbmOldMask;

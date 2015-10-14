@@ -22,6 +22,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 #include "settings.h"
 #include "theme.h"
+#include "gui.h"
 
 #include "7zip.h"
 #include "device.h"
@@ -752,7 +753,7 @@ void State::popup_sysinfo(Canvas &canvas)
     td.TextOutF(D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
     td.ret_ofs(10);
     td.shift_l();
-    popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
+    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
 }
 
 void State::contextmenu2(int x,int y)

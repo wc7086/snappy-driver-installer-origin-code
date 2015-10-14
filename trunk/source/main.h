@@ -27,6 +27,8 @@ class Canvas;
 class Console_t;
 class Combobox;
 
+extern class Popup_t Popup;
+
 #include "resources.h"
 
 // Misc
@@ -107,24 +109,27 @@ class Popup_t
     Popup_t(const Popup_t&)=delete;
     Popup_t &operator=(const Popup_t&)=delete;
 
-public:
-    HWND hPopup=nullptr;
+private:
+    int floating_type=0;
+    int floating_x=0,floating_y=0;
     Canvas *canvasPopup=nullptr;
-    Font *hFontP;
-    Font *hFontBold;
 
+public:
     Popup_t();
     ~Popup_t();
+    void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
+    void popup_resize(int x,int y);
+    void onHover();
 
-    int floating_type=0;
-    int floating_itembar=0;
-    int floating_x=0,floating_y=0;
+    Font *hFontP;
+    Font *hFontBold;
+    HWND hPopup=nullptr;
+    int floating_itembar=-1;
     int horiz_sh=0;
 
     LRESULT PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 };
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
-extern class Popup_t Popup;
 
 // Console
 class Console_t
@@ -141,23 +146,7 @@ class MainWindow_t
     MainWindow_t(const MainWindow_t&)=delete;
     void operator=(const MainWindow_t&)=delete;
 
-public:
-    int main1x_c,main1y_c;
-    int mainx_c,mainy_c;
-    Font *hFont;
-    HWND hMain,hField;
-    Combobox *hLang;
-    Combobox *hTheme;
-    int ctrl_down;
-    int space_down;
-    int shift_down;
-
-    int hideconsole;
-    int offset_target;
-    int kbpanel,kbitem[KB_PANEL_CHK+1];
-
-    int field_lasti,field_lastz;
-
+private:
     Canvas *canvasMain;
     Canvas *canvasField;
     static const wchar_t classMain[];
@@ -166,9 +155,35 @@ public:
 
     int mousex=-1,mousey=-1,mousedown=MOUSE_NONE,mouseclick=0;
     int scrollvisible=0;
+    int field_lasti,field_lastz;
+
+    Font *hFont;
 
 public:
-    void gui(int nCmd);
+    int main1x_c,main1y_c;
+    int mainx_c,mainy_c;
+
+    HWND hMain,hField;
+    Combobox *hLang;
+    Combobox *hTheme;
+    int offset_target;
+    int ctrl_down;
+    int space_down;
+    int shift_down;
+
+    int hideconsole;
+    int kbpanel,kbitem[KB_PANEL_CHK+1];
+
+private:
+    static LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    static LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
+    static LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
+    int WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    LRESULT WndProc2(HWND,UINT,WPARAM,LPARAM);
+    LRESULT WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
+
+public:
+    void MainLoop(int nCmd);
     void lang_refresh();
     void theme_refresh();
     void redrawfield();
@@ -187,13 +202,7 @@ public:
     int  getscrollpos();
     void setscrollpos(int pos);
 
-    static LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-    static LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
-    static LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
-
-    int WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-    LRESULT WndProc2(HWND,UINT,WPARAM,LPARAM);
-    LRESULT WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
+    void ShowProgressInTaskbar(bool show,long long complited=0,long long total=0);
 
     MainWindow_t();
     ~MainWindow_t();
@@ -215,7 +224,6 @@ void escapeAmpUrl(wchar_t *buf,const wchar_t *source);
 void escapeAmp(wchar_t *buf,const wchar_t *source);
 
 // GUI Helpers
-HWND CreateWindowM(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id);
 HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f);
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 void setMirroring(HWND hwnd);

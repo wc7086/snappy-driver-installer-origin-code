@@ -87,7 +87,6 @@ public:
 };
 //}
 
-
 //{ Font
 class Font
 {
@@ -121,6 +120,10 @@ class Canvas
     HWND hwnd;
     HRGN clipping;
 
+private:
+    HICON CreateMirroredIcon(HICON hiconOrg);
+    void loadGUID(GUID *g,const char *s);
+
 public:
     Canvas();
     ~Canvas();
@@ -150,88 +153,12 @@ public:
 };
 //}
 
-//{ ### Text ###
-class textdata_t
-{
-protected:
-    Canvas *pcanvas;
-
-    int ofsx;
-    int wy;
-    int maxsz;
-
-public:
-    int col;
-    int x;
-    int y;
-
-protected:
-    void TextOut_CM(int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
-
-public:
-    textdata_t(Canvas &canvas,int ofsx=0);
-
-    void TextOutF(int col,const wchar_t *format,...);
-    void TextOutF(const wchar_t *format,...);
-    void ret();
-    void nl();
-    void ret_ofs(int a);
-    int getX(){return x;}
-    int getY(){return y;}
-};
-
-class textdata_horiz_t:public textdata_t
-{
-    int i;
-	int *limits;
-    int mode;
-
-public:
-    textdata_horiz_t(Canvas &canvas,int ofsx1,int *lim,int mode1):textdata_t(canvas,ofsx1),i(0),limits(lim),mode(mode1){}
-    void limitskip();
-    void TextOutP(const wchar_t *format,...);
-};
-
-class textdata_vert:public textdata_t
-{
-
-public:
-    textdata_vert(Canvas &canvas,int ofsx1=0):textdata_t(canvas,ofsx1)
-    {
-
-    }
-    void shift_r();
-    void shift_l();
-    int getMaxsz(){return maxsz;}
-    void TextOutSF(const wchar_t *str,const wchar_t *format,...);
-};
-//}
-
 // Popup
-void popup_resize(int x,int y);
+//void popup_resize(int x,int y);
 void popup_about(Canvas &canvas);
 void format_size(wchar_t *buf,long long val,int isspeed);
 void format_time(wchar_t *buf,long long val);
-
-// Misc functions
-int mirw(int x,int ofs,int w);
-
-int Xm(int x,int o);
-int Ym(int y);
-int XM(int x,int o);
-int YM(int y,int o);
-
-int Xg(int x,int o);
-int Yg(int y);
-int XG(int x,int o);
-int YG(int y,int o);
-
-void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
-HICON CreateMirroredIcon(HICON hiconOrg);
-void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited=0,long long total=0);
-void loadGUID(GUID *g,const char *s);
-void drawnew(Canvas &canvas);
-bool isRebootDesired();
+//void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 
 //{ Combobox
 class Combobox
@@ -240,40 +167,14 @@ class Combobox
 
 public:
     Combobox(HWND hwnd,int id);
-    HWND gethandle(){return handle;}
-    void Clear()
-    {
-        SendMessage(handle,CB_RESETCONTENT,0,0);
-    }
-    void AddItem(const wchar_t *str)
-    {
-        SendMessage(handle,CB_ADDSTRING,0,(LPARAM)str);
-    }
-    int FindItem(const wchar_t *str)
-    {
-        return SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
-    }
-    int GetNumItems()
-    {
-        return SendMessage(handle,CB_GETCOUNT,0,0);
-    }
-    void SetCurSel(int i)
-    {
-        SendMessage(handle,CB_SETCURSEL,i,0);
-    }
-
-    void Focus()
-    {
-        SetFocus(handle);
-    }
-    void SetFont(Font *font)
-    {
-        SendMessage(handle,WM_SETFONT,(WPARAM)font->hFont,MAKELPARAM(FALSE,0));
-    }
-    void Move(int x1,int y1,int wx,int wy)
-    {
-        MoveWindow(handle,x1,y1,wx,wy,false);
-    }
+    void Clear();
+    void AddItem(const wchar_t *str);
+    int FindItem(const wchar_t *str);
+    int GetNumItems();
+    void SetCurSel(int i);
+    void Focus();
+    void SetFont(Font *font);
+    void Move(int x1,int y1,int wx,int wy);
     void SetMirroring();
 };
 //}

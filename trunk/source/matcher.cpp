@@ -22,13 +22,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 #include "settings.h"
 #include "theme.h"
+#include "gui.h"
 
 #include <windows.h>
 
 #include "system.h"
 #include "enum.h"
 #include "main.h"
-#include "draw.h"
 #include "device.h"
 
 //{ Global variables

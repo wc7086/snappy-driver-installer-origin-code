@@ -533,7 +533,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
 
     int zz=td.getMaxsz();
     if(!devicematch_f->device->HardwareID&&!hwidmatch_f)zz/=2;
-    popup_resize((zz+10+p0*2)*2,td.y+D(POPUP_OFSY));
+    Popup.popup_resize((zz+10+p0*2)*2,td.y+D(POPUP_OFSY));
 }
 
 int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
@@ -944,7 +944,7 @@ void Manager::updateoverall()
         items_list[SLOT_EXTRACTING].val1=_processeditems;
         items_list[SLOT_EXTRACTING].val2=_totalitems;
         if(manager_g->items_list[SLOT_EXTRACTING].percent>0&&installmode==MODE_INSTALLING&&Updater->isPaused())
-            ShowProgressInTaskbar(MainWindow.hMain,true,items_list[SLOT_EXTRACTING].percent,1000);
+            MainWindow.ShowProgressInTaskbar(true,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }
 void Manager::install(int flagsv)
@@ -1309,7 +1309,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
     if(pos>MainWindow.mainy_c)return 0;
     if(wx<0)return 0;
 
-    canvas.SetFont(MainWindow.hFont);
+    //canvas.SetFont(MainWindow.hFont);
 
     if(index<SLOT_RESTORE_POINT)cutoff=D(DRVITEM_OFSY);
     ClipRegion hrgn2{0,cutoff,x+wx,MainWindow.mainy_c};
@@ -1903,6 +1903,6 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
         td.TextOutF(c0,STR(STR_HINT_SCROLL));
         td.y+=lne;
     }
-    popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
+    Popup.popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
 }
 //}

@@ -381,4 +381,76 @@ public:
 };
 //}
 
+//{ ### Text ###
+class textdata_t
+{
+protected:
+    Canvas *pcanvas;
+
+    int ofsx;
+    int wy;
+    int maxsz;
+
+public:
+    int col;
+    int x;
+    int y;
+
+protected:
+    void TextOut_CM(int x,int y,const wchar_t *str,int color,int *maxsz,int mode);
+
+public:
+    textdata_t(Canvas &canvas,int ofsx=0);
+
+    void TextOutF(int col,const wchar_t *format,...);
+    void TextOutF(const wchar_t *format,...);
+    void ret();
+    void nl();
+    void ret_ofs(int a);
+    int getX(){return x;}
+    int getY(){return y;}
+};
+
+class textdata_horiz_t:public textdata_t
+{
+    int i;
+	int *limits;
+    int mode;
+
+public:
+    textdata_horiz_t(Canvas &canvas,int ofsx1,int *lim,int mode1):textdata_t(canvas,ofsx1),i(0),limits(lim),mode(mode1){}
+    void limitskip();
+    void TextOutP(const wchar_t *format,...);
+};
+
+class textdata_vert:public textdata_t
+{
+
+public:
+    textdata_vert(Canvas &canvas,int ofsx1=0):textdata_t(canvas,ofsx1)
+    {
+
+    }
+    void shift_r();
+    void shift_l();
+    int getMaxsz(){return maxsz;}
+    void TextOutSF(const wchar_t *str,const wchar_t *format,...);
+};
+//}
+
+// Misc functions
+void drawnew(Canvas &canvas);
+bool isRebootDesired();
+
+int Xg(int x,int o);
+int Yg(int y);
+int XG(int x,int o);
+int YG(int y,int o);
+
+int mirw(int x,int ofs,int w);
+int Xm(int x,int o);
+int Ym(int y);
+int XM(int x,int o);
+int YM(int y,int o);
+
 #endif
