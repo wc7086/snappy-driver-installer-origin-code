@@ -38,6 +38,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 SystemImp System;
 int monitor_pause=0;
+HFONT CLIHelp_Font;
 
 bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)
 {
@@ -615,3 +616,64 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
     }
 }
 //}
+
+static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+
+    HWND hEditBox;
+    LPCSTR s;
+    int sz;
+
+    switch(Message)
+    {
+    case WM_INITDIALOG:
+        SetWindowTextW(hwnd,L"Command Line options help");
+        hEditBox=GetDlgItem(hwnd,0);
+        SetWindowTextW(hEditBox,L"Command Line options");
+        //ShowWindow(hEditBox,SW_HIDE);
+        hEditBox=GetDlgItem(hwnd,IDOK);
+        ShowWindow(hEditBox,SW_HIDE);
+        hEditBox=GetDlgItem(hwnd,IDCANCEL);
+        SetWindowTextW(hEditBox,L"Close");
+
+        get_resource(IDR_CLI_HELP,(void **)&s,&sz);
+        hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
+
+        SendMessage(hEditBox,WM_SETFONT,(WPARAM)CLIHelp_Font,0);
+
+        SetWindowTextA(hEditBox,s);
+        SendMessage(hEditBox,EM_SETREADONLY,1,0);
+
+        return TRUE;
+
+    case WM_COMMAND:
+        switch(LOWORD(wParam))
+        {
+        case IDOK:
+            EndDialog(hwnd,IDOK);
+            return TRUE;
+
+        case IDCANCEL:
+            EndDialog(hwnd,IDCANCEL);
+            return TRUE;
+
+        default:
+            break;
+        }
+        break;
+
+    default:
+        break;
+    }
+    return false;
+}
+
+void ShowHelp()
+{
+    CLIHelp_Font=CreateFont(-12,0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+                            CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,L"Consolas");
+
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)ShowHelpProcedure);
+    DeleteObject(CLIHelp_Font);
+}

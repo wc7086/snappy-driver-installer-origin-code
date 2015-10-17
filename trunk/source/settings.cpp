@@ -26,7 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #include <shellapi.h>
 #endif
 
@@ -38,67 +38,6 @@ int volatile installmode=MODE_NONE;
 int invaidate_set;
 int num_cores;
 int ret_global=0;
-
-Font CLIHelp_Font;
-
-static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-
-    HWND hEditBox;
-    LPCSTR s;
-    int sz;
-
-    switch(Message)
-    {
-    case WM_INITDIALOG:
-        SetWindowTextW(hwnd,L"Command Line options help");
-        hEditBox=GetDlgItem(hwnd,0);
-        SetWindowTextW(hEditBox,L"Command Line options");
-        //ShowWindow(hEditBox,SW_HIDE);
-        hEditBox=GetDlgItem(hwnd,IDOK);
-        ShowWindow(hEditBox,SW_HIDE);
-        hEditBox=GetDlgItem(hwnd,IDCANCEL);
-        SetWindowTextW(hEditBox,L"Close");
-
-        get_resource(IDR_CLI_HELP,(void **)&s,&sz);
-        hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
-
-        SendMessage(hEditBox,WM_SETFONT,(WPARAM)CLIHelp_Font.get(),0);
-
-        SetWindowTextA(hEditBox,s);
-        SendMessage(hEditBox,EM_SETREADONLY,1,0);
-
-        return TRUE;
-
-    case WM_COMMAND:
-        switch(LOWORD(wParam))
-        {
-        case IDOK:
-            EndDialog(hwnd,IDOK);
-            return TRUE;
-
-        case IDCANCEL:
-            EndDialog(hwnd,IDCANCEL);
-            return TRUE;
-
-        default:
-            break;
-        }
-        break;
-
-    default:
-        break;
-    }
-    return false;
-}
-
-static void ShowHelp(HINSTANCE AhInst)
-{
-    CLIHelp_Font.SetFont(L"Consolas",12);
-
-    DialogBox(AhInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)ShowHelpProcedure);
-}
 
 Settings_t::Settings_t()
 {
@@ -240,7 +179,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
         }else
         if(!StrCmpIW(pr,L"-?"))
         {
-            ShowHelp(ghInst);
+            ShowHelp();
             //Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;
             Settings.statemode=STATEMODE_EXIT;
             break;
