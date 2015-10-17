@@ -90,7 +90,12 @@ void Combobox::SetMirroring()
 
 
 //{ Image
-void Image::MakeCopy(Image &t)
+ImageImp *CreateImages(int n)
+{
+    return new ImageImp[n];
+}
+
+void ImageImp::MakeCopy(ImageImp &t)
 {
     Release();
     bitmap=t.bitmap;
@@ -101,7 +106,7 @@ void Image::MakeCopy(Image &t)
     iscopy=1;
 }
 
-void Image::Load(int i)
+void ImageImp::Load(int i)
 {
     wchar_t *filename=D_STR(i);
 
@@ -113,9 +118,9 @@ void Image::Load(int i)
         LoadFromFile(filename);
 }
 
-bool Image::IsLoaded()const{return ldc!=nullptr;}
+bool ImageImp::IsLoaded()const{return ldc!=nullptr;}
 
-void Image::Release()
+void ImageImp::Release()
 {
     if(bitmap&&!iscopy)
     {
@@ -130,7 +135,7 @@ void Image::Release()
     iscopy=0;
 }
 
-void Image::LoadFromFile(wchar_t *filename)
+void ImageImp::LoadFromFile(wchar_t *filename)
 {
     wchar_t buf[BUFLEN];
     FILE *f;
@@ -159,7 +164,7 @@ void Image::LoadFromFile(wchar_t *filename)
     CreateMyBitmap(imgbuf.get(),sz);
 }
 
-void Image::LoadFromRes(int id)
+void ImageImp::LoadFromRes(int id)
 {
     int sz;
     HGLOBAL myResourceData;
@@ -173,7 +178,7 @@ void Image::LoadFromRes(int id)
     CreateMyBitmap((BYTE *)myResourceData,sz);
 }
 
-void Image::CreateMyBitmap(BYTE *data,size_t sz)
+void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
 {
     BYTE *big;
     hasalpha=sx=sy=0;
@@ -237,7 +242,7 @@ void Image::CreateMyBitmap(BYTE *data,size_t sz)
     //    Log.print_con("%dx%d:%d,%d\n",sx,sy,hasalpha,index);
 }
 
-void Image::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
+void ImageImp::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 {
     BLENDFUNCTION blend={AC_SRC_OVER,0,255,AC_SRC_ALPHA};
     int xi,yi,wx,wy,wx1,wy1,wx2,wy2;
@@ -281,6 +286,29 @@ void Image::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
         if((fill&HTILE)==0)break;
     }
     //drawrect(dc,x1,y1,x2,y2,0xFF000000,0xFF00,1,0);
+}
+//}
+
+//{ ImageStorange
+void ImageStorange::LoadAll()
+{
+    for(int i=0;i<num;i++)
+    {
+        wchar_t *str=D_STR(boxindex[i]+4);
+        int j;
+        for(j=0;j<i;j++)
+            if(!wcscmp(str,D_STR(boxindex[j]+4)))
+        {
+            a[i].MakeCopy(a[j]);
+            //Log.print_con("%d Copy %S %d\n",i,str,j);
+            break;
+        }
+        if(i==j)
+        {
+            a[i].Load(boxindex[i]+4);
+            //Log.print_con("%d New  %S\n",i,str);
+        }
+    }
 }
 //}
 
@@ -574,7 +602,7 @@ int  Canvas::GetTextExtent(const wchar_t *str)
 
 void Canvas::DrawImage(Image &image,int x1,int y1,int wx,int wy,int flags1,int flags2)
 {
-    image.Draw(hdcMem,x1,y1,wx,wy,flags1,flags2);
+    (dynamic_cast<ImageImp &>(image)).Draw(hdcMem,x1,y1,wx,wy,flags1,flags2);
 }
 
 void Canvas::CopyCanvas(Canvas *source,int x1,int y1)
@@ -710,7 +738,7 @@ void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
     rect.right=x1+wx;
     rect.bottom=y1+wy;
 
-    if(vTheme->GetIcon(i)->IsLoaded())
+    if((dynamic_cast<ImageImp *>(vTheme->GetIcon(i)))->IsLoaded())
         DrawImage(*vTheme->GetIcon(i),x1,y1,x1+wx,y1+wy,0,Image::HSTR|Image::VSTR);
     else
         DrawFrameControl(hdcMem,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));

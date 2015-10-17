@@ -93,25 +93,25 @@ public:
 
 class VaultTheme:public Vault
 {
-    Image *box;
-    Image *icon;
+    ImageStorange *box;
+    ImageImp *icon;
 
 public:
     void SwitchData(int i);
     void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
     Image *GetIcon(int i){return &icon[i];}
-    Image *GetImage(int i){return &box[i];}
+    Image *GetImage(int i){return box->GetImage(i);}
 
     VaultTheme(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
         Vault{entryv,numv,resv,elem_id_,folder_}
     {
-        box=new Image[BOX_NUM];
-        icon=new Image[ICON_NUM];
+        box=new ImageStorange(BOX_NUM);
+        icon=CreateImages(ICON_NUM);
     }
     ~VaultTheme()
     {
-        delete[] box;
+        delete box;
         delete[] icon;
     }
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
@@ -408,7 +408,8 @@ void VaultTheme::SwitchData(int i)
     if(Settings.flags&FLAG_NOGUI)return;
     load(i);
 
-    for(i=0;i<BOX_NUM;i++)
+    box->LoadAll();
+    /*for(i=0;i<BOX_NUM;i++)
     {
         wchar_t *str=D_STR(boxindex[i]+4);
         int j;
@@ -421,10 +422,10 @@ void VaultTheme::SwitchData(int i)
         }
         if(i==j)
         {
-            box[i].Load(boxindex[i]+4);
+            box->GetImage(i)->Load(boxindex[i]+4);
             //Log.print_con("%d New  %S\n",i,str);
         }
-    }
+    }*/
     for(i=0;i<ICON_NUM;i++)
     {
         wchar_t *str=D_STR(iconindex[i]);

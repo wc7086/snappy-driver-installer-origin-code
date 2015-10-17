@@ -18,11 +18,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef DRAW_H
 #define DRAW_H
 
-#include "themelist.h"
-
 // Declarations
 class Image;
 class ClipRegionImp;
+class ImageImp;
 
 // Global vars
 extern int rtl;
@@ -30,21 +29,6 @@ extern int rtl;
 //{ Image
 class Image
 {
-    HBITMAP bitmap=nullptr;
-    HGDIOBJ oldbitmap=nullptr;
-    HDC ldc=nullptr;
-    int sx=0,sy=0,hasalpha=0;
-    int iscopy=0;
-
-private:
-    void LoadFromFile(wchar_t *filename);
-    void LoadFromRes(int id);
-    void CreateMyBitmap(BYTE *data,size_t sz);
-    void Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
-    void Release();
-    bool IsLoaded()const;
-    friend class Canvas;
-
 public:
     enum align
     {
@@ -62,9 +46,57 @@ public:
         ASPECT  = 16,
     };
 
-    ~Image(){Release();}
+    virtual ~Image(){}
+    virtual void Load(int strid)=0;
+    virtual void MakeCopy(ImageImp &t)=0;
+};
+class ImageImp:public Image
+{
+    HBITMAP bitmap=nullptr;
+    HGDIOBJ oldbitmap=nullptr;
+    HDC ldc=nullptr;
+    int sx=0,sy=0,hasalpha=0;
+    int iscopy=0;
+
+private:
+    void LoadFromFile(wchar_t *filename);
+    void LoadFromRes(int id);
+    void CreateMyBitmap(BYTE *data,size_t sz);
+    void Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
+    void Release();
+    bool IsLoaded()const;
+    friend class Canvas;
+
+public:
+    ~ImageImp(){Release();}
     void Load(int strid);
-    void MakeCopy(Image &t);
+    void MakeCopy(ImageImp &t);
+};
+
+ImageImp *CreateImages(int n);
+//}
+
+//{ ImageStorange
+class ImageStorange
+{
+    ImageImp *a;
+    int num;
+
+public:
+    ImageStorange(int n)
+    {
+        a=new ImageImp[n];
+        num=n;
+    }
+    ~ImageStorange()
+    {
+        delete[] a;
+    }
+    Image *GetImage(int n)
+    {
+        return &a[n];
+    }
+    void LoadAll();
 };
 //}
 
@@ -102,7 +134,6 @@ public:
     Font():hFont(nullptr){}
     ~Font();
     void SetFont(const wchar_t *name,int size,int bold=false);
-    HFONT get(){return hFont;}
 };
 //}
 
@@ -158,7 +189,6 @@ public:
 void popup_about(Canvas &canvas);
 void format_size(wchar_t *buf,long long val,int isspeed);
 void format_time(wchar_t *buf,long long val);
-//void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
 
 //{ Combobox
 class Combobox
