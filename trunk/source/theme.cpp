@@ -93,26 +93,26 @@ public:
 
 class VaultTheme:public Vault
 {
-    ImageStorange *box;
-    ImageImp *icon;
+    ImageStorange *Images;
+    ImageStorange *Icons;
 
 public:
     void SwitchData(int i);
     void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
-    Image *GetIcon(int i){return &icon[i];}
-    Image *GetImage(int i){return box->GetImage(i);}
+    Image *GetIcon(int i){return Icons->GetImage(i);}
+    Image *GetImage(int i){return Images->GetImage(i);}
 
     VaultTheme(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
         Vault{entryv,numv,resv,elem_id_,folder_}
     {
-        box=new ImageStorange(BOX_NUM);
-        icon=CreateImages(ICON_NUM);
+        Images=CreateImageStorange(BOX_NUM,boxindex,4);
+        Icons=CreateImageStorange(ICON_NUM,iconindex);
     }
     ~VaultTheme()
     {
-        delete box;
-        delete[] icon;
+        delete Images;
+        delete Icons;
     }
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
@@ -407,42 +407,8 @@ void VaultTheme::SwitchData(int i)
 {
     if(Settings.flags&FLAG_NOGUI)return;
     load(i);
-
-    box->LoadAll();
-    /*for(i=0;i<BOX_NUM;i++)
-    {
-        wchar_t *str=D_STR(boxindex[i]+4);
-        int j;
-        for(j=0;j<i;j++)
-            if(!wcscmp(str,D_STR(boxindex[j]+4)))
-        {
-            box[i].MakeCopy(box[j]);
-            //Log.print_con("%d Copy %S %d\n",i,str,j);
-            break;
-        }
-        if(i==j)
-        {
-            box->GetImage(i)->Load(boxindex[i]+4);
-            //Log.print_con("%d New  %S\n",i,str);
-        }
-    }*/
-    for(i=0;i<ICON_NUM;i++)
-    {
-        wchar_t *str=D_STR(iconindex[i]);
-        int j;
-        for(j=0;j<i;j++)
-            if(!wcscmp(str,D_STR(iconindex[j])))
-        {
-            icon[i].MakeCopy(icon[j]);
-            //Log.print_con("%d Copy %S %d\n",i,str,j);
-            break;
-        }
-        if(i==j)
-        {
-            icon[i].Load(iconindex[i]);
-            //Log.print_con("%d New  %S\n",i,str);
-        }
-    }
+    Images->LoadAll();
+    Icons->LoadAll();
 }
 
 void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)

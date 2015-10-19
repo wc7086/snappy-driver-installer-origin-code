@@ -693,7 +693,7 @@ void Collection::populate()
     Timers.start(time_indexes);
 
     drp_count=scanfolder_count(driverpack_dir);
-    driverpack_list.reserve(drp_count+1+100); // TODO
+    driverpack_list.reserve(drp_count+1+300); // TODO
 
     driverpack_list.push_back(Driverpack(driverpack_dir,L"unpacked.7z",this));
     unpacked_drp=&driverpack_list.back();

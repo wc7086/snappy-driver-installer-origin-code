@@ -90,10 +90,28 @@ void Combobox::SetMirroring()
 
 
 //{ Image
-ImageImp *CreateImages(int n)
+class ImageImp:public Image
 {
-    return new ImageImp[n];
-}
+    HBITMAP bitmap=nullptr;
+    HGDIOBJ oldbitmap=nullptr;
+    HDC ldc=nullptr;
+    int sx=0,sy=0,hasalpha=0;
+    int iscopy=0;
+
+private:
+    void LoadFromFile(wchar_t *filename);
+    void LoadFromRes(int id);
+    void CreateMyBitmap(BYTE *data,size_t sz);
+    void Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill);
+    void Release();
+    bool IsLoaded()const;
+    friend class Canvas;
+
+public:
+    ~ImageImp(){Release();}
+    void Load(int strid);
+    void MakeCopy(ImageImp &t);
+};
 
 void ImageImp::MakeCopy(ImageImp &t)
 {
@@ -290,14 +308,46 @@ void ImageImp::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 //}
 
 //{ ImageStorange
-void ImageStorange::LoadAll()
+class ImageStorangeImp:public ImageStorange
+{
+    ImageImp *a;
+    int num,add;
+    const int *index;
+
+public:
+    ImageStorangeImp(int n,const int *ind,int add_=0);
+    ~ImageStorangeImp();
+    Image *GetImage(int n);
+    void LoadAll();
+};
+
+ImageStorange *CreateImageStorange(int n,const int *ind,int add_)
+{
+    return new ImageStorangeImp(n,ind,add_);
+}
+ImageStorangeImp::ImageStorangeImp(int n,const int *ind,int add_)
+{
+    a=new ImageImp[n];
+    num=n;
+    index=ind;
+    add=add_;
+}
+ImageStorangeImp::~ImageStorangeImp()
+{
+    delete[] a;
+}
+Image *ImageStorangeImp::GetImage(int n)
+{
+    return &a[n];
+}
+void ImageStorangeImp::LoadAll()
 {
     for(int i=0;i<num;i++)
     {
-        wchar_t *str=D_STR(boxindex[i]+4);
+        wchar_t *str=D_STR(index[i]+add);
         int j;
         for(j=0;j<i;j++)
-            if(!wcscmp(str,D_STR(boxindex[j]+4)))
+            if(!wcscmp(str,D_STR(index[j]+add)))
         {
             a[i].MakeCopy(a[j]);
             //Log.print_con("%d Copy %S %d\n",i,str,j);
@@ -305,7 +355,7 @@ void ImageStorange::LoadAll()
         }
         if(i==j)
         {
-            a[i].Load(boxindex[i]+4);
+            a[i].Load(index[i]+add);
             //Log.print_con("%d New  %S\n",i,str);
         }
     }
