@@ -452,7 +452,9 @@ void ClickVisiter::VisitwCheckbox(wCheckbox *a)
             a->command->RightClick(x,y);
         }
         else
-            if(act!=CHECKBOX::GET)
+            if(act==CHECKBOX::GET)
+                value=a->checked;
+            else
             {
                 switch(act)
                 {

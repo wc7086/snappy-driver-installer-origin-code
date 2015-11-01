@@ -1,13 +1,12 @@
-THEME_NAME              = "Classic (big)"
+// Yet another SDI theme by mPolr
 
-// Font
-FONT_NAME                = "Arial"
+THEME_NAME              = "YetAnotherSDI"
 
 // Main window
-MAINWND_BITMAP_FILENAME  = "classic\bg.webp"
+MAINWND_BITMAP_FILENAME  = "yasdi\bg.webp"
 
 // Popup
-POPUP_TRANSPARENCY       = 250
+POPUP_TRANSPARENCY       = 245
 POPUP_TEXT_COLOR         = 0x000000
 POPUP_INSIDE_COLOR       = 0xFFFFFF
 
@@ -19,37 +18,37 @@ PROGR_S_OUTLINE_ROUND    = 0
 
 // Panel, generic
 PANEL_WY                 = 16
-PANEL_INSIDE_COLOR       = 0xBBBBBB
+PANEL_INSIDE_COLOR       = 0xF0FAFA
 PANEL_OUTLINE_WIDTH      = 1
 PANEL_OUTLINE_ROUND      = 0
 
 // Checkboxes on left panel
 CHKBOX_TEXT_COLOR_H      = 0
-BUTTON_BITMAP_CHECKED    = "classic\ch_n.webp"
-BUTTON_BITMAP_CHECKED_H  = "classic\ch_h.webp"
-BUTTON_BITMAP_UNCHECKED  = "classic\unch_n.webp"
-BUTTON_BITMAP_UNCHECKED_H= "classic\unch_h.webp"
+BUTTON_BITMAP_CHECKED    = "yasdi\ch_n.webp"
+BUTTON_BITMAP_CHECKED_H  = "yasdi\ch_h.webp"
+BUTTON_BITMAP_UNCHECKED  = "yasdi\unch_n.webp"
+BUTTON_BITMAP_UNCHECKED_H= "yasdi\unch_h.webp"
 
 // Buttons on left panel
-BUTTON_INSIDE_COLOR      = 0xDDDDDD
+BUTTON_INSIDE_COLOR      = 0xDFDFDF
 BUTTON_OUTLINE_ROUND     = 0
-BUTTON_INSIDE_COLOR_H    = 0xEEEEEE
+BUTTON_INSIDE_COLOR_H    = 0xDDEEDD
 BUTTON_OUTLINE_ROUND_H   = 0
 
 // Driver list
 DRVLIST_OUTLINE_ROUND    = 0
 
 // Driver item content
-ITEM_EXPAND_UP           = "classic\upn.webp"
-ITEM_EXPAND_UP_H         = "classic\uph.webp"
-ITEM_EXPAND_DOWN         = "classic\dnn.webp"
-ITEM_EXPAND_DOWN_H       = "classic\dnh.webp"
+ITEM_EXPAND_UP           = "yasdi\upn.webp"
+ITEM_EXPAND_UP_H         = "yasdi\uph.webp"
+ITEM_EXPAND_DOWN         = "yasdi\dnn.webp"
+ITEM_EXPAND_DOWN_H       = "yasdi\dnh.webp"
 
 // Driver item (generic style)
-DRVITEM_INSIDE_COLOR     = 0xBBBBBB
+DRVITEM_INSIDE_COLOR     = 0xF0FAFA
 DRVITEM_OUTLINE_ROUND    = 0
-DRVITEM_INSIDE_COLOR_H   = 0xBBBBBB
-DRVITEM_OUTLINE_ROUND_H  = 0
+DRVITEM_INSIDE_COLOR_H   = 0xF0A578
+DRVITEM_OUTLINE_ROUND_H  = 4
 
 // Info (indexing,snapshot,installation)
 DRVITEM_INSIDE_COLOR_IF     = 0xFFDDDD
@@ -115,7 +114,7 @@ DRVITEM_TEXT2_COLOR_WN      = 0x0000CF
 DRVITEM_INSIDE_COLOR_BC     = DRVITEM_INSIDE_COLOR
 DRVITEM_INSIDE_COLOR_BC_H   = DRVITEM_INSIDE_COLOR_H
 DRVITEM_TEXT1_COLOR_BC      = DRVITEM_TEXT1_COLOR
-DRVITEM_TEXT2_COLOR_BC      = 0x00FF00
+DRVITEM_TEXT2_COLOR_BC      = 0xA25100
 
 // SAME_CUR
 DRVITEM_INSIDE_COLOR_SC     = DRVITEM_INSIDE_COLOR
@@ -133,7 +132,7 @@ DRVITEM_TEXT2_COLOR_WC      = 0x0000CF
 DRVITEM_INSIDE_COLOR_BO     = DRVITEM_INSIDE_COLOR
 DRVITEM_INSIDE_COLOR_BO_H   = DRVITEM_INSIDE_COLOR_H
 DRVITEM_TEXT1_COLOR_BO      = DRVITEM_TEXT1_COLOR
-DRVITEM_TEXT2_COLOR_BO      = 0x00FF00
+DRVITEM_TEXT2_COLOR_BO      = 0x008100
 
 // SAME_OLD
 DRVITEM_INSIDE_COLOR_SO     = DRVITEM_INSIDE_COLOR
@@ -166,8 +165,8 @@ DRVITEM_TEXT1_COLOR_DP      = DRVITEM_TEXT1_COLOR
 DRVITEM_TEXT2_COLOR_DP      = DRVITEM_TEXT2_COLOR
 
 // NOT-FOUND,MISSING
-DRVITEM_INSIDE_COLOR_NM     = 0x0000DF
-DRVITEM_INSIDE_COLOR_NM_H   = 0x0000DF
+DRVITEM_INSIDE_COLOR_NM     = 0x0000D0
+DRVITEM_INSIDE_COLOR_NM_H   = 0x0000FD
 DRVITEM_TEXT1_COLOR_NM      = 0xFFFFFF
 DRVITEM_TEXT2_COLOR_NM      = 0xFFFFFF
 
@@ -184,49 +183,62 @@ DRVITEM_TEXT1_COLOR_NS      = DRVITEM_TEXT1_COLOR
 DRVITEM_TEXT2_COLOR_NS      = DRVITEM_TEXT2_COLOR
 
 // Font
-FONT_SIZE                = 16
+FONT_SIZE                = 11
 
 // Main window
-MAINWND_WX               = 900
-MAINWND_WY               = 800
+MAINWND_WX               = 1000
+MAINWND_WY               = 710
+MAINWND_MINX             = 640
+MAINWND_MINY             = 480
 
 // Popup
-POPUP_WX                 = 420
-POPUP_WY                 = 19
+POPUP_WX                 = 400
+POPUP_WY                 = 17
 
 // Panel, generic
-PANEL_WY                 = 22
+PANEL_WY                 = 20
 PANEL_WX                 = 220
 
 // Panel, sysinfo
+PANEL1_OFSX              = 10
 PANEL1_OFSY              = 10
+PANEL1_WX              = 700
 
 // Panel, install
-PANEL2_OFSY              = 85
+PANEL2_OFSX              = 0
+PANEL2_OFSY              = 0
+PANEL2_WX              = 0
+PANEL2_WY              = 0
 
 // Panel, lang_theme
-PANEL3_OFSY              = 162
+PANEL3_OFSY              = 85
 
 // Panel, actions
-PANEL4_OFSY              = 281
+PANEL4_OFSY              = 199
 
 // Panel, filters (found)
-PANEL5_OFSY              = 386
+PANEL5_OFSY              = 294
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 557
+PANEL6_OFSY              = 449
 
 // Panel, filters (special)
-PANEL7_OFSY              = 667
+PANEL7_OFSY              = 544
 
 // Panel, install button
-PANEL9_OFSY              = 85
+PANEL9_OFSX              = 710
+PANEL9_OFSY              = 42
+PANEL9_WX              = 254
+PANEL9_WY              = 32
 
 // Panel, selectall button
-PANEL10_OFSY             = 108
+PANEL10_OFSY             = 7
+PANEL10_WX             = 128
 
 // Panel, selectnone button
-PANEL11_OFSY             = 131
+PANEL11_OFSX             = 836
+PANEL11_OFSY             = 7
+PANEL11_WX             = 128
 
 // Panel, options
 PANEL12_OFSX             = -250
@@ -237,17 +249,20 @@ PANEL13_OFSY             = -80
 
 // Checkboxes on left panel
 CHKBOX_TEXT_OFSX         = 22
-CHKBOX_SIZE              = 19
+CHKBOX_SIZE              = 18
 
 // Driver list
 DRVLIST_OFSX             = 230
+DRVLIST_OFSY             = 75
 
 // Driver items
-DRVITEM_WY               = 40
-DRVITEM_OFSY             = 5
-DRVITEM_DIST_Y0          = 45
+DRVITEM_WX               = 720
+DRVITEM_WY               = 35
+DRVITEM_OFSY             = 10
+DRVITEM_DIST_Y0          = 38
 
 // Driver item content
-ITEM_CHECKBOX_SIZE       = 25
-ITEM_TEXT_OFS_Y          = 0
-ITEM_TEXT_DIST_Y         = 16
+ITEM_CHECKBOX_SIZE       = 23
+ITEM_TEXT_OFS_X          = 70
+ITEM_TEXT_OFS_Y          = 3
+ITEM_TEXT_DIST_Y         = 14

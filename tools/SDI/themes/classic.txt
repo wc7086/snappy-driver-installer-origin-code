@@ -1,13 +1,9 @@
 THEME_NAME              = "Classic"
 
-// Font
-FONT_NAME                = "Arial"
-
 // Main window
 MAINWND_BITMAP_FILENAME  = "classic\bg.webp"
 
 // Popup
-POPUP_WY                 = 13
 POPUP_TRANSPARENCY       = 250
 POPUP_TEXT_COLOR         = 0x000000
 POPUP_INSIDE_COLOR       = 0xFFFFFF
@@ -19,7 +15,6 @@ PROGR_OUTLINE_ROUND      = 0
 PROGR_S_OUTLINE_ROUND    = 0
 
 // Panel, generic
-PANEL_WY                 = 16
 PANEL_INSIDE_COLOR       = 0xBBBBBB
 PANEL_OUTLINE_WIDTH      = 1
 PANEL_OUTLINE_ROUND      = 0

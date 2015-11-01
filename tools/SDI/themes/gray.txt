@@ -1,9 +1,5 @@
 THEME_NAME              = "Gray"
 
-// Font
-FONT_NAME                = "Arial"
-FONT_SIZE                = 14
-
 // Main window
 MAINWND_WX               = 1094
 MAINWND_WY               = 856
