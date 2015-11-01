@@ -2,10 +2,10 @@ THEME_NAME              = "Metallic_new"
 
 // Main window
 MAINWND_TEXT_COLOR       = 0x000000
-MAINWND_WX               = 800
-MAINWND_WY               = 600
-MAINWND_MINX             = 640
-MAINWND_MINY             = 260
+MAINWND_WX               = 1024
+MAINWND_WY               = 731
+MAINWND_MINX             = 839
+MAINWND_MINY             = 295
 MAINWND_INSIDE_COLOR     = 0xE6E6E6
 MAINWND_BITMAP_FILENAME  = "metallic_new\main2.webp"
 MAINWND_BITMAP_ANCHOR    = center
@@ -93,7 +93,6 @@ PANEL13_BITMAP_FILENAME  = "RES_211"
 
 // Checkboxes on left panel
 CHKBOX_TEXT_COLOR_H      = 0xFF1919
-CHKBOX_SIZE              = 15
 BUTTON_BITMAP_CHECKED    = "metallic_new\checked.webp"
 BUTTON_BITMAP_CHECKED_H  = "metallic_new\checked.webp"
 BUTTON_BITMAP_UNCHECKED  = "metallic_new\unchecked.webp"
@@ -108,8 +107,8 @@ BUTTON_OUTLINE_WIDTH_H   = 1
 BUTTON_OUTLINE_ROUND_H   = 0
 
 // Driver list
-DRVLIST_OFSX             = 155
-DRVLIST_OFSY             = 65
+DRVLIST_OFSX             = 204
+DRVLIST_OFSY             = 80
 DRVLIST_WX               = -7
 DRVLIST_WY               = -5
 DRVLIST_INSIDE_COLOR     = 0xFF000000
@@ -118,10 +117,6 @@ DRVLIST_OUTLINE_WIDTH    = 1
 DRVLIST_OUTLINE_ROUND    = 0
 DRVLIST_BITMAP_FILENAME  = "metallic_new\semi.webp"
 DRVLIST_BITMAP_FILL      = hstr_vstr
-
-// Driver item content
-ITEM_CHECKBOX_OFS_Y      = 7
-ITEM_CHECKBOX_SIZE       = 17
 
 // Driver item (generic style)
 DRVITEM_OUTLINE_ROUND    = 0
@@ -146,3 +141,54 @@ DRVITEM_TEXT2_COLOR_BO   = 0x008100
 
 // MISSING
 DRVITEM_TEXT2_COLOR_MS   = 0x008400
+
+
+// Main window
+MAINWND_WX               = 1024
+MAINWND_WY               = 731
+MAINWND_MINX             = 839
+MAINWND_MINY             = 295
+
+// Panel, sysinfo
+PANEL1_WX                = -668
+
+// Panel, lang_theme
+PANEL3_OFSY              = 135
+
+// Panel, actions
+PANEL4_OFSY              = 255
+
+// Panel, filters (found)
+PANEL5_OFSY              = 354
+
+// Panel, filters (not found)
+PANEL6_OFSY              = 517
+
+// Panel, filters (special)
+PANEL7_OFSY              = 617
+
+// Panel, revision
+PANEL8_WX                = PANEL3_WX
+
+// Panel, install button
+PANEL9_OFSX              = -180
+PANEL9_OFSY              = 0
+PANEL9_WX                = 177
+PANEL9_WY                = 73
+
+// Panel, selectall button
+PANEL10_OFSX             = -337
+PANEL10_OFSY             = 1
+PANEL10_WX               = 160
+PANEL10_WY               = 34
+
+// Panel, selectnone button
+PANEL11_OFSX             = PANEL10_OFSX
+PANEL11_OFSY             = 39
+PANEL11_WX               = PANEL10_WX
+PANEL11_WY               = PANEL10_WY
+
+// Panel, options
+PANEL12_OFSX             = -665
+PANEL12_OFSY             = 4
+PANEL12_WX               = 328
