@@ -730,6 +730,11 @@ void MainWindow_t::redrawmainwnd()
 
 void MainWindow_t::tabadvance(int v)
 {
+/*    if(v>0)
+        wPanels->NextPanel();
+    else
+        wPanels->PrevPanel();
+*/
     while(1)
     {
         kbpanel+=v;
@@ -748,14 +753,22 @@ void MainWindow_t::tabadvance(int v)
     else
         SetFocus(hMain);
 
+    HoverVisiter hv{0,0};
+    wPanels->Accept(hv);
+
     redrawfield();
-    redrawmainwnd();
+    //redrawmainwnd();
 }
 
 extern int setaa;
 void MainWindow_t::arrowsAdvance(int v)
 {
     if(!kbpanel)return;
+
+/*    if(v>0)
+        wPanels->NextItem();
+    else
+        wPanels->PrevItem();*/
 
     if(kbpanel==KB_INSTALL)
     {

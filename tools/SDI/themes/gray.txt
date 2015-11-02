@@ -44,9 +44,13 @@ PANEL_OUTLINE_ROUND      = 0
 PANEL1_OFSY              = 14
 
 // Panel, install
-PANEL2_OFSX              = PANEL2_OFSX
-PANEL2_OFSY              = 186
-PANEL2_WY                = 0
+PANEL2_OFSX              = 0
+PANEL2_OFSY              = 0
+PANEL2_WX                = -1
+PANEL2_WY                = 30
+PANEL2_INSIDE_COLOR      = 0xFF000000
+PANEL2_OUTLINE_WIDTH     = 0
+PANEL2_BITMAP_FILENAME   = ""
 
 // Panel, lang_theme
 PANEL3_OFSY              = 98
