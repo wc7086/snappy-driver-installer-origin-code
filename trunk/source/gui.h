@@ -155,7 +155,8 @@ public:
 
 class Widget
 {
-protected:
+public:
+    int cur;
     int x1,y1,wx,wy;
 
 public:
@@ -170,6 +171,8 @@ public:
     virtual ~Widget(){delete command;}
     virtual void draw(Canvas &){}
     virtual void arrange(){}
+    virtual bool SetFocus(){return false;}
+    virtual bool IsFocused(Widget *){return false;}
 
     void setboundbox(int v1,int v2,int v3,int v4){x1=v1;y1=v2;wx=v3;wy=v4;}
     void hitscan(int x,int y);
@@ -186,6 +189,10 @@ protected:
     Widget *widgets[20];
 
 public:
+    virtual void NextPanel(){cur++;}
+    virtual void PrevPanel(){cur--;}
+    virtual void NextItem(){widgets[5]->cur++;}
+    virtual void PrevItem(){widgets[5]->cur--;}
     virtual void Add(Widget *w)
     {
         widgets[num]=w;
@@ -197,6 +204,11 @@ public:
     ~WidgetComposite()
     {
         for(int i=0;i<num;i++)delete widgets[i];
+    }
+    bool IsFocused(Widget *a)
+    {
+        //Log.print_con("Cur %d\n",cur);
+        return widgets[cur]==a;
     }
     void draw(Canvas &canvas)
     {
@@ -211,11 +223,12 @@ public:
 // wPanel
 class wPanel:public WidgetComposite
 {
-    int sz,indofs,boxi;
+    int sz,indofs,boxi,kb;
     bool isAdvanced;
 
 public:
-    wPanel(int sz_,int box_,bool isAdv=false):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),isAdvanced(isAdv){}
+    wPanel(int sz_,int box_,int kb_=0,bool isAdv=false):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),kb(kb_),isAdvanced(isAdv){}
+    bool IsFocused(Widget *a);
     void Accept(WidgetVisitor &);
     void arrange();
     void draw(Canvas &canvas);
@@ -293,6 +306,7 @@ public:
     bool checked=false;
 
 public:
+    bool SetFocus(){return true;}
     void draw(Canvas &canvas);
     void Accept(WidgetVisitor &visitor);
     wCheckbox(int str_id_,Command *c):Widget(str_id_){command=c;}
@@ -302,6 +316,7 @@ public:
 class wButton:public Widget
 {
 public:
+    bool SetFocus(){return true;}
     void Accept(WidgetVisitor &visitor);
     void draw(Canvas &canvas);
     wButton(int str_id_,Command *c):Widget(str_id_){command=c;}

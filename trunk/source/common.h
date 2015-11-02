@@ -149,6 +149,24 @@ void strtolower(char *s,size_t len);
 int  unicode2ansi(char *s,char *out,size_t size);
 int _wtoi_my(const wchar_t *str);
 
+class WString
+{
+private:
+    wchar_t buf[BUFLEN];
+    wchar_t *buf_dyn=nullptr;
+    wchar_t *buf_cur;
+
+public:
+    WString():buf_cur(buf){}
+    ~WString(){delete buf_dyn;}
+
+    //void sprintf(format,...);
+    //void copy(wchar_t *s)
+
+    wchar_t *GetV(){return buf_cur;}
+    const wchar_t *Get(){return buf_cur;}
+};
+
 // 7-zip
 size_t  encode(char *dest,size_t dest_sz,char *src,size_t src_sz);
 size_t  decode(char *dest,size_t dest_sz,char *src,size_t src_sz);
