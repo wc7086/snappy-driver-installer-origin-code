@@ -3,9 +3,9 @@ THEME_NAME              = "Grass"
 // Main window
 MAINWND_TEXT_COLOR       = 0x000000
 MAINWND_WX               = 1024
-MAINWND_WY               = 731
-MAINWND_MINX             = 839
-MAINWND_MINY             = 295
+MAINWND_WY               = 729
+MAINWND_MINX             = 838
+MAINWND_MINY             = 289
 MAINWND_INSIDE_COLOR     = 0xE6E6E6
 MAINWND_BITMAP_FILENAME  = "grass\main.webp"
 MAINWND_BITMAP_ANCHOR    = center
@@ -21,27 +21,27 @@ PANEL_BITMAP_FILENAME    = "grass\semi.webp"
 PANEL_BITMAP_FILL        = hstr_vstr
 
 // Panel, sysinfo
-PANEL1_OFSX              = 155
+PANEL1_OFSX              = 209
 PANEL1_OFSY              = 4
-PANEL1_WX                = -483
+PANEL1_WX                = -620
 
 // Panel, install
 PANEL2_WY                = 0
 
 // Panel, lang_theme
-PANEL3_OFSY              = 127
+PANEL3_OFSY              = 135
 
 // Panel, actions
-PANEL4_OFSY              = 220
+PANEL4_OFSY              = 255
 
 // Panel, filters (found)
-PANEL5_OFSY              = 296
+PANEL5_OFSY              = 354
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 423
+PANEL6_OFSY              = 517
 
 // Panel, filters (special)
-PANEL7_OFSY              = 499
+PANEL7_OFSY              = 617
 
 // Panel, revision
 PANEL8_OFSX              = 5
@@ -49,26 +49,26 @@ PANEL8_OFSY              = 110
 PANEL8_BITMAP_FILENAME   = ""
 
 // Panel, install button
-PANEL9_OFSX              = -140
+PANEL9_OFSX              = -180
 PANEL9_OFSY              = 0
-PANEL9_WX                = 137
-PANEL9_WY                = 57
+PANEL9_WX                = 177
+PANEL9_WY                = 69
 PANEL9_OUTLINE_WIDTH     = -1
 PANEL9_BITMAP_FILENAME   = "grass\button.webp"
 PANEL9_BITMAP_FILENAME_H = "grass\button_h.webp"
 
 // Panel, selectall button
-PANEL10_OFSX             = -247
+PANEL10_OFSX             = -337
 PANEL10_OFSY             = 1
-PANEL10_WX               = 110
-PANEL10_WY               = 27
+PANEL10_WX               = 160
+PANEL10_WY               = 30
 PANEL10_OUTLINE_WIDTH    = PANEL9_OUTLINE_WIDTH
 PANEL10_BITMAP_FILENAME  = "grass\button_2.webp"
 PANEL10_BITMAP_FILENAME_H= "grass\button_2s.webp"
 
 // Panel, selectnone button
 PANEL11_OFSX             = PANEL10_OFSX
-PANEL11_OFSY             = 30
+PANEL11_OFSY             = 39
 PANEL11_WX               = PANEL10_WX
 PANEL11_WY               = PANEL10_WY
 PANEL11_OUTLINE_WIDTH    = PANEL9_OUTLINE_WIDTH
@@ -76,9 +76,9 @@ PANEL11_BITMAP_FILENAME  = "grass\button_2.webp"
 PANEL11_BITMAP_FILENAME_H= "grass\button_2d.webp"
 
 // Panel, options
-PANEL12_OFSX             = -478
+PANEL12_OFSX             = -613
 PANEL12_OFSY             = 4
-PANEL12_WX               = 229
+PANEL12_WX               = 272
 PANEL12_WY               = PANEL_WY
 
 // Panel, logo
@@ -107,7 +107,7 @@ BUTTON_OUTLINE_WIDTH_H   = 1
 BUTTON_OUTLINE_ROUND_H   = 0
 
 // Driver list
-DRVLIST_OFSX             = 204
+DRVLIST_OFSX             = 209
 DRVLIST_OFSY             = 80
 DRVLIST_WX               = -7
 DRVLIST_WY               = -5
@@ -141,54 +141,3 @@ DRVITEM_TEXT2_COLOR_BO   = 0x008100
 
 // MISSING
 DRVITEM_TEXT2_COLOR_MS   = 0x008400
-
-
-// Main window
-MAINWND_WX               = 1024
-MAINWND_WY               = 731
-MAINWND_MINX             = 839
-MAINWND_MINY             = 295
-
-// Panel, sysinfo
-PANEL1_WX                = -668
-
-// Panel, lang_theme
-PANEL3_OFSY              = 135
-
-// Panel, actions
-PANEL4_OFSY              = 255
-
-// Panel, filters (found)
-PANEL5_OFSY              = 354
-
-// Panel, filters (not found)
-PANEL6_OFSY              = 517
-
-// Panel, filters (special)
-PANEL7_OFSY              = 617
-
-// Panel, revision
-PANEL8_WX                = PANEL3_WX
-
-// Panel, install button
-PANEL9_OFSX              = -180
-PANEL9_OFSY              = 0
-PANEL9_WX                = 177
-PANEL9_WY                = 73
-
-// Panel, selectall button
-PANEL10_OFSX             = -337
-PANEL10_OFSY             = 1
-PANEL10_WX               = 160
-PANEL10_WY               = 34
-
-// Panel, selectnone button
-PANEL11_OFSX             = PANEL10_OFSX
-PANEL11_OFSY             = 39
-PANEL11_WX               = PANEL10_WX
-PANEL11_WY               = PANEL10_WY
-
-// Panel, options
-PANEL12_OFSX             = -665
-PANEL12_OFSY             = 4
-PANEL12_WX               = 328

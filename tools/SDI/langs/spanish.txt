@@ -68,7 +68,7 @@ STR_SHOW_INVALID_H      = "Muestra controladores que no sean compatibles con el 
 
 STR_OPTIONS             = "Opciones"
 STR_OPTIONS_H           = ""
-STR_REBOOT              = "Reiniciar el equipo después de la instalación"
+STR_REBOOT              = "Reiniciar el equipo"
 STR_REBOOT_H            = "Reiniciar el equipo (si es necesario) después de la instalación (Ctrl + R).\n\nSUGERENCIA: Puedes cancelar en cualquier momento  reiniciar el equipo desactivando la casilla de verificación."
 
 // Sysinfo

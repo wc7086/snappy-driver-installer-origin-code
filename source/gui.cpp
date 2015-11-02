@@ -41,22 +41,26 @@ public:
     autorun()
     {
         wPanel *p;
-        int ind=0;
         wPanels=new WidgetComposite;
 
+        // Revision
+        p=new wPanel{1,BOX_PANEL8};
+        p->Add(new wTextRev);
+        wPanels->Add(p);
+
         // SysInfo
-        p=new wPanel{3,ind++};
+        p=new wPanel{3,BOX_PANEL1};
         p->Add(new wTextSys1);
         p->Add(new wTextSys2);
         p->Add(new wTextSys3);
         wPanels->Add(p);
 
         // Install
-        p=new wPanel{3,ind++};
+        p=new wPanel{3,BOX_PANEL2};
         wPanels->Add(p);
 
         // Theme/lang
-        p=new wPanel{5,ind++};
+        p=new wPanel{5,BOX_PANEL3};
         p->Add(new wText    {STR_LANG});
         p->Add(new wLang);
         p->Add(new wText    {STR_THEME});
@@ -65,7 +69,7 @@ public:
         wPanels->Add(p);
 
         // Actions
-        p=new wPanel{4,ind++};
+        p=new wPanel{4,BOX_PANEL4};
         p->Add(new wButton  {STR_OPENLOGS,          new OpenLogsCommand});
         p->Add(new wButton  {STR_SNAPSHOT,          new SnapshotCommand});
         p->Add(new wButton  {STR_EXTRACT,           new ExtractCommand});
@@ -73,7 +77,7 @@ public:
         wPanels->Add(p);
 
         // Filters (found)
-        p=new wPanel{7,ind++,true};
+        p=new wPanel{7,BOX_PANEL5,true};
         p->Add(new wText    {STR_SHOW_FOUND});
         p->Add(new wCheckbox{STR_SHOW_MISSING,      new FiltersCommand{ID_SHOW_MISSING}});
         p->Add(new wCheckbox{STR_SHOW_NEWER,        new FiltersCommand{ID_SHOW_NEWER}});
@@ -84,7 +88,7 @@ public:
         wPanels->Add(p);
 
         // Filters (not found)
-        p=new wPanel{4,ind++,true};
+        p=new wPanel{4,BOX_PANEL6,true};
         p->Add(new wText    {STR_SHOW_NOTFOUND});
         p->Add(new wCheckbox{STR_SHOW_NF_MISSING,   new FiltersCommand{ID_SHOW_NF_MISSING}});
         p->Add(new wCheckbox{STR_SHOW_NF_UNKNOWN,   new FiltersCommand{ID_SHOW_NF_UNKNOWN}});
@@ -92,41 +96,36 @@ public:
         wPanels->Add(p);
 
         // Filters (special)
-        p=new wPanel{3,ind++,true};
+        p=new wPanel{3,BOX_PANEL7,true};
         p->Add(new wCheckbox{STR_SHOW_ONE,          new FiltersCommand{ID_SHOW_ONE}});
         p->Add(new wCheckbox{STR_SHOW_DUP,          new FiltersCommand{ID_SHOW_DUP}});
         p->Add(new wCheckbox{STR_SHOW_INVALID,      new FiltersCommand{ID_SHOW_INVALID}});
         wPanels->Add(p);
 
-        // Revision
-        p=new wPanel{1,ind++};
-        p->Add(new wTextRev);
-        wPanels->Add(p);
-
         // Install button
-        p=new wPanel{1,ind++};
+        p=new wPanel{1,BOX_PANEL9};
         p->Add(new wButtonInst{STR_INSTALL,         new InstallCommand});
         wPanels->Add(p);
 
         // Select all button
-        p=new wPanel{1,ind++};
+        p=new wPanel{1,BOX_PANEL10};
         p->Add(new wButton  {STR_SELECT_ALL,        new SelectAllCommand});
         wPanels->Add(p);
 
         // Select none button
-        p=new wPanel{1,ind++};
+        p=new wPanel{1,BOX_PANEL11};
         p->Add(new wButton  {STR_SELECT_NONE,       new SelectNoneCommand});
         wPanels->Add(p);
 
         // Options
-        p=new wPanel{3,ind++};
+        p=new wPanel{3,BOX_PANEL12};
         p->Add(new wText    {STR_OPTIONS});
         p->Add(new wCheckbox{STR_RESTOREPOINT,      new RestPointCheckboxCommand});
         p->Add(new wCheckbox{STR_REBOOT,            new RebootCheckboxCommand});
         wPanels->Add(p);
 
         // Logo
-        p=new wLogo{1,ind++};
+        p=new wLogo{1,BOX_PANEL13};
         p->Add(new wText    {0});
         wPanels->Add(p);
     }
@@ -219,7 +218,7 @@ void wPanel::draw(Canvas &canvas)
     if(!Settings.expertmode&&isAdvanced)return;
 
     // Draw panel
-    canvas.DrawWidget(x1,y1,x1+wx,y1+wy,(isSelected&&flags)?BOX_PANEL_H+index*2+2:BOX_PANEL+index*2+2);
+    canvas.DrawWidget(x1,y1,x1+wx,y1+wy,boxi+(isSelected&&flags?1:0));
 
     // Draw childs
     ClipRegion rgn;
