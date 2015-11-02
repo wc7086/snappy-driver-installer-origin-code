@@ -415,7 +415,7 @@ BUTTON_BITMAP_FILL_H     = BUTTON_BITMAP_FILL
 
 // Driver list
 DRVLIST_OFSX             = 200
-DRVLIST_OFSY             = 0
+DRVLIST_OFSY             = 5
 DRVLIST_WX               = -1
 DRVLIST_WY               = -1
 DRVLIST_INSIDE_COLOR     = 0xFFF0EF2F  // set 0xFF000000 to expose the background

@@ -8,7 +8,7 @@ STR_LANG_CODE           = 0x0E
 STR_RTL                 = 0
 
 // left panel
-STR_SHOW_SYSINFO        = "      - Rendszerinformáció -"
+STR_SHOW_SYSINFO        = "  - Rendszerinformáció -"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "- TELEPÍTÉS -"

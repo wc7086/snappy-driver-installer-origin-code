@@ -729,6 +729,7 @@ void Canvas::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,in
     HGDIOBJ r;
     unsigned r32;
 
+    if(x1>x2)return;
     //oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
     newbrush=CreateSolidBrush(color1);
     oldbrush=(HBRUSH)SelectObject(hdcMem,newbrush);

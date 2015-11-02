@@ -230,7 +230,9 @@ void Vault::parse()
             }
             else                // Number
             {
-                entry[r].val=readvalue(rhs);
+                int val=readvalue(rhs);
+                //if(!entry[r].init&&entry[r].val==val)Log.print_err("WARNNING: double definition for '%S'\n",lhs);
+                entry[r].val=val;
                 entry[r].init=2;
             }
         }

@@ -211,11 +211,11 @@ public:
 // wPanel
 class wPanel:public WidgetComposite
 {
-    int sz,indofs,index;
+    int sz,indofs,boxi;
     bool isAdvanced;
 
 public:
-    wPanel(int sz_,int ofs,bool isAdv=false):sz(sz_),indofs((ofs+1)*18),index(ofs),isAdvanced(isAdv){}
+    wPanel(int sz_,int box_,bool isAdv=false):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),isAdvanced(isAdv){}
     void Accept(WidgetVisitor &);
     void arrange();
     void draw(Canvas &canvas);
@@ -235,7 +235,7 @@ class wLogo:public wPanel
 {
 public:
     void Accept(WidgetVisitor &visitor);
-    wLogo(int sz_,int ofs):wPanel{sz_,ofs}{}
+    wLogo(int sz_,int box_):wPanel{sz_,box_}{}
 };
 
 // wLang

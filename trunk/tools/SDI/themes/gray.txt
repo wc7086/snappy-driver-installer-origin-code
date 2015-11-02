@@ -103,6 +103,7 @@ BUTTON_INSIDE_COLOR_H    = 0xFF20B9
 
 // Driver list
 DRVLIST_OFSX             = 217
+DRVLIST_OFSY             = 2
 DRVLIST_INSIDE_COLOR     = 0xCCCCCC
 DRVLIST_OUTLINE_ROUND    = 0
 
@@ -110,6 +111,7 @@ DRVLIST_OUTLINE_ROUND    = 0
 DRVITEM_WX               = -20
 DRVITEM_WY               = 37
 DRVITEM_OFSX             = 15
+DRVITEM_OFSY             = 10
 DRVITEM_DIST_Y0          = 36
 
 // Driver item content

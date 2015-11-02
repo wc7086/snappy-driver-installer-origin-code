@@ -72,7 +72,7 @@ STR_SHOW_INVALID_H      = "Zeigt die mit dem aktuellen System inkompatiblen Trei
 
 STR_OPTIONS             = "Optionen"
 STR_OPTIONS_H           = ""
-STR_REBOOT              = "PC nach der Treiberinstallation neu starten"
+STR_REBOOT              = "PC neustarten"
 STR_REBOOT_H            = "Falls erforderlich, wird der PC nach der Treiberinstallation neu gestartet (Strg+R).\n\nHinweis: Der Neustart kann jederzeit durch Entfernen des Hakens unterbunden werden."
 
 // Sysinfo
