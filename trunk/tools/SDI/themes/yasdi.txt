@@ -17,7 +17,6 @@ PROGR_OUTLINE_ROUND      = 0
 PROGR_S_OUTLINE_ROUND    = 0
 
 // Panel, generic
-PANEL_WY                 = 16
 PANEL_INSIDE_COLOR       = 0xF0FAFA
 PANEL_OUTLINE_WIDTH      = 1
 PANEL_OUTLINE_ROUND      = 0
@@ -182,27 +181,14 @@ DRVITEM_INSIDE_COLOR_NS_H   = 0xDDFFDD
 DRVITEM_TEXT1_COLOR_NS      = DRVITEM_TEXT1_COLOR
 DRVITEM_TEXT2_COLOR_NS      = DRVITEM_TEXT2_COLOR
 
-// Font
-FONT_SIZE                = 11
-
 // Main window
-MAINWND_WX               = 1000
+MAINWND_WX               = 1024
 MAINWND_WY               = 710
-MAINWND_MINX             = 640
-MAINWND_MINY             = 480
-
-// Popup
-POPUP_WX                 = 400
-POPUP_WY                 = 17
-
-// Panel, generic
-PANEL_WY                 = 20
-PANEL_WX                 = 220
+MAINWND_MINX             = 529
+MAINWND_MINY             = 240
 
 // Panel, sysinfo
-PANEL1_OFSX              = 10
-PANEL1_OFSY              = 10
-PANEL1_WX              = 700
+PANEL1_WX              = -315
 
 // Panel, install
 PANEL2_OFSX              = 0
@@ -214,34 +200,35 @@ PANEL2_OUTLINE_WIDTH     = 0
 PANEL2_BITMAP_FILENAME   = ""
 
 // Panel, lang_theme
-PANEL3_OFSY              = 85
+PANEL3_OFSY              = 88
 
 // Panel, actions
-PANEL4_OFSY              = 199
+PANEL4_OFSY              = 208
 
 // Panel, filters (found)
-PANEL5_OFSY              = 294
+PANEL5_OFSY              = 306
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 449
+PANEL6_OFSY              = 469
 
 // Panel, filters (special)
-PANEL7_OFSY              = 544
+PANEL7_OFSY              = 569
 
 // Panel, install button
-PANEL9_OFSX              = 710
-PANEL9_OFSY              = 42
-PANEL9_WX              = 254
-PANEL9_WY              = 32
+PANEL9_OFSX              = -311
+PANEL9_OFSY              = 43
+PANEL9_WX              = 306
+PANEL9_WY              = 34
 
 // Panel, selectall button
+PANEL10_OFSX             = PANEL9_OFSX
 PANEL10_OFSY             = 7
-PANEL10_WX             = 128
+PANEL10_WX             = 155
 
 // Panel, selectnone button
-PANEL11_OFSX             = 836
+PANEL11_OFSX             = -160
 PANEL11_OFSY             = 7
-PANEL11_WX             = 128
+PANEL11_WX             = PANEL10_WX
 
 // Panel, options
 PANEL12_OFSX             = -250
@@ -250,22 +237,6 @@ PANEL12_OFSY             = 10
 // Panel, logo
 PANEL13_OFSY             = -80
 
-// Checkboxes on left panel
-CHKBOX_TEXT_OFSX         = 22
-CHKBOX_SIZE              = 18
 
 // Driver list
-DRVLIST_OFSX             = 230
-DRVLIST_OFSY             = 75
-
-// Driver items
-DRVITEM_WX               = 720
-DRVITEM_WY               = 35
-DRVITEM_OFSY             = 10
-DRVITEM_DIST_Y0          = 38
-
-// Driver item content
-ITEM_CHECKBOX_SIZE       = 23
-ITEM_TEXT_OFS_X          = 70
-ITEM_TEXT_OFS_Y          = 3
-ITEM_TEXT_DIST_Y         = 14
+DRVLIST_OFSY             = 83

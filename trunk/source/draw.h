@@ -123,7 +123,7 @@ public:
     ~Canvas();
 
     void CopyCanvas(Canvas *source,int x1,int y1);
-    void begin(HWND hwnd,int x,int y);
+    void begin(HWND hwnd,int x,int y,bool mirror=true);
     void end();
 
     void SetClipRegion(ClipRegion &clip);

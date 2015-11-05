@@ -113,6 +113,7 @@ private:
     int floating_type=0;
     int floating_x=1,floating_y=1;
     Canvas *canvasPopup=nullptr;
+    bool wait=false;
 
 public:
     Popup_t();
@@ -120,6 +121,7 @@ public:
     void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
     void popup_resize(int x,int y);
     void onHover();
+    void onLeave();
 
     Font *hFontP;
     Font *hFontBold;

@@ -496,7 +496,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         td.ret_ofs(10);
         canvas.SetFont(Popup.hFontP);
         td.TextOutF(               c0,L"%s",t+cur_driver->DriverDesc);
-        td.TextOutF(               cur_driver->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
+        td.TextOutF(               cur_driver->isvalidcat(state)?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
         td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
         td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
@@ -520,8 +520,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
         canvas.SetFont(Popup.hFontP);
         td.TextOutF(               c0,L"%s",bufw+1000);
-        td.TextOutF(hwidmatch_f->isvalidcat(state)?cb:D(POPUP_CMP_INVALID_COLOR),
-                 L"%s%S",STR(STR_HINT_SIGNATURE),/*hwidmatch_f->pickcat(state),*/hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
+        td.TextOutF(hwidmatch_f->isvalidcat(state)?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
         td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
         td.TextOutF(cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
         td.TextOutF(cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
