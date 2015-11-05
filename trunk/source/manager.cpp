@@ -811,6 +811,8 @@ void Manager::print_hr()
 
             if(itembar->hwidmatch)
             {
+                ex.Found(itembar->hwidmatch->getdrp_packname(),itembar->hwidmatch->getdrp_drvversion());
+
                 Log.print_file("Available driver\n");
                 itembar->hwidmatch->print_hr();
             }
@@ -1467,6 +1469,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 RECT rect;
                 int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
                 rect.left=x+D(ITEM_TEXT_OFS_X);
+                if(rtl)rect.left=x+D(ITEM_TEXT_OFS_X)+wx1/2-canvas.GetTextExtent(bufw)-10;
                 rect.top=pos;
                 if(intend)wx1-=D(DRVITEM_LINE_INTEND);
                 rect.right=rect.left+wx1/2;

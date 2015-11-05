@@ -241,6 +241,20 @@ const wchar_t *Device::getHWIDby(int num,State *state)
     return L"";
 }
 
+Device::Device(State *state):
+driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
+        Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
+        InstanceId(0),status(0),problem(0),ret(0)
+{
+    wchar_t buf[BUFLEN];
+
+    wsprintf(buf,L"%S",ex.GetHWID());
+    //Log.print_con("Fake '%S'\n",buf);
+    buf[lstrlen(buf)+2]=0;
+    problem=2;
+    HardwareID=state->textas.t_memcpy((char *)buf,lstrlen(buf)*2+4);
+}
+
 Device::Device(HDEVINFO hDevInfo,State *state,int i)
 {
     DWORD buffersize;
@@ -488,6 +502,8 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
 //{ State
 void State::fakeOSversion()
 {
+    ex.SetWindowVer();
+
     if(Settings.virtual_arch_type==32)architecture=0;
     if(Settings.virtual_arch_type==64)architecture=1;
     if(Settings.virtual_os_version)
@@ -992,6 +1008,12 @@ void State::scanDevices()
     Driverpack unpacked_drp{L"",L"windir.7z",&collection};
 
     Timers.start(time_devicescan);
+    if(ex.IsActive())
+    {
+        Devices_list.emplace_back((Device(this)));
+        Timers.stop(time_devicescan);
+        return;
+    }
     //collection.init(textas.getw(windir),L"",L"");
 
     hDevInfo=SetupDiGetClassDevs(nullptr,nullptr,nullptr,DIGCF_PRESENT|DIGCF_ALLCLASSES);

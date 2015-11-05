@@ -109,6 +109,7 @@ public:
     //Device &operator=(const Device &)=delete;
     //Device(Device &&)=default;
     Device(HDEVINFO hDevInfo,State *state,int i);
+    Device(State *state);
     Device():driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
         Mfg(0),FriendlyName(0),Capabilities(0),ConfigFlags(0),
         InstanceId(0),status(0),problem(0),ret(0),DeviceInfoData(){}

@@ -111,7 +111,7 @@ class Popup_t
 
 private:
     int floating_type=0;
-    int floating_x=0,floating_y=0;
+    int floating_x=1,floating_y=1;
     Canvas *canvasPopup=nullptr;
 
 public:

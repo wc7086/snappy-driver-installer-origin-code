@@ -76,6 +76,7 @@ public:
 
     friend class Driverpack;
     friend class Hwidmatch;
+    friend class datum;
     friend int cmpdate(Version *t1,Version *t2);
     friend int cmpversion(Version *t1,Version *t2);
 };
