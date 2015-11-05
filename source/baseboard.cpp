@@ -21,6 +21,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <comdef.h>         // for _bstr_t
 #include <Wbemidl.h>        // for IWbemLocator
 #include <shobjidl.h>       // for TBPF_NORMAL
+#include "common.h"
+#include "indexing.h"
 #include "main.h"
 
 const IID IID_ITaskbarList3={0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf}};
@@ -34,6 +36,8 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 {
     *manuf=*model=*product=*cs_model=0;
     *type=0;
+
+    if(ex.IsActive())return 0;
 
     HRESULT hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))

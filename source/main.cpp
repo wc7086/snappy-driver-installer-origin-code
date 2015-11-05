@@ -933,8 +933,11 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
         case WM_DESTROY:
             GetWindowRect(hwnd,&rect);
-            Settings.wndwx=rect.right-rect.left;
-            Settings.wndwy=rect.bottom-rect.top;
+            if(!IsIconic(hwnd))
+            {
+                Settings.wndwx=rect.right-rect.left;
+                Settings.wndwy=rect.bottom-rect.top;
+            }
 
             vLang->StopMonitor();
             vTheme->StopMonitor();
