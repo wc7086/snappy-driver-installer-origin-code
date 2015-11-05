@@ -808,8 +808,7 @@ int MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam
     switch(uMsg)
     {
         case WM_MOUSELEAVE:
-            ShowWindow(Popup.hPopup,SW_HIDE);
-            InvalidateRect(hwnd,nullptr,0);
+            Popup.onLeave();
             break;
 
         case WM_MOUSEHOVER:
@@ -1544,7 +1543,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 if(ctrl_down||Settings.expertmode)type=FLOATING_CMPDRIVER;
 
                 manager_g->hitscan(x,y,&itembar_i,&i);
-                if(i==0&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||Settings.expertmode))
+                if((i==0||i==3)&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||Settings.expertmode))
                     Popup.drawpopup(itembar_i,type,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_AUTORUN)
                     Popup.drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
@@ -1630,7 +1629,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
 
         case WM_PAINT:
             GetClientRect(hwnd,&rect);
-            canvasPopup->begin(hwnd,rect.right,rect.bottom);
+            canvasPopup->begin(hwnd,rect.right,rect.bottom,floating_type!=FLOATING_CMPDRIVER&&floating_type!=FLOATING_DRIVERLST);
 
             canvasPopup->DrawWidget(0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)

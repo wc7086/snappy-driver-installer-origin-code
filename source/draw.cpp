@@ -415,7 +415,7 @@ Canvas::~Canvas()
     }
 }
 
-void Canvas::begin(HWND nhwnd,int nx,int ny)
+void Canvas::begin(HWND nhwnd,int nx,int ny,bool mirror)
 {
     unsigned r32;
 
@@ -448,7 +448,10 @@ void Canvas::begin(HWND nhwnd,int nx,int ny)
     SetStretchBltMode(hdcMem,HALFTONE);
     r32=SelectClipRgn(hdcMem,clipping);
     if(!r32)Log.print_err("ERROR in canvas_begin(): failed SelectClipRgn\n");
-    SetLayout(hdcMem,rtl?LAYOUT_RTL:0);
+    if(mirror)
+        SetLayout(hdcMem,rtl?LAYOUT_RTL:0);
+    else
+        SetLayout(hdcMem,0);
 }
 
 void Canvas::end()
@@ -830,20 +833,43 @@ void Popup_t::drawpopup(int itembar,int type,int x,int y,HWND hwnd)
         MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
         if(needupdate)InvalidateRect(hPopup,nullptr,0);
 
-        TRACKMOUSEEVENT tme;
-        tme.cbSize=sizeof(tme);
-        tme.hwndTrack=hwnd;
-        tme.dwFlags=TME_LEAVE|TME_HOVER;
-        tme.dwHoverTime=(MainWindow.ctrl_down||MainWindow.space_down)?1:Settings.hintdelay;
-        TrackMouseEvent(&tme);
+        if(!wait)
+        {
+            wait=true;
+            TRACKMOUSEEVENT tme;
+            tme.cbSize=sizeof(tme);
+            tme.hwndTrack=hwnd;
+            tme.dwFlags=TME_LEAVE|TME_HOVER;
+            tme.dwHoverTime=(MainWindow.ctrl_down||MainWindow.space_down)?1:Settings.hintdelay;
+            TrackMouseEvent(&tme);
+        }
     }
     if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
 }
 
 void Popup_t::onHover()
 {
+    wait=false;
+    if(floating_type&&rtl)
+    {
+        if(floating_type==FLOATING_CMPDRIVER||floating_type==FLOATING_DRIVERLST)
+        {
+            rtl=0;
+            setMirroring(Popup.hPopup);
+            rtl=1;
+        }
+        else
+            setMirroring(Popup.hPopup);
+    }
     InvalidateRect(hPopup,nullptr,0);
     ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
+}
+
+void Popup_t::onLeave()
+{
+    wait=false;
+    ShowWindow(Popup.hPopup,SW_HIDE);
+    //InvalidateRect(hPopup,nullptr,0);
 }
 
 HICON Canvas::CreateMirroredIcon(HICON hiconOrg)
