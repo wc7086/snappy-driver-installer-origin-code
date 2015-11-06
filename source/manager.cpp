@@ -62,11 +62,12 @@ itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupin
     first=first1;
 }
 
-void itembar_t::itembar_setpos(int *pos,int *cnt)
+void itembar_t::itembar_setpos(int *pos,int *cnt,bool addspace)
 {
     if(isactive)
     {
         *pos+=*cnt?D(DRVITEM_DIST_Y1):D(DRVITEM_DIST_Y0);
+        if(addspace)*pos+=D(DRVITEM_DIST_Y2);
         (*cnt)--;
     }
     oldpos=curpos;
@@ -1191,6 +1192,7 @@ void Manager::setpos()
 //1:narrow
 
     itembar=&items_list[0];
+    bool prev_was_a_slot=false;
     for(k=0;k<items_list.size();k++,itembar++)
     {
         devicematch=itembar->devicematch;
@@ -1199,10 +1201,11 @@ void Manager::setpos()
         //if(lastitembar&&lastitembar->index<SLOT_RESTORE_POINT&&itembar->index<SLOT_RESTORE_POINT)cnt=1;
         if(devicematch&&!devicematch->num_matches&&!lastmatch&&lastitembar&&lastitembar->index>=SLOT_RESTORE_POINT)cnt=1;
 
-        itembar->itembar_setpos(&pos,&cnt);
+        itembar->itembar_setpos(&pos,&cnt,prev_was_a_slot);
         if(itembar->isactive)
         {
             lastitembar=itembar;
+            prev_was_a_slot=k<RES_SLOTS;
             group=itembar->index;
             if(devicematch)lastmatch=devicematch->num_matches;
         }

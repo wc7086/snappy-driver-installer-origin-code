@@ -3,7 +3,7 @@
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "Farsi"
+STR_LANG_NAME           = "فارسی"
 STR_LANG_CODE           = 0x29
 STR_RTL                 = 1
 

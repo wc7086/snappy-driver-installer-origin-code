@@ -84,7 +84,7 @@ public:
         wPanels->Add(p);
 
         // Actions
-        p=new wPanel{4,BOX_PANEL4,KB_ACTIONS};
+        p=new wPanel{4,BOX_PANEL4,KB_ACTIONS,true};
         p->Add(new wButton  {STR_OPENLOGS,          new OpenLogsCommand});
         p->Add(new wButton  {STR_SNAPSHOT,          new SnapshotCommand});
         p->Add(new wButton  {STR_EXTRACT,           new ExtractCommand});
@@ -497,11 +497,7 @@ void ExpertmodeCheckboxCommand::LeftClick(bool checked)
 {
     Settings.expertmode=checked;
 
-    if(Settings.expertmode||MainWindow.ctrl_down?SW_SHOWNOACTIVATE:MainWindow.hideconsole)
-        Console->Show();
-    else
-        Console->Hide();
-
+    if(MainWindow.ctrl_down)Console->Show();
     InvalidateRect(MainWindow.hMain,nullptr,0);
 }
 

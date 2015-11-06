@@ -6,7 +6,7 @@
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "German"
+STR_LANG_NAME           = "Deutsch"
 STR_LANG_CODE           = 0x07
 STR_RTL                 = 0
 
