@@ -139,7 +139,7 @@ public:
     {
         //Log.print_con("%d,%d,%d [%d]\n",windowsbits,windowsver,hwidpos,hwidpos+windowsver*num_hwidpos+windowsbits*num_hwidpos*num_windowver);
         //data[hwidpos+windowsver*num_hwidpos+windowsbits*num_hwidpos*num_windowver]=val;
-        data[windowsver+windowsbits*num_windowver]=val;
+        data[windowsver+windowsbits*num_windowver]=(char)val;
         if(ver)vers[windowsver+windowsbits*num_windowver]=*ver;
     }
     char Get(int n)

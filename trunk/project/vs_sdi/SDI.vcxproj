@@ -116,36 +116,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\newdrp\SDI_latest\trunk\external\libtorrent-libtorrent-1_0_6\include;C:\newdrp\SDI_latest\trunk\external\SevenZ\build\C;C:\newdrp\nSDI\trunk\external\boost_1_59_0;C:\newdrp\SDI_latest\trunk\resources;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\external\libtorrent-libtorrent-1_0_6\include;..\..\external\SevenZ\build\C;..\..\external\boost_1_59_0;..\..\resources;$(IncludePath)</IncludePath>
     <IntDir>..\..\obj\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
-    <LibraryPath>C:\newdrp\SDI_latest\trunk\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\</OutDir>
     <TargetName>SDI_RD</TargetName>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\newdrp\SDI_latest\trunk\external\libtorrent-libtorrent-1_0_6\include;C:\newdrp\SDI_latest\trunk\external\SevenZ\build\C;C:\newdrp\nSDI\trunk\external\boost_1_59_0;C:\newdrp\SDI_latest\trunk\resources;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\external\libtorrent-libtorrent-1_0_6\include;..\..\external\SevenZ\build\C;..\..\external\boost_1_59_0;..\..\resources;$(IncludePath)</IncludePath>
     <IntDir>..\..\obj\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
-    <LibraryPath>C:\newdrp\SDI_latest\trunk\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\</OutDir>
     <TargetName>SDI_x64_RD</TargetName>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\newdrp\SDI_latest\trunk\external\libtorrent-libtorrent-1_0_6\include;C:\newdrp\SDI_latest\trunk\external\SevenZ\build\C;C:\newdrp\nSDI\trunk\external\boost_1_59_0;C:\newdrp\SDI_latest\trunk\resources;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\external\libtorrent-libtorrent-1_0_6\include;..\..\external\SevenZ\build\C;..\..\external\boost_1_59_0;..\..\resources;$(IncludePath)</IncludePath>
     <IntDir>..\..\obj\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
-    <LibraryPath>C:\newdrp\SDI_latest\trunk\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\</OutDir>
     <TargetName>SDI_R</TargetName>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\newdrp\SDI_latest\trunk\external\libtorrent-libtorrent-1_0_6\include;C:\newdrp\SDI_latest\trunk\external\SevenZ\build\C;C:\newdrp\nSDI\trunk\external\boost_1_59_0;C:\newdrp\SDI_latest\trunk\resources;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\external\libtorrent-libtorrent-1_0_6\include;..\..\external\SevenZ\build\C;..\..\external\boost_1_59_0;..\..\resources;$(IncludePath)</IncludePath>
     <IntDir>..\..\obj\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
-    <LibraryPath>C:\newdrp\SDI_latest\trunk\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\lib\$(Configuration)_$(Platform)\;$(LibraryPath)</LibraryPath>
     <OutDir>..\..\</OutDir>
     <TargetName>SDI_x64R</TargetName>
     <RunCodeAnalysis>false</RunCodeAnalysis>

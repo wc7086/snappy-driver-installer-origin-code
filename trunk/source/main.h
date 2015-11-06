@@ -32,7 +32,7 @@ extern class Popup_t Popup;
 #include "resources.h"
 
 // Misc
-#define APPTITLE            L"Snappy Driver Installer " SVN_REV2
+#define APPTITLE            L"Snappy Driver Installer " TEXT(SVN_REV2)
 #define VER_MARKER          "SDW"
 #define VER_STATE           0x102
 #define VER_INDEX           0x205
