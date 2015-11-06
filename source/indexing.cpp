@@ -339,7 +339,7 @@ void Exporter::Found(const wchar_t *s,Version *ver)
 }
 void Exporter::PrintStats()
 {
-    return;
+#if 0
     f=fopen("export.txt","wt");
     Log.set_verbose(LOG_VERBOSE_MANAGER);
 
@@ -379,6 +379,7 @@ void Exporter::PrintStats()
     //items[cur_hwid].Set(0,0,-1,nullptr);
     //items[cur_hwid].Set(0,1,-1,nullptr);
     invalidate(INVALIDATE_DEVICES);
+#endif
 }
 bool Exporter::Advance()
 {
