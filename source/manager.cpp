@@ -1146,6 +1146,8 @@ void Manager::itembar_settext(int i,int act,const wchar_t *txt1,__int64 val1v,__
 
 void Manager::set_rstpnt(int checked)
 {
+    if(MainWindow.kbpanel)return;
+
     ClickVisiter cv{ID_RESTPNT,checked?CHECKBOX::SET:CHECKBOX::CLEAR};
     wPanels->Accept(cv);
 
