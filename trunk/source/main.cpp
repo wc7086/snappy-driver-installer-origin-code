@@ -768,15 +768,18 @@ void MainWindow_t::arrowsAdvance(int v)
 {
     if(!kbpanel)return;
 
-/*    if(v>0)
+    if(v>0)
         wPanels->NextItem();
     else
-        wPanels->PrevItem();*/
+        wPanels->PrevItem();
 
     if(kbpanel==KB_INSTALL)
     {
         kbitem[kbpanel]+=v;
         if(kbitem[kbpanel]<0)kbitem[kbpanel]=2;
+
+        HoverVisiter hv{0,0};
+        wPanels->Accept(hv);
         redrawmainwnd();
         return;
     }
@@ -789,6 +792,8 @@ void MainWindow_t::arrowsAdvance(int v)
     }
 
     //for(int i=0;i<NUM_PANELS;i++)panels[i].keybAdvance(v);
+    HoverVisiter hv{0,0};
+    wPanels->Accept(hv);
     redrawmainwnd();
 }
 //}

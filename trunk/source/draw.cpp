@@ -850,6 +850,7 @@ void Popup_t::drawpopup(int itembar,int type,int x,int y,HWND hwnd)
 void Popup_t::onHover()
 {
     wait=false;
+    if(MainWindow.kbpanel)return;
     if(floating_type&&rtl)
     {
         if(floating_type==FLOATING_CMPDRIVER||floating_type==FLOATING_DRIVERLST)

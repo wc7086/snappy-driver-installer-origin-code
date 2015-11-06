@@ -156,7 +156,6 @@ public:
 class Widget
 {
 public:
-    int cur;
     int x1,y1,wx,wy;
 
 public:
@@ -169,6 +168,8 @@ public:
 public:
     Widget(int str_id_):str_id(str_id_){}
     virtual ~Widget(){delete command;}
+    virtual void NextItem(){}
+    virtual void PrevItem(){}
     virtual void draw(Canvas &){}
     virtual void arrange(){}
     virtual bool SetFocus(){return false;}
@@ -185,14 +186,13 @@ public:
 class WidgetComposite:public Widget
 {
 protected:
+    int cur_item=0;
     int num=0;
     Widget *widgets[20];
 
 public:
-    virtual void NextPanel(){cur++;}
-    virtual void PrevPanel(){cur--;}
-    virtual void NextItem(){widgets[5]->cur++;}
-    virtual void PrevItem(){widgets[5]->cur--;}
+    void NextItem(){for(int i=0;i<num;i++)widgets[i]->NextItem();}
+    void PrevItem(){for(int i=0;i<num;i++)widgets[i]->PrevItem();}
     virtual void Add(Widget *w)
     {
         widgets[num]=w;
@@ -207,8 +207,7 @@ public:
     }
     bool IsFocused(Widget *a)
     {
-        //Log.print_con("Cur %d\n",cur);
-        return widgets[cur]==a;
+        return widgets[cur_item]==a;
     }
     void draw(Canvas &canvas)
     {
@@ -225,9 +224,12 @@ class wPanel:public WidgetComposite
 {
     int sz,indofs,boxi,kb;
     bool isAdvanced;
+    int kbi;
 
 public:
-    wPanel(int sz_,int box_,int kb_=0,bool isAdv=false):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),kb(kb_),isAdvanced(isAdv){}
+    wPanel(int sz_,int box_,int kb_=0,bool isAdv=false,int kbi_=0):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),kb(kb_),isAdvanced(isAdv),kbi(kbi_){}
+    void PrevItem();
+    void NextItem();
     bool IsFocused(Widget *a);
     void Accept(WidgetVisitor &);
     void arrange();

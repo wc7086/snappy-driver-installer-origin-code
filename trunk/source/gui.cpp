@@ -60,17 +60,17 @@ public:
         wPanels->Add(p);
 
         // Install button
-        r=new wPanel{1,BOX_PANEL9,KB_INSTALL};
+        r=new wPanel{1,BOX_PANEL9,KB_INSTALL,false,1};
         r->Add(new wButtonInst{STR_INSTALL,         new InstallCommand});
         p->Add(r);
 
         // Select all button
-        r=new wPanel{1,BOX_PANEL10,KB_INSTALL};
+        r=new wPanel{1,BOX_PANEL10,KB_INSTALL,false,2};
         r->Add(new wButton  {STR_SELECT_ALL,        new SelectAllCommand});
         p->Add(r);
 
         // Select none button
-        r=new wPanel{1,BOX_PANEL11,KB_INSTALL};
+        r=new wPanel{1,BOX_PANEL11,KB_INSTALL,false,3};
         r->Add(new wButton  {STR_SELECT_NONE,       new SelectNoneCommand});
         p->Add(r);
 
@@ -158,7 +158,7 @@ void wPanel::arrange()
 
     if(!wy1)wy=0;
 
-    for(cur=0;cur<num;cur++)if(widgets[cur]->SetFocus())break;
+    for(cur_item=0;cur_item<num;cur_item++)if(widgets[cur_item]->SetFocus())break;
     for(int i=0;i<num;i++)
     {
         widgets[i]->flags=D(PANEL_OUTLINE_WIDTH+indofs)<0?1:0;
@@ -176,6 +176,28 @@ void wPanel::arrange()
     }
     else
         flags=0;
+}
+
+void wPanel::PrevItem()
+{
+    if(MainWindow.kbpanel==kb&&cur_item>0&&widgets[cur_item-1]->SetFocus())
+        cur_item--;
+    else
+    {
+        cur_item=num-1;
+        if(cur_item<0)cur_item=0;
+    }
+}
+void wPanel::NextItem()
+{
+    if(MainWindow.kbpanel==kb&&cur_item<num-1)
+        cur_item++;
+    else
+    {
+        cur_item=0;
+        while(cur_item<num&&!widgets[cur_item]->SetFocus())cur_item++;
+    }
+
 }
 
 void Widget::hitscan(int x,int y)
@@ -222,7 +244,12 @@ void wPanel::draw(Canvas &canvas)
     if(!Settings.expertmode&&isAdvanced)return;
 
     // Draw panel
-    canvas.DrawWidget(x1,y1,x1+wx,y1+wy,boxi+(isSelected&&flags?1:0));
+    if(kb==KB_INSTALL)
+    {
+        canvas.DrawWidget(x1,y1,x1+wx,y1+wy,boxi+(widgets[0]->isSelected&&flags?1:0));
+    }
+    else
+        canvas.DrawWidget(x1,y1,x1+wx,y1+wy,boxi+(isSelected&&flags?1:0));
 
     // Draw childs
     ClipRegion rgn;
@@ -335,6 +362,12 @@ void WidgetComposite::Accept(WidgetVisitor &visitor)
 
 bool wPanel::IsFocused(Widget *a)
 {
+    if(MainWindow.kbpanel==KB_INSTALL&&kb==MainWindow.kbpanel)
+    {
+        if(MainWindow.kbitem[KB_INSTALL]<0)MainWindow.kbitem[KB_INSTALL]=2;
+        if(MainWindow.kbitem[KB_INSTALL]>2)MainWindow.kbitem[KB_INSTALL]=0;
+        return MainWindow.kbitem[KB_INSTALL]+1==kbi;
+    }
     return kb==MainWindow.kbpanel&&WidgetComposite::IsFocused(a);
 }
 
