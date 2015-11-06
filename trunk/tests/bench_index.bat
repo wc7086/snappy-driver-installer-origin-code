@@ -3,26 +3,26 @@ rd /q /s logs
 rd /q /s logs_bench
 
 rd /q /s indexes
-bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:64 -nogui
-rename logs\log.txt log_199_a1.txt
+bin\SDI_R326.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320  -nogui
+rename logs\log.txt log_326_a1.txt
 
 rd /q /s indexes
-bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:64 -nogui
-rename logs\log.txt log_199_a2.txt
+bin\SDI_R326.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320  -nogui
+rename logs\log.txt log_326_a2.txt
 
 rd /q /s indexes
-bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:64 -nogui
-rename logs\log.txt log_199_a3.txt
+bin\SDI_R326.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320  -nogui
+rename logs\log.txt log_326_a3.txt
 
 
-bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:64 -nogui
-rename logs\log.txt log_199_b1.txt
+bin\SDI_R326.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320  -nogui
+rename logs\log.txt log_326_b1.txt
 
-bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:64 -nogui
-rename logs\log.txt log_199_b2.txt
+bin\SDI_R326.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320  -nogui
+rename logs\log.txt log_326_b2.txt
 
-bin\SDI_R199.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:64 -nogui
-rename logs\log.txt log_199_b3.txt
+bin\SDI_R326.exe -license -preservecfg -drp_dir:..\drivers -nosnapshot -nostamp -verbose:320  -nogui
+rename logs\log.txt log_326_b3.txt
 
 
 rd /q /s indexes

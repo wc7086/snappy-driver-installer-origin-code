@@ -169,6 +169,7 @@ DRVITEM_WY               = 37
 DRVITEM_OFSX             = 15
 DRVITEM_OFSY             = 10
 DRVITEM_DIST_Y0          = 36
+DRVITEM_DIST_Y2          = 10
 
 // Driver item content
 ITEM_CHECKBOX_SIZE       = 23

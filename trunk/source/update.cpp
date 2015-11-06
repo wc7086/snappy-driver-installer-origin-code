@@ -55,7 +55,7 @@ class TorrentStatus_t
     long long uploaded;
     __int64 elapsed,remaining;
 
-    const wchar_t *status;
+    int status_strid;
     wchar_t error[BUFLEN];
     int uploadspeed,downloadspeed;
     int seedstotal,seedsconnected;
@@ -684,8 +684,8 @@ void UpdaterImp::updateTorrentStatus()
     t->uploaded=st.total_payload_upload;
 
     t->elapsed=13;
-    t->status=STR(STR_TR_ST0+st.state);
-    if(hSession->is_paused())t->status=STR(STR_TR_ST4);
+    t->status_strid=STR_TR_ST0+st.state;
+    if(hSession->is_paused())t->status_strid=STR_TR_ST4;
     finisheddownloading=st.is_finished;
 
     wcscpy(t->error,L"");
@@ -849,8 +849,8 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
     td.TextOutSF(STR(STR_DWN_REMAINING),num1);
 
     td.nl();
-    if(t.status)
-        td.TextOutSF(STR(STR_DWN_STATUS),L"%s",t.status);
+    if(t.status_strid)
+        td.TextOutSF(STR(STR_DWN_STATUS),L"%s",STR(t.status_strid));
     if(*t.error)
     {
         td.col=D(POPUP_CMP_INVALID_COLOR);

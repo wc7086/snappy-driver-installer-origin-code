@@ -3,7 +3,7 @@
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "Hungarian"
+STR_LANG_NAME           = "Magyar"
 STR_LANG_CODE           = 0x0E
 STR_RTL                 = 0
 
@@ -11,11 +11,11 @@ STR_RTL                 = 0
 STR_SHOW_SYSINFO        = "  - Rendszerinformáció -"
 STR_SHOW_SYSINFO_H      = ""
 
-STR_INSTALL             = "- TELEPÍTÉS -"
+STR_INSTALL             = "TELEPÍTÉS"
 STR_INSTALL_H           = "Kijelölt driverek telepítése(Ctrl+I).\n\nTIPP: Tartsa lenyomva a Shift gombot, amikor egy driver-re klikkel a telepítés azonnali indításához."
 STR_SELECT_ALL          = "Összes kijelölése"
 STR_SELECT_ALL_H        = "Ctrl+A"
-STR_SELECT_NONE         = "  - Visszavonás -"
+STR_SELECT_NONE         = "Visszavonás"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Nyelv (Language)"
@@ -293,7 +293,7 @@ STR_UPD_UPDATEHINT2     = "Elõszõr frissítse a szoftvert, hogy ezt a funkció
 STR_UPD_AVAIL1          = "Programfrissítés érhető el : SDI R%d"
 STR_UPD_AVAIL2          = "Driverfrissítés érhető el : %d driver-csomag"
 STR_UPD_AVAIL3          = "Programfrissítés érhető el : SDI R%d valamint : %d driver-csomag tölthető le"
-STR_UPD_START           = "- Klikk ide a letöltéshez. - A szerverhez való csatlakozás hosszabb időbe tellik! Várjon... (vagy próbálja később)"
+STR_UPD_START           = "(Klikk ide a letöltéshez)"
 STR_UPD_PROGRES         = "Letöltve %s a %s-ból (%d%%)"
 STR_UPD_MODIFY          = "(Klikk ide a letöltendő frissítések kijelöléséhez)"
 

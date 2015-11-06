@@ -564,6 +564,7 @@ enum
     DRVITEM_LINE_WIDTH,
     DRVITEM_DIST_Y0,
     DRVITEM_DIST_Y1,
+    DRVITEM_DIST_Y2,
 
 // Driver item content
     ITEM_CHECKBOX_OFS_X,

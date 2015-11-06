@@ -32,7 +32,7 @@ extern class Popup_t Popup;
 #include "resources.h"
 
 // Misc
-#define APPTITLE            L"Snappy Driver Installer v0.3"
+#define APPTITLE            L"Snappy Driver Installer " SVN_REV2
 #define VER_MARKER          "SDW"
 #define VER_STATE           0x102
 #define VER_INDEX           0x205
@@ -173,7 +173,6 @@ public:
     int space_down;
     int shift_down;
 
-    int hideconsole;
     int kbpanel,kbitem[KB_PANEL_CHK+1];
 
 private:

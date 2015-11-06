@@ -91,25 +91,30 @@ Settings_t Settings;
 
 class Console1:public Console_t
 {
+    bool keep_open;
+
 public:
     Console1()
     {
         DWORD dwProcessId;
         GetWindowThreadProcessId(GetConsoleWindow(),&dwProcessId);
-        if(GetCurrentProcessId()!=dwProcessId)MainWindow.hideconsole=SW_SHOWNOACTIVATE;
-        ShowWindow(GetConsoleWindow(),MainWindow.hideconsole);
+        keep_open=GetCurrentProcessId()!=dwProcessId;
+        if(!keep_open)ShowWindow(GetConsoleWindow(),SW_HIDE);
     }
     ~Console1()
     {
-        ShowWindow(GetConsoleWindow(),1);
+        if(keep_open)return;
+        ShowWindow(GetConsoleWindow(),SW_SHOW);
     }
     void Show()
     {
-        ShowWindow(GetConsoleWindow(),1);
+        if(keep_open)return;
+        ShowWindow(GetConsoleWindow(),SW_SHOWNOACTIVATE);
     }
     void Hide()
     {
-        ShowWindow(GetConsoleWindow(),0);
+        if(keep_open)return;
+        ShowWindow(GetConsoleWindow(),SW_HIDE);
     }
 };
 
@@ -193,7 +198,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // Bring back the console window
     #ifndef CONSOLE_MODE
-    if((Settings.expertmode&&Settings.flags&FLAG_SHOWCONSOLE)?SW_SHOWNOACTIVATE:MainWindow.hideconsole)
+    if(Settings.flags&FLAG_SHOWCONSOLE)
         Console->Show();
     else
         Console->Hide();
@@ -483,8 +488,6 @@ MainWindow_t::MainWindow_t()
     hFont=new Font;
     hLang=nullptr;
     hTheme=nullptr;
-
-    hideconsole=SW_HIDE;
 
     mousex=-1;
     mousey=-1;

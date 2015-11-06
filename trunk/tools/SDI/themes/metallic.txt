@@ -436,6 +436,7 @@ DRVITEM_LINE_COLOR       = 0
 DRVITEM_LINE_WIDTH       = 3
 DRVITEM_DIST_Y0          = 45
 DRVITEM_DIST_Y1          = DRVITEM_DIST_Y0
+DRVITEM_DIST_Y2          = 0
 
 // Driver item content
 ITEM_CHECKBOX_OFS_X      = 5

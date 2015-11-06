@@ -565,6 +565,7 @@ entry_t theme[THEME_NM]=
     DEF_VAL("DRVITEM_LINE_WIDTH")
     DEF_VAL("DRVITEM_DIST_Y0")
     DEF_VAL("DRVITEM_DIST_Y1")
+    DEF_VAL("DRVITEM_DIST_Y2")
 
 // Driver item content
     DEF_VAL("ITEM_CHECKBOX_OFS_X")
