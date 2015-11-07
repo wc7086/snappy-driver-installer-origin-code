@@ -174,6 +174,7 @@ public:
     virtual void arrange(){}
     virtual bool SetFocus(){return false;}
     virtual bool IsFocused(Widget *){return false;}
+    virtual bool IsHidden(){return false;}
 
     void setboundbox(int v1,int v2,int v3,int v4){x1=v1;y1=v2;wx=v3;wy=v4;}
     void hitscan(int x,int y);
@@ -228,6 +229,7 @@ class wPanel:public WidgetComposite
 
 public:
     wPanel(int sz_,int box_,int kb_=0,bool isAdv=false,int kbi_=0):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),kb(kb_),isAdvanced(isAdv),kbi(kbi_){}
+    bool IsHidden(){return !Settings.expertmode&&isAdvanced;}
     void PrevItem();
     void NextItem();
     bool IsFocused(Widget *a);

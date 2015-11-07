@@ -241,7 +241,11 @@ void wTheme::arrange()
 void wPanel::draw(Canvas &canvas)
 {
     if(!wy)return;
-    if(!Settings.expertmode&&isAdvanced)return;
+    if(IsHidden())
+    {
+        for(int i=0;i<num;i++)widgets[i]->draw(canvas);
+        return;
+    }
 
     // Draw panel
     if(kb==KB_INSTALL)
@@ -261,6 +265,7 @@ void wPanel::draw(Canvas &canvas)
 
 void wText::draw(Canvas &canvas)
 {
+    if(parent->IsHidden())return;
     canvas.SetTextColor(D_C(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(mirw(x1,0,wx),y1+0,STR(str_id));
     //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
@@ -280,14 +285,14 @@ void wTextRev::draw(Canvas &canvas)
 
 void wCheckbox::draw(Canvas &canvas)
 {
+    command->UpdateCheckbox(&checked);
+    if(parent->IsHidden())return;
+
     if(isSelected&&MainWindow.kbpanel)
     {
         canvas.DrawWidget(x1,y1,x1+wx,y1+wy-4,BOX_KBHLT);
         //isSelected=false;
     }
-
-    command->UpdateCheckbox(&checked);
-
     canvas.DrawCheckbox(mirw(x1,0,wx-D_X(CHKBOX_SIZE)-2),y1,D_X(CHKBOX_SIZE)-2,D_X(CHKBOX_SIZE)-2,checked,isSelected);
     canvas.SetTextColor(D_C(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(mirw(x1,D_X(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
@@ -295,6 +300,7 @@ void wCheckbox::draw(Canvas &canvas)
 
 void wButton::draw(Canvas &canvas)
 {
+    if(parent->IsHidden())return;
     if(!flags)canvas.DrawWidget(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
     canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
