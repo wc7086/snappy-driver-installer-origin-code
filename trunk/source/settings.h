@@ -179,6 +179,7 @@ public:
     int statemode;
     int expertmode;
     int hintdelay;
+    int scale;
     int wndwx,wndwy;
     int filters;
     int virtual_os_version;

@@ -90,7 +90,7 @@ PANEL12_WX               = 272
 PANEL12_WY               = PANEL_WY
 
 // Panel, logo
-PANEL13_OFSX             = 20
+PANEL13_OFSX             = 45
 PANEL13_OFSY             = 5
 PANEL13_WX               = 110
 PANEL13_WY               = 105

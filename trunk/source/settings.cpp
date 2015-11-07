@@ -62,6 +62,7 @@ Settings_t::Settings_t()
     statemode=STATEMODE_REAL;
     expertmode=0;
     hintdelay=500;
+    scale=256;
     wndwx=0,wndwy=0;
     filters=
         (1<<ID_SHOW_MISSING)+
@@ -120,6 +121,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
         if(argstr(pr,L"-lang:",curlang))continue;
         if(argstr(pr,L"-theme:",curtheme))continue;
         if(argint(pr,L"-hintdelay:",&hintdelay))continue;
+        if(argint(pr,L"-scale:",&scale))continue;
         if(argint(pr,L"-wndwx:",&wndwx))continue;
         if(argint(pr,L"-wndwy:",&wndwy))continue;
         if(argint(pr,L"-filters:",&filters))continue;
@@ -234,12 +236,12 @@ void Settings_t::save()
     fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
               L"\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
               L"\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n\"-finish_upd_cmd:%s\"\n\n"
-              L"\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-filters:%d\n\n"
+              L"\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-scale:%d\n-filters:%d\n\n"
               L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
-            curlang,curtheme,hintdelay,wndwx,wndwy,filters,
+            curlang,curtheme,hintdelay,wndwx,wndwy,scale,filters,
             Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections);
 
     if(license)fwprintf(f,L"-license ");

@@ -24,6 +24,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Theme/lang
 #define STR(A) (language[A].valstr?language[A].valstr:L"")
 #define D(A) theme[A].val
+#define D_C(A) theme[A].val
+#define D_1(A) theme[A].val
+#define D_X(A) (theme[A].val*256/Settings.scale)
 #define D_STR(A) theme[A].valstr
 
 #define TEXT_1(quote) L##quote
