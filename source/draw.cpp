@@ -367,11 +367,11 @@ void Canvas::DrawConnection(int x1,int pos,int ofsy,int curpos)
 {
     HPEN oldpen,newpen;
 
-    newpen=CreatePen(PS_SOLID,D(DRVITEM_LINE_WIDTH),D(DRVITEM_LINE_COLOR));
+    newpen=CreatePen(PS_SOLID,D_1(DRVITEM_LINE_WIDTH),D_C(DRVITEM_LINE_COLOR));
     oldpen=(HPEN)SelectObject(hdcMem,newpen);
-    MoveToEx(hdcMem,x1-D(DRVITEM_LINE_INTEND)/2,curpos-D(DRVITEM_DIST_Y0)+D(DRVITEM_WY)-ofsy,nullptr);
-    LineTo(hdcMem,x1-D(DRVITEM_LINE_INTEND)/2,pos+D(DRVITEM_WY)/2);
-    LineTo(hdcMem,x1,pos+D(DRVITEM_WY)/2);
+    MoveToEx(hdcMem,x1-D_X(DRVITEM_LINE_INTEND)/2,curpos-D_X(DRVITEM_DIST_Y0)+D_X(DRVITEM_WY)-ofsy,nullptr);
+    LineTo(hdcMem,x1-D_X(DRVITEM_LINE_INTEND)/2,pos+D_X(DRVITEM_WY)/2);
+    LineTo(hdcMem,x1,pos+D_X(DRVITEM_WY)/2);
     SelectObject(hdcMem,oldpen);
     DeleteObject(newpen);
 }
@@ -497,7 +497,7 @@ void popup_about(Canvas &canvas)
     RECT rect;
     rect.left=td.getX();
     rect.top=td.getY();
-    rect.right=D(POPUP_WX)-D(POPUP_OFSX)*2;
+    rect.right=D_X(POPUP_WX)-D_X(POPUP_OFSX)*2;
     rect.bottom=900;
     canvas.CalcBoundingBox(STR(STR_ABOUT_LICENSE),&rect);
     canvas.DrawTextRect(STR(STR_ABOUT_LICENSE),&rect);
@@ -508,7 +508,7 @@ void popup_about(Canvas &canvas)
     td.TextOutF(L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
     td.TextOutF(L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
 
-    Popup.popup_resize(D(POPUP_WX),rect.bottom+D(POPUP_OFSY));
+    Popup.popup_resize(D_X(POPUP_WX),rect.bottom+D_X(POPUP_OFSY));
 }
 
 void format_size(wchar_t *buf,long long val,int isspeed)
@@ -706,7 +706,7 @@ void Canvas::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid
             DestroyIcon(hIcon);
             hIcon=miricon;
         }
-        DrawIconEx(hdcMem,x1,y1,hIcon,D(ITEM_ICON_SIZE),D(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
+        DrawIconEx(hdcMem,x1,y1,hIcon,D_X(ITEM_ICON_SIZE),D_X(ITEM_ICON_SIZE),0,nullptr,DI_NORMAL);
         DestroyIcon(hIcon);
     }
 }
@@ -778,8 +778,8 @@ void Canvas::DrawWidget(int x1,int y1,int x2,int y2,int id)
         Log.print_err("ERROR in box_draw(): invalid index=%d\n",i);
         return;
     }
-    DrawFilledRect(x1,y1,x2,y2,D(i),D(i+1),D(i+2),D(i+3));
-    DrawImage(*vTheme->GetImage(id),x1,y1,x2,y2,D(i+5),D(i+6));
+    DrawFilledRect(x1,y1,x2,y2,D_C(i),D_C(i+1),D_1(i+2),D_X(i+3));
+    DrawImage(*vTheme->GetImage(id),x1,y1,x2,y2,D_1(i+5),D_1(i+6));
 }
 
 void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)

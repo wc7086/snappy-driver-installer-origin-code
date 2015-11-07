@@ -96,9 +96,9 @@ PANEL9_OUTLINE_COLOR_H   = 0x000000
 PANEL9_BITMAP_FILENAME   = "dark\wideblueglass.webp"
 PANEL9_BITMAP_FILENAME_H = "dark\wideblueglass_h.webp"
 PANEL9_BITMAP_ANCHOR     = top_left
-PANEL9_BITMAP_FILL       = none
+PANEL9_BITMAP_FILL       = hstra
 PANEL9_BITMAP_ANCHOR_H   = top_left
-PANEL9_BITMAP_FILL_H     = none
+PANEL9_BITMAP_FILL_H     = hstra
 
 // Panel, selectall button
 PANEL10_WY               = 26
@@ -112,9 +112,9 @@ PANEL10_OUTLINE_COLOR_H   = 0x000000
 PANEL10_BITMAP_FILENAME   = "dark\thinblueglass.webp"
 PANEL10_BITMAP_FILENAME_H = "dark\thinblueglass_h.webp"
 PANEL10_BITMAP_ANCHOR     = top_left
-PANEL10_BITMAP_FILL       = none
+PANEL10_BITMAP_FILL       = hstra
 PANEL10_BITMAP_ANCHOR_H   = top_left
-PANEL10_BITMAP_FILL_H     = none
+PANEL10_BITMAP_FILL_H     = hstra
 
 // Panel, selectnone button
 PANEL11_WY               = PANEL10_WY
@@ -128,9 +128,9 @@ PANEL11_OUTLINE_COLOR_H   = 0x000000
 PANEL11_BITMAP_FILENAME   = "dark\thinblueglass.webp"
 PANEL11_BITMAP_FILENAME_H = "dark\thinblueglass_h.webp"
 PANEL11_BITMAP_ANCHOR     = top_left
-PANEL11_BITMAP_FILL       = none
+PANEL11_BITMAP_FILL       = hstra
 PANEL11_BITMAP_ANCHOR_H   = top_left
-PANEL11_BITMAP_FILL_H     = none
+PANEL11_BITMAP_FILL_H     = hstra
 
 // Items on left panel
 PNLITEM_WY               = 22
@@ -151,9 +151,9 @@ BUTTON_OUTLINE_COLOR_H   = 0x000000
 BUTTON_BITMAP_FILENAME   = "dark\thinblue.webp"
 BUTTON_BITMAP_FILENAME_H = "dark\thinblue_h.webp"
 BUTTON_BITMAP_ANCHOR     = top_left
-BUTTON_BITMAP_FILL       = none
+BUTTON_BITMAP_FILL       = hstra
 BUTTON_BITMAP_ANCHOR_H   = top_left
-BUTTON_BITMAP_FILL_H     = none
+BUTTON_BITMAP_FILL_H     = hstra
 
 // Driver list
 DRVLIST_OFSX             = 217

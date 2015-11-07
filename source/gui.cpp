@@ -62,17 +62,17 @@ public:
         // Install button
         r=new wPanel{1,BOX_PANEL9,KB_INSTALL,false,1};
         r->Add(new wButtonInst{STR_INSTALL,         new InstallCommand});
-        p->Add(r);
+        wPanels->Add(r);
 
         // Select all button
         r=new wPanel{1,BOX_PANEL10,KB_INSTALL,false,2};
         r->Add(new wButton  {STR_SELECT_ALL,        new SelectAllCommand});
-        p->Add(r);
+        wPanels->Add(r);
 
         // Select none button
         r=new wPanel{1,BOX_PANEL11,KB_INSTALL,false,3};
         r->Add(new wButton  {STR_SELECT_NONE,       new SelectNoneCommand});
-        p->Add(r);
+        wPanels->Add(r);
 
         // Theme/lang
         p=new wPanel{5,BOX_PANEL3,KB_EXPERT};
@@ -148,25 +148,25 @@ void ExpertmodeCheckboxCommand::UpdateCheckbox(bool *checked)
 
 void wPanel::arrange()
 {
-    int ofsx=D(PNLITEM_OFSX),ofsy=D(PNLITEM_OFSY);
-    int wy1=D(PANEL_WY+indofs);
+    int ofsx=D_X(PNLITEM_OFSX),ofsy=D_X(PNLITEM_OFSY);
+    int wy1=D_X(PANEL_WY+indofs);
 
-    x1=Xm(D(PANEL_OFSX+indofs),D(PANEL_WX+indofs));
-    y1=Ym(D(PANEL_OFSY+indofs));
-    wx=XM(D(PANEL_WX+indofs),D(PANEL_OFSX+indofs));
+    x1=Xm(D_X(PANEL_OFSX+indofs),D_X(PANEL_WX+indofs));
+    y1=Ym(D_X(PANEL_OFSY+indofs));
+    wx=XM(D_X(PANEL_WX+indofs),D_X(PANEL_OFSX+indofs));
     wy=wy1*sz+ofsy*2;
 
-    if(!wy1)wy=0;
+    if(!D_1(PANEL_WY+indofs))wy=0;
 
     for(cur_item=0;cur_item<num;cur_item++)if(widgets[cur_item]->SetFocus())break;
     for(int i=0;i<num;i++)
     {
-        widgets[i]->flags=D(PANEL_OUTLINE_WIDTH+indofs)<0?1:0;
-        widgets[i]->setboundbox(x1+ofsx,y1+ofsy+i*D(PNLITEM_WY),wx-ofsx*2,wy1);
+        widgets[i]->flags=D_1(PANEL_OUTLINE_WIDTH+indofs)<0?1:0;
+        widgets[i]->setboundbox(x1+ofsx,y1+ofsy+i*D_X(PNLITEM_WY),wx-ofsx*2,wy1);
         widgets[i]->arrange();
     }
 
-    if(D(PANEL_OUTLINE_WIDTH+indofs)<0)
+    if(D_1(PANEL_OUTLINE_WIDTH+indofs)<0)
     {
         flags=1;
         x1+=ofsx;
@@ -261,7 +261,7 @@ void wPanel::draw(Canvas &canvas)
 
 void wText::draw(Canvas &canvas)
 {
-    canvas.SetTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+    canvas.SetTextColor(D_C(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(mirw(x1,0,wx),y1+0,STR(str_id));
     //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
 }
@@ -274,7 +274,7 @@ void wTextRev::draw(Canvas &canvas)
     wsprintf(buf,L"%s (",TEXT(SVN_REV2));
     v.str_date(buf+wcslen(buf));
     wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
-    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(mirw(x1,0,wx),y1,buf);
 }
 
@@ -288,17 +288,17 @@ void wCheckbox::draw(Canvas &canvas)
 
     command->UpdateCheckbox(&checked);
 
-    canvas.DrawCheckbox(mirw(x1,0,wx-D(CHKBOX_SIZE)-2),y1,D(CHKBOX_SIZE)-2,D(CHKBOX_SIZE)-2,checked,isSelected);
-    canvas.SetTextColor(D(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
-    canvas.DrawTextXY(mirw(x1,D(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
+    canvas.DrawCheckbox(mirw(x1,0,wx-D_X(CHKBOX_SIZE)-2),y1,D_X(CHKBOX_SIZE)-2,D_X(CHKBOX_SIZE)-2,checked,isSelected);
+    canvas.SetTextColor(D_C(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(mirw(x1,D_X(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
 }
 
 void wButton::draw(Canvas &canvas)
 {
     if(!flags)canvas.DrawWidget(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
-    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
-    canvas.DrawTextXY(mirw(x1,wy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,STR(str_id));
+    canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
+    canvas.DrawTextXY(mirw(x1,wy/2,wx),y1+(wy-D_X(FONT_SIZE)-2)/2,STR(str_id));
     //canvas.drawrect(x1,y1,x1+wx,y1+wy,0xFF000000,0xFF,1,0);
 }
 
@@ -307,15 +307,15 @@ void wButtonInst::draw(Canvas &canvas)
     if(!flags)canvas.DrawWidget(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
     wchar_t buf[BUFLEN];
-    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
     wsprintf(buf,L"%s (%d)",STR(str_id),manager_g->countItems());
-    int nwy=D(PANEL9_OFSX)==D(PANEL10_OFSX)?D(PANEL10_WY):wy;
-    canvas.DrawTextXY(mirw(x1,nwy/2,wx),y1+(wy-D(FONT_SIZE)-2)/2,buf);
+    int nwy=D_X(PANEL9_OFSX)==D_X(PANEL10_OFSX)?D_X(PANEL10_WY):wy;
+    canvas.DrawTextXY(mirw(x1,nwy/2,wx),y1+(wy-D_X(FONT_SIZE)-2)/2,buf);
 }
 
 void wTextSys1::draw(Canvas &canvas)
 {
-    canvas.SetTextColor(D(CHKBOX_TEXT_COLOR));
+    canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,STR(STR_SHOW_SYSINFO));
     canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,STR(STR_SYSINF_MOTHERBOARD));
     canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_ENVIRONMENT));
@@ -584,22 +584,22 @@ void ClickVisiter::VisitwTextSys1(wTextSys1 *a)
 textdata_t::textdata_t(Canvas &canvas_,int xofs):
     pcanvas(&canvas_),
     ofsx(xofs),
-    wy(D(POPUP_WY)),
+    wy(D_X(POPUP_WY)),
     maxsz(0),
-    col(D(POPUP_TEXT_COLOR)),
-    x(D(POPUP_OFSX)+xofs),
-    y(D(POPUP_OFSY))
+    col(D_C(POPUP_TEXT_COLOR)),
+    x(D_X(POPUP_OFSX)+xofs),
+    y(D_X(POPUP_OFSY))
 {
 }
 
 void textdata_t::ret()
 {
-    x=D(POPUP_OFSX)+ofsx;
+    x=D_X(POPUP_OFSX)+ofsx;
 }
 
 void textdata_t::ret_ofs(int a)
 {
-    x=D(POPUP_OFSX)+a;
+    x=D_X(POPUP_OFSX)+a;
 }
 
 void textdata_t::nl()

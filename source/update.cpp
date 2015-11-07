@@ -828,11 +828,11 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
 {
     textdata_vert td(canvas);
     TorrentStatus_t t;
-    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
+    int p0=D_X(POPUP_OFSX),p1=D_X(POPUP_OFSX)+10;
     long long per=0;
     wchar_t num1[BUFLEN],num2[BUFLEN];
 
-    td.y=D(POPUP_OFSY);
+    td.y=D_X(POPUP_OFSY);
 
     //update_getstatus(&t);
     t=TorrentStatus;
@@ -853,9 +853,9 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
         td.TextOutSF(STR(STR_DWN_STATUS),L"%s",STR(t.status_strid));
     if(*t.error)
     {
-        td.col=D(POPUP_CMP_INVALID_COLOR);
+        td.col=D_C(POPUP_CMP_INVALID_COLOR);
         td.TextOutSF(STR(STR_DWN_ERROR),L"%s",t.error);
-        td.col=D(POPUP_TEXT_COLOR);
+        td.col=D_C(POPUP_TEXT_COLOR);
     }
     format_size(num1,t.downloadspeed,1);
     td.TextOutSF(STR(STR_DWN_DOWNLOADSPEED),num1);
@@ -870,7 +870,7 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
     td.TextOutSF(STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
 
 //    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
-    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D(POPUP_OFSY));
+    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D_X(POPUP_OFSY));
 }
 
 UpdaterImp::UpdaterImp()

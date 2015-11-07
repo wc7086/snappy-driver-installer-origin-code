@@ -526,9 +526,9 @@ void MainWindow_t::lang_refresh()
 
 void MainWindow_t::theme_refresh()
 {
-    hFont->SetFont(D_STR(FONT_NAME),D(FONT_SIZE));
-    Popup.hFontP->SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE));
-    Popup.hFontBold->SetFont(D_STR(FONT_NAME),D(POPUP_FONT_SIZE),true);
+    hFont->SetFont(D_STR(FONT_NAME),D_X(FONT_SIZE));
+    Popup.hFontP->SetFont(D_STR(FONT_NAME),D_X(POPUP_FONT_SIZE));
+    Popup.hFontBold->SetFont(D_STR(FONT_NAME),D_X(POPUP_FONT_SIZE),true);
 
     hLang->SetFont(hFont);
     hTheme->SetFont(hFont);
@@ -744,7 +744,7 @@ void MainWindow_t::tabadvance(int v)
         if(!kbpanel)kbpanel=KB_PANEL_CHK;
         if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
 
-        if(kbpanel==KB_PANEL_CHK&&!D(PANEL12_WY))continue;
+        if(kbpanel==KB_PANEL_CHK&&!D_X(PANEL12_WY))continue;
         if(!Settings.expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
         break;
     }
@@ -1052,8 +1052,8 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_SIZING:
             {
                 RECT *r=(RECT *)lParam;
-                int minx=D(MAINWND_MINX);
-                int miny=D(MAINWND_MINY);
+                int minx=D_X(MAINWND_MINX);
+                int miny=D_X(MAINWND_MINY);
 
                 switch(wParam)
                 {
@@ -1097,6 +1097,11 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             }
 
         case WM_KEYUP:
+            if(ctrl_down&&wParam==L'0')
+            {
+                Settings.scale=256;
+                PostMessage(hwnd,WM_UPDATETHEME,0,0);
+            }
             if(ctrl_down&&wParam==L'A'){SelectAllCommand c;c.LeftClick();}
             if(ctrl_down&&wParam==L'N'){SelectNoneCommand c;c.LeftClick();}
             if(ctrl_down&&wParam==L'I'){InstallCommand c;c.LeftClick();}
@@ -1162,16 +1167,16 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             break;
 
         case WM_SIZE:
-            SetLayeredWindowAttributes(hMain,0,(BYTE)D(MAINWND_TRANSPARENCY),LWA_ALPHA);
-            SetLayeredWindowAttributes(Popup.hPopup,0,(BYTE)D(POPUP_TRANSPARENCY),LWA_ALPHA);
+            SetLayeredWindowAttributes(hMain,0,(BYTE)D_1(MAINWND_TRANSPARENCY),LWA_ALPHA);
+            SetLayeredWindowAttributes(Popup.hPopup,0,(BYTE)D_1(POPUP_TRANSPARENCY),LWA_ALPHA);
 
             GetWindowRect(hwnd,&rect);
             main1x_c=x;
             main1y_c=y;
 
-            i=D(PNLITEM_OFSX)+D(PANEL_LIST_OFSX);
-            f=D(PANEL_LIST_OFSX)?4:0;
-            MoveWindow(hField,Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)),XM(D(DRVLIST_WX),D(DRVLIST_OFSX)),YM(D(DRVLIST_WY),D(DRVLIST_OFSY)),TRUE);
+            i=D_X(PNLITEM_OFSX)+D_X(PANEL_LIST_OFSX);
+            f=D_X(PANEL_LIST_OFSX)?4:0;
+            MoveWindow(hField,Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),Ym(D_X(DRVLIST_OFSY)),XM(D_X(DRVLIST_WX),D_X(DRVLIST_OFSX)),YM(D_X(DRVLIST_WY),D_X(DRVLIST_OFSY)),TRUE);
 
             wPanels->arrange();
             manager_g->setpos();
@@ -1223,6 +1228,15 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
         case WM_MOUSEWHEEL:
             i=GET_WHEEL_DELTA_WPARAM(wParam);
+            if(ctrl_down)
+            {
+                Settings.scale-=i/20;
+                if(Settings.scale<100){Settings.scale=100;break;}
+                if(Settings.scale>500){Settings.scale=500;break;}
+                Settings.wndwx=0;
+                Settings.wndwy=0;
+                PostMessage(hwnd,WM_UPDATETHEME,0,0);
+            }
             if(space_down)
             {
                 Popup.horiz_sh-=i/5;
@@ -1353,7 +1367,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 void RestPointCheckboxCommand::RightClick(int x,int y)
 {
     Popup.floating_itembar=SLOT_RESTORE_POINT;
-    manager_g->contextmenu(x-Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),y-Ym(D(DRVLIST_OFSY)));
+    manager_g->contextmenu(x-Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),y-Ym(D_X(DRVLIST_OFSY)));
 }
 
 //{ Buttons
@@ -1429,7 +1443,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
             GetClientRect(hwnd,&rect);
             canvasField->begin(hwnd,rect.right,rect.bottom);
-            canvasField->CopyCanvas(canvasMain,Xm(D(DRVLIST_OFSX),D(DRVLIST_WX)),Ym(D(DRVLIST_OFSY)));
+            canvasField->CopyCanvas(canvasMain,Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),Ym(D_X(DRVLIST_OFSY)));
             canvasField->SetFont(hFont);
             manager_g->draw(*canvasField,y);
             canvasField->end();
@@ -1615,16 +1629,16 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
 
             wp=(WINDOWPOS*)lParam;
             GetClientRect(hwnd,&rect);
-            rect.right=D(POPUP_WX);
+            rect.right=D_X(POPUP_WX);
             rect.bottom=floating_y;
 
             canvasPopup->SetFont(Popup.hFontP);
             canvasPopup->CalcBoundingBox(STR(floating_itembar),&rect);
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
-            popup_resize(rect.right-rect.left+D(POPUP_OFSX)*2,rect.bottom-rect.top+D(POPUP_OFSY)*2);
-            wp->cx=rect.right+D(POPUP_OFSX)*2;
-            wp->cy=rect.bottom+D(POPUP_OFSY)*2;
+            popup_resize(rect.right-rect.left+D_X(POPUP_OFSX)*2,rect.bottom-rect.top+D_X(POPUP_OFSY)*2);
+            wp->cx=rect.right+D_X(POPUP_OFSX)*2;
+            wp->cy=rect.bottom+D_X(POPUP_OFSY)*2;
             break;
 
         case WM_CREATE:
@@ -1648,12 +1662,12 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
                     break;
 
                 case FLOATING_TOOLTIP:
-                    rect.left+=D(POPUP_OFSX);
-                    rect.top+=D(POPUP_OFSY);
-                    rect.right-=D(POPUP_OFSX);
-                    rect.bottom-=D(POPUP_OFSY);
+                    rect.left+=D_X(POPUP_OFSX);
+                    rect.top+=D_X(POPUP_OFSY);
+                    rect.right-=D_X(POPUP_OFSX);
+                    rect.bottom-=D_X(POPUP_OFSY);
                     canvasPopup->SetFont(Popup.hFontP);
-                    canvasPopup->SetTextColor(D(POPUP_TEXT_COLOR));
+                    canvasPopup->SetTextColor(D_C(POPUP_TEXT_COLOR));
                     canvasPopup->DrawTextRect(STR(floating_itembar),&rect);
                     break;
 

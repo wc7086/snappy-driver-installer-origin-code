@@ -671,7 +671,7 @@ void State::popup_sysinfo(Canvas &canvas)
 {
     wchar_t bufw[BUFLEN];
     int i;
-    int p0=D(POPUP_OFSX),p1=D(POPUP_OFSX)+10;
+    int p0=D_X(POPUP_OFSX),p1=D_X(POPUP_OFSX)+10;
 
     textdata_vert td(canvas);
     td.ret();
@@ -766,10 +766,10 @@ void State::popup_sysinfo(Canvas &canvas)
     td.ret();
     td.shift_r();
     td.nl();
-    td.TextOutF(D(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
+    td.TextOutF(D_C(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
     td.ret_ofs(10);
     td.shift_l();
-    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D(POPUP_OFSY));
+    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D_X(POPUP_OFSY));
 }
 
 void State::contextmenu2(int x,int y)

@@ -841,12 +841,12 @@ void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,int i
     td.y=y;
     td.col=0;
 
-    if(!altsectscore)td.col=D(POPUP_LST_INVALID_COLOR);
+    if(!altsectscore)td.col=D_C(POPUP_LST_INVALID_COLOR);
     else
     {
-        if(status&STATUS_BETTER||status&STATUS_NEW)td.col=D(POPUP_LST_BETTER_COLOR);else
-        if(status&STATUS_WORSE||status&STATUS_OLD)td.col=D(POPUP_LST_WORSE_COLOR);else
-        td.col=D(POPUP_TEXT_COLOR);
+        if(status&STATUS_BETTER||status&STATUS_NEW)td.col=D_C(POPUP_LST_BETTER_COLOR);else
+        if(status&STATUS_WORSE||status&STATUS_OLD)td.col=D_C(POPUP_LST_WORSE_COLOR);else
+        td.col=D_C(POPUP_TEXT_COLOR);
     }
 
     td.TextOutP(L"$%04d",index);

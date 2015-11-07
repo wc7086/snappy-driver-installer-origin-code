@@ -55,8 +55,8 @@ itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupin
     memset(this,0,sizeof(itembar_t));
     devicematch=devicematch1;
     hwidmatch=hwidmatch1;
-    curpos=(-D(DRVITEM_DIST_Y0))<<16;
-    tagpos=(-D(DRVITEM_DIST_Y0))<<16;
+    curpos=(-D_X(DRVITEM_DIST_Y0))<<16;
+    tagpos=(-D_X(DRVITEM_DIST_Y0))<<16;
     index=groupindex;
     rm=rm1;
     first=first1;
@@ -66,8 +66,8 @@ void itembar_t::itembar_setpos(int *pos,int *cnt,bool addspace)
 {
     if(isactive)
     {
-        *pos+=*cnt?D(DRVITEM_DIST_Y1):D(DRVITEM_DIST_Y0);
-        if(addspace)*pos+=D(DRVITEM_DIST_Y2);
+        *pos+=*cnt?D_X(DRVITEM_DIST_Y1):D_X(DRVITEM_DIST_Y0);
+        if(addspace)*pos+=D_X(DRVITEM_DIST_Y2);
         (*cnt)--;
     }
     oldpos=curpos;
@@ -122,11 +122,11 @@ void itembar_t::str_status(wchar_t *buf)
 
 void itembar_t::drawbutton(Canvas &canvas,int x,int pos,const wchar_t *str1,const wchar_t *str2)
 {
-    pos+=D(ITEM_TEXT_OFS_Y);
-    canvas.SetTextColor(D(boxindex[box_status()]+14));
-    canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,str1);
-    canvas.SetTextColor(D(boxindex[box_status()]+15));
-    canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),str2);
+    pos+=D_X(ITEM_TEXT_OFS_Y);
+    canvas.SetTextColor(D_C(boxindex[box_status()]+14));
+    canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,str1);
+    canvas.SetTextColor(D_C(boxindex[box_status()]+15));
+    canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),str2);
 }
 
 static int showpercent(int a)
@@ -370,8 +370,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     unsigned score=0;
     *i_hwid=*a_hwid=0;
     int cm_ver=0,cm_date=0,cm_score=0,cm_hwid=0;
-    int c0=D(POPUP_TEXT_COLOR),cb=D(POPUP_CMP_BETTER_COLOR);
-    int p0=D(POPUP_OFSX);
+    int c0=D_C(POPUP_TEXT_COLOR),cb=D_C(POPUP_CMP_BETTER_COLOR);
+    int p0=D_X(POPUP_OFSX);
 
     if(devicematch_f->driver)
     {
@@ -415,7 +415,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         td.ret_ofs(10);
         canvas.SetFont(Popup.hFontP);
         td.TextOutF(c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
-        td.TextOutF(hwidmatch_f->calc_notebook()?c0:D(POPUP_CMP_INVALID_COLOR)
+        td.TextOutF(hwidmatch_f->calc_notebook()?c0:D_C(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
     }
 
@@ -436,7 +436,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
 
     // HWID list (devicematch_f)
     maxln=td.y;
-    td.y=D(POPUP_OFSY);
+    td.y=D_X(POPUP_OFSY);
     if(devicematch_f->device->HardwareID)
     {
         canvas.SetFont(Popup.hFontBold);
@@ -451,7 +451,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
             if(!StrCmpIW(i_hwid,p))pp|=1;
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            td.TextOutF(pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
+            td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=lstrlenW(p)+1;
         }
     }
@@ -469,19 +469,19 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
             if(!StrCmpIW(i_hwid,p))pp|=1;
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            td.TextOutF(pp?D(POPUP_HWID_COLOR):c0,L"%s",p);
+            td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=lstrlenW(p)+1;
         }
     }
     if(!cur_driver||!hwidmatch_f)cm_hwid=0;
     if(td.y>maxln)maxln=td.y;
-    maxln+=D(POPUP_WY);
+    maxln+=D_X(POPUP_WY);
     td.y=maxln;
 
     // Cur driver (cur_driver)
     if(cur_driver||hwidmatch_f)
     {
-        canvas.DrawLine(0,td.y-D(POPUP_WY)/2,wx,td.y-D(POPUP_WY)/2);
+        canvas.DrawLine(0,td.y-D_X(POPUP_WY)/2,wx,td.y-D_X(POPUP_WY)/2);
     }
     if(devicematch_f->device->HardwareID||hwidmatch_f)
     {
@@ -497,7 +497,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         td.ret_ofs(10);
         canvas.SetFont(Popup.hFontP);
         td.TextOutF(               c0,L"%s",t+cur_driver->DriverDesc);
-        td.TextOutF(               cur_driver->isvalidcat(state)?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
+        td.TextOutF(               cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
         td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
         td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
@@ -521,19 +521,19 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
         canvas.SetFont(Popup.hFontP);
         td.TextOutF(               c0,L"%s",bufw+1000);
-        td.TextOutF(hwidmatch_f->isvalidcat(state)?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
+        td.TextOutF(hwidmatch_f->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
         td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
         td.TextOutF(cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
         td.TextOutF(cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
         td.TextOutF(cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
         td.TextOutF(               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
-        td.TextOutF(hwidmatch_f->getDecorscore()?c0:D(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
+        td.TextOutF(hwidmatch_f->getDecorscore()?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
         td.TextOutF(cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
     }
 
     int zz=td.getMaxsz();
     if(!devicematch_f->device->HardwareID&&!hwidmatch_f)zz/=2;
-    Popup.popup_resize((zz+10+p0*2)*2,td.y+D(POPUP_OFSY));
+    Popup.popup_resize((zz+10+p0*2)*2,td.y+D_X(POPUP_OFSY));
 }
 
 int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
@@ -839,9 +839,9 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
     unsigned i;
     int pos;
     int ofsy=MainWindow.getscrollpos();
-    int cutoff=calc_cutoff()+D(DRVITEM_DIST_Y0);
+    int cutoff=calc_cutoff()+D_X(DRVITEM_DIST_Y0);
     int ofs=0;
-    int wx=XG(D(DRVITEM_WX),Xg(D(DRVITEM_OFSX),D(DRVITEM_WX)));
+    int wx=XG(D_X(DRVITEM_WX),Xg(D_X(DRVITEM_OFSX),D_X(DRVITEM_WX)));
 
     *r=-2;
     *zone=0;
@@ -858,8 +858,8 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
         if(MainWindow.kbitem[MainWindow.kbpanel]>=max_cnt)MainWindow.kbitem[MainWindow.kbpanel]=0;
     }
 
-    y-=-D(DRVITEM_DIST_Y0);
-    x-=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
+    y-=-D_X(DRVITEM_DIST_Y0);
+    x-=Xg(D_X(DRVITEM_OFSX),D_X(DRVITEM_WX));
     if(MainWindow.kbpanel==KB_NONE)if(x<0||x>wx)return;
     itembar=&items_list[0];
     for(i=0;i<items_list.size();i++,itembar++)
@@ -886,15 +886,15 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
         pos=itembar->curpos>>16;
         if(i>=SLOT_RESTORE_POINT&&y<cutoff)continue;
         if(i>=SLOT_RESTORE_POINT)pos-=ofsy;
-        if(y>pos&&y<pos+D(DRVITEM_WY))
+        if(y>pos&&y<pos+D_X(DRVITEM_WY))
         {
-            x-=D(ITEM_CHECKBOX_OFS_X);
-            y-=D(ITEM_CHECKBOX_OFS_Y)+pos;
-            ofs=(itembar->first&1)?0:D(DRVITEM_LINE_INTEND);
+            x-=D_X(ITEM_CHECKBOX_OFS_X);
+            y-=D_X(ITEM_CHECKBOX_OFS_Y)+pos;
+            ofs=(itembar->first&1)?0:D_X(DRVITEM_LINE_INTEND);
             if(x-ofs>0)*r=i;
-            if(x-ofs>0&&x-ofs<D(ITEM_CHECKBOX_SIZE)&&y>0&&y<D(ITEM_CHECKBOX_SIZE))*zone=1;
-            if(x>wx-50&&!ofs)*zone=2;
-            if(!*zone&&(x-ofs<D(ITEM_CHECKBOX_SIZE)))*zone=3;
+            if(x-ofs>0&&x-ofs<D_X(ITEM_CHECKBOX_SIZE)&&y>0&&y<D_X(ITEM_CHECKBOX_SIZE))*zone=1;
+            if(x>wx-D_X(ITEM_ICON_SIZE)*32/21&&!ofs)*zone=2;
+            if(!*zone&&(x-ofs<D_X(ITEM_CHECKBOX_SIZE)))*zone=3;
             if(!*zone&&(x>240+190))*zone=3;
             if(MainWindow.kbpanel==KB_NONE)return;
         }
@@ -1185,7 +1185,7 @@ void Manager::setpos()
     itembar_t *itembar,*lastitembar=nullptr;
     unsigned k;
     int cnt=0;
-    int pos=D(DRVITEM_OFSY);
+    int pos=D_X(DRVITEM_OFSY);
     //int pos=0;
     int group=0;
     int lastmatch=0;
@@ -1236,7 +1236,7 @@ int Manager::animate()
     int i=MainWindow.getscrollpos();
     if(MainWindow.offset_target)
     {
-        int v=MainWindow.offset_target-D(DRVITEM_DIST_Y0)*2;
+        int v=MainWindow.offset_target-D_X(DRVITEM_DIST_Y0)*2;
         if(i>v)
         {
             i--;
@@ -1246,7 +1246,7 @@ int Manager::animate()
             chg=1;
         }
 
-        v=MainWindow.offset_target+D(DRVITEM_DIST_Y0)-MainWindow.mainy_c;
+        v=MainWindow.offset_target+D_X(DRVITEM_DIST_Y0)-MainWindow.mainy_c;
         if(i<v)
         {
             i++;
@@ -1289,13 +1289,13 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
     itembar_t *itembar=&items_list[index];
 
     wchar_t bufw[BUFLEN];
-    int x=Xg(D(DRVITEM_OFSX),D(DRVITEM_WX));
-    int wx=XG(D(DRVITEM_WX),x);
-    int r=D(boxindex[itembar->box_status()]+3);
+    int x=Xg(D_X(DRVITEM_OFSX),D_X(DRVITEM_WX));
+    int wx=XG(D_X(DRVITEM_WX),x);
+    int r=D_X(boxindex[itembar->box_status()]+3);
     int intend=0;
     int oldstyle=Settings.flags&FLAG_SHOWDRPNAMES1||Settings.flags&FLAG_OLDSTYLE;
 
-    int pos=(itembar->curpos>>16)-D(DRVITEM_DIST_Y0);
+    int pos=(itembar->curpos>>16)-D_X(DRVITEM_DIST_Y0);
     if(index>=SLOT_RESTORE_POINT)pos-=ofsy;
 
     if(!(itembar->first&1))
@@ -1308,26 +1308,26 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
     }
     if(intend)
     {
-        x+=D(DRVITEM_LINE_INTEND);
-        wx-=D(DRVITEM_LINE_INTEND);
+        x+=D_X(DRVITEM_LINE_INTEND);
+        wx-=D_X(DRVITEM_LINE_INTEND);
     }
-    if(pos<=-D(DRVITEM_DIST_Y0))return 0;
+    if(pos<=-D_X(DRVITEM_DIST_Y0))return 0;
     if(pos>MainWindow.mainy_c)return 0;
     if(wx<0)return 0;
 
     //canvas.SetFont(MainWindow.hFont);
 
-    if(index<SLOT_RESTORE_POINT)cutoff=D(DRVITEM_OFSY);
+    if(index<SLOT_RESTORE_POINT)cutoff=D_X(DRVITEM_OFSY);
     ClipRegion hrgn2{0,cutoff,x+wx,MainWindow.mainy_c};
-    ClipRegion hrgn{x,(pos<cutoff)?cutoff:pos,x+wx,pos+D(DRVITEM_WY),r};
+    ClipRegion hrgn{x,(pos<cutoff)?cutoff:pos,x+wx,pos+D_X(DRVITEM_WY),r};
     int cl=((zone>=0)?1:0);
     if(index==SLOT_EXTRACTING&&itembar->install_status&&installmode==MODE_NONE)
         cl=((GetTickCount()-animstart)/200)%2;
     canvas.SetClipRegion(hrgn2);
-    if(intend&&D(DRVITEM_LINE_WIDTH)&&!(itembar->first&2))
+    if(intend&&D_1(DRVITEM_LINE_WIDTH)&&!(itembar->first&2))
         canvas.DrawConnection(x,pos,ofsy,items_list[intend].curpos>>16);
 
-    canvas.DrawWidget(x,pos,x+wx,pos+D(DRVITEM_WY),itembar->box_status()+cl);
+    canvas.DrawWidget(x,pos,x+wx,pos+D_X(DRVITEM_WY),itembar->box_status()+cl);
     canvas.SetClipRegion(hrgn);
 
     if(itembar->percent)
@@ -1336,36 +1336,36 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
         int a=BOX_PROGR;
         //if(index==SLOT_EXTRACTING&&installmode==MODE_STOPPING)a=BOX_PROGR_S;
         //if(index>=RES_SLOTS&&(!itembar->checked||installmode==MODE_STOPPING))a=BOX_PROGR_S;
-        canvas.DrawWidget(x,pos,(int)(x+wx*itembar->percent/1000),pos+D(DRVITEM_WY),a);
+        canvas.DrawWidget(x,pos,(int)(x+wx*itembar->percent/1000),pos+D_X(DRVITEM_WY),a);
     }
 
     canvas.SetTextColor(0); // todo: color
     switch(index)
     {
         case SLOT_RESTORE_POINT:
-            canvas.DrawCheckbox(x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_CHECKBOX_OFS_Y),
-                         D(ITEM_CHECKBOX_SIZE),D(ITEM_CHECKBOX_SIZE),
+            canvas.DrawCheckbox(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_CHECKBOX_OFS_Y),
+                         D_X(ITEM_CHECKBOX_SIZE),D_X(ITEM_CHECKBOX_SIZE),
                          itembar->checked,zone>=0);
 
             wcscpy(bufw,STR(itembar->install_status));
-            canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw);
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)/2,bufw);
             break;
 
         case SLOT_INDEXING:
             wsprintf(bufw,L"%s (%d%s%d)",STR(itembar->isactive==2?STR_INDEXLZMA:STR_INDEXING),
                         (int)items_list[SLOT_INDEXING].val1,STR(STR_OF),
                         (int)items_list[SLOT_INDEXING].val2);
-            canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,bufw);
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
 
             if(*itembar->txt1)
             {
                 wsprintf(bufw,L"%s",itembar->txt1);
-                canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
+                canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),bufw);
             }
             break;
 
         case SLOT_EXTRACTING:
-            pos+=D(ITEM_TEXT_OFS_Y);
+            pos+=D_X(ITEM_TEXT_OFS_Y);
             if(installmode)
             {
                 if(installmode==MODE_INSTALLING)
@@ -1378,22 +1378,22 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 else
                     if(itembar->install_status)wsprintf(bufw,STR(itembar->install_status),itembar->percent);
 
-                canvas.SetTextColor(D(boxindex[itembar->box_status()]+14));
-                canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,bufw);
+                canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
+                canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
                 if(itembar_act>=RES_SLOTS)
                 {
                     wsprintf(bufw,L"%S",items_list[itembar_act].hwidmatch->getdrp_drvdesc());
-                    canvas.SetTextColor(D(boxindex[itembar->box_status()]+15));
-                    canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
+                    canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
+                    canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),bufw);
                 }
             }else
             {
                 wsprintf(bufw,L"%s",STR(itembar->install_status));
-                canvas.SetTextColor(D(boxindex[itembar->box_status()]+14));
-                canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,bufw);
+                canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
+                canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
                 wsprintf(bufw,L"%s",STR(STR_INST_CLOSE));
-                canvas.SetTextColor(D(boxindex[itembar->box_status()]+15));
-                canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
+                canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
+                canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),bufw);
             }
             break;
 
@@ -1402,10 +1402,10 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_NOUPDATES:
-            pos+=D(ITEM_TEXT_OFS_Y);
+            pos+=D_X(ITEM_TEXT_OFS_Y);
             wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
-            canvas.SetTextColor(D(boxindex[itembar->box_status()]+14));
-            canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y)/2,bufw);
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)/2,bufw);
             break;
 
         case SLOT_DOWNLOAD:
@@ -1450,42 +1450,42 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
             if(itembar->first&2)
             {
                     /*wsprintf(bufw,L"%ws",matcher->state->text+itembar->devicematch->device->Devicedesc);
-                    canvas.setTextColor(D(boxindex[box_status(index)]+14));
-                    TextOutH(hdc,x+D(ITEM_TEXT_OFS_X),pos,bufw);*/
+                    canvas.setTextColor(D_C(boxindex[box_status(index)]+14));
+                    TextOutH(hdc,x+D_X(ITEM_TEXT_OFS_X),pos,bufw);*/
 
                     //str_status(bufw,itembar);
                     wsprintf(bufw,L"%ws",itembar->hwidmatch->getdrp_packname());
-                    canvas.SetTextColor(D(boxindex[itembar->box_status()]+15));
-                    canvas.DrawTextXY(x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_TEXT_DIST_Y)+5,bufw);
+                    canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
+                    canvas.DrawTextXY(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)+5,bufw);
                     break;
             }
             if(itembar->hwidmatch)
             {
                 // Checkbox
-                canvas.DrawCheckbox(x+D(ITEM_CHECKBOX_OFS_X),pos+D(ITEM_CHECKBOX_OFS_Y),
-                         D(ITEM_CHECKBOX_SIZE),D(ITEM_CHECKBOX_SIZE),
+                canvas.DrawCheckbox(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_CHECKBOX_OFS_Y),
+                         D_X(ITEM_CHECKBOX_SIZE),D_X(ITEM_CHECKBOX_SIZE),
                          itembar->checked,zone>=0);
 
                 // Available driver desc
-                pos+=D(ITEM_TEXT_OFS_Y);
+                pos+=D_X(ITEM_TEXT_OFS_Y);
                 wsprintf(bufw,L"%S",itembar->hwidmatch->getdrp_drvdesc());
-                canvas.SetTextColor(D(boxindex[itembar->box_status()]+14));
+                canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
                 RECT rect;
-                int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
-                rect.left=x+D(ITEM_TEXT_OFS_X);
-                if(rtl)rect.left=x+D(ITEM_TEXT_OFS_X)+wx1/2-canvas.GetTextExtent(bufw)-10;
+                int wx1=wx-D_X(ITEM_TEXT_OFS_X)-D_X(ITEM_ICON_OFS_X);
+                rect.left=x+D_X(ITEM_TEXT_OFS_X);
+                if(rtl)rect.left=x+D_X(ITEM_TEXT_OFS_X)+wx1/2-canvas.GetTextExtent(bufw)-10;
                 rect.top=pos;
-                if(intend)wx1-=D(DRVITEM_LINE_INTEND);
+                if(intend)wx1-=D_X(DRVITEM_LINE_INTEND);
                 rect.right=rect.left+wx1/2;
                 rect.bottom=rect.top+90;
                 if(oldstyle)
-                    canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,bufw);
+                    canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
                 else
                     canvas.DrawTextRect(bufw,&rect);
 
 
                 // Available driver status
-                canvas.SetTextColor(D(boxindex[itembar->box_status()]+15));
+                canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
                 itembar->str_status(bufw);
                 switch(itembar->install_status)
                 {
@@ -1508,12 +1508,12 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                     default:
                         wcscpy(bufw,STR(itembar->install_status));
                 }
-                rect.left=x+D(ITEM_TEXT_OFS_X)+wx1/2;
+                rect.left=x+D_X(ITEM_TEXT_OFS_X)+wx1/2;
                 rect.top=pos;
                 rect.right=rect.left+wx1/2;
                 rect.bottom=rect.top+90;
                 if(oldstyle)
-                    canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
+                    canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),bufw);
                 else
                     canvas.DrawTextRect(bufw,&rect);
 
@@ -1527,7 +1527,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                             itembar->hwidmatch->getdrp_packpath()+len+(lnn?1:0),
                             lnn?L"\\":L"",
                             itembar->hwidmatch->getdrp_packname());
-                    canvas.DrawTextXY(x+wx-240,pos+D(ITEM_TEXT_DIST_Y),bufw);
+                    canvas.DrawTextXY(x+wx-240,pos+D_X(ITEM_TEXT_DIST_Y),bufw);
                 }
             }
             else
@@ -1536,26 +1536,26 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                 if(itembar->devicematch)
                 {
                     wsprintf(bufw,L"%ws",matcher->getState()->textas.get(itembar->devicematch->device->Devicedesc));
-                    canvas.SetTextColor(D(boxindex[itembar->box_status()]+14));
+                    canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
                     RECT rect;
-                    int wx1=wx-D(ITEM_TEXT_OFS_X)-D(ITEM_ICON_OFS_X);
-                    rect.left=x+D(ITEM_TEXT_OFS_X);
+                    int wx1=wx-D_X(ITEM_TEXT_OFS_X)-D_X(ITEM_ICON_OFS_X);
+                    rect.left=x+D_X(ITEM_TEXT_OFS_X);
                     rect.top=pos;
                     rect.right=rect.left+wx1/2;
                     rect.bottom=rect.top+90;
                     if(oldstyle)
-                        canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos,bufw);
+                        canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
                     else
                         canvas.DrawTextRect(bufw,&rect);
 
                     itembar->str_status(bufw);
-                    canvas.SetTextColor(D(boxindex[itembar->box_status()]+15));
-                    rect.left=x+D(ITEM_TEXT_OFS_X)+wx1/2;
+                    canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
+                    rect.left=x+D_X(ITEM_TEXT_OFS_X)+wx1/2;
                     rect.top=pos;
                     rect.right=rect.left+wx1/2;
                     rect.bottom=rect.top+90;
                     if(oldstyle)
-                        canvas.DrawTextXY(x+D(ITEM_TEXT_OFS_X),pos+D(ITEM_TEXT_DIST_Y),bufw);
+                        canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),bufw);
                     else
                         canvas.DrawTextRect(bufw,&rect);
                 }
@@ -1563,7 +1563,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
             // Device icon
             if(itembar->devicematch)
             {
-                canvas.DrawIcon(x+D(ITEM_ICON_OFS_X),pos+D(ITEM_ICON_OFS_Y),
+                canvas.DrawIcon(x+D_X(ITEM_ICON_OFS_X),pos+D_X(ITEM_ICON_OFS_Y),
                                 (itembar->hwidmatch)?itembar->hwidmatch->getdrp_drvfield(ClassGuid_):nullptr,
                                 &itembar->devicematch->device->DeviceInfoData.ClassGuid);
             }
@@ -1571,8 +1571,8 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
             // Expand icon
             if(groupsize(itembar->index)>1&&itembar->first&1)
             {
-                int xo=x+wx-D(ITEM_ICON_SIZE)*2+10;
-                canvas.DrawImage(*vTheme->GetIcon((itembar->isactive&2?0:2)+(zone==2?1:0)),xo,pos,xo+32,pos+32,0,Image::HSTR|Image::VSTR);
+                int xo=x+wx-D_X(ITEM_ICON_SIZE)*32/22;
+                canvas.DrawImage(*vTheme->GetIcon((itembar->isactive&2?0:2)+(zone==2?1:0)),xo,pos,xo+D_X(ITEM_ICON_SIZE)*32/25,pos+D_X(ITEM_ICON_SIZE)*32/25,0,Image::HSTR|Image::VSTR);
             }
             break;
 
@@ -1587,7 +1587,7 @@ int Manager::isbehind(int pos,int ofsy,int j)
     itembar_t *itembar;
 
     if(j<SLOT_RESTORE_POINT)return 0;
-    if(pos-ofsy<=-D(DRVITEM_DIST_Y0))return 1;
+    if(pos-ofsy<=-D_X(DRVITEM_DIST_Y0))return 1;
     if(pos-ofsy>MainWindow.mainy_c)return 1;
 
     itembar=&items_list[j-1];
@@ -1829,16 +1829,16 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     POINT p;
     wchar_t i_hwid[BUFLEN];
     wchar_t bufw[BUFLEN];
-    int lne=D(POPUP_WY);
+    int lne=D_X(POPUP_WY);
     unsigned k;
     int maxsz=0;
 	int limits[30];
-    int c0=D(POPUP_TEXT_COLOR);
+    int c0=D_C(POPUP_TEXT_COLOR);
     textdata_horiz_t td(canvas,Popup.horiz_sh,limits,1);
 
     if(i<RES_SLOTS)return;
 
-    td.y=D(POPUP_OFSY);
+    td.y=D_X(POPUP_OFSY);
     td.col=0;
 
     int group=items_list[i].index;
@@ -1888,9 +1888,9 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     {
         if(k==i)
         {
-            canvas.DrawEmptyRect(D(POPUP_OFSX)+Popup.horiz_sh,td.y,
-                            wx+Popup.horiz_sh-D(POPUP_OFSX),td.y+lne,
-                            D(POPUP_LST_SELECTED_COLOR));
+            canvas.DrawEmptyRect(D_X(POPUP_OFSX)+Popup.horiz_sh,td.y,
+                            wx+Popup.horiz_sh-D_X(POPUP_OFSX),td.y+lne,
+                            D_C(POPUP_LST_SELECTED_COLOR));
         }
         itembar->hwidmatch->popup_driverline(limits,canvas,td.y,1,k);
         td.y+=lne;
@@ -1903,13 +1903,13 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
 
     maxsz=0;
     for(k=0;k<30;k++)maxsz+=limits[k];
-    if(p.x+maxsz+D(POPUP_OFSX)*3>rect.right)
+    if(p.x+maxsz+D_X(POPUP_OFSX)*3>rect.right)
     {
         td.y+=lne;
         td.ret();
         td.TextOutF(c0,STR(STR_HINT_SCROLL));
         td.y+=lne;
     }
-    Popup.popup_resize(maxsz+D(POPUP_OFSX)*3,td.y+D(POPUP_OFSY));
+    Popup.popup_resize(maxsz+D_X(POPUP_OFSX)*3,td.y+D_X(POPUP_OFSY));
 }
 //}

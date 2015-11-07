@@ -47,6 +47,7 @@ Settings.cfg
 -lang:<name>      Current interface language.
 -theme:<name>     Current theme.
 -hintdelay:<time> Sets hint delay.
+-scale:<size>     Sets scaling for GUI(normal size: 256).
 -wndwx:<num>      Sets window width.
 -wndwy:<num>      Sets window height.
 -filters:<flags>  Sets filters.
