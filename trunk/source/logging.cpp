@@ -100,7 +100,7 @@ void Log_t::gen_timestamp()
 
 void Log_t::start(wchar_t *logdir)
 {
-    wchar_t filename[BUFLEN];
+    WStringShort filename;
 
     if(Settings.flags&FLAG_NOLOGFILE)return;
     setlocale(LC_ALL,"");
@@ -108,25 +108,25 @@ void Log_t::start(wchar_t *logdir)
 
     gen_timestamp();
 
-    wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
-    if(!System.canWrite(filename))
+    filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
+    if(!System.canWrite(filename.Get()))
     {
         Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
-        wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
+        filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
     }
 
     mkdir_r(logdir);
-    logfile=_wfopen(filename,L"wt");
+    logfile=_wfopen(filename.Get(),L"wt");
     if(!logfile)
     {
         Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
-        wsprintf(filename,L"%s\\%slog.txt",logdir,timestamp);
+        filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
         mkdir_r(logdir);
-        logfile=_wfopen(filename,L"wb");
+        logfile=_wfopen(filename.Get(),L"wb");
     }
     if((log_verbose&LOG_VERBOSE_BATCH)==0)
         Log.print_file("{start logging\n%s\n\n",SVN_REV_STR);
@@ -240,16 +240,16 @@ const wchar_t *errno_str()
 
 void Log_t::print_syserr(int r,const wchar_t *s)
 {
-    wchar_t buf[BUFLEN];
+    WString buf;
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-                    nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),(LPWSTR)&buf,BUFLEN,nullptr);
-    Log.print_err("ERROR with %S:[%d]'%S'\n",s,r,buf);
+                    nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),buf.GetV(),buf.Length(),nullptr);
+    Log.print_err("ERROR with %S:[%x]'%S'\n",s,r,buf.Get());
     error_count++;
 }
 
 static void myterminate()
 {
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
 
     std::exception_ptr p;
     p=std::current_exception();
@@ -260,29 +260,29 @@ static void myterminate()
     }
     catch(const std::exception& e)
     {
-        wsprintf(buf,L"Exception: %S\n",e.what());
+        buf.sprintf(L"Exception: %S\n",e.what());
     }
     catch(int i)
     {
-        wsprintf(buf,L"Exception: %d\n",i);
+        buf.sprintf(L"Exception: %d\n",i);
     }
     catch(char const*str)
     {
-        wsprintf(buf,L"Exception: %S\n",str);
+        buf.sprintf(L"Exception: %S\n",str);
     }
     catch(wchar_t const*str)
     {
-        wsprintf(buf,L"Exception: %s\n",str);
+        buf.sprintf(L"Exception: %s\n",str);
     }
     catch(...)
     {
-        wsprintf(buf,L"Exception: unknown");
+        buf.sprintf(L"Exception: unknown");
     }
     Log.print_err("ERROR: %S\n",buf);
     Log.save();
     Log.stop();
-    wcscat(buf,L"\n\nThe program will self terminate now.");
-    MessageBox(MainWindow.hMain,buf,L"Exception",MB_ICONERROR);
+    buf.append(L"\n\nThe program will self terminate now.");
+    MessageBox(MainWindow.hMain,buf.Get(),L"Exception",MB_ICONERROR);
 
     abort();
 }

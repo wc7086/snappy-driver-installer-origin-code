@@ -991,7 +991,7 @@ void Collection::print_index_hr()
     Timers.stop(time_indexprint);
 }
 
-wchar_t *Collection::finddrp(wchar_t *fnd)
+wchar_t *Collection::finddrp(const wchar_t *fnd)
 {
     int j;
     wchar_t *s,*d,*n_s;

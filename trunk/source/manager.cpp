@@ -1163,18 +1163,18 @@ const wchar_t *Manager::getHWIDby(int id){return items_list[Popup.floating_itemb
 
 void Manager::getINFpath(int wp)
 {
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
     State *state=matcher->getState();
 
-    wsprintf(buf,L"%s%s%s",
+    buf.sprintf(L"%s%s%s",
             (wp==ID_LOCATEINF)?L"/select,":L"",
             state->textas.get(state->getWindir()),
             state->textas.get(items_list[Popup.floating_itembar].devicematch->driver->getInfPath()));
 
     if(wp==ID_OPENINF)
-        System.run_command(buf,L"",SW_SHOW,0);
+        System.run_command(buf.Get(),L"",SW_SHOW,0);
     else
-        System.run_command(L"explorer.exe",buf,SW_SHOW,0);
+        System.run_command(L"explorer.exe",buf.Get(),SW_SHOW,0);
 }
 //}
 

@@ -315,7 +315,7 @@ public:
     void printstats();
     void print_index_hr();
 
-    wchar_t *finddrp(wchar_t *s);
+    wchar_t *finddrp(const wchar_t *s);
 };
 
 // Driverpack

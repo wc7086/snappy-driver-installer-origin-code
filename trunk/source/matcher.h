@@ -77,7 +77,7 @@ public:
     virtual void print()=0;
     virtual void sorta(int *v)=0;
 
-    virtual wchar_t *finddrp(wchar_t *s)=0;
+    virtual wchar_t *finddrp(const wchar_t *s)=0;
     virtual State *getState()=0;
     virtual Collection *getCol()=0;
     virtual size_t getDwidmatch_list()=0;

@@ -247,6 +247,45 @@ int Hashtable::findnext(int *isfound)
 //}
 
 //{ Strings
+
+void WString_dyn::Resize(int size)
+{
+    Log.print_con("Resize to %d->",len);
+    len=size;
+#ifndef _MSC_VER
+    wchar_t *old=buf_dyn;
+#endif
+    buf_dyn=new wchar_t[len];
+    lstrcpy(buf_dyn,buf_cur);
+    buf_cur=buf_dyn;
+#ifndef _MSC_VER
+    delete[] old;
+#endif
+    Log.print_con("%d\n",len);
+}
+
+void WString_dyn::sprintf(const wchar_t *format,...)
+{
+    va_list args;
+    va_start(args,format);
+    vsprintf(format,args);
+    va_end(args);
+}
+void WString_dyn::vsprintf(const wchar_t *format,va_list args)
+{
+    int r=_vscwprintf(format,args)+1;
+    if(r>len)Resize(r);
+    r=vswprintf_s(buf_cur,len,format,args);
+    if(debug)Log.print_con("%d,(%S),[%S]\n",r,format,buf_cur);
+}
+
+void WString_dyn::append(const wchar_t *str)
+{
+    size_t sz=lstrlen(buf_cur)+lstrlen(str)+1;
+    if(sz>len)Resize(sz);
+    wcscat_s(buf_cur,len,str);
+}
+
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
 {
     wchar_t *s;

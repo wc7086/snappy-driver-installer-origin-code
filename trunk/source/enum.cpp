@@ -77,19 +77,19 @@ const dev devtbl[NUM_PROPS]=
 //{ Device
 void Device::print_guid(GUID *g)
 {
-    wchar_t buffer[BUFLEN];
-    /*log_file("%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",g->Data1,g->Data2,g->Data3,
-        (int)(g->Data4[0]),(int)(g->Data4[1]),
-        (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
-        (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
+    WString buffer;
 
-    *buffer=0;
-    if(!SetupDiGetClassDescription(g,buffer,BUFLEN,nullptr))
+    if(!SetupDiGetClassDescription(g,buffer.GetV(),buffer.Length(),nullptr))
     {
-        //int lr=GetLastError();
-        //print_error(lr,L"print_guid()");
+        Log.print_file("%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",g->Data1,g->Data2,g->Data3,
+            (int)(g->Data4[0]),(int)(g->Data4[1]),
+            (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
+            (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));
+
+        unsigned lr=GetLastError();
+        if(lr!=0xE0000206)Log.print_syserr(lr,L"print_guid()");
     }
-    Log.print_file("%S\n",buffer);
+    Log.print_file("%S\n",buffer.Get());
 }
 
 void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *val)
@@ -328,16 +328,16 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         return;
     }
 
-    wchar_t filename[BUFLEN];
-    wchar_t fnm_hwid[BUFLEN];
-    wsprintf(filename,L"%s%s",state->textas.get(state->getWindir()),state->textas.get(InfPath));
-    wsprintf(fnm_hwid,L"%s%s",filename,state->textas.get(MatchingDeviceId));
+    WStringShort filename;
+    WStringShort fnm_hwid;
+    filename.sprintf(L"%s%s",state->textas.get(state->getWindir()),state->textas.get(InfPath));
+    fnm_hwid.sprintf(L"%s%s",filename.Get(),state->textas.get(MatchingDeviceId));
 
-    auto got=inf_list->find(std::wstring(fnm_hwid));
+    auto got=inf_list->find(std::wstring(fnm_hwid.Get()));
     if(got!=inf_list->end())
     {
         infdata_t *infdata=&got->second;
-        //log_file("Match_hwid '%S' %d,%d,%d,%d\n",fnm_hwid,infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
+        //log_file("Match_hwid '%S' %d,%d,%d,%d\n",fnm_hwid.Get(),infdata->feature,infdata->catalogfile,infdata->cat,infdata->inf_pos);
         feature=infdata->feature;
         catalogfile=infdata->catalogfile;
         cat=infdata->cat;
@@ -345,25 +345,25 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         return;
     }
 
-    got=inf_list->find(std::wstring(filename));
+    got=inf_list->find(std::wstring(filename.Get()));
     if(got!=inf_list->end())
     {
         infdata_t *infdata=&got->second;
         cat=infdata->cat;
         catalogfile=infdata->catalogfile;
         start_index=infdata->start_index;
-        //log_file("Match_inf  '%S',%d,%d\n",filename,cat,catalogfile);
+        //log_file("Match_inf  '%S',%d,%d\n",filename.Get(),cat,catalogfile);
     }
     else
     {
         FILE *f;
         int len;
 
-        //log_file("Reading '%S' for (%S)\n",filename,state->textas.get(MatchingDeviceId));
-        f=_wfopen(filename,L"rb");
+        //log_file("Reading '%S' for (%S)\n",filename.Get(),state->textas.get(MatchingDeviceId));
+        f=_wfopen(filename.Get(),L"rb");
         if(!f)
         {
-            Log.print_err("ERROR: file not found '%S'\n",filename);
+            Log.print_err("ERROR: file not found '%S'\n",filename.Get());
             return;
         }
         fseek(f,0,SEEK_END);
@@ -391,8 +391,8 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     unpacked_drp->fillinfo(sect,hwid,start_index,&inf_pos,&cat,&catalogfile,&feature);
 
     //log_file("Added  %d,%d,%d,%d\n",feature,catalogfile,cat,inf_pos);
-    inf_list->insert({std::wstring(fnm_hwid),infdata_t(catalogfile,feature,inf_pos,cat,start_index)});
-    inf_list->insert({std::wstring(filename),infdata_t(catalogfile,0,0,cat,start_index)});
+    inf_list->insert({std::wstring(fnm_hwid.Get()),infdata_t(catalogfile,feature,inf_pos,cat,start_index)});
+    inf_list->insert({std::wstring(filename.Get()),infdata_t(catalogfile,0,0,cat,start_index)});
 }
 
 int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)

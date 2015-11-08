@@ -274,13 +274,13 @@ void wText::draw(Canvas &canvas)
 void wTextRev::draw(Canvas &canvas)
 {
     Version v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
 
-    wsprintf(buf,L"%s (",TEXT(SVN_REV2));
-    v.str_date(buf+wcslen(buf));
-    wcscat(buf,L")");if(rtl)wcscat(buf,L"\u200E");
+    buf.sprintf(L"%s (",TEXT(SVN_REV2));
+    v.str_date(buf.GetV()+wcslen(buf.Get()));
+    buf.append(L")");if(rtl)buf.append(L"\u200E");
     canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
-    canvas.DrawTextXY(mirw(x1,0,wx),y1,buf);
+    canvas.DrawTextXY(mirw(x1,0,wx),y1,buf.Get());
 }
 
 void wCheckbox::draw(Canvas &canvas)
@@ -312,11 +312,11 @@ void wButtonInst::draw(Canvas &canvas)
 {
     if(!flags)canvas.DrawWidget(x1,y1,x1+wx,y1+wy-1,isSelected?BOX_BUTTON_H:BOX_BUTTON);
 
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
     canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
-    wsprintf(buf,L"%s (%d)",STR(str_id),manager_g->countItems());
+    buf.sprintf(L"%s (%d)",STR(str_id),manager_g->countItems());
     int nwy=D_X(PANEL9_OFSX)==D_X(PANEL10_OFSX)?D_X(PANEL10_WY):wy;
-    canvas.DrawTextXY(mirw(x1,nwy/2,wx),y1+(wy-D_X(FONT_SIZE)-2)/2,buf);
+    canvas.DrawTextXY(mirw(x1,nwy/2,wx),y1+(wy-D_X(FONT_SIZE)-2)/2,buf.Get());
 }
 
 void wTextSys1::draw(Canvas &canvas)
@@ -330,11 +330,10 @@ void wTextSys1::draw(Canvas &canvas)
 void wTextSys2::draw(Canvas &canvas)
 {
     State *state=manager_g->matcher->getState();
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
 
-    wsprintf(buf,L"%s (%d-bit)",state->get_winverstr(),state->getArchitecture()?64:32);
-    if(rtl)wcscat(buf,L"\u200E");
-    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf);
+    buf.sprintf(L"%s (%d-bit)%s",state->get_winverstr(),state->getArchitecture()?64:32,rtl?L"\u200E":L"");
+    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf.Get());
     canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,state->getProduct());
     canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_WINDIR));
     canvas.DrawTextXY(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getWindir()));
@@ -343,13 +342,13 @@ void wTextSys2::draw(Canvas &canvas)
 void wTextSys3::draw(Canvas &canvas)
 {
     State *state=manager_g->matcher->getState();
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
 
-    wsprintf(buf,L"%s",(wx<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
-    if(rtl)wcscat(buf,L"\u200E");
-    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf);
-    wsprintf(buf,L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
-    canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,buf);
+    buf.sprintf(L"%s",(wx<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
+    if(rtl)buf.append(L"\u200E");
+    canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf.Get());
+    buf.sprintf(L"%s: %s",STR(STR_SYSINF_TYPE),STR(state->isLaptop?STR_SYSINF_LAPTOP:STR_SYSINF_DESKTOP));
+    canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,buf.Get());
     canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_TEMP));
     canvas.DrawTextXY(x1+10+SYSINFO_COL3,y1,state->textas.getw(state->getTemp()));
 }
@@ -633,12 +632,12 @@ void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxs
 
 void textdata_horiz_t::TextOutP(const wchar_t *format,...)
 {
-    wchar_t buffer[BUFLEN];
+    WStringShort buffer;
     va_list args;
     va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
+    buffer.vsprintf(format,args);
 
-    TextOut_CM(x,y,buffer,col,&limits[i],mode);
+    TextOut_CM(x,y,buffer.Get(),col,&limits[i],mode);
     x+=limits[i];
     i++;
     va_end(args);
@@ -646,36 +645,36 @@ void textdata_horiz_t::TextOutP(const wchar_t *format,...)
 
 void textdata_t::TextOutF(int col1,const wchar_t *format,...)
 {
-    wchar_t buffer[BUFLEN];
+    WStringShort buffer;
     va_list args;
     va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
+    buffer.vsprintf(format,args);
 
-    TextOut_CM(x,y,buffer,col1,&maxsz,1);
+    TextOut_CM(x,y,buffer.Get(),col1,&maxsz,1);
     y+=wy;
     va_end(args);
 }
 
 void textdata_t::TextOutF(const wchar_t *format,...)
 {
-    wchar_t buffer[BUFLEN];
+    WStringShort buffer;
     va_list args;
     va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
+    buffer.vsprintf(format,args);
 
-    TextOut_CM(x,y,buffer,col,&maxsz,1);
+    TextOut_CM(x,y,buffer.Get(),col,&maxsz,1);
     y+=wy;
     va_end(args);
 }
 
 void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
 {
-    wchar_t buffer[BUFLEN];
+    WStringShort buffer;
     va_list args;
     va_start(args,format);
-    _vsnwprintf(buffer,BUFLEN,format,args);
+    buffer.vsprintf(format,args);
     TextOut_CM(x,y,str,col,&maxsz,1);
-    TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer,col,&maxsz,1);
+    TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer.Get(),col,&maxsz,1);
     y+=wy;
     va_end(args);
 }
