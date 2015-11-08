@@ -124,7 +124,7 @@ unsigned Hashtable::gethashcode(const char *s,size_t sz)
 
 void Hashtable::reset(size_t size1)
 {
-    size=size1;
+    size=(int)size1;
     if(!size)size=1;
     items.resize(size);
     items.reserve(size*4);

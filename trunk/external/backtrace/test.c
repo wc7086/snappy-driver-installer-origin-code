@@ -16,7 +16,11 @@ bar()
 int
 main()
 {
-        LoadLibraryA("backtrace.dll");
+#ifdef _WIN64
+        LoadLibrary("backtrace64.dll");
+#else
+        LoadLibrary("backtrace.dll");
+#endif
         bar();
 
         return 0;

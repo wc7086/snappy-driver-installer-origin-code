@@ -3,7 +3,7 @@
 all : backtrace64.dll test64.exe
 
 backtrace64.dll : backtrace.c
-	gcc -O3 -Os -fexpensive-optimizations -fomit-frame-pointer -s -shared -static-libgcc -Wall -Ic:\mingw_510\mingw32\include -o $@ $^ -lbfd -liberty -limagehlp
+	gcc -O3 -Os -fexpensive-optimizations -fomit-frame-pointer -s -shared -static-libgcc -Wall -Ic:\mingw\mingw64\include -o $@ $^ -lbfd -liberty -limagehlp
 
 test64.exe : test.c
 	gcc -g -Wall -o $@ $^

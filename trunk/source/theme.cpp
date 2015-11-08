@@ -374,7 +374,7 @@ Vault::Vault(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folde
 VaultLang::VaultLang(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
     Vault{entryv,numv,resv,elem_id_,folder_}
 {
-    load(0);
+    load(-1);
 }
 
 
