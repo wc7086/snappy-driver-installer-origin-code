@@ -352,7 +352,7 @@ public:
     void print();
     void sorta(int *v);
 
-    wchar_t *finddrp(wchar_t *s) override{return col->finddrp(s);}
+    wchar_t *finddrp(const wchar_t *s) override{return col->finddrp(s);}
     State *getState(){return state;}
     Collection *getCol(){return col;}
     size_t getDwidmatch_list() { return devicematch_list.size(); }

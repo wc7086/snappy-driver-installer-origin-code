@@ -192,16 +192,16 @@ int UpdateDialog_t::getnewver(const char *s)
 
 int UpdateDialog_t::getcurver(const char *ptr)
 {
-    wchar_t bffw[BUFLEN];
-    wchar_t *s=bffw;
+    WStringShort bffw;
 
-    wsprintf(bffw,L"%S",ptr);
+    bffw.sprintf(L"%S",ptr);
+    wchar_t *s=bffw.GetV();
     while(*s)
     {
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=manager_g->matcher->finddrp(bffw);
+            s=manager_g->matcher->finddrp(bffw.Get());
             if(!s)return 0;
             while(*s)
             {
@@ -262,9 +262,9 @@ void UpdateDialog_t::updateTexts()
     SetWindowText(GetDlgItem(hUpdate,IDACCEPT),STR(STR_UPD_BTN_ACCEPT));
 
     // Total size
-    wchar_t buf[BUFLEN];
-    wsprintf(buf,STR(STR_UPD_TOTALSIZE),totalsize);
-    SetWindowText(GetDlgItem(hUpdate,IDTOTALSIZE),buf);
+    WStringShort buf;
+    buf.sprintf(STR(STR_UPD_TOTALSIZE),totalsize);
+    SetWindowText(GetDlgItem(hUpdate,IDTOTALSIZE),buf.Get());
 
     // Column headers
     LVCOLUMN lvc;
@@ -718,16 +718,15 @@ void UpdaterImp::updateTorrentStatus()
 
 void UpdaterImp::removeOldDriverpacks(const wchar_t *ptr)
 {
-    wchar_t bffw[BUFLEN];
-    wchar_t *s=bffw;
-
-    wcscpy(bffw,ptr);
+    WStringShort bffw;
+    bffw.append(ptr);
+    wchar_t *s=bffw.GetV();
     while(*s)
     {
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=manager_g->matcher->finddrp(bffw);
+            s=manager_g->matcher->finddrp(bffw.Get());
             if(!s)return;
             wchar_t buf[BUFLEN];
             wsprintf(buf,L"%ws\\%s",Settings.drp_dir,s);
@@ -754,9 +753,9 @@ void UpdaterImp::moveNewFiles()
             break;
     if(i!=numfiles)
     {
-        wchar_t buf [BUFLEN];
-        wsprintf(buf,L"/c del %ws\\_*.bin",Settings.index_dir);
-        System.run_command(L"cmd",buf,SW_HIDE,1);
+        WStringShort buf;
+        buf.sprintf(L"/c del %ws\\_*.bin",Settings.index_dir);
+        System.run_command(L"cmd",buf.Get(),SW_HIDE,1);
     }
 
     for(i=0;i<numfiles;i++)

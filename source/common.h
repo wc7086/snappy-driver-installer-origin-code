@@ -150,23 +150,45 @@ void strtolower(char *s,size_t len);
 int  unicode2ansi(char *s,char *out,size_t size);
 int _wtoi_my(const wchar_t *str);
 
-class WString
+class WString_dyn
 {
-private:
-    wchar_t buf[BUFLEN];
+protected:
     wchar_t *buf_dyn=nullptr;
     wchar_t *buf_cur;
+    size_t len;
+    bool debug;
 
 public:
-    WString():buf_cur(buf){}
-    ~WString(){delete buf_dyn;}
+    WString_dyn(size_t sz,wchar_t *buf,bool debug_=false):buf_cur(buf),len(sz),debug(debug_){*buf_cur=0;}
+    virtual ~WString_dyn(){delete[] buf_dyn;}
+    void Resize(int size);
 
-    //void sprintf(format,...);
-    //void copy(wchar_t *s)
+    void sprintf(const wchar_t *format,...);
+    void vsprintf(const wchar_t *format,va_list args);
+    void append(const wchar_t *str);
 
     wchar_t *GetV(){return buf_cur;}
     const wchar_t *Get(){return buf_cur;}
+    size_t Length(){return len;}
 };
+
+class WString:public WString_dyn
+{
+    const static int size=BUFLEN;
+    wchar_t buf[size];
+public:
+    WString(bool debug_=false):WString_dyn(size,buf,debug_){}
+};
+
+class WStringShort:public WString_dyn
+{
+    const static int size=128;
+    wchar_t buf[size];
+public:
+    WStringShort(bool debug_=false):WString_dyn(size,buf,debug_){}
+};
+
+//typedef WString_sz<BUFLEN> WString;
 
 // 7-zip
 size_t  encode(char *dest,size_t dest_sz,char *src,size_t src_sz);

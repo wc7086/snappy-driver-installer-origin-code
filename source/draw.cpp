@@ -155,27 +155,25 @@ void ImageImp::Release()
 
 void ImageImp::LoadFromFile(wchar_t *filename)
 {
-    wchar_t buf[BUFLEN];
-    FILE *f;
-    size_t sz;
-
     if(!filename||!*filename)return;
-    wsprintf(buf,L"%s\\themes\\%s",Settings.data_dir,filename);
-    f=_wfopen(buf,L"rb");
+
+    WStringShort name;
+    name.sprintf(L"%s\\themes\\%s",Settings.data_dir,filename);
+    FILE *f=_wfopen(name.Get(),L"rb");
     if(!f)
     {
-        Log.print_err("ERROR in image_loadFile(): file '%S' not found\n",buf);
+        Log.print_err("ERROR in image_loadFile(): file '%S' not found\n",name.Get());
         return;
     }
     fseek(f,0,SEEK_END);
-    sz=ftell(f);
+    size_t sz=ftell(f);
     fseek(f,0,SEEK_SET);
     std::unique_ptr<BYTE[]> imgbuf(new BYTE[sz]);
 
     sz=fread(imgbuf.get(),1,sz,f);
     if(!sz)
     {
-        Log.print_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",buf);
+        Log.print_err("ERROR in image_loadFile(): cannnot read from file '%S'\n",name.Get());
         return;
     }
     fclose(f);

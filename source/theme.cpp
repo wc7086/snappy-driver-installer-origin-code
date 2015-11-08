@@ -61,7 +61,7 @@ protected:
     int  readvalue(const wchar_t *str);
     void parse();
     bool loadFromEncodedFile(const wchar_t *filename);
-    void loadFromFile(wchar_t *filename);
+    void loadFromFile(const wchar_t *filename);
     void loadFromRes(int id);
 
 public:
@@ -327,7 +327,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
     }
 }
 
-void Vault::loadFromFile(wchar_t *filename)
+void Vault::loadFromFile(const wchar_t *filename)
 {
     if(!filename[0])return;
     if(!loadFromEncodedFile(filename))
@@ -415,7 +415,7 @@ void VaultTheme::SwitchData(int i)
 
 void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
 {
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     int i=0;
@@ -423,24 +423,24 @@ void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
     if(Settings.flags&FLAG_NOGUI)return;
 
     int lang_auto=-1;
-    wchar_t lang_auto_str[BUFLEN];
-    wcscpy(lang_auto_str,L"Auto (English)");
+    WStringShort lang_auto_str;
+    lang_auto_str.sprintf(L"Auto (English)");
 
-    wsprintf(buf,L"%s\\%s\\*.txt",Settings.data_dir,path);
-    hFind=FindFirstFile(buf,&FindFileData);
+    buf.sprintf(L"%s\\%s\\*.txt",Settings.data_dir,path);
+    hFind=FindFirstFile(buf.Get(),&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
     do
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
-        wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
-        loadFromFile(buf);
+        buf.sprintf(L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
+        loadFromFile(buf.Get());
         if(language[STR_LANG_CODE].val==(locale&0xFF))
         {
-            wsprintf(lang_auto_str,L"Auto (%s)",STR(STR_LANG_NAME));
+            lang_auto_str.sprintf(L"Auto (%s)",STR(STR_LANG_NAME));
             lang_auto=i;
         }
         lst->AddItem(STR(STR_LANG_NAME));
-        wcscpy(namelist[i],buf);
+        wcscpy(namelist[i],buf.Get());
         i++;
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
@@ -452,7 +452,7 @@ void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
         namelist[i][0]=0;
     }else
     {
-        lst->AddItem(lang_auto_str);
+        lst->AddItem(lang_auto_str.Get());
         wcscpy(namelist[i],(lang_auto>=0)?namelist[lang_auto]:L"");
     }
 }
@@ -461,22 +461,22 @@ void VaultTheme::EnumFiles(Combobox *lst,const wchar_t *path,int arg)
 {
 	UNREFERENCED_PARAMETER(arg);
 
-    wchar_t buf[BUFLEN];
+    WStringShort buf;
     HANDLE hFind;
     WIN32_FIND_DATA FindFileData;
     int i=0;
 
     if(Settings.flags&FLAG_NOGUI)return;
-    wsprintf(buf,L"%s\\%s\\*.txt",Settings.data_dir,path);
-    hFind=FindFirstFile(buf,&FindFileData);
+    buf.sprintf(L"%s\\%s\\*.txt",Settings.data_dir,path);
+    hFind=FindFirstFile(buf.Get(),&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
     do
     if(!(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
     {
-        wsprintf(buf,L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
-        loadFromFile(buf);
+        buf.sprintf(L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
+        loadFromFile(buf.Get());
         lst->AddItem(D_STR(THEME_NAME));
-        wcscpy(namelist[i],buf);
+        wcscpy(namelist[i],buf.Get());
         i++;
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
@@ -492,18 +492,16 @@ void VaultTheme::EnumFiles(Combobox *lst,const wchar_t *path,int arg)
 
 void VaultLang::StartMonitor()
 {
-    wchar_t buf[BUFLEN];
-
-    wsprintf(buf,L"%s\\%s",Settings.data_dir,folder);
-    mon=CreateFilemon(buf,1,updateCallback);
+    WStringShort buf;
+    buf.sprintf(L"%s\\%s",Settings.data_dir,folder);
+    mon=CreateFilemon(buf.Get(),1,updateCallback);
 }
 
 void VaultTheme::StartMonitor()
 {
-    wchar_t buf[BUFLEN];
-
-    wsprintf(buf,L"%s\\%s",Settings.data_dir,folder);
-    mon=CreateFilemon(buf,1,updateCallback);
+    WStringShort buf;
+    buf.sprintf(L"%s\\%s",Settings.data_dir,folder);
+    mon=CreateFilemon(buf.Get(),1,updateCallback);
 }
 
 void VaultLang::updateCallback(const wchar_t *szFile,int action,int lParam)
