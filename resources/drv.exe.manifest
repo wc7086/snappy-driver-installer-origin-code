@@ -10,8 +10,6 @@
       </requestedPrivileges>
     </security>
   </trustInfo>
-  <dependency>
-  </dependency>
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
         <application>
             <!-- Windows 8.1 -->

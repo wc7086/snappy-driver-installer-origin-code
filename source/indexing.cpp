@@ -331,7 +331,7 @@ void Exporter::Found(const wchar_t *s,Version *ver)
     if(!f)return;
 
     auto it=find(packs.begin(),packs.end(),s);
-    int v=(it==packs.end())?0:it-packs.begin();
+    size_t v=(it==packs.end())?0:it-packs.begin();
     Log.set_verbose(LOG_VERBOSE_MANAGER|LOG_VERBOSE_LOG_CON);
     //Log.print_con("Found(%d,%d,%d): [%d]%30S %40s\n",cur_bits,cur_ver,cur_hwid,v,s,GetHWID());
     Log.set_verbose(LOG_VERBOSE_MANAGER);

@@ -217,20 +217,32 @@ _backtrace(struct output_buffer *ob, struct bfd_set *set, int depth , LPCONTEXT 
         STACKFRAME frame;
         memset(&frame,0,sizeof(frame));
 
+#ifdef _WIN64
+        frame.AddrPC.Offset = context->Rip;
+        frame.AddrPC.Mode = AddrModeFlat;
+        frame.AddrStack.Offset = context->Rsp;
+        frame.AddrStack.Mode = AddrModeFlat;
+        frame.AddrFrame.Offset = context->Rbp;
+        frame.AddrFrame.Mode = AddrModeFlat;
+#else
         frame.AddrPC.Offset = context->Eip;
         frame.AddrPC.Mode = AddrModeFlat;
         frame.AddrStack.Offset = context->Esp;
         frame.AddrStack.Mode = AddrModeFlat;
         frame.AddrFrame.Offset = context->Ebp;
         frame.AddrFrame.Mode = AddrModeFlat;
-
+#endif
         HANDLE process = GetCurrentProcess();
         HANDLE thread = GetCurrentThread();
 
         char symbol_buffer[sizeof(IMAGEHLP_SYMBOL) + 255];
         char module_name_raw[MAX_PATH];
 
+#ifdef _WIN64
+        while(StackWalk64(IMAGE_FILE_MACHINE_AMD64,
+#else
         while(StackWalk(IMAGE_FILE_MACHINE_I386,
+#endif
                 process,
                 thread,
                 &frame,
@@ -247,7 +259,11 @@ _backtrace(struct output_buffer *ob, struct bfd_set *set, int depth , LPCONTEXT 
                 symbol->SizeOfStruct = (sizeof *symbol) + 255;
                 symbol->MaxNameLength = 254;
 
+#ifdef _WIN64
+                DWORD64 module_base = SymGetModuleBase64(process, frame.AddrPC.Offset);
+#else
                 DWORD module_base = SymGetModuleBase(process, frame.AddrPC.Offset);
+#endif
 
                 const char * module_name = "[unknown module]";
                 if (module_base &&
@@ -265,8 +281,14 @@ _backtrace(struct output_buffer *ob, struct bfd_set *set, int depth , LPCONTEXT 
                 }
 
                 if (file == NULL) {
+#ifdef _WIN64
+                        DWORD64 dummy = 0;
+                        if (SymGetSymFromAddr64(process, frame.AddrPC.Offset, &dummy, symbol))
+#else
                         DWORD dummy = 0;
-                        if (SymGetSymFromAddr(process, frame.AddrPC.Offset, &dummy, symbol)) {
+                        if (SymGetSymFromAddr(process, frame.AddrPC.Offset, &dummy, symbol))
+#endif
+                        {
                                 file = symbol->Name;
                         }
                         else {

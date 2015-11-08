@@ -59,11 +59,11 @@ void Combobox::AddItem(const wchar_t *str)
 }
 int Combobox::FindItem(const wchar_t *str)
 {
-    return SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
+    return (int)SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
 }
 int Combobox::GetNumItems()
 {
-    return SendMessage(handle,CB_GETCOUNT,0,0);
+    return (int)SendMessage(handle,CB_GETCOUNT,0,0);
 }
 void Combobox::SetCurSel(int i)
 {

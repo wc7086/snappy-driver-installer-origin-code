@@ -1527,7 +1527,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
                             itembar->hwidmatch->getdrp_packpath()+len+(lnn?1:0),
                             lnn?L"\\":L"",
                             itembar->hwidmatch->getdrp_packname());
-                    canvas.DrawTextXY(x+wx-240,pos+D_X(ITEM_TEXT_DIST_Y),bufw);
+                    canvas.DrawTextXY(rect.left,pos+D_X(ITEM_TEXT_DIST_Y),bufw);
                 }
             }
             else
