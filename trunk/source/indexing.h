@@ -179,7 +179,7 @@ public:
     bool IsActive(){return f!=nullptr;}
     void AddHwid(const char *s);
     void AddPack(const wchar_t *s);
-    void Found(const wchar_t *s,Version *ver);
+    void Found(const wchar_t *s,const Version *ver);
     void PrintStats();
     bool Advance();
     void SetWindowVer();
@@ -291,7 +291,7 @@ class Collection
     const wchar_t *index_bin_dir;
     const wchar_t *index_linear_dir;
     std::vector<Driverpack> driverpack_list;
-    wchar_t *driverpack_dir;
+    const wchar_t *driverpack_dir;
 
 private:
     int  scanfolder_count(const wchar_t *path);
@@ -299,14 +299,14 @@ private:
     void loadOnlineIndexes();
 
 public:
-    wchar_t *getDriverpack_dir()const{return driverpack_dir;}
+    const wchar_t *getDriverpack_dir()const{return driverpack_dir;}
     const wchar_t *getIndex_bin_dir()const{return index_bin_dir;}
     const wchar_t *getIndex_linear_dir()const{return index_linear_dir;}
 	size_t size(){ return driverpack_list.size(); }
     std::vector<Driverpack> *getList(){return &driverpack_list;}
 
-    void init(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
-    Collection(wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
+    void init(const wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
+    Collection(const wchar_t *driverpacks_dir,const wchar_t *index_bin_dir,const wchar_t *index_linear_dir);
     Collection():index_bin_dir(nullptr),index_linear_dir(nullptr),driverpack_dir(nullptr){}
 
     void updatedir();
@@ -315,7 +315,7 @@ public:
     void printstats();
     void print_index_hr();
 
-    wchar_t *finddrp(const wchar_t *s);
+    const wchar_t *finddrp(const wchar_t *s);
 };
 
 // Driverpack
@@ -350,8 +350,8 @@ private:
     static unsigned int __stdcall savedrp_thread(void *arg);
 
 public:
-    wchar_t *getPath(){return text_ind.getw2(drppath);}
-    wchar_t *getFilename(){return text_ind.getw2(drpfilename);}
+    const wchar_t *getPath(){return text_ind.getw2(drppath);}
+    const wchar_t *getFilename(){return text_ind.getw2(drpfilename);}
     int getType(){return type;}
 	size_t getSize(){ return HWID_list.size(); }
     int setType(int val){return type=val;}
@@ -369,7 +369,7 @@ public:
     size_t printstats();
     void print_index_hr();
 
-    void fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
+    void fillinfo(const char *sect,const char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
     void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
     void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,size_t inf_len);

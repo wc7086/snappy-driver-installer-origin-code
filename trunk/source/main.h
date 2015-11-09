@@ -225,7 +225,7 @@ void escapeAmpUrl(wchar_t *buf,const wchar_t *source);
 void escapeAmp(wchar_t *buf,const wchar_t *source);
 
 // GUI Helpers
-HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f);
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,int id,DWORD f);
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 void setMirroring(HWND hwnd);
 void checktimer(const wchar_t *str,long long t,int uMsg);

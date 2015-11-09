@@ -137,7 +137,7 @@ public:
     void restorepos1(Manager *manager_prev);
     void restorepos(Manager *manager_prev);
     void popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i);
-    int  manager_drplive(wchar_t *s);
+    int  manager_drplive(const wchar_t *s);
     void set_rstpnt(int checked);
     void itembar_settext(int i,const wchar_t *txt1,int percent);
     void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,__int64 val1v=0,__int64 val2v=1,__int64 percent=-1);

@@ -201,7 +201,7 @@ int UpdateDialog_t::getcurver(const char *ptr)
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=manager_g->matcher->finddrp(bffw.Get());
+            s=const_cast<wchar_t *>(manager_g->matcher->finddrp(bffw.Get()));
             if(!s)return 0;
             while(*s)
             {
@@ -726,7 +726,7 @@ void UpdaterImp::removeOldDriverpacks(const wchar_t *ptr)
         if(*s=='_'&&s[1]>='0'&&s[1]<='9')
         {
             *s=0;
-            s=manager_g->matcher->finddrp(bffw.Get());
+            s=const_cast<wchar_t *>(manager_g->matcher->finddrp(bffw.Get()));
             if(!s)return;
             WStringShort buf;
             buf.sprintf(L"%ws\\%s",Settings.drp_dir,s);

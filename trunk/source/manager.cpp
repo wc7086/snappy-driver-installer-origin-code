@@ -295,7 +295,7 @@ void itembar_t::contextmenu(int x,int y)
 
     const Driver *cur_driver=nullptr;
 
-    char *t=manager_g->matcher->getState()->textas.get(0);
+    const char *t=manager_g->matcher->getState()->textas.get(0);
     if(devicematch->driver)cur_driver=devicematch->driver;
     int flags2=isactive&2?MF_CHECKED:0;
     int flags3=cur_driver?0:MF_GRAYED;
@@ -360,7 +360,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     wchar_t i_hwid[BUFLEN];
     wchar_t a_hwid[BUFLEN];
 
-    char *t=state->textas.get(0);
+    const char *t=state->textas.get(0);
     int maxln=0;
     int bolder=wx/2;
     wchar_t *p;
@@ -569,10 +569,10 @@ void Manager::init(Matcher *matchera)
         items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
 }
 
-int  Manager::manager_drplive(wchar_t *s)
+int  Manager::manager_drplive(const wchar_t *s)
 {
     itembar_t *itembar;
-    unsigned k;
+    size_t k;
 
     itembar=&items_list[RES_SLOTS];
     for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
@@ -592,12 +592,12 @@ void Manager::populate()
     matcher->sorta(remap);
     items_list.resize(RES_SLOTS);
 
-    for(unsigned i=0;i<matcher->getDwidmatch_list();i++)
+    for(size_t i=0;i<matcher->getDwidmatch_list();i++)
     {
         Devicematch *devicematch=matcher->getDevicematch_i(remap[i]);
         Hwidmatch *hwidmatch=matcher->getHwidmatch_i(devicematch->start_matches);
 
-        for(unsigned j=0;j<devicematch->num_matches;j++,hwidmatch++)
+        for(size_t j=0;j<devicematch->num_matches;j++,hwidmatch++)
         {
             items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],2));
             items_list.push_back(itembar_t(devicematch,hwidmatch,i+RES_SLOTS,remap[i],j?0:1));
@@ -1097,7 +1097,7 @@ void Manager::selectnone()
 void Manager::selectall()
 {
     itembar_t *itembar;
-    unsigned i;
+    size_t i;
     int group=-1;
 
     #ifdef USE_TORRENT
@@ -1183,7 +1183,7 @@ void Manager::setpos()
 {
     Devicematch *devicematch;
     itembar_t *itembar,*lastitembar=nullptr;
-    unsigned k;
+    size_t k;
     int cnt=0;
     int pos=D_X(DRVITEM_OFSY);
     //int pos=0;
@@ -1830,7 +1830,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     wchar_t i_hwid[BUFLEN];
     wchar_t bufw[BUFLEN];
     int lne=D_X(POPUP_WY);
-    unsigned k;
+    size_t k;
     int maxsz=0;
 	int limits[30];
     int c0=D_C(POPUP_TEXT_COLOR);
@@ -1843,7 +1843,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
 
     int group=items_list[i].index;
     const Driver *cur_driver=items_list[i].devicematch->driver;
-    char *t=matcher->getState()->textas.get(0);
+    const char *t=matcher->getState()->textas.get(0);
 
     memset(limits,0,sizeof(limits));
 

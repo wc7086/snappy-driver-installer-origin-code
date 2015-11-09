@@ -681,9 +681,9 @@ void escapeAmp(wchar_t *buf,const wchar_t *source)
 //}
 
 //{ GUI Helpers
-HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,HMENU id,DWORD f)
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,int id,DWORD f)
 {
-    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,id,ghInst,NULL);
+    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,(HMENU)((size_t)id),ghInst,NULL);
 }
 
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
@@ -901,7 +901,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             hMain=hwnd;
 
             // Field
-            hField=CreateWindowMF(classField,nullptr,hwnd,nullptr,WS_VSCROLL);
+            hField=CreateWindowMF(classField,nullptr,hwnd,0,WS_VSCROLL);
 
             // Popup
             Popup.hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,

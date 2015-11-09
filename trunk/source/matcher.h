@@ -71,13 +71,13 @@ int cmpunsigned(unsigned a,unsigned b);
 class Matcher
 {
 public:
-    virtual void findHWIDs(Devicematch *device_match,wchar_t *hwid,int dev_pos,int ishw)=0;
+    virtual void findHWIDs(Devicematch *device_match,const wchar_t *hwid,int dev_pos,int ishw)=0;
     virtual void init(State *state1,Collection *col1)=0;
     virtual void populate()=0;
     virtual void print()=0;
     virtual void sorta(int *v)=0;
 
-    virtual wchar_t *finddrp(const wchar_t *s)=0;
+    virtual const wchar_t *finddrp(const wchar_t *s)=0;
     virtual State *getState()=0;
     virtual Collection *getCol()=0;
     virtual size_t getDwidmatch_list()=0;
@@ -148,41 +148,41 @@ public:
     int calc_catalogfile();
     int calc_notebook();
 
-    void minlen(char *s,int *len);
+    void minlen(const char *s,int *len);
     void calclen(int *limits);
     void print_tbl(const int *limits);
     void print_hr();
     void popup_driverline(int *limits,Canvas &canvas,int ln,int mode,int index);
-    int  cmp(Hwidmatch *match2);
-    int isdup(Hwidmatch *match2,char *sect1);
+    int  cmp(const Hwidmatch *match2);
+    int isdup(const Hwidmatch *match2,const char *sect1);
     int isdrivervalid();
     int isvalidcat(const State *state);
     int pickcat(const State *state);
 
 // <<< GETTERS
     //driverpack
-    wchar_t *getdrp_packpath();
-    wchar_t *getdrp_packname();
-    int   getdrp_packontorrent();
+    const wchar_t *getdrp_packpath()const;
+    const wchar_t *getdrp_packname()const;
+    int   getdrp_packontorrent()const;
     //inffile
-    char *getdrp_infpath();
-    char *getdrp_infname();
-    const char *getdrp_drvfield(int n);
-    const char *getdrp_drvcat(int n);
-    Version *getdrp_drvversion();
-    int   getdrp_infsize();
-    int   getdrp_infcrc();
+    const char *getdrp_infpath()const;
+    const char *getdrp_infname()const;
+    const char *getdrp_drvfield(int n)const;
+    const char *getdrp_drvcat(int n)const;
+    Version *getdrp_drvversion()const;
+    int   getdrp_infsize()const;
+    int   getdrp_infcrc()const;
     //manufacturer
-    char *getdrp_drvmanufacturer();
-    void  getdrp_drvsection(char *buf);
+    const char *getdrp_drvmanufacturer()const;
+    void  getdrp_drvsection(char *buf)const;
     //desc
-    char *getdrp_drvdesc();
-    char *getdrp_drvinstall();
-    char *getdrp_drvinstallPicked();
-    int   getdrp_drvfeature();
+    const char *getdrp_drvdesc()const;
+    const char *getdrp_drvinstall()const;
+    const char *getdrp_drvinstallPicked()const;
+    int   getdrp_drvfeature()const;
     //HWID
-    int   getdrp_drvinfpos();
-    char *getdrp_drvHWID();
+    int   getdrp_drvinfpos()const;
+    const char *getdrp_drvHWID()const;
 // <<< GETTERS
 };
 
