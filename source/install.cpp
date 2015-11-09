@@ -197,7 +197,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     wchar_t hwid[BUFLEN];
     wchar_t inf[BUFLEN];
     wchar_t buf[BUFLEN];
-    unsigned i,j;
+    size_t i,j;
     RESTOREPOINTINFOW pRestorePtSpec;
     STATEMGRSTATUS pSMgrStatus;
     HINSTANCE hinstLib=nullptr;

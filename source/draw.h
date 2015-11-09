@@ -57,7 +57,7 @@ class ImageStorange
 {
 public:
     virtual ~ImageStorange(){}
-    virtual Image *GetImage(int n)=0;
+    virtual Image *GetImage(size_t n)=0;
     virtual void LoadAll()=0;
 };
 ImageStorange *CreateImageStorange(int n,const int *ind,int add_=0);

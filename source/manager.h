@@ -74,14 +74,14 @@ public:
     int isactive;
     int checked;
     int first;
-    int index;
+    size_t index;
     int rm;
 
     int intend;
     int oldpos,curpos,tagpos,accel;
 
 public:
-    itembar_t(Devicematch *devicematch,Hwidmatch *match,int groupindex,int rm,int first);
+    itembar_t(Devicematch *devicematch,Hwidmatch *match,size_t groupindex,int rm,int first);
     itembar_t(){}
     void itembar_setpos(int *pos,int *cnt,bool addspace);
     void str_status(wchar_t *buf);
@@ -106,7 +106,7 @@ public:
 private:
     int  calc_cutoff();
     int  isbehind(int pos,int ofs,int j);
-    int  drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff);
+    int  drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff);
 
 public:
     void init(Matcher *matcher);
@@ -128,7 +128,7 @@ public:
 
 // Driver list
     int countItems();
-    int groupsize(int index);
+    int groupsize(size_t index);
     void setpos();
     int  animate();
 

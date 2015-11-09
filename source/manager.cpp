@@ -50,7 +50,7 @@ const status_t statustnl[NUM_STATUS]=
 //}
 
 //{ Itembar
-itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,int groupindex,int rm1,int first1)
+itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,size_t groupindex,int rm1,int first1)
 {
     memset(this,0,sizeof(itembar_t));
     devicematch=devicematch1;
@@ -836,7 +836,7 @@ int setaa=0;
 void Manager::hitscan(int x,int y,int *r,int *zone)
 {
     itembar_t *itembar;
-    unsigned i;
+    size_t i;
     int pos;
     int ofsy=MainWindow.getscrollpos();
     int cutoff=calc_cutoff()+D_X(DRVITEM_DIST_Y0);
@@ -868,7 +868,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
 
         if(MainWindow.kbpanel==KB_FIELD)
         {
-            *r=i;
+            *r=static_cast<int>(i);
             if(MainWindow.kbitem[MainWindow.kbpanel]==cnt)
             {
                 if(setaa)
@@ -891,7 +891,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             x-=D_X(ITEM_CHECKBOX_OFS_X);
             y-=D_X(ITEM_CHECKBOX_OFS_Y)+pos;
             ofs=(itembar->first&1)?0:D_X(DRVITEM_LINE_INTEND);
-            if(x-ofs>0)*r=i;
+            if(x-ofs>0)*r=static_cast<int>(i);
             if(x-ofs>0&&x-ofs<D_X(ITEM_CHECKBOX_SIZE)&&y>0&&y<D_X(ITEM_CHECKBOX_SIZE))*zone=1;
             if(x>wx-D_X(ITEM_ICON_SIZE)*32/21&&!ofs)*zone=2;
             if(!*zone&&(x-ofs<D_X(ITEM_CHECKBOX_SIZE)))*zone=3;
@@ -1017,7 +1017,7 @@ void Manager::toggle(int index)
 {
     itembar_t *itembar,*itembar1;
     unsigned i;
-    int group;
+    size_t group;
 
     #ifdef USE_TORRENT
     if(installmode&&!Updater->isPaused())return;
@@ -1048,8 +1048,8 @@ void Manager::toggle(int index)
 void Manager::expand(int index,EXPAND_MODE f)
 {
     itembar_t *itembar,*itembar1;
-    unsigned i;
-    int group;
+    size_t i;
+    size_t group;
 
     itembar1=&items_list[index];
     group=itembar1->index;
@@ -1080,7 +1080,7 @@ void Manager::expand(int index,EXPAND_MODE f)
 void Manager::selectnone()
 {
     itembar_t *itembar;
-    unsigned i;
+    size_t i;
 
     #ifdef USE_TORRENT
     if(installmode&&!Updater->isPaused())return;
@@ -1098,7 +1098,7 @@ void Manager::selectall()
 {
     itembar_t *itembar;
     size_t i;
-    int group=-1;
+    size_t group=0;
 
     #ifdef USE_TORRENT
     if(installmode&&!Updater->isPaused())return;
@@ -1187,7 +1187,7 @@ void Manager::setpos()
     int cnt=0;
     int pos=D_X(DRVITEM_OFSY);
     //int pos=0;
-    int group=0;
+    size_t group=0;
     int lastmatch=0;
 
 //0:wide
@@ -1261,7 +1261,7 @@ int Manager::animate()
         (installmode==MODE_NONE&&items_list[SLOT_EXTRACTING].install_status);
 }
 
-int Manager::groupsize(int index)
+int Manager::groupsize(size_t index)
 {
     int num=0;
 
@@ -1284,7 +1284,7 @@ int Manager::countItems()
     return cnt;
 }
 
-int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
+int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
 {
     itembar_t *itembar=&items_list[index];
 
@@ -1300,7 +1300,7 @@ int Manager::drawitem(Canvas &canvas,int index,int ofsy,int zone,int cutoff)
 
     if(!(itembar->first&1))
     {
-        int i=index;
+        size_t i=index;
 
         while(i>=0&&!(items_list[i].first&1&&items_list[i].isactive))i--;
         if(items_list[i].index==itembar->index)intend=i;
@@ -1841,7 +1841,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     td.y=D_X(POPUP_OFSY);
     td.col=0;
 
-    int group=items_list[i].index;
+    size_t group=items_list[i].index;
     const Driver *cur_driver=items_list[i].devicematch->driver;
     const char *t=matcher->getState()->textas.get(0);
 

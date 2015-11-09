@@ -57,7 +57,7 @@ protected:
 
 protected:
     int  findvar(wchar_t *str);
-    wchar_t *findstr(const wchar_t *str)const;
+    wchar_t *findstr(wchar_t *str)const;
     int  readvalue(const wchar_t *str);
     void parse();
     bool loadFromEncodedFile(const wchar_t *filename);
@@ -146,7 +146,7 @@ int Vault::findvar(wchar_t *str)
     return i;
 }
 
-wchar_t *Vault::findstr(const wchar_t *str)const
+wchar_t *Vault::findstr(wchar_t *str)const
 {
     wchar_t *b,*e;
 

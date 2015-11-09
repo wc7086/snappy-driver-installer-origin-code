@@ -90,7 +90,7 @@ class Txt
     loadable_vector<char> text;
 
 public:
-    ofst getSize()const{return text.size();}
+    ofst getSize()const{return static_cast<ofst>(text.size());}
     const char *get(int offset)const{return (char *)&text[offset];}
     char *getV(int offset)const{return (char *)&text[offset];}
     const wchar_t *getw(int offset)const{return (wchar_t *)(&text[offset]);}
