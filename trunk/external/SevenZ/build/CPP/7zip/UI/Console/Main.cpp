@@ -451,7 +451,7 @@ static void PrintHexId(CStdOutStream &so, UInt64 id)
 }
 
 int Main2(
-	WCHAR *command_line
+	const WCHAR *command_line
 )
 {
   #if defined(_WIN32) && !defined(UNDER_CE)

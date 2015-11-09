@@ -562,11 +562,11 @@ void MainWindow_t::extractto()
     if(System.ChooseDir(dir,STR(STR_EXTRACTFOLDER)))
     {
         int argc;
-        wchar_t buf[BUFLEN];
         wchar_t **argv=CommandLineToArgvW(GetCommandLineW(),&argc);
-        wsprintf(buf,L"%s\\drv.exe",dir);
-        if(!CopyFile(argv[0],buf,0))
-            Log.print_err("ERROR in extractto(): failed CopyFile(%S,%S)\n",argv[0],buf);
+        WStringShort buf;
+        buf.sprintf(L"%s\\drv.exe",dir);
+        if(!CopyFile(argv[0],buf.Get(),0))
+            Log.print_err("ERROR in extractto(): failed CopyFile(%S,%S)\n",argv[0],buf.Get());
         LocalFree(argv);
 
         wcscat(dir,L"\\drivers");

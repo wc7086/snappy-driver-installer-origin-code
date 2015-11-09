@@ -203,7 +203,6 @@ void Bundle::bundle_load(Bundle *pbundle)
 
 void Bundle::bundle_lowprioirity()
 {
-    wchar_t filename[BUFLEN];
     Timers.stoponce(time_startup,time_total);
     Timers.print();
 
@@ -220,8 +219,9 @@ void Bundle::bundle_lowprioirity()
 
     collection.save();
     Log.gen_timestamp();
-    wsprintf(filename,L"%s\\%sstate.snp",Settings.log_dir,Log.getTimestamp());
-    state.save(filename);
+    WStringShort filename;
+    filename.sprintf(L"%s\\%sstate.snp",Settings.log_dir,Log.getTimestamp());
+    state.save(filename.Get());
 
     if(Settings.flags&COLLECTION_PRINT_INDEX)
     {
