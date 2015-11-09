@@ -148,8 +148,8 @@ static int showpercent(int a)
 void itembar_t::updatecur()
 {
     if(itembar_act==SLOT_RESTORE_POINT)return;
-    if(showpercent(install_status))
-        percent=(int)(ar_proceed*(instflag&INSTALLDRIVERS&&checked?900.:1000.)/ar_total);
+    if(showpercent(install_status)&&ar_total)
+        percent=(ar_proceed*(instflag&INSTALLDRIVERS&&checked?900:1000))/ar_total;
     else
         percent=0;
 }
@@ -293,7 +293,7 @@ void itembar_t::contextmenu(int x,int y)
     }
     if(Popup.floating_itembar<RES_SLOTS)return;
 
-    Driver *cur_driver=nullptr;
+    const Driver *cur_driver=nullptr;
 
     char *t=manager_g->matcher->getState()->textas.get(0);
     if(devicematch->driver)cur_driver=devicematch->driver;
@@ -364,7 +364,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     int maxln=0;
     int bolder=wx/2;
     wchar_t *p;
-    Driver *cur_driver=nullptr;
+    const Driver *cur_driver=nullptr;
     textdata_vert td(canvas);
     Version *a_v=nullptr;
     unsigned score=0;
@@ -536,7 +536,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     Popup.popup_resize((zz+10+p0*2)*2,td.y+D_X(POPUP_OFSY));
 }
 
-int itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb)
+int itembar_cmp(const itembar_t *a,const itembar_t *b,const Txt *ta,const Txt *tb)
 {
     if(a->hwidmatch&&b->hwidmatch)
     {
@@ -1159,7 +1159,7 @@ void Manager::set_rstpnt(int checked)
 void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
 void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index);}
 void Manager::contextmenu(int x,int y){items_list[Popup.floating_itembar].contextmenu(x,y);}
-const wchar_t *Manager::getHWIDby(int id){return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
+const wchar_t *Manager::getHWIDby(int id)const{return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
 void Manager::getINFpath(int wp)
 {
@@ -1842,7 +1842,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     td.col=0;
 
     int group=items_list[i].index;
-    Driver *cur_driver=items_list[i].devicematch->driver;
+    const Driver *cur_driver=items_list[i].devicematch->driver;
     char *t=matcher->getState()->textas.get(0);
 
     memset(limits,0,sizeof(limits));

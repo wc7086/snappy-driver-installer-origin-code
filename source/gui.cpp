@@ -617,8 +617,8 @@ void textdata_horiz_t::limitskip()
     x+=limits[i++];
 }
 
-void textdata_vert::shift_r(){maxsz+=(int)POPUP_SYSINFO_OFS;}
-void textdata_vert::shift_l(){maxsz-=(int)POPUP_SYSINFO_OFS;}
+void textdata_vert::shift_r(){maxsz+=POPUP_SYSINFO_OFS;}
+void textdata_vert::shift_l(){maxsz-=POPUP_SYSINFO_OFS;}
 
 void textdata_t::TextOut_CM(int x1,int y1,const wchar_t *str,int color,int *maxsz1,int mode1)
 {
@@ -674,7 +674,7 @@ void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
     va_start(args,format);
     buffer.vsprintf(format,args);
     TextOut_CM(x,y,str,col,&maxsz,1);
-    TextOut_CM((int)(x+POPUP_SYSINFO_OFS),y,buffer.Get(),col,&maxsz,1);
+    TextOut_CM((x+POPUP_SYSINFO_OFS),y,buffer.Get(),col,&maxsz,1);
     y+=wy;
     va_end(args);
 }

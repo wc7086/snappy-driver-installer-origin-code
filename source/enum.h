@@ -86,7 +86,7 @@ class Device
     SP_DEVINFO_DATA_32 DeviceInfoData;     // ClassGuid,DevInst
 
 private:
-    void print_guid(GUID *g);
+    void print_guid(const GUID *g);
     void read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *val);
 
 public:
@@ -101,9 +101,9 @@ public:
     GUID *getGUID(){return &DeviceInfoData.ClassGuid;}
 
     int  print_status();
-    void print(State *state);
-    void printHWIDS(State *state);
-    const wchar_t *getHWIDby(int num,State *state);
+    void print(const State *state);
+    void printHWIDS(const State *state);
+    const wchar_t *getHWIDby(int num,const State *state);
 
     //Device(const Device &)=delete;
     //Device &operator=(const Device &)=delete;
@@ -140,16 +140,16 @@ private:
     void read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val);
     void scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos);
     int findHWID_in_list(const wchar_t *p,const wchar_t *str);
-    void calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos);
+    void calc_dev_pos(const Device *cur_device,const State *state,int *ishw,int *dev_pos);
 
 public:
     ofst getInfPath()const{return InfPath;}
-    ofst getMatchingDeviceId(){return MatchingDeviceId;}
-    Version *getVersion(){return &version;}
+    ofst getMatchingDeviceId()const{return MatchingDeviceId;}
+    const Version *getVersion()const{return &version;}
 
-    unsigned calc_score_h(State *state);
-    int  isvalidcat(State *state);
-    void print(State *state);
+    unsigned calc_score_h(const State *state)const;
+    int  isvalidcat(const State *state)const;
+    void print(const State *state)const;
 
 
     //Driver(const Driver &)=delete;
@@ -226,14 +226,14 @@ private:
     void fakeOSversion();
 
 public:
-    ofst getWindir(){return windir;}
-    ofst getTemp(){return temp;}
-    int getLocale(){return locale;}
-    int getArchitecture(){return architecture;}
-    void getWinVer(int *major,int *minor);
-    const wchar_t *get_szCSDVersion(){return platform.szCSDVersion;}
+    ofst getWindir()const{return windir;}
+    ofst getTemp()const{return temp;}
+    int getLocale()const{return locale;}
+    int getArchitecture()const{return architecture;}
+    void getWinVer(int *major,int *minor)const;
+    const wchar_t *get_szCSDVersion()const{return platform.szCSDVersion;}
     std::vector<Device> *getDevices_list(){return &Devices_list;}
-    Driver *getCurrentDriver(Device *dev){return (dev->getDriverIndex()>=0)?&Drivers_list[dev->getDriverIndex()]:nullptr;}
+    const Driver *getCurrentDriver(const Device *dev)const{return (dev->getDriverIndex()>=0)?&Drivers_list[dev->getDriverIndex()]:nullptr;}
 
     wchar_t *getProduct();
     wchar_t *getManuf();
@@ -248,19 +248,19 @@ public:
     int  load(const wchar_t *filename);
     void getsysinfo_fast();
     void getsysinfo_slow();
-    void getsysinfo_slow(State *prev);
+    void getsysinfo_slow(const State *prev);
     void scanDevices();
     void init();
 
     const wchar_t *get_winverstr();
-    int  opencatfile(Driver *cur_driver);
+    int  opencatfile(const Driver *cur_driver);
     void genmarker(); // in matcher.cpp
     void isnotebook_a();
 };
 
 // Monitor info
-int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon);
-int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height);
+int GetMonitorDevice(const wchar_t* adapterName,DISPLAY_DEVICE *ddMon);
+int GetMonitorSizeFromEDID(const wchar_t* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
 
 int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);

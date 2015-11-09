@@ -216,7 +216,7 @@ int SystemImp::canWrite(const wchar_t *path)
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
 
-void SystemImp::getClassDesc(GUID *guid,wchar_t *bufw)
+void SystemImp::getClassDesc(const GUID *guid,wchar_t *bufw)
 {
     SetupDiGetClassDescription(guid,bufw,BUFLEN,nullptr);
 }
@@ -555,8 +555,6 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
     UNREFERENCED_PARAMETER(action);
     UNREFERENCED_PARAMETER(lParam);
 
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-    WIN32_FIND_DATA FindFileData;
     int type;
     int update=0;
 
@@ -590,7 +588,8 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
             manager_g->itembar_setactive(SLOT_VIRUS_RECYCLER,update=1);
 
     // Hidden folders
-    hFind=FindFirstFile(L"\\*.*",&FindFileData);
+    WIN32_FIND_DATA FindFileData;
+    HANDLE hFind=FindFirstFile(L"\\*.*",&FindFileData);
     if(type==DRIVE_REMOVABLE)
     while(FindNextFile(hFind,&FindFileData)!=0)
     {

@@ -233,10 +233,10 @@ void Settings_t::save()
     }
     FILE *f=_wfopen(L"sdi.cfg",L"wt");
     if(!f)return;
-    fwprintf(f,L"\"-drp_dir:%s\"\n\"-index_dir:%s\"\n\"-output_dir:%s\"\n"
-              L"\"-data_dir:%s\"\n\"-log_dir:%s\"\n\n"
-              L"\"-finish_cmd:%s\"\n\"-finishrb_cmd:%s\"\n\"-finish_upd_cmd:%s\"\n\n"
-              L"\"-lang:%s\"\n\"-theme:%s\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-scale:%d\n-filters:%d\n\n"
+    fwprintf(f,L"\"-drp_dir:%ws\"\n\"-index_dir:%ws\"\n\"-output_dir:%ws\"\n"
+              L"\"-data_dir:%ws\"\n\"-log_dir:%ws\"\n\n"
+              L"\"-finish_cmd:%ws\"\n\"-finishrb_cmd:%ws\"\n\"-finish_upd_cmd:%ws\"\n\n"
+              L"\"-lang:%ws\"\n\"-theme:%ws\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-scale:%d\n-filters:%d\n\n"
               L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
@@ -342,6 +342,7 @@ bool Settings_t::load_cfg_switch(const wchar_t *cmdParams)
     wchar_t **argv;
     int argc;
 
+    size_t len=wcslen(GFG_DEF);
     argv=CommandLineToArgvW(cmdParams,&argc);
     for(int i=1;i<argc;i++)
     {
@@ -349,7 +350,7 @@ bool Settings_t::load_cfg_switch(const wchar_t *cmdParams)
         if(pr[0]=='/')pr[0]='-';
         if(StrStrIW(pr,GFG_DEF))
         {
-            if(load(pr+wcslen(GFG_DEF)))
+            if(load(pr+len))
             {
                 flags|=FLAG_PRESERVECFG;
                 return true;

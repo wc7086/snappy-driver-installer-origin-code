@@ -75,7 +75,7 @@ const dev devtbl[NUM_PROPS]=
 //}
 
 //{ Device
-void Device::print_guid(GUID *g)
+void Device::print_guid(const GUID *g)
 {
     WString buffer;
 
@@ -160,7 +160,7 @@ int Device::print_status()
     }
 }
 
-void Device::print(State *state)
+void Device::print(const State *state)
 {
     static const char *deviceststus_str[]=
     {
@@ -172,7 +172,7 @@ void Device::print(State *state)
         "Device is currently stopped"
     };
 
-    char *s=state->textas.get(0);
+    const char *s=state->textas.get(0);
     Log.print_file("DeviceInfo\n");
     Log.print_file("  Name:         %S\n",s+Devicedesc);
     Log.print_file("  Status:       ");
@@ -185,7 +185,7 @@ void Device::print(State *state)
     Log.print_file("  Capabilities: %d\n",Capabilities);
 }
 
-void Device::printHWIDS(State *state)
+void Device::printHWIDS(const State *state)
 {
     if(HardwareID)
     {
@@ -214,7 +214,7 @@ void Device::printHWIDS(State *state)
     }
 }
 
-const wchar_t *Device::getHWIDby(int num,State *state)
+const wchar_t *Device::getHWIDby(int num,const State *state)
 {
     int i=0;
 
@@ -407,7 +407,7 @@ int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
     return -1;
 }
 
-void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos)
+void Driver::calc_dev_pos(const Device *cur_device,const State *state,int *ishw,int *dev_pos)
 {
     *ishw=1;
     *dev_pos=findHWID_in_list(state->textas.getw(cur_device->getHardwareID()),state->textas.getw(MatchingDeviceId));
@@ -418,13 +418,13 @@ void Driver::calc_dev_pos(Device *cur_device,State *state,int *ishw,int *dev_pos
     }
 }
 
-unsigned Driver::calc_score_h(State *state)
+unsigned Driver::calc_score_h(const State *state)const
 {
     return calc_score(catalogfile,feature,identifierscore, // TODO: check signature
                       state,StrStrIW(state->textas.getw(InfSectionExt),L".nt")||StrStrIW(state->textas.getw(InfSection),L".nt")?1:0);
 }
 
-int Driver::isvalidcat(State *state)
+int Driver::isvalidcat(const State *state)const
 {
     char bufa[BUFLEN];
     if(!cat)return 0;
@@ -437,7 +437,7 @@ int Driver::isvalidcat(State *state)
     return strstr(s,bufa)?1:0;
 }
 
-void Driver::print(State *state)
+void Driver::print(const State *state)const
 {
     char *s=state->textas.get(0);
     wchar_t buf[BUFLEN];
@@ -513,7 +513,7 @@ void State::fakeOSversion()
     }
 }
 
-void State::getWinVer(int *major,int *minor)
+void State::getWinVer(int *major,int *minor)const
 {
     *major=platform.dwMajorVersion;
     *minor=platform.dwMinorVersion;
@@ -769,7 +769,7 @@ void State::popup_sysinfo(Canvas &canvas)
     td.TextOutF(D_C(POPUP_CMP_BETTER_COLOR),STR(STR_SYSINF_MISC));
     td.ret_ofs(10);
     td.shift_l();
-    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D_X(POPUP_OFSY));
+    Popup.popup_resize((td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.getY()+D_X(POPUP_OFSY));
 }
 
 void State::contextmenu2(int x,int y)
@@ -989,7 +989,7 @@ void State::getsysinfo_slow()
     Timers.stop(time_sysinfo);
 }
 
-void State::getsysinfo_slow(State *prev)
+void State::getsysinfo_slow(const State *prev)
 {
     Timers.reset(time_sysinfo);
     manuf=textas.strcpyw(prev->textas.getw(prev->manuf));
@@ -1089,7 +1089,7 @@ const wchar_t *State::get_winverstr()
     return getWindowsName(NUM_OS-1);
 }
 
-int State::opencatfile(Driver *cur_driver)
+int State::opencatfile(const Driver *cur_driver)
 {
     wchar_t filename[BUFLEN];
     char bufa[BUFLEN];
@@ -1202,7 +1202,7 @@ void State::isnotebook_a()
 //}
 
 //{ Monitor info
-int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon)
+int GetMonitorDevice(const wchar_t* adapterName,DISPLAY_DEVICE *ddMon)
 {
     DWORD devMon=0;
 
@@ -1216,7 +1216,7 @@ int GetMonitorDevice(wchar_t* adapterName,DISPLAY_DEVICE *ddMon)
     return *ddMon->DeviceID!=0;
 }
 
-int GetMonitorSizeFromEDID(wchar_t* adapterName,int *Width,int *Height)
+int GetMonitorSizeFromEDID(const wchar_t* adapterName,int *Width,int *Height)
 {
     DISPLAY_DEVICE ddMon;
     ZeroMemory(&ddMon,sizeof(ddMon));

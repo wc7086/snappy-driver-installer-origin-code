@@ -698,9 +698,9 @@ void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
 
 void setMirroring(HWND hwnd)
 {
-    LONG v=GetWindowLong(hwnd,GWL_EXSTYLE);
+    LONG_PTR v=GetWindowLongPtr(hwnd,GWL_EXSTYLE);
     if(rtl)v|=WS_EX_LAYOUTRTL;else v&=~WS_EX_LAYOUTRTL;
-    SetWindowLong(hwnd,GWL_EXSTYLE,v);
+    SetWindowLongPtr(hwnd,GWL_EXSTYLE,v);
 }
 
 void checktimer(const wchar_t *str,long long t,int uMsg)
@@ -885,7 +885,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     short x,y;
 
     int i;
-	LRESULT f;
+	int f;
     int wp;
     long long timer=GetTickCount();
 

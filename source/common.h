@@ -68,8 +68,8 @@ public:
     int  setDate(int d_,int m_,int y_);
     void setVersion(int v1_,int v2_,int v3_,int v4_);
     void setInvalid(){y=v1=-1;}
-    void str_date(wchar_t *buf);
-    void str_version(wchar_t *buf);
+    void str_date(wchar_t *buf)const;
+    void str_version(wchar_t *buf)const;
 
     Version():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
     Version(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
@@ -77,11 +77,11 @@ public:
     friend class Driverpack;
     friend class Hwidmatch;
     friend class datum;
-    friend int cmpdate(Version *t1,Version *t2);
-    friend int cmpversion(Version *t1,Version *t2);
+    friend int cmpdate(const Version *t1,const Version *t2);
+    friend int cmpversion(const Version *t1,const Version *t2);
 };
-int cmpdate(Version *t1,Version *t2);
-int cmpversion(Version *t1,Version *t2);
+int cmpdate(const Version *t1,const Version *t2);
+int cmpversion(const Version *t1,const Version *t2);
 
 // Txt
 class Txt
@@ -91,9 +91,9 @@ class Txt
 
 public:
     size_t getSize()const{return text.size();}
-    char *get(int offset){return &text[offset];}
-    wchar_t *getw(int offset){return (wchar_t *)(&text[offset]);}
-    wchar_t *getw2(int offset){return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
+    char *get(int offset)const{return (char *)&text[offset];}
+    wchar_t *getw(int offset)const{return (wchar_t *)(&text[offset]);}
+    wchar_t *getw2(int offset)const{return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
 
     ofst strcpy(const char *mem);
 	ofst strcpyw(const wchar_t *mem);
@@ -147,7 +147,7 @@ public:
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(char *s,size_t len);
 void strtolower(char *s,size_t len);
-int  unicode2ansi(char *s,char *out,size_t size);
+size_t unicode2ansi(const char *s,char *out,size_t size);
 int _wtoi_my(const wchar_t *str);
 
 class WString_dyn
@@ -161,7 +161,7 @@ protected:
 public:
     WString_dyn(size_t sz,wchar_t *buf,bool debug_=false):buf_cur(buf),len(sz),debug(debug_){}
     virtual ~WString_dyn(){delete[] buf_dyn;}
-    void Resize(int size);
+    void Resize(size_t size);
 
     void sprintf(const wchar_t *format,...);
     void vsprintf(const wchar_t *format,va_list args);
@@ -189,8 +189,8 @@ public:
 };
 
 // 7-zip
-size_t  encode(char *dest,size_t dest_sz,char *src,size_t src_sz);
-size_t  decode(char *dest,size_t dest_sz,char *src,size_t src_sz);
+size_t  encode(char *dest,size_t dest_sz,const char *src,size_t src_sz);
+size_t  decode(char *dest,size_t dest_sz,const char *src,size_t src_sz);
 void registerall();
 
 namespace NArchive{
