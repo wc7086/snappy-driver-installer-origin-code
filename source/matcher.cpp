@@ -781,7 +781,7 @@ void Hwidmatch::calclen(int *limits)
 
 void Hwidmatch::print_tbl(int *limits)
 {
-    CHAR buf[BUFLEN];
+    char buf[BUFLEN];
     Version *v;
 
     v=getdrp_drvversion();
@@ -809,7 +809,7 @@ void Hwidmatch::print_tbl(int *limits)
 
 void Hwidmatch::print_hr()
 {
-    CHAR buf[BUFLEN];
+    char buf[BUFLEN];
     Version *v;
 
     v=getdrp_drvversion();
@@ -910,7 +910,7 @@ int Hwidmatch::isdrivervalid()
 
 int Hwidmatch::isvalidcat(State *state)
 {
-    CHAR bufa[BUFLEN];
+    char bufa[BUFLEN];
     int n=pickcat(state);
     const char *s=getdrp_drvcat(n);
 

@@ -38,7 +38,6 @@ public:
     virtual void ShowProgress(wchar_t *buf)=0;
     virtual void ShowPopup(Canvas &canvas)=0;
 
-    virtual void downloadTorrent()=0;
     virtual void checkUpdates()=0;
     virtual void resumeDownloading()=0;
     virtual void pause()=0;

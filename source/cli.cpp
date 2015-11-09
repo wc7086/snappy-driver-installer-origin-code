@@ -16,6 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "common.h"
 #include "logging.h"
 #include "settings.h"
 #include "cli.h"
@@ -24,8 +25,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 // Depend on Win32API
 #include "system.h"
-
-
 
 #define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 
@@ -93,20 +92,20 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
     }
     else
     {
-        wchar_t buf[BUFLEN];
-        wcscpy(buf,ParamStr+tmpLen);
+        WStringShort buf;
+        buf.append(ParamStr+tmpLen);
         wchar_t *chB;
 
-        chB=wcsrchr(buf,'=');
+        chB=wcsrchr(buf.Get(),'=');
         if(chB==NULL)
             wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
         else
         {
-            tmpLen=chB-buf+1;
-            wcscpy(CLIParam.SaveInstalledFileName,buf+tmpLen);
-            buf[tmpLen-1]=0;
+            tmpLen=chB-buf.Get()+1;
+            wcscpy(CLIParam.SaveInstalledFileName,buf.Get()+tmpLen);
+            (buf.GetV())[tmpLen-1]=0;
         }
-        wcscpy(CLIParam.HWIDSTR,buf);
+        wcscpy(CLIParam.HWIDSTR,buf.Get());
         CLIParam.HWIDInstalled=true;
     }
 }
@@ -118,14 +117,13 @@ void init_CLIParam()
 
 void RUN_CLI()
 {
-    wchar_t buf[BUFLEN];
-
     if(CLIParam.SaveInstalledHWD)
     {
         ExpandPath(CLIParam.SaveInstalledFileName);
-        wcscpy(buf,CLIParam.SaveInstalledFileName);
-        System.fileDelSpec(buf);
-        System.CreateDir(buf);
+        WStringShort buf;
+        buf.append(CLIParam.SaveInstalledFileName);
+        System.fileDelSpec(buf.GetV());
+        System.CreateDir(buf.Get());
         System.deletefile(CLIParam.SaveInstalledFileName);
     }
     else
@@ -137,6 +135,7 @@ void RUN_CLI()
             if(!f)Log.print_err("Failed to open '%S'\n",CLIParam.SaveInstalledFileName);
             else
             {
+                wchar_t buf[BUFLEN];
                 while(fgetws(buf,sizeof(buf)/2,f))
                 {
                     //Log.print_con("'%S'\n", buf);

@@ -426,7 +426,7 @@ unsigned Driver::calc_score_h(State *state)
 
 int Driver::isvalidcat(State *state)
 {
-    CHAR bufa[BUFLEN];
+    char bufa[BUFLEN];
     if(!cat)return 0;
     const char *s=state->textas.get(cat);
 
@@ -1092,7 +1092,7 @@ const wchar_t *State::get_winverstr()
 int State::opencatfile(Driver *cur_driver)
 {
     wchar_t filename[BUFLEN];
-    CHAR bufa[BUFLEN];
+    char bufa[BUFLEN];
     FILE *f;
     *bufa=0;
 

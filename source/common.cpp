@@ -273,7 +273,7 @@ void WString_dyn::sprintf(const wchar_t *format,...)
 }
 void WString_dyn::vsprintf(const wchar_t *format,va_list args)
 {
-    int r=_vscwprintf(format,args)+1;
+    unsigned r=_vscwprintf(format,args)+1;
     if(r>len)Resize(r);
     r=vswprintf_s(buf_cur,len,format,args);
     if(debug)Log.print_con("%d,(%S),[%S]\n",r,format,buf_cur);

@@ -19,7 +19,7 @@ CStdOutStream *g_StdStream = NULL;
 CStdOutStream *g_ErrStream = NULL;
 
 extern int Main2(
-  WCHAR *command_line
+  const WCHAR *command_line
 );
 
 static const char *kException_CmdLine_Error_Message = "Command Line Error:";
@@ -44,7 +44,7 @@ static void PrintError(const char *message)
 
 #define NT_CHECK_FAIL_ACTION *g_StdStream << "Unsupported Windows version"; return NExitCode::kFatalError;
 
-int Extract7z(WCHAR *str);
+int Extract7z(const WCHAR *str);
 int MY_CDECL _main
 (
   #ifndef _WIN32
@@ -54,7 +54,7 @@ int MY_CDECL _main
 {
 	return Extract7z(0);
 }
-int Extract7z(WCHAR *str)
+int Extract7z(const WCHAR *str)
 {
   g_StdStream = &g_StdOut;
 
@@ -62,7 +62,7 @@ int Extract7z(WCHAR *str)
 
   NConsoleClose::CCtrlHandlerSetter ctrlHandlerSetter;
   int res = 0;
-  
+
   try
   {
 	res = Main2(str);

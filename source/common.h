@@ -159,7 +159,7 @@ protected:
     bool debug;
 
 public:
-    WString_dyn(size_t sz,wchar_t *buf,bool debug_=false):buf_cur(buf),len(sz),debug(debug_){*buf_cur=0;}
+    WString_dyn(size_t sz,wchar_t *buf,bool debug_=false):buf_cur(buf),len(sz),debug(debug_){}
     virtual ~WString_dyn(){delete[] buf_dyn;}
     void Resize(int size);
 
@@ -177,7 +177,7 @@ class WString:public WString_dyn
     const static int size=BUFLEN;
     wchar_t buf[size];
 public:
-    WString(bool debug_=false):WString_dyn(size,buf,debug_){}
+    WString(bool debug_=false):WString_dyn(size,buf,debug_){*buf=0;}
 };
 
 class WStringShort:public WString_dyn
@@ -185,10 +185,8 @@ class WStringShort:public WString_dyn
     const static int size=128;
     wchar_t buf[size];
 public:
-    WStringShort(bool debug_=false):WString_dyn(size,buf,debug_){}
+    WStringShort(bool debug_=false):WString_dyn(size,buf,debug_){*buf=0;}
 };
-
-//typedef WString_sz<BUFLEN> WString;
 
 // 7-zip
 size_t  encode(char *dest,size_t dest_sz,char *src,size_t src_sz);
@@ -199,7 +197,7 @@ namespace NArchive{
 namespace N7z{
         extern void register7z();
 }}
-extern int  Extract7z(wchar_t *str);
+extern int  Extract7z(const wchar_t *str);
 extern void registerBCJ();
 extern void registerBCJ2();
 extern void registerBranch();

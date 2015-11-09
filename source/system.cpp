@@ -31,6 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for PathFileExists
 #include <shlobj.h>         // for SHBrowseForFolder
 
+#include "common.h"
 #include "system.h"
 #include "main.h"
 #include "settings.h"
@@ -268,7 +269,7 @@ struct FilemonDataPOD
 	LPARAM     lParam;
 	DWORD      notifyFilter;
 	BOOL       fStop;
-	wchar_t      dir[BUFLEN];
+	wchar_t    dir[BUFLEN];
 	int        subdirs;
 	FileChangeCallback callback;
 };
@@ -328,7 +329,7 @@ void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfByt
 {
     UNREFERENCED_PARAMETER(dwNumberOfBytesTransfered);
 
-	TCHAR szFile[MAX_PATH];
+	wchar_t szFile[MAX_PATH];
 	PFILE_NOTIFY_INFORMATION pNotify;
 	FilemonDataPOD *pMonitor=reinterpret_cast<FilemonDataPOD*>(lpOverlapped);
 
@@ -600,9 +601,9 @@ void viruscheck(const wchar_t *szFile,int action,int lParam)
 
             if(FindFileData.dwFileAttributes&FILE_ATTRIBUTE_HIDDEN)
             {
-                wchar_t bufw[BUFLEN];
-                wsprintf(bufw,L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
-                if(System.FileExists(bufw))continue;
+                WStringShort bufw;
+                bufw.sprintf(L"\\%ws\\not_a_virus.txt",FindFileData.cFileName);
+                if(System.FileExists(bufw.Get()))continue;
                 Log.print_con("VIRUS_WARNING: hidden folder '%S'\n",FindFileData.cFileName);
                 manager_g->itembar_setactive(SLOT_VIRUS_HIDDEN,update=1);
             }

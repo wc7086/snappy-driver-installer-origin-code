@@ -146,11 +146,11 @@ void Settings_t::parse(const wchar_t *str,int ind)
         if(argflg(pr,L"-onlyupdates",FLAG_ONLYUPDATES))continue;
         if(!StrCmpIW(pr,L"-7z"))
         {
-            wchar_t cmd[BUFLEN];
-            wsprintf(cmd,L"7za.exe %s",StrStrIW(str,L"-7z")+4);
-            Log.print_con("Executing '%S'\n",cmd);
+            WStringShort cmd;
+            cmd.sprintf(L"7za.exe %s",StrStrIW(str,L"-7z")+4);
+            Log.print_con("Executing '%S'\n",cmd.Get());
             registerall();
-            ret_global=Extract7z(cmd);
+            ret_global=Extract7z(cmd.Get());
             Log.print_con("Ret: %d\n",ret_global);
             statemode=STATEMODE_EXIT;
             break;

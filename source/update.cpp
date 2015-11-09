@@ -110,6 +110,7 @@ class UpdaterImp:public Updater_t
     long long torrenttime=0;
 
 private:
+    void downloadTorrent();
     void updateTorrentStatus();
     void removeOldDriverpacks(const wchar_t *ptr);
     void moveNewFiles();
@@ -122,7 +123,6 @@ public:
     void ShowProgress(wchar_t *buf);
     void ShowPopup(Canvas &canvas);
 
-    void downloadTorrent();
     void checkUpdates();
     void resumeDownloading();
     void pause();
@@ -728,10 +728,10 @@ void UpdaterImp::removeOldDriverpacks(const wchar_t *ptr)
             *s=0;
             s=manager_g->matcher->finddrp(bffw.Get());
             if(!s)return;
-            wchar_t buf[BUFLEN];
-            wsprintf(buf,L"%ws\\%s",Settings.drp_dir,s);
-            Log.print_con("Old file: %S\n",buf);
-            _wremove(buf);
+            WStringShort buf;
+            buf.sprintf(L"%ws\\%s",Settings.drp_dir,s);
+            Log.print_con("Old file: %S\n",buf.Get());
+            _wremove(buf.Get());
             return;
         }
         s++;
@@ -768,9 +768,9 @@ void UpdaterImp::moveNewFiles()
         if(StrStrIA(filenamefull,"autorun.inf")||StrStrIA(filenamefull,".bat"))continue;
 
         // Determine destination dirs
-        wchar_t filenamefull_src[BUFLEN];
+        WStringShort filenamefull_src;
         wchar_t filenamefull_dst[BUFLEN];
-        wsprintf(filenamefull_src,L"update\\%S",fe.path.c_str());
+        filenamefull_src.sprintf(L"update\\%S",fe.path.c_str());
         wsprintf(filenamefull_dst,L"%S",filenamefull);
         strsub(filenamefull_dst,L"indexes\\SDI",Settings.index_dir);
         strsub(filenamefull_dst,L"drivers",Settings.drp_dir);
@@ -782,22 +782,22 @@ void UpdaterImp::moveNewFiles()
         // Prepare online indexes
         wchar_t *p=filenamefull_dst;
         while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        if(p&&StrStrIW(filenamefull_src,L"indexes\\SDI\\"))*p=L'_';
+        if(p&&StrStrIW(filenamefull_src.Get(),L"indexes\\SDI\\"))*p=L'_';
 
         // Create dirs for the file
-        wchar_t dirs[BUFLEN];
-        wcscpy(dirs,filenamefull_dst);
-        p=dirs;
+        WStringShort dirs;
+        dirs.append(filenamefull_dst);
+        p=dirs.GetV();
         while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
         if(p[-1]==L'\\')
         {
             *--p=0;
-            mkdir_r(dirs);
+            mkdir_r(dirs.Get());
         }
 
         // Move file
         Log.print_con("New file: %S\n",filenamefull_dst);
-        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
+        if(!MoveFileEx(filenamefull_src.Get(),filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
             Log.print_syserr(GetLastError(),L"MoveFileEx()");
     }
     System.run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
@@ -1016,7 +1016,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     // Download torrent
     UpdaterImp *Updater1=dynamic_cast<UpdaterImp *>(Updater);
-    Updater->downloadTorrent();
+    Updater1->downloadTorrent();
     if(downloadmangar_exitflag!=DOWNLOAD_STATUS_TORRENT_GOT)
     {
         Log.print_con("}thread_download(failed to download torrent)\n");
@@ -1089,9 +1089,9 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 // Execute user cmd
                 if(*Settings.finish_upd)
                 {
-                    wchar_t buf[BUFLEN];
-                    wsprintf(buf,L" /c %s",Settings.finish_upd);
-                    System.run_command(L"cmd",buf,SW_HIDE,0);
+                    WStringShort buf;
+                    buf.sprintf(L" /c %s",Settings.finish_upd);
+                    System.run_command(L"cmd",buf.Get(),SW_HIDE,0);
                 }
                 if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
 
