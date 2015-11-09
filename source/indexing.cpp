@@ -322,7 +322,7 @@ void Exporter::AddPack(const wchar_t *s)
 {
     packs.emplace_back(s);
 }
-void Exporter::Found(const wchar_t *s,Version *ver)
+void Exporter::Found(const wchar_t *s,const Version *ver)
 {
     if(!f)return;
 
@@ -518,7 +518,7 @@ void Parser::subStr()
     if(!flag)return;
 
     *p_s=0;
-    strBeg=textholder.get(textholder.strcpy(static_buf));
+    strBeg=textholder.getV(textholder.strcpy(static_buf));
     strEnd=strBeg+strlen(strBeg);
 }
 
@@ -809,7 +809,7 @@ void Collection::loadOnlineIndexes()
     FindClose(hFind);
 }
 
-void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv)
+void Collection::init(const wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv)
 {
     driverpack_dir=driverpacks_dirv;
     index_bin_dir=index_bin_dirv;
@@ -817,7 +817,7 @@ void Collection::init(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,co
     driverpack_list.clear();
 }
 
-Collection::Collection(wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv)
+Collection::Collection(const wchar_t *driverpacks_dirv,const wchar_t *index_bin_dirv,const wchar_t *index_linear_dirv)
 {
     driverpack_dir=driverpacks_dirv;
     index_bin_dir=index_bin_dirv;
@@ -987,10 +987,10 @@ void Collection::print_index_hr()
     Timers.stop(time_indexprint);
 }
 
-wchar_t *Collection::finddrp(const wchar_t *fnd)
+const wchar_t *Collection::finddrp(const wchar_t *fnd)
 {
     int j;
-    wchar_t *s,*d,*n_s;
+    const wchar_t *s,*d,*n_s;
 
     j=0;
     n_s=nullptr;
@@ -1690,7 +1690,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             char *s1b,*s1e;
             parse_info.readStr(&s1b,&s1e);
 
-            cur_manuf_index=manufacturer_list.size();
+            cur_manuf_index=static_cast<ofst>(manufacturer_list.size());
             manufacturer_list.resize(cur_manuf_index+1);
             cur_manuf=&manufacturer_list[cur_manuf_index];
             cur_manuf->inffile_index=cur_inffile_index;
@@ -1825,7 +1825,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             }
                             //} feature and install_picked section
 
-                            cur_desc_index=desc_list.size();
+                            cur_desc_index=static_cast<ofst>(desc_list.size());
 
                             desc_list.push_back(data_desc_t(cur_manuf_index,
                                 manufacturer_list[cur_manuf_index].sections_n-1,
@@ -1857,7 +1857,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
 void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
 {
-    int *rr=reinterpret_cast<int *>(text_ind.get(manufacturer_list[manuf_index].sections));
+    const int *rr=reinterpret_cast<const int *>(text_ind.get(manufacturer_list[manuf_index].sections));
     if(pos)
     {
         strcpy(buf,text_ind.get(rr[0]));
@@ -2111,7 +2111,7 @@ void Driverpack::genhashes()
     indexes.reset(HWID_list.size()/2);
     for(unsigned i=0;i<HWID_list.size();i++)
     {
-        char *vv=text_ind.get(HWID_list[i].HWID);
+        const char *vv=text_ind.get(HWID_list[i].HWID);
         int val=indexes.gethashcode(vv,strlen(vv));
         indexes.additem(val,i);
     }
@@ -2231,7 +2231,7 @@ void Driverpack::print_index_hr()
     fclose(f);
 }
 
-void Driverpack::fillinfo(char *sect,char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature)
+void Driverpack::fillinfo(const char *sect,const char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature)
 {
     *inf_pos=-1;
     //log_file("Search[%s,%s,%d]\n",sect,hwid,start_index);

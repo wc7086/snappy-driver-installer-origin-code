@@ -235,9 +235,9 @@ public:
     std::vector<Device> *getDevices_list(){return &Devices_list;}
     const Driver *getCurrentDriver(const Device *dev)const{return (dev->getDriverIndex()>=0)?&Drivers_list[dev->getDriverIndex()]:nullptr;}
 
-    wchar_t *getProduct();
-    wchar_t *getManuf();
-    wchar_t *getModel();
+    const wchar_t *getProduct();
+    const wchar_t *getManuf();
+    const wchar_t *getModel();
 
     State();
     void print();

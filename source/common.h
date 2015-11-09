@@ -90,10 +90,12 @@ class Txt
     loadable_vector<char> text;
 
 public:
-    size_t getSize()const{return text.size();}
-    char *get(int offset)const{return (char *)&text[offset];}
-    wchar_t *getw(int offset)const{return (wchar_t *)(&text[offset]);}
-    wchar_t *getw2(int offset)const{return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
+    ofst getSize()const{return text.size();}
+    const char *get(int offset)const{return (char *)&text[offset];}
+    char *getV(int offset)const{return (char *)&text[offset];}
+    const wchar_t *getw(int offset)const{return (wchar_t *)(&text[offset]);}
+    wchar_t *getwV(int offset)const{return (wchar_t *)(&text[offset]);}
+    const wchar_t *getw2(int offset)const{return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
 
     ofst strcpy(const char *mem);
 	ofst strcpyw(const wchar_t *mem);
@@ -132,7 +134,7 @@ class Hashtable
     loadable_vector<Hashitem> items;
 
 public:
-	size_t getSize(){ return items.size(); }
+	ofst getSize()const{ return static_cast<ofst>(items.size()); }
 
     static unsigned gethashcode(const char *s,size_t sz);
     void reset(size_t size);
@@ -167,9 +169,9 @@ public:
     void vsprintf(const wchar_t *format,va_list args);
     void append(const wchar_t *str);
 
-    wchar_t *GetV(){return buf_cur;}
-    const wchar_t *Get(){return buf_cur;}
-    size_t Length(){return len;}
+    wchar_t *GetV()const{return buf_cur;}
+    const wchar_t *Get()const{return buf_cur;}
+    size_t Length()const{return len;}
 };
 
 class WString:public WString_dyn

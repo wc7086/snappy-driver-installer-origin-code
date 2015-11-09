@@ -189,7 +189,7 @@ void Device::printHWIDS(const State *state)
 {
     if(HardwareID)
     {
-        wchar_t *p=state->textas.getw(HardwareID);
+        const wchar_t *p=state->textas.getw(HardwareID);
         Log.print_file("HardwareID\n");
         while(*p)
         {
@@ -204,7 +204,7 @@ void Device::printHWIDS(const State *state)
 
     if(CompatibleIDs)
     {
-        wchar_t *p=state->textas.getw(CompatibleIDs);
+        const wchar_t *p=state->textas.getw(CompatibleIDs);
         Log.print_file("CompatibleID\n");
         while(*p)
         {
@@ -220,7 +220,7 @@ const wchar_t *Device::getHWIDby(int num,const State *state)
 
     if(HardwareID)
     {
-        wchar_t *p=state->textas.getw(HardwareID);
+        const wchar_t *p=state->textas.getw(HardwareID);
         while(*p)
         {
             if(i==num)return p;
@@ -230,7 +230,7 @@ const wchar_t *Device::getHWIDby(int num,const State *state)
     }
     if(CompatibleIDs)
     {
-        wchar_t *p=state->textas.getw(CompatibleIDs);
+        const wchar_t *p=state->textas.getw(CompatibleIDs);
         while(*p)
         {
             if(i==num)return p;
@@ -273,7 +273,7 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
 
     SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,nullptr,0,&buffersize);
     InstanceId=state->textas.alloc(buffersize);
-    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,state->textas.getw(InstanceId),buffersize,nullptr);
+    SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,const_cast<wchar_t *>(state->textas.getw(InstanceId)),buffersize,nullptr);
 
     read_device_property(hDevInfo,state,SPDRP_DEVICEDESC,    &Devicedesc);
     read_device_property(hDevInfo,state,SPDRP_HARDWAREID,    &HardwareID);
@@ -309,7 +309,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val)
     }
 
     *val=state->textas.alloc(dwSize);
-    lr=RegQueryValueEx(hkey,key,nullptr,&dwType,reinterpret_cast<unsigned char*>(state->textas.get(*val)),&dwSize);
+    lr=RegQueryValueEx(hkey,key,nullptr,&dwType,(unsigned char*)state->textas.get(*val),&dwSize);
     if(lr!=ERROR_SUCCESS)
     {
         Log.print_err("Key %S\n",key);
@@ -439,7 +439,7 @@ int Driver::isvalidcat(const State *state)const
 
 void Driver::print(const State *state)const
 {
-    char *s=state->textas.get(0);
+    const char *s=state->textas.get(0);
     wchar_t buf[BUFLEN];
 
     Log.print_file("  Name:     %S\n",s+DriverDesc);
@@ -519,25 +519,25 @@ void State::getWinVer(int *major,int *minor)const
     *minor=platform.dwMinorVersion;
 }
 
-wchar_t *State::getProduct()
+const wchar_t *State::getProduct()
 {
-    wchar_t *s=textas.getw(product);
+    const wchar_t *s=textas.getw(product);
 
     if(StrStrIW(s,L"Product"))return textas.getw(cs_model);
     return s;
 }
 
-wchar_t *State::getManuf()
+const wchar_t *State::getManuf()
 {
-    wchar_t *s=textas.getw(manuf);
+    const wchar_t *s=textas.getw(manuf);
 
     if(StrStrIW(s,L"Vendor")||StrStrIW(s,L"Quanta"))return textas.getw(cs_manuf);
     return s;
 }
 
-wchar_t *State::getModel()
+const wchar_t *State::getModel()
 {
-    wchar_t *s=textas.getw(model);
+    const wchar_t *s=textas.getw(model);
 
     if(!*s)return textas.getw(cs_model);
     return s;
@@ -632,7 +632,7 @@ void State::print()
         if(batteryloc->BatteryFullLifeTime!=0xFFFFFFFF)
             Log.print_file("  FullLifeTime: %d mins\n",batteryloc->BatteryFullLifeTime/60);
 
-        buf=textas.getw(monitors);
+        buf=textas.getwV(monitors);
         Log.print_file("\nMonitors\n");
         for(i=0;i<buf[0];i++)
         {
@@ -1143,7 +1143,7 @@ void State::isnotebook_a()
     unsigned int i;
     int min_v=99,min_x=0,min_y=0;
     int batdev=0;
-    wchar_t *buf;
+    const wchar_t *buf;
     SYSTEM_POWER_STATUS *batteryloc;
 
     buf=textas.getw(monitors);
@@ -1178,7 +1178,7 @@ void State::isnotebook_a()
     {
         if(cur_device.getHardwareID())
         {
-            wchar_t *p=textas.getw(cur_device.getHardwareID());
+            const wchar_t *p=textas.getw(cur_device.getHardwareID());
             while(*p)
             {
                 if(StrStrIW(p,L"*ACPI0003"))batdev=1;

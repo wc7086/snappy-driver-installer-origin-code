@@ -47,7 +47,7 @@ int rtl=0;
 //{ ComboBox
 Combobox::Combobox(HWND hwnd,int id)
 {
-    handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,(HMENU)id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
+    handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
 }
 void Combobox::Clear()
 {
@@ -240,18 +240,17 @@ void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
     BYTE *p2=big;
     for(int i=0;i<sy*sx;i++)
     {
-        BYTE B,G,R,A;
-        B=*p2++;
-        G=*p2++;
-        R=*p2++;
-        A=*p2++;
-        double dA=A/255.;
+        int B,G,R,A;
+        B=(int)*p2++;
+        G=(int)*p2++;
+        R=(int)*p2++;
+        A=(int)*p2++;
         if(A!=255)hasalpha=1;
 
-        *bits++=(BYTE)(B*dA);
-        *bits++=(BYTE)(G*dA);
-        *bits++=(BYTE)(R*dA);
-        *bits++=A;
+        *bits++=(BYTE)(B*A/256);
+        *bits++=(BYTE)(G*A/256);
+        *bits++=(BYTE)(R*A/256);
+        *bits++=(BYTE)A;
     }
     SelectObject(ldc,bitmap);
     free(big);
