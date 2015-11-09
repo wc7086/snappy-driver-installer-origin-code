@@ -75,7 +75,7 @@ public:
     virtual void init(State *state1,Collection *col1)=0;
     virtual void populate()=0;
     virtual void print()=0;
-    virtual void sorta(int *v)=0;
+    virtual void sorta(size_t *v)=0;
 
     virtual const wchar_t *finddrp(const wchar_t *s)=0;
     virtual State *getState()=0;

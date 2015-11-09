@@ -40,7 +40,7 @@ char *vector_save(std::vector<T> *v,char *p)
 template <class T>
 char *vector_load(std::vector<T> *v,char *p)
 {
-    int sz,num;
+    size_t sz=0,num=0;
 
     memcpy(&sz,p,sizeof(int));p+=sizeof(int);
     memcpy(&num,p,sizeof(int));p+=sizeof(int);

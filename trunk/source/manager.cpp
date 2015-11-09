@@ -588,7 +588,7 @@ int  Manager::manager_drplive(const wchar_t *s)
 
 void Manager::populate()
 {
-    int remap[1024*8];
+    size_t remap[1024*8];
     matcher->sorta(remap);
     items_list.resize(RES_SLOTS);
 
@@ -958,8 +958,8 @@ void Manager::install(int flagsv)
 void Manager::testitembars()
 {
     itembar_t *itembar;
-    unsigned i,j=0,index=RES_SLOTS+1;
-    int prev_index=-1;
+    size_t i,j=0,index=RES_SLOTS+1;
+    size_t prev_index=0;
 
     itembar=&items_list[0];
 
@@ -1300,7 +1300,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
 
     if(!(itembar->first&1))
     {
-        size_t i=index;
+        int i=index;
 
         while(i>=0&&!(items_list[i].first&1&&items_list[i].isactive))i--;
         if(items_list[i].index==itembar->index)intend=i;

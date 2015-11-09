@@ -350,7 +350,7 @@ public:
     void init(State *state1,Collection *col1){state=state1;col=col1;devicematch_list.clear();hwidmatch_list.clear();}
     void populate();
     void print();
-    void sorta(int *v);
+    void sorta(size_t *v);
 
     const wchar_t *finddrp(const wchar_t *s) override{return col->finddrp(s);}
     State *getState(){return state;}
@@ -376,7 +376,7 @@ void MatcherImp::findHWIDs(Devicematch *devicematch,const wchar_t *hwidv,int dev
 
 	size_t sz = strlen(hwid);
     strtoupper(hwid,sz);
-	size_t code = Hashtable::gethashcode(hwid, sz);
+	int code = Hashtable::gethashcode(hwid, sz);
 
     for(auto &drp:*col->getList())
     {
@@ -477,7 +477,7 @@ void MatcherImp::print()
     Log.print_file("}matcher_print\n\n");
 }
 
-void MatcherImp::sorta(int *v)
+void MatcherImp::sorta(size_t *v)
 {
     Devicematch *devicematch_i,*devicematch_j;
     Hwidmatch *hwidmatch_i,*hwidmatch_j;

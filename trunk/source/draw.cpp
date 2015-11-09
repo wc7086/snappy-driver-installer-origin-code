@@ -308,21 +308,22 @@ void ImageImp::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
 class ImageStorangeImp:public ImageStorange
 {
     ImageImp *a;
-    int num,add;
+    size_t num;
+    int add;
     const int *index;
 
 public:
-    ImageStorangeImp(int n,const int *ind,int add_=0);
+    ImageStorangeImp(size_t n,const int *ind,int add_=0);
     ~ImageStorangeImp();
     Image *GetImage(size_t n);
     void LoadAll();
 };
 
-ImageStorange *CreateImageStorange(int n,const int *ind,int add_)
+ImageStorange *CreateImageStorange(size_t n,const int *ind,int add_)
 {
     return new ImageStorangeImp(n,ind,add_);
 }
-ImageStorangeImp::ImageStorangeImp(int n,const int *ind,int add_)
+ImageStorangeImp::ImageStorangeImp(size_t n,const int *ind,int add_)
 {
     a=new ImageImp[n];
     num=n;
@@ -342,7 +343,7 @@ void ImageStorangeImp::LoadAll()
     for(size_t i=0;i<num;i++)
     {
         wchar_t *str=D_STR(index[i]+add);
-        int j;
+        size_t j;
         for(j=0;j<i;j++)
             if(!wcscmp(str,D_STR(index[j]+add)))
         {
