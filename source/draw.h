@@ -60,7 +60,7 @@ public:
     virtual Image *GetImage(size_t n)=0;
     virtual void LoadAll()=0;
 };
-ImageStorange *CreateImageStorange(int n,const int *ind,int add_=0);
+ImageStorange *CreateImageStorange(size_t n,const int *ind,int add_=0);
 //}
 
 //{ ClipRegion

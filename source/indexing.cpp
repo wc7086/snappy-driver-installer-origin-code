@@ -944,7 +944,7 @@ void Collection::save()
         {
             if(FindFileData.cFileName[0]==L'_')continue;
             filename.sprintf(L"%s\\%s",index_bin_dir,FindFileData.cFileName);
-            unsigned i;
+            size_t i;
             for(i=Settings.flags&FLAG_KEEPUNPACKINDEX?0:1;i<driverpack_list.size();i++)
             {
                 wchar_t buf1[BUFLEN];
