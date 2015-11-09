@@ -224,7 +224,7 @@ int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
         return 0x3000+dev_pos+0x100*inf_pos;
 }
 
-int calc_signature(int catalogfile,State *state,int isnt)
+int calc_signature(int catalogfile,const State *state,int isnt)
 {
     if(state->getArchitecture())
     {
@@ -240,7 +240,7 @@ int calc_signature(int catalogfile,State *state,int isnt)
     return 0xC000;
 }
 
-unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt)
+unsigned calc_score(int catalogfile,int feature,int rank,const State *state,int isnt)
 {
     int major,minor;
     state->getWinVer(&major,&minor);
@@ -268,7 +268,7 @@ int calc_secttype(const char *s)
     return -1;
 }
 
-int Hwidmatch::calc_decorscore(int id,State *state)
+int Hwidmatch::calc_decorscore(int id,const State *state)
 {
     int major,
         minor,
@@ -281,7 +281,7 @@ int Hwidmatch::calc_decorscore(int id,State *state)
     return nts_score[id];
 }
 
-int Hwidmatch::calc_markerscore(State *state,const char *path)
+int Hwidmatch::calc_markerscore(const State *state,const char *path)
 {
     char buf[BUFLEN];
     int majver,
@@ -438,7 +438,7 @@ void MatcherImp::populate()
 
     for(auto &cur_device:*state->getDevices_list())
     {
-        Driver *cur_driver=state->getCurrentDriver(&cur_device);
+        const Driver *cur_driver=state->getCurrentDriver(&cur_device);
         devicematch_list.push_back(Devicematch(&cur_device,cur_driver,hwidmatch_list.size(),this));
     }
     sort();
@@ -525,7 +525,7 @@ void MatcherImp::sorta(int *v)
 //}
 
 //{ Devicematch
-Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher):
+Devicematch::Devicematch(Device *cur_device,const Driver *cur_driver,int items,Matcher *matcher):
     start_matches(items),
     num_matches(0),
     device(cur_device),
@@ -570,7 +570,7 @@ Devicematch::Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher
 }
 
 const GUID nonPnP={0x8ecc055d,0x047f,0x11d1,{0xa5,0x37,0x00,0x00,0xf8,0x75,0x3e,0xd1}};
-int Devicematch::isMissing(State *state)
+int Devicematch::isMissing(const State *state)
 {
     if(device->getProblem()==CM_PROB_DISABLED)return 0;
     if(device->getProblem()&&device->getHardwareID())return 1;
@@ -587,13 +587,13 @@ int Devicematch::isMissing(State *state)
 //}
 
 //{ Hwidmatch
-int Hwidmatch::isvalid_usb30hub(State *state,const wchar_t *str)
+int Hwidmatch::isvalid_usb30hub(const State *state,const wchar_t *str)
 {
     if(StrStrIW(state->textas.getw(devicematch->device->getHardwareID()),str))return 1;
     return 0;
 }
 
-int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *section)
+int Hwidmatch::isblacklisted(const State *state,const wchar_t *hwid,const char *section)
 {
     if(StrStrIW(state->textas.getw(devicematch->device->getHardwareID()),hwid))
     {
@@ -604,7 +604,7 @@ int Hwidmatch::isblacklisted(State *state,const wchar_t *hwid,const char *sectio
     return 0;
 }
 
-int Hwidmatch::isvalid_ver(State *state)
+int Hwidmatch::isvalid_ver(const State *state)
 {
     Version *v;
     int major,minor;
@@ -643,7 +643,7 @@ int Hwidmatch::calc_catalogfile()
     return r;
 }
 
-int Hwidmatch::calc_altsectscore(State *state,int curscore)
+int Hwidmatch::calc_altsectscore(const State *state,int curscore)
 {
     int desc_index,manufacturer_index;
 
@@ -688,10 +688,10 @@ int Hwidmatch::calc_altsectscore(State *state,int curscore)
     return isvalidcat(state)?2:1;
 }
 
-int Hwidmatch::calc_status(State *state)
+int Hwidmatch::calc_status(const State *state)
 {
     int r=0;
-    Driver *cur_driver=devicematch->driver;
+    const Driver *cur_driver=devicematch->driver;
 
     if(devicematch->isMissing(state))return STATUS_MISSING;
 
@@ -779,7 +779,7 @@ void Hwidmatch::calclen(int *limits)
     minlen(getdrp_drvdesc(),&limits[6]);
 }
 
-void Hwidmatch::print_tbl(int *limits)
+void Hwidmatch::print_tbl(const int *limits)
 {
     char buf[BUFLEN];
     Version *v;
@@ -908,7 +908,7 @@ int Hwidmatch::isdrivervalid()
     return 0;
 }
 
-int Hwidmatch::isvalidcat(State *state)
+int Hwidmatch::isvalidcat(const State *state)
 {
     char bufa[BUFLEN];
     int n=pickcat(state);
@@ -921,7 +921,7 @@ int Hwidmatch::isvalidcat(State *state)
     return strstr(s,bufa)?1:0;
 }
 
-int Hwidmatch::pickcat(State *state)
+int Hwidmatch::pickcat(const State *state)
 {
     if(state->getArchitecture()==1&&*getdrp_drvcat(CatalogFile_ntamd64))
     {

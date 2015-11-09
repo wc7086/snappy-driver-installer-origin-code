@@ -96,7 +96,7 @@ private:
 public:
     Font():hFont(nullptr){}
     ~Font();
-    void SetFont(const wchar_t *name,int size,int bold=false);
+    void SetFont(const wchar_t *name,int size,bool bold=false);
 };
 //}
 

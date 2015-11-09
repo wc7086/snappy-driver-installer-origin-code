@@ -111,7 +111,7 @@ void Log_t::start(wchar_t *logdir)
     filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
     if(!System.canWrite(filename.Get()))
     {
-        Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
+        Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename.Get());
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
         filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
@@ -121,7 +121,7 @@ void Log_t::start(wchar_t *logdir)
     logfile=_wfopen(filename.Get(),L"wt");
     if(!logfile)
     {
-        Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename);
+        Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename.Get());
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
         wcscat(logdir,L"\\SDI_logs");
         filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
@@ -278,7 +278,7 @@ static void myterminate()
     {
         buf.sprintf(L"Exception: unknown");
     }
-    Log.print_err("ERROR: %S\n",buf);
+    Log.print_err("ERROR: %S\n",buf.Get());
     Log.save();
     Log.stop();
     buf.append(L"\n\nThe program will self terminate now.");

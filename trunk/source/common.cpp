@@ -248,7 +248,7 @@ int Hashtable::findnext(int *isfound)
 
 //{ Strings
 
-void WString_dyn::Resize(int size)
+void WString_dyn::Resize(size_t size)
 {
     Log.print_con("Resize to %d->",len);
     len=size;
@@ -319,9 +319,10 @@ void strtolower(char *s,size_t len)
     }
 }
 
-int unicode2ansi(char *s,char *out,size_t size)
+size_t unicode2ansi(const char *s,char *out,size_t size)
 {
-    int ret,flag;
+    size_t ret;
+    int flag;
     size/=2;
     /*if(!out)Log.log_err("Error out:\n");
     if(!s)Log.log_err("Error in:\n");
@@ -341,13 +342,13 @@ int _wtoi_my(const wchar_t *str)
 //}
 
 //{ 7-zip
-size_t encode(char *dest,size_t dest_sz,char *src,size_t src_sz)
+size_t encode(char *dest,size_t dest_sz,const char *src,size_t src_sz)
 {
     Lzma86_Encode((Byte *)dest,(SizeT *)&dest_sz,(const Byte *)src,src_sz,0,1<<23,SZ_FILTER_AUTO);
     return dest_sz;
 }
 
-size_t decode(char *dest,size_t dest_sz,char *src,size_t src_sz)
+size_t decode(char *dest,size_t dest_sz,const char *src,size_t src_sz)
 {
     Lzma86_Decode((Byte *)dest,(SizeT *)&dest_sz,(const Byte *)src,(SizeT *)&src_sz);
     return dest_sz;

@@ -92,7 +92,7 @@ public:
     void contextmenu(int x,int y);
     void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index);
 };
-int  itembar_cmp(itembar_t *a,itembar_t *b,Txt *ta,Txt *tb);
+int  itembar_cmp(const itembar_t *a,const itembar_t *b,const Txt *ta,const Txt *tb);
 
 // Manager
 class Manager
@@ -144,7 +144,7 @@ public:
     void itembar_setactive(int i,int val);
     void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index);
     void contextmenu(int x,int y);
-    const wchar_t *getHWIDby(int id);
+    const wchar_t *getHWIDby(int id)const;
     static unsigned int __stdcall thread_install(void *arg);
 
     friend int _7z_setcomplited(long long i); // TODO: friend

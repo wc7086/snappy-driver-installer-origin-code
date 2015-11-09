@@ -70,7 +70,7 @@ public:
     void CreateDir(const wchar_t *filename);
     void fileDelSpec(wchar_t *filename);
 
-    void getClassDesc(GUID *guid,wchar_t *bufw);
+    void getClassDesc(const GUID *guid,wchar_t *bufw);
     void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
     void UnregisterClass_log(const wchar_t *lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
 };

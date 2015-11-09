@@ -271,8 +271,8 @@ void ImageImp::Draw(HDC dc,int x1,int y1,int x2,int y2,int anchor,int fill)
     wy=(fill&VSTR)?y2-y1:sy;
     if(fill&ASPECT)
     {
-        if(fill&HSTR)wy=(int)(sy*((double)wx/sx));
-        if(fill&VSTR)wx=(int)(sx*((double)wy/sy));
+        if(fill&HSTR)wy=sy*wx/sx;
+        if(fill&VSTR)wx=sx*wy/sy;
     }
 
     for(xi=0;xi<x2;xi+=wx)
@@ -597,7 +597,7 @@ ClipRegion::~ClipRegion(){delete imp;}
 void ClipRegion::setRegion(int x1,int y1,int x2,int y2){imp->setRegion(x1,y1,x2,y2);}
 //}
 
-void Font::SetFont(const wchar_t *name,int size,int bold)
+void Font::SetFont(const wchar_t *name,int size,bool bold)
 {
     if(hFont&&!DeleteObject(hFont))
         Log.print_err("ERROR in setfont(): failed DeleteObject\n");

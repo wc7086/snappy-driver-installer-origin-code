@@ -135,7 +135,7 @@ private:
     Version vers[num_hwidpos*num_windowver*num_windowsbits];
 
 public:
-    void Set(int windowsbits,int windowsver,int val,Version *ver)
+    void Set(int windowsbits,int windowsver,int val,const Version *ver)
     {
         //Log.print_con("%d,%d,%d [%d]\n",windowsbits,windowsver,hwidpos,hwidpos+windowsver*num_hwidpos+windowsbits*num_hwidpos*num_windowver);
         //data[hwidpos+windowsver*num_hwidpos+windowsbits*num_hwidpos*num_windowver]=val;
@@ -340,8 +340,8 @@ class Driverpack
 
 private:
     int  genindex();
-    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
-    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
+    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,const char *adr,size_t len);
+    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,const char *adr,size_t len);
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,size_t inf_len);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index);
 

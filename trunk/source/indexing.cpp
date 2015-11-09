@@ -133,10 +133,6 @@ void *mySzAlloc(void *p,size_t size)
         Log.print_err("Failed to alloc\n");
         //Log.log_err("%10ld, Failed to allocate %ld MB \n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
     }
-    catch(...)
-    {
-        Log.print_err("Failed to alloc\n");
-    }
 
     //if(size>1024*1024)Log.log_err("%10ld, Allocated %ld MB\n",nvwa::total_mem_alloc/1024/1024,size/1024/1024);
 
@@ -211,7 +207,7 @@ void Version::setVersion(int v1_,int v2_,int v3_,int v4_)
     v4=v4_;
 }
 
-void Version::str_date(wchar_t *buf)
+void Version::str_date(wchar_t *buf)const
 {
     SYSTEMTIME tm;
     FILETIME ft;
@@ -229,7 +225,7 @@ void Version::str_date(wchar_t *buf)
         GetDateFormat(manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf,100);
 }
 
-void Version::str_version(wchar_t *buf)
+void Version::str_version(wchar_t *buf)const
 {
     if(v1<0)
         wsprintf(buf,STR(STR_HINT_UNKNOWN));
@@ -237,7 +233,7 @@ void Version::str_version(wchar_t *buf)
         wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
 }
 
-int cmpdate(Version *t1,Version *t2)
+int cmpdate(const Version *t1,const Version *t2)
 {
     int res;
 
@@ -255,7 +251,7 @@ int cmpdate(Version *t1,Version *t2)
     return 0;
 }
 
-int cmpversion(Version *t1,Version *t2)
+int cmpversion(const Version *t1,const Version *t2)
 {
     int res;
 
@@ -403,8 +399,8 @@ bool Exporter::Advance()
     if(cur_bits<num_windowsbits)return true;
     cur_bits=0;
 
-    cur_hwid++;
-    hwids_it++;
+    ++cur_hwid;
+    ++hwids_it;
     if(cur_hwid<hwids.size())return true;
     //if(cur_hwid<100)return true;
 
@@ -1442,7 +1438,7 @@ int Driverpack::genindex()
     return 1;
 }
 
-void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,size_t len)
+void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,const char *adr,size_t len)
 {
     inffile_task data;
 
@@ -1457,7 +1453,7 @@ void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const 
     objs_new->push(data);
 }
 
-void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,char *adr,size_t len)
+void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,const char *adr,size_t len)
 {
     inffile_task data;
 

@@ -60,9 +60,9 @@ extern const markers_t markers[NUM_MARKERS];
 
 // Calc
 int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
-unsigned calc_score(int catalogfile,int feature,int rank,State *state,int isnt);
+unsigned calc_score(int catalogfile,int feature,int rank,const State *state,int isnt);
 int calc_secttype(const char *s);
-int calc_signature(int catalogfile,State *state,int isnt);
+int calc_signature(int catalogfile,const State *state,int isnt);
 
 // Misc
 int cmpunsigned(unsigned a,unsigned b);
@@ -100,11 +100,11 @@ class Devicematch
 
 public:
     Device *device;
-    Driver *driver;
+    const Driver *driver;
 
 public:
-    Devicematch(Device *cur_device,Driver *cur_driver,int items,Matcher *matcher);
-    int isMissing(State *state);
+    Devicematch(Device *cur_device,const Driver *cur_driver,int items,Matcher *matcher);
+    int isMissing(const State *state);
     int getStatus(){return status;}
 
     friend class Manager; // TODO: friend
@@ -123,13 +123,13 @@ class Hwidmatch
     unsigned score;
 
 private:
-    int isvalid_usb30hub(State *state,const wchar_t *str);
-    int isblacklisted(State *state,const wchar_t *hwid,const char *section);
-    int isvalid_ver(State *state);
-    int calc_altsectscore(State *state,int curscore);
-    int calc_status(State *state);
-    int calc_decorscore(int id,State *state);
-    int calc_markerscore(State *state,const char *path);
+    int isvalid_usb30hub(const State *state,const wchar_t *str);
+    int isblacklisted(const State *state,const wchar_t *hwid,const char *section);
+    int isvalid_ver(const State *state);
+    int calc_altsectscore(const State *state,int curscore);
+    int calc_status(const State *state);
+    int calc_decorscore(int id,const State *state);
+    int calc_markerscore(const State *state,const char *path);
 
 public:
     void setHWID_index(int index){HWID_index=index;}
@@ -150,14 +150,14 @@ public:
 
     void minlen(char *s,int *len);
     void calclen(int *limits);
-    void print_tbl(int *limits);
+    void print_tbl(const int *limits);
     void print_hr();
     void popup_driverline(int *limits,Canvas &canvas,int ln,int mode,int index);
     int  cmp(Hwidmatch *match2);
     int isdup(Hwidmatch *match2,char *sect1);
     int isdrivervalid();
-    int isvalidcat(State *state);
-    int pickcat(State *state);
+    int isvalidcat(const State *state);
+    int pickcat(const State *state);
 
 // <<< GETTERS
     //driverpack
