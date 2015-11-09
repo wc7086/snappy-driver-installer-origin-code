@@ -804,7 +804,7 @@ LRESULT CALLBACK MainWindow_t::WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,L
     return MainWindow.WndProcCommon2(hwnd,uMsg,wParam,lParam);
 }
 
-int MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(wParam);
 

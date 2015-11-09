@@ -314,7 +314,7 @@ class ImageStorangeImp:public ImageStorange
 public:
     ImageStorangeImp(int n,const int *ind,int add_=0);
     ~ImageStorangeImp();
-    Image *GetImage(int n);
+    Image *GetImage(size_t n);
     void LoadAll();
 };
 
@@ -333,13 +333,13 @@ ImageStorangeImp::~ImageStorangeImp()
 {
     delete[] a;
 }
-Image *ImageStorangeImp::GetImage(int n)
+Image *ImageStorangeImp::GetImage(size_t n)
 {
     return &a[n];
 }
 void ImageStorangeImp::LoadAll()
 {
-    for(int i=0;i<num;i++)
+    for(size_t i=0;i<num;i++)
     {
         wchar_t *str=D_STR(index[i]+add);
         int j;
@@ -685,7 +685,7 @@ void Canvas::loadGUID(GUID *g,const char *s)
 
 void Canvas::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
 {
-    HICON hIcon;
+    HICON hIcon=nullptr;
     BOOL ret=false;
     if(guid_driverpack)
     {
@@ -694,7 +694,7 @@ void Canvas::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid
         ret=SetupDiLoadClassIcon(&gd,&hIcon,nullptr);
     }
     if(!ret)ret=SetupDiLoadClassIcon(guid_device,&hIcon,nullptr);
-    if(ret)
+    if(hIcon)
     {
         if(rtl)
         {

@@ -110,9 +110,9 @@ class Popup_t
     Popup_t &operator=(const Popup_t&)=delete;
 
 private:
+    Canvas *canvasPopup=nullptr;
     int floating_type=0;
     int floating_x=1,floating_y=1;
-    Canvas *canvasPopup=nullptr;
     bool wait=false;
 
 public:
@@ -179,7 +179,7 @@ private:
     static LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
     static LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
     static LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
-    int WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    LRESULT WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
     LRESULT WndProc2(HWND,UINT,WPARAM,LPARAM);
     LRESULT WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
 

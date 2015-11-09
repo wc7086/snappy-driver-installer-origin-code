@@ -152,7 +152,7 @@ public:
     void calclen(int *limits);
     void print_tbl(const int *limits);
     void print_hr();
-    void popup_driverline(int *limits,Canvas &canvas,int ln,int mode,int index);
+    void popup_driverline(int *limits,Canvas &canvas,int ln,int mode,size_t index);
     int  cmp(const Hwidmatch *match2);
     int isdup(const Hwidmatch *match2,const char *sect1);
     int isdrivervalid();

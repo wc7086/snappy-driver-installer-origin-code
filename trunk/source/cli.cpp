@@ -43,7 +43,7 @@ static void ExpandPath(wchar_t *Apath)
 {
     wchar_t infoBuf[BUFLEN];
 
-    memset(infoBuf,0,sizeof(BUFLEN));
+    *infoBuf=0;
     System.ExpandEnvVar(Apath,infoBuf,BUFLEN);
     wcscpy(Apath,infoBuf);
 }
@@ -94,7 +94,7 @@ void Parse_HWID_installed_swith(const wchar_t *ParamStr)
     {
         WStringShort buf;
         buf.append(ParamStr+tmpLen);
-        wchar_t *chB;
+        const wchar_t *chB;
 
         chB=wcsrchr(buf.Get(),'=');
         if(chB==NULL)

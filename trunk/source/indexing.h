@@ -168,7 +168,7 @@ class Exporter
     std::vector<datum> items;
 
     FILE *f=nullptr;
-    unsigned cur_hwid;
+    size_t cur_hwid;
     unsigned cur_bits;
     unsigned cur_ver;
     unsigned cur_pos;
@@ -350,13 +350,13 @@ private:
     static unsigned int __stdcall savedrp_thread(void *arg);
 
 public:
-    const wchar_t *getPath(){return text_ind.getw2(drppath);}
-    const wchar_t *getFilename(){return text_ind.getw2(drpfilename);}
-    int getType(){return type;}
-	size_t getSize(){ return HWID_list.size(); }
-    int setType(int val){return type=val;}
-    int find(int key,int *isFound){return indexes.find(key,isFound);}
-    int findnext(int *isFound){return indexes.findnext(isFound);}
+    const wchar_t *getPath()const{return text_ind.getw2(drppath);}
+    const wchar_t *getFilename()const{ return text_ind.getw2(drpfilename); }
+    int getType()const{ return type; }
+    ofst getSize()const{ return static_cast<ofst>(HWID_list.size()); }
+    int setType(int val){ return type=val; }
+    int find(int key,int *isFound){ return indexes.find(key,isFound); }
+    int findnext(int *isFound){ return indexes.findnext(isFound); }
 
     Driverpack(const Driverpack&)=default;
     Driverpack &operator=(const Driverpack&)=default;

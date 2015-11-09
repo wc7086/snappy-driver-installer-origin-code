@@ -831,7 +831,7 @@ void Hwidmatch::print_hr()
     Log.print_file("\n");
 }
 
-void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,int index)
+void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,size_t index)
 {
     char buf[BUFLEN];
     wchar_t bufw[BUFLEN];
@@ -858,7 +858,7 @@ void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,int i
     td.TextOutP(L"| %3X",status);getdrp_drvsection(buf);
     td.TextOutP(L"| %S",buf);
     td.TextOutP(L"| %s\\%s",getdrp_packpath(),getdrp_packname());
-    td.TextOutP(L"| %08X%",getdrp_infcrc());
+    td.TextOutP(L"| %08X",getdrp_infcrc());
     td.TextOutP(L"| %S%S",getdrp_infpath(),getdrp_infname());
     td.TextOutP(L"| %S",getdrp_drvmanufacturer());v->str_version(bufw);
     td.TextOutP(L"| %s",bufw);

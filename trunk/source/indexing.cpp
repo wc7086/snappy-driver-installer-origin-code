@@ -2109,7 +2109,7 @@ void Driverpack::genhashes()
 
     // Hashtable for fast search
     indexes.reset(HWID_list.size()/2);
-    for(unsigned i=0;i<HWID_list.size();i++)
+    for(size_t i=0;i<HWID_list.size();i++)
     {
         const char *vv=text_ind.get(HWID_list[i].HWID);
         int val=indexes.gethashcode(vv,strlen(vv));
