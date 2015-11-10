@@ -75,13 +75,13 @@ public:
     int checked;
     int first;
     size_t index;
-    int rm;
+    size_t rm;
 
     int intend;
     int oldpos,curpos,tagpos,accel;
 
 public:
-    itembar_t(Devicematch *devicematch,Hwidmatch *match,size_t groupindex,int rm,int first);
+    itembar_t(Devicematch *devicematch,Hwidmatch *match,size_t groupindex,size_t rm,int first);
     itembar_t(){}
     void itembar_setpos(int *pos,int *cnt,bool addspace);
     void str_status(wchar_t *buf);
@@ -90,7 +90,7 @@ public:
     int  box_status();
 
     void contextmenu(int x,int y);
-    void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index);
+    void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index);
 };
 int  itembar_cmp(const itembar_t *a,const itembar_t *b,const Txt *ta,const Txt *tb);
 
@@ -105,7 +105,7 @@ public:
 
 private:
     int  calc_cutoff();
-    int  isbehind(int pos,int ofs,int j);
+    int  isbehind(int pos,int ofs,size_t j);
     int  drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff);
 
 public:
@@ -116,13 +116,13 @@ public:
     void print_hr();
 
 // User interaction
-    void hitscan(int x,int y, int *i,int *zone);
+    void hitscan(int x,int y,size_t *i,int *zone);
     void clear();
     void updateoverall();
     void install(int flags);
     void testitembars();
-    void toggle(int index);
-    void expand(int index,EXPAND_MODE f);
+    void toggle(size_t index);
+    void expand(size_t index,EXPAND_MODE f);
     void selectnone();
     void selectall();
 
@@ -136,13 +136,13 @@ public:
     void draw(Canvas &canvas,int ofsy);
     void restorepos1(Manager *manager_prev);
     void restorepos(Manager *manager_prev);
-    void popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i);
+    void popup_driverlist(Canvas &canvas,int wx,int wy,size_t i);
     int  manager_drplive(const wchar_t *s);
     void set_rstpnt(int checked);
-    void itembar_settext(int i,const wchar_t *txt1,int percent);
-    void itembar_settext(int i,int act,const wchar_t *txt1=nullptr,__int64 val1v=0,__int64 val2v=1,__int64 percent=-1);
-    void itembar_setactive(int i,int val);
-    void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index);
+    void itembar_settext(size_t i,const wchar_t *txt1,int percent);
+    void itembar_settext(size_t i,int act,const wchar_t *txt1=nullptr,__int64 val1v=0,__int64 val2v=1,__int64 percent=-1);
+    void itembar_setactive(size_t i,int val);
+    void popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index);
     void contextmenu(int x,int y);
     const wchar_t *getHWIDby(int id)const;
     static unsigned int __stdcall thread_install(void *arg);

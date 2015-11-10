@@ -356,10 +356,10 @@ public:
     State *getState(){return state;}
     Collection *getCol(){return col;}
     size_t getDwidmatch_list() { return devicematch_list.size(); }
-    Devicematch *getDevicematch_i(int i){return &devicematch_list[i];}
+    Devicematch *getDevicematch_i(size_t i){return &devicematch_list[i];}
     size_t getHwidmatch_list(){return hwidmatch_list.size();}
     void Insert(const Hwidmatch &a){hwidmatch_list.push_back(a);}
-    Hwidmatch *getHwidmatch_i(int i){return &hwidmatch_list[i];}
+    Hwidmatch *getHwidmatch_i(size_t i){return &hwidmatch_list[i];}
 };
 
 Matcher::~Matcher(){}
@@ -501,7 +501,7 @@ void MatcherImp::sorta(size_t *v)
 
             if(ismi<ismj)
             {
-                int t;
+                size_t t;
 
                 t=v[i];
                 v[i]=v[j];
@@ -513,7 +513,7 @@ void MatcherImp::sorta(size_t *v)
                ||
                (!hwidmatch_i&&hwidmatch_j))
             {
-                int t;
+                size_t t;
 
                 t=v[i];
                 v[i]=v[j];
@@ -525,7 +525,7 @@ void MatcherImp::sorta(size_t *v)
 //}
 
 //{ Devicematch
-Devicematch::Devicematch(Device *cur_device,const Driver *cur_driver,int items,Matcher *matcher):
+Devicematch::Devicematch(Device *cur_device,const Driver *cur_driver,size_t items,Matcher *matcher):
     start_matches(items),
     num_matches(0),
     device(cur_device),
@@ -756,7 +756,7 @@ Hwidmatch::Hwidmatch(Driverpack *drp1,int HWID_index1):
 
 void Hwidmatch::minlen(const char *s,int *len)
 {
-	int l=strlen(s);
+	int l=(int)strlen(s);
     if(*len<l)*len=l;
 }
 

@@ -27,11 +27,23 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 #include "gui.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4244)
+#pragma warning(disable:4245)
+#pragma warning(disable:4267)
+#pragma warning(disable:4512)
+#endif
+
 #include "libtorrent/config.hpp"
 #include "libtorrent/entry.hpp"
 #include "libtorrent/bencode.hpp"
 #include "libtorrent/alert_types.hpp"
 #include "libtorrent/session.hpp"
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <windows.h>
 #include <shobjidl.h>
@@ -302,7 +314,7 @@ void UpdateDialog_t::setCheckboxes()
 
         if(item.lParam==-2)val=baseChecked;
         if(item.lParam==-1)val=indexesChecked;
-        if(item.lParam>=0)val=hTorrent.file_priority(item.lParam);
+        if(item.lParam>=0)val=hTorrent.file_priority((int)item.lParam);
 
         ListView_SetCheckState(hListg,i,val);
     }
@@ -327,7 +339,7 @@ void UpdateDialog_t::setPriorities()
 
         if(item.lParam==-2)base_pri=val?2:0;
         if(item.lParam==-1)indexes_pri=val?2:0;
-        if(item.lParam>= 0)hTorrent.file_priority(item.lParam,val);
+        if(item.lParam>= 0)hTorrent.file_priority(static_cast<int>(item.lParam),val);
     }
 
     // Set priorities for the app and indexes
@@ -361,7 +373,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
 
         case WM_MOUSELEAVE:
             bMouseInWindow=0;
-            Popup.drawpopup(-1,FLOATING_NONE,0,0,hWnd);
+            Popup.drawpopup(0,FLOATING_NONE,0,0,hWnd);
             break;
 
         default:

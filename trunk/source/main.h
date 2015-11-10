@@ -118,7 +118,7 @@ private:
 public:
     Popup_t();
     ~Popup_t();
-    void drawpopup(int itembar,int type,int x,int y,HWND hwnd);
+    void drawpopup(size_t itembar,int type,int x,int y,HWND hwnd);
     void popup_resize(int x,int y);
     void onHover();
     void onLeave();
@@ -126,7 +126,7 @@ public:
     Font *hFontP;
     Font *hFontBold;
     HWND hPopup=nullptr;
-    int floating_itembar=-1;
+    size_t floating_itembar=0;
     int horiz_sh=0;
 
     LRESULT PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
@@ -157,7 +157,8 @@ private:
 
     int mousex=-1,mousey=-1,mousedown=MOUSE_NONE,mouseclick=0;
     int scrollvisible=0;
-    int field_lasti,field_lastz;
+    size_t field_lasti;
+    int field_lastz;
 
     Font *hFont;
 

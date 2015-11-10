@@ -21,7 +21,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Global vars
 extern long long ar_total,ar_proceed;
 extern int instflag;
-extern int itembar_act;
+extern size_t itembar_act;
 extern int needreboot;
 extern wchar_t extractdir[BUFLEN];
 

@@ -50,7 +50,7 @@ const status_t statustnl[NUM_STATUS]=
 //}
 
 //{ Itembar
-itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,size_t groupindex,int rm1,int first1)
+itembar_t::itembar_t(Devicematch *devicematch1,Hwidmatch *hwidmatch1,size_t groupindex,size_t rm1,int first1)
 {
     memset(this,0,sizeof(itembar_t));
     devicematch=devicematch1;
@@ -347,7 +347,7 @@ void itembar_t::contextmenu(int x,int y)
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
 }
 
-void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index1)
+void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index1)
 {
     if(index1<RES_SLOTS)return;
 
@@ -622,7 +622,7 @@ void Manager::filter(int options)
 {
     Devicematch *devicematch;
     itembar_t *itembar,*itembar1,*itembar_drp=nullptr,*itembar_drpcur=nullptr;
-    unsigned i,j,k;
+    size_t i,j,k;
     int cnt[NUM_STATUS+1];
     int ontorrent;
     int o1=options&FILTER_SHOW_ONE;
@@ -841,7 +841,7 @@ void Manager::print_hr()
 // 2 downarrow
 // 3 text
 int setaa=0;
-void Manager::hitscan(int x,int y,int *r,int *zone)
+void Manager::hitscan(int x,int y,size_t *r,int *zone)
 {
     itembar_t *itembar;
     size_t i;
@@ -851,7 +851,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
     int ofs=0;
     int wx=XG(D_X(DRVITEM_WX),Xg(D_X(DRVITEM_OFSX),D_X(DRVITEM_WX)));
 
-    *r=-2;
+    *r=0;
     *zone=0;
     int cnt=0;
 
@@ -876,7 +876,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
 
         if(MainWindow.kbpanel==KB_FIELD)
         {
-            *r=static_cast<int>(i);
+            *r=i;
             if(MainWindow.kbitem[MainWindow.kbpanel]==cnt)
             {
                 if(setaa)
@@ -899,7 +899,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             x-=D_X(ITEM_CHECKBOX_OFS_X);
             y-=D_X(ITEM_CHECKBOX_OFS_Y)+pos;
             ofs=(itembar->first&1)?0:D_X(DRVITEM_LINE_INTEND);
-            if(x-ofs>0)*r=static_cast<int>(i);
+            if(x-ofs>0)*r=i;
             if(x-ofs>0&&x-ofs<D_X(ITEM_CHECKBOX_SIZE)&&y>0&&y<D_X(ITEM_CHECKBOX_SIZE))*zone=1;
             if(x>wx-D_X(ITEM_ICON_SIZE)*32/21&&!ofs)*zone=2;
             if(!*zone&&(x-ofs<D_X(ITEM_CHECKBOX_SIZE)))*zone=3;
@@ -907,7 +907,7 @@ void Manager::hitscan(int x,int y,int *r,int *zone)
             if(MainWindow.kbpanel==KB_NONE)return;
         }
     }
-    *r=-1;
+    *r=0;
 }
 
 void Manager::clear()
@@ -1021,7 +1021,7 @@ void Manager::testitembars()
 
 }
 
-void Manager::toggle(int index)
+void Manager::toggle(size_t index)
 {
     itembar_t *itembar,*itembar1;
     unsigned i;
@@ -1053,7 +1053,7 @@ void Manager::toggle(int index)
     MainWindow.redrawmainwnd();
 }
 
-void Manager::expand(int index,EXPAND_MODE f)
+void Manager::expand(size_t index,EXPAND_MODE f)
 {
     itembar_t *itembar,*itembar1;
     size_t i;
@@ -1130,7 +1130,7 @@ void Manager::selectall()
 //}
 
 //{ Helpers
-void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
+void Manager::itembar_settext(size_t i,const wchar_t *txt1,int percent)
 {
     itembar_t *itembar=&items_list[i];
     wcscpy(itembar->txt1,txt1);
@@ -1139,7 +1139,7 @@ void Manager::itembar_settext(int i,const wchar_t *txt1,int percent)
     MainWindow.redrawfield();
 }
 
-void Manager::itembar_settext(int i,int act,const wchar_t *txt1,__int64 val1v,__int64 val2v,__int64 percent)
+void Manager::itembar_settext(size_t i,int act,const wchar_t *txt1,__int64 val1v,__int64 val2v,__int64 percent)
 {
     itembar_t *itembar=&items_list[i];
     if(txt1)wcscpy(itembar->txt1,txt1);
@@ -1164,8 +1164,8 @@ void Manager::set_rstpnt(int checked)
     MainWindow.redrawfield();
 }
 
-void Manager::itembar_setactive(int i,int val){items_list[i].isactive=val;}
-void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,int index){items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index);}
+void Manager::itembar_setactive(size_t i,int val){ items_list[i].isactive=val; }
+void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index){ items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index); }
 void Manager::contextmenu(int x,int y){items_list[Popup.floating_itembar].contextmenu(x,y);}
 const wchar_t *Manager::getHWIDby(int id)const{return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
@@ -1196,7 +1196,7 @@ void Manager::setpos()
     int pos=D_X(DRVITEM_OFSY);
     //int pos=0;
     size_t group=0;
-    int lastmatch=0;
+    size_t lastmatch=0;
 
 //0:wide
 //1:narrow
@@ -1590,7 +1590,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
     return 1;
 }
 
-int Manager::isbehind(int pos,int ofsy,int j)
+int Manager::isbehind(int pos,int ofsy,size_t j)
 {
     itembar_t *itembar;
 
@@ -1616,11 +1616,11 @@ int Manager::calc_cutoff()
 
 void Manager::draw(Canvas &canvas,int ofsy)
 {
-    itembar_t *itembar;
-    int i;
+    size_t i;
     int maxpos=0;
     int nm=0;
-    int cur_i,zone;
+    size_t cur_i;
+    int zone;
     int cutoff=0;
     POINT p;
     RECT rect;
@@ -1635,22 +1635,19 @@ void Manager::draw(Canvas &canvas,int ofsy)
     cutoff=calc_cutoff();
     items_list[itembar_act].updatecur();
     updateoverall();
-    for(i=items_list.size()-1;i>=0;i--)
+    i=items_list.size()-1;
+    for(auto itembar=items_list.crbegin();itembar!=items_list.crend();++itembar,--i)
     {
-        itembar=&items_list[i];
         if(itembar->isactive)continue;
-
         if(isbehind((itembar->curpos>>16),ofsy,i))continue;
         nm+=drawitem(canvas,i,ofsy,-1,cutoff);
     }
-    for(i=items_list.size()-1;i>=0;i--)
+    i=items_list.size()-1;
+    for(auto itembar=items_list.rbegin();itembar!=items_list.rend();++itembar,--i)
     {
-        itembar=&items_list[i];
         if(itembar->isactive==0)continue;
-
         if(itembar->curpos>maxpos)maxpos=itembar->curpos;
         nm+=drawitem(canvas,i,ofsy,cur_i==i?zone:-1,cutoff);
-
     }
     //printf("nm:%3d, ofs:%d\n",nm,ofsy);
     MainWindow.setscrollrange((maxpos>>16)+20);
@@ -1660,7 +1657,8 @@ void Manager::restorepos1(Manager *manager_prev)
 {
     int i;
 
-    memcpy(&items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
+    std::copy_n(manager_prev->items_list.begin(),(int)RES_SLOTS,items_list.begin());
+    //memcpy(&items_list.front(),&manager_prev->items_list.front(),sizeof(itembar_t)*RES_SLOTS);
     populate();
     filter(Settings.filters);
     items_list[SLOT_SNAPSHOT].isactive=Settings.statemode==STATEMODE_EMUL?1:0;
@@ -1829,7 +1827,7 @@ void Manager::restorepos(Manager *manager_old)
 //}
 
 //{ Popup
-void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
+void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
 {
 	UNREFERENCED_PARAMETER(wy);
 

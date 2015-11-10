@@ -135,11 +135,11 @@ class Txt
 
 public:
     ofst getSize()const{return static_cast<ofst>(text.size());}
-    const char *get(int offset)const{return (char *)&text[offset];}
-    char *getV(int offset)const{return (char *)&text[offset];}
-    const wchar_t *getw(int offset)const{return (wchar_t *)(&text[offset]);}
-    wchar_t *getwV(int offset)const{return (wchar_t *)(&text[offset]);}
-    const wchar_t *getw2(int offset)const{return (wchar_t *)(&text[offset-(text[0]?2:0)]);}
+    const char *get(size_t offset)const{return (char *)&text[offset];}
+    char *getV(size_t offset)const{ return (char *)&text[offset]; }
+    const wchar_t *getw(size_t offset)const{ return (wchar_t *)(&text[offset]); }
+    wchar_t *getwV(size_t offset)const{ return (wchar_t *)(&text[offset]); }
+    const wchar_t *getw2(size_t offset)const{ return (wchar_t *)(&text[offset-(text[0]?2:0)]); }
 
     ofst strcpy(const char *mem);
 	ofst strcpyw(const wchar_t *mem);

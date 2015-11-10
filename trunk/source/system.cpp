@@ -398,7 +398,7 @@ void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfByt
 
                 Log.print_con("  %c a(%d),m(%d),err(%02d),size(%9d)\n",flag?'+':'-',pNotify->Action,m,errno,sz);
 
-                if(flag)pMonitor->callback(szFile,pNotify->Action,pMonitor->lParam);
+                if(flag)pMonitor->callback(szFile,pNotify->Action,(int)pMonitor->lParam);
                 Log.print_con("}\n\n");
 			}
 		}while(pNotify->NextEntryOffset!=0);

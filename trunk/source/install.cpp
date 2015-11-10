@@ -74,7 +74,7 @@ public:
 //{ Global vars
 long long ar_total,ar_proceed;
 int instflag;
-int itembar_act;
+size_t itembar_act;
 int needreboot=0;
 wchar_t extractdir[BUFLEN];
 
