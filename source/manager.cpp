@@ -489,7 +489,11 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     }
     if(cur_driver)
     {
-        cur_driver->version.str_date(bufw);
+        WStringShort date;
+        WStringShort vers;
+
+        cur_driver->version.str_date(date);
+        cur_driver->version.str_version(vers);
 
         td.ret();
         canvas.SetFont(Popup.hFontBold);
@@ -499,8 +503,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         td.TextOutF(               c0,L"%s",t+cur_driver->DriverDesc);
         td.TextOutF(               cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
-        td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);cur_driver->version.str_version(bufw);
-        td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
+        td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),date.Get());
+        td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),vers.Get());
         td.TextOutF(cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
         td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
@@ -510,10 +514,14 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
     // Available driver (hwidmatch_f)
     if(hwidmatch_f)
     {
-        td.y=maxln;
-        a_v->str_date(bufw);
+        WStringShort date;
+        WStringShort vers;
+
+        a_v->str_date(date);
+        a_v->str_version(vers);
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
+        td.y=maxln;
         canvas.SetFont(Popup.hFontBold);
         td.ret_ofs(bolder);
         td.TextOutF(               c0,L"%s",STR(STR_HINT_AVAILDRV));
@@ -523,8 +531,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,in
         td.TextOutF(               c0,L"%s",bufw+1000);
         td.TextOutF(hwidmatch_f->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
         td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
-        td.TextOutF(cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),bufw);a_v->str_version(bufw);
-        td.TextOutF(cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),bufw);
+        td.TextOutF(cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),date.Get());
+        td.TextOutF(cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),vers.Get());
         td.TextOutF(cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
         td.TextOutF(               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
         td.TextOutF(hwidmatch_f->getDecorscore()?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
@@ -1861,17 +1869,21 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,unsigned i)
     {
         wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
         for(k=0;bufw[k];k++)i_hwid[k]=(char)toupper(bufw[k]);i_hwid[k]=0;
-        cur_driver->version.str_date(bufw);
+
+        WStringShort date;
+        WStringShort vers;
+        cur_driver->version.str_date(date);
+        cur_driver->version.str_version(vers);
 
         td.TextOutP(L"$%04d",i);
         td.limitskip();
         td.col=c0;
         td.TextOutP(L"| %08X",cur_driver->calc_score_h(matcher->getState()));
-        td.TextOutP(L"| %s",bufw);
+        td.TextOutP(L"| %s",date.Get());
         for(k=0;k<6;k++)td.limitskip();
         td.TextOutP(L"| %s%s",t+matcher->getState()->getWindir(),t+cur_driver->InfPath);
-        td.TextOutP(L"| %s",t+cur_driver->ProviderName);cur_driver->version.str_version(bufw);
-        td.TextOutP(L"| %s",bufw);
+        td.TextOutP(L"| %s",t+cur_driver->ProviderName);
+        td.TextOutP(L"| %s",vers.Get());
         td.TextOutP(L"| %s",i_hwid);
         td.TextOutP(L"| %s",t+cur_driver->DriverDesc);
         td.y+=lne;

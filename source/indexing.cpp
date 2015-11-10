@@ -207,7 +207,7 @@ void Version::setVersion(int v1_,int v2_,int v3_,int v4_)
     v4=v4_;
 }
 
-void Version::str_date(wchar_t *buf)const
+void Version::str_date(WStringShort &buf,bool invariant)const
 {
     SYSTEMTIME tm;
     FILETIME ft;
@@ -220,17 +220,17 @@ void Version::str_date(wchar_t *buf)const
     int r=FileTimeToSystemTime(&ft,&tm);
 
     if(y<1000||!r)
-        wsprintf(buf,STR(STR_HINT_UNKNOWN));
+        buf.sprintf(STR(STR_HINT_UNKNOWN));
     else
-        GetDateFormat(manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf,100);
+        GetDateFormat(invariant?LOCALE_INVARIANT:manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf.GetV(),buf.Length());
 }
 
-void Version::str_version(wchar_t *buf)const
+void Version::str_version(WStringShort &buf)const
 {
     if(v1<0)
-        wsprintf(buf,STR(STR_HINT_UNKNOWN));
+        buf.sprintf(STR(STR_HINT_UNKNOWN));
     else
-        wsprintf(buf,L"%d.%d.%d.%d",v1,v2,v3,v4);
+        buf.sprintf(L"%d.%d.%d.%d",v1,v2,v3,v4);
 }
 
 int cmpdate(const Version *t1,const Version *t2)
@@ -2140,6 +2140,8 @@ void Driverpack::print_index_hr()
     int cnts[NUM_DECS],plain;
     unsigned HWID_index_last=0;
     unsigned manuf_index_last=0;
+    WStringShort date;
+    WStringShort vers;
     int i;
 
     getindexfilename(col->getIndex_linear_dir(),L"txt",filename);
@@ -2155,8 +2157,10 @@ void Driverpack::print_index_hr()
             fprintf(f,"**%s%s\n",text_ind.get(inffile[i].infpath),text_ind.get(inffile[i].inffilename));
 
         t=&d_i->version;
-        fprintf(f,"    date\t\t\t%d/%d/%d\n",t->d,t->m,t->y);
-        fprintf(f,"    version\t\t\t%d.%d.%d.%d\n",t->v1,t->v2,t->v3,t->v4);
+        t->str_date(date,true);
+        t->str_version(vers);
+        fprintf(f,"    date\t\t\t%S\n",date.Get());
+        fprintf(f,"    version\t\t\t%S\n",vers.Get());
         for(i=0;i<NUM_VER_NAMES;i++)
             if(d_i->fields[i])
             {

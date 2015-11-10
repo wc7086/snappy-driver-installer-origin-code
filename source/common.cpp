@@ -142,8 +142,7 @@ char *Hashtable::loaddata(char *p)
 {
     memcpy(&size,p,sizeof(int));p+=sizeof(int);
     items.resize(size);
-    p=items.loaddata(p);
-    return p;
+    return items.loaddata(p);
 }
 
 /*

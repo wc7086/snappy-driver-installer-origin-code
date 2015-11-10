@@ -58,6 +58,51 @@ public:
     char *loaddata(char *p){return vector_load(this,p);}
 };
 
+// Strings
+void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
+void strtoupper(char *s,size_t len);
+void strtolower(char *s,size_t len);
+size_t unicode2ansi(const char *s,char *out,size_t size);
+int _wtoi_my(const wchar_t *str);
+
+class WString_dyn
+{
+protected:
+    wchar_t *buf_dyn=nullptr;
+    wchar_t *buf_cur;
+    size_t len;
+    bool debug;
+
+public:
+    WString_dyn(size_t sz,wchar_t *buf,bool debug_=false):buf_cur(buf),len(sz),debug(debug_){}
+    virtual ~WString_dyn(){delete[] buf_dyn;}
+    void Resize(size_t size);
+
+    void sprintf(const wchar_t *format,...);
+    void vsprintf(const wchar_t *format,va_list args);
+    void append(const wchar_t *str);
+
+    wchar_t *GetV()const{return buf_cur;}
+    const wchar_t *Get()const{return buf_cur;}
+    size_t Length()const{return len;}
+};
+
+class WString:public WString_dyn
+{
+    const static int size=BUFLEN;
+    wchar_t buf[size];
+public:
+    WString(bool debug_=false):WString_dyn(size,buf,debug_){*buf=0;}
+};
+
+class WStringShort:public WString_dyn
+{
+    const static int size=128;
+    wchar_t buf[size];
+public:
+    WStringShort(bool debug_=false):WString_dyn(size,buf,debug_){*buf=0;}
+};
+
 // Version
 class Version
 {
@@ -68,14 +113,13 @@ public:
     int  setDate(int d_,int m_,int y_);
     void setVersion(int v1_,int v2_,int v3_,int v4_);
     void setInvalid(){y=v1=-1;}
-    void str_date(wchar_t *buf)const;
-    void str_version(wchar_t *buf)const;
+    int  GetV1()const{return v1;}
+    void str_date(WStringShort &buf,bool invariant=false)const;
+    void str_version(WStringShort &buf)const;
 
     Version():d(0),m(0),y(0),v1(-2),v2(0),v3(0),v4(0){}
     Version(int d1,int m1,int y1):d(d1),m(m1),y(y1),v1(-2),v2(0),v3(0),v4(0){}
 
-    friend class Driverpack;
-    friend class Hwidmatch;
     friend class datum;
     friend int cmpdate(const Version *t1,const Version *t2);
     friend int cmpversion(const Version *t1,const Version *t2);
@@ -143,51 +187,6 @@ public:
     void additem(int key,int value);
     int  find(int vl,int *isfound);
     int  findnext(int *isfound);
-};
-
-// Strings
-void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
-void strtoupper(char *s,size_t len);
-void strtolower(char *s,size_t len);
-size_t unicode2ansi(const char *s,char *out,size_t size);
-int _wtoi_my(const wchar_t *str);
-
-class WString_dyn
-{
-protected:
-    wchar_t *buf_dyn=nullptr;
-    wchar_t *buf_cur;
-    size_t len;
-    bool debug;
-
-public:
-    WString_dyn(size_t sz,wchar_t *buf,bool debug_=false):buf_cur(buf),len(sz),debug(debug_){}
-    virtual ~WString_dyn(){delete[] buf_dyn;}
-    void Resize(size_t size);
-
-    void sprintf(const wchar_t *format,...);
-    void vsprintf(const wchar_t *format,va_list args);
-    void append(const wchar_t *str);
-
-    wchar_t *GetV()const{return buf_cur;}
-    const wchar_t *Get()const{return buf_cur;}
-    size_t Length()const{return len;}
-};
-
-class WString:public WString_dyn
-{
-    const static int size=BUFLEN;
-    wchar_t buf[size];
-public:
-    WString(bool debug_=false):WString_dyn(size,buf,debug_){*buf=0;}
-};
-
-class WStringShort:public WString_dyn
-{
-    const static int size=128;
-    wchar_t buf[size];
-public:
-    WStringShort(bool debug_=false):WString_dyn(size,buf,debug_){*buf=0;}
 };
 
 // 7-zip

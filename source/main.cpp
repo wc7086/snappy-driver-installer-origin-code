@@ -527,8 +527,11 @@ void MainWindow_t::lang_refresh()
 void MainWindow_t::theme_refresh()
 {
     hFont->SetFont(D_STR(FONT_NAME),D_X(FONT_SIZE));
-    Popup.hFontP->SetFont(D_STR(FONT_NAME),D_X(POPUP_FONT_SIZE));
-    Popup.hFontBold->SetFont(D_STR(FONT_NAME),D_X(POPUP_FONT_SIZE),true);
+    int fz=D_X(POPUP_FONT_SIZE);
+    if(fz<10)fz=10;
+    Popup.hFontP->SetFont(D_STR(FONT_NAME),fz);
+    Popup.hFontBold->SetFont(D_STR(FONT_NAME),fz,true);
+    D(POPUP_WY)=fz*120/100*Settings.scale/256;
 
     hLang->SetFont(hFont);
     hTheme->SetFont(hFont);
@@ -1231,8 +1234,8 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             if(ctrl_down)
             {
                 Settings.scale-=i/20;
-                if(Settings.scale<100){Settings.scale=100;break;}
-                if(Settings.scale>500){Settings.scale=500;break;}
+                if(Settings.scale<150){Settings.scale=150;break;}
+                if(Settings.scale>350){Settings.scale=350;break;}
                 Settings.wndwx=0;
                 Settings.wndwy=0;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);

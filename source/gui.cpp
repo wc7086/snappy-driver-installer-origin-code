@@ -275,10 +275,11 @@ void wTextRev::draw(Canvas &canvas)
 {
     Version v{atoi(SVN_REV_D),atoi(SVN_REV_M),SVN_REV_Y};
     WStringShort buf;
+    WStringShort date;
 
-    buf.sprintf(L"%s (",TEXT(SVN_REV2));
-    v.str_date(buf.GetV()+wcslen(buf.Get()));
-    buf.append(L")");if(rtl)buf.append(L"\u200E");
+    v.str_date(date);
+    buf.sprintf(L"%s (%s)",TEXT(SVN_REV2),date.Get());
+    if(rtl)buf.append(L"\u200E");
     canvas.SetTextColor(D_C(CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(mirw(x1,0,wx),y1,buf.Get());
 }
