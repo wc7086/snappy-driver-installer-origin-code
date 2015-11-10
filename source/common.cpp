@@ -274,7 +274,8 @@ void WString_dyn::vsprintf(const wchar_t *format,va_list args)
 {
     unsigned r=_vscwprintf(format,args)+1;
     if(r>len)Resize(r);
-    r=vswprintf_s(buf_cur,len,format,args);
+    //r=vswprintf_s(buf_cur,len,format,args);
+    r=_vswprintf(buf_cur,format,args);
     if(debug)Log.print_con("%d,(%S),[%S]\n",r,format,buf_cur);
 }
 
@@ -282,7 +283,8 @@ void WString_dyn::append(const wchar_t *str)
 {
     size_t sz=lstrlen(buf_cur)+lstrlen(str)+1;
     if(sz>len)Resize(sz);
-    wcscat_s(buf_cur,len,str);
+    //wcscat_s(buf_cur,len,str);
+    wcscat(buf_cur,str);
 }
 
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
