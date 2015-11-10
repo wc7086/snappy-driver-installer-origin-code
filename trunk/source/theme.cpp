@@ -43,7 +43,7 @@ class Vault:public VaultInt
 
 protected:
     entry_t *entry;
-    int num;
+    size_t num;
     std::unique_ptr<wchar_t []> data_ptr,odata_ptr,datav_ptr;
 
     std::unordered_map <std::wstring,int> lookuptbl;
@@ -65,7 +65,7 @@ protected:
     void loadFromRes(int id);
 
 public:
-    Vault(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
+    Vault(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
     virtual ~Vault(){}
     void load(int i);
     int PickTheme();
@@ -82,7 +82,7 @@ public:
 class VaultLang:public Vault
 {
 public:
-    VaultLang(entry_t *entry,int num,int res,int elem_id_,const wchar_t *folder_);
+    VaultLang(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
     void SwitchData(int i);
     void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
@@ -103,7 +103,7 @@ public:
     Image *GetIcon(int i){return Icons->GetImage(i);}
     Image *GetImage(int i){return Images->GetImage(i);}
 
-    VaultTheme(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
+    VaultTheme(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
         Vault{entryv,numv,resv,elem_id_,folder_}
     {
         Images=CreateImageStorange(BOX_NUM,boxindex,4);
@@ -116,11 +116,11 @@ public:
     }
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
-VaultInt *CreateVaultLang(entry_t *entry,int num,int res)
+VaultInt *CreateVaultLang(entry_t *entry,size_t num,int res)
 {
     return new VaultLang(entry,num,res,WM_UPDATELANG,L"langs");
 }
-VaultInt *CreateVaultTheme(entry_t *entry,int num,int res)
+VaultInt *CreateVaultTheme(entry_t *entry,size_t num,int res)
 {
     return new VaultTheme(entry,num,res,WM_UPDATETHEME,L"themes");
 }
@@ -361,7 +361,7 @@ void Vault::loadFromRes(int id)
         if(entry[i].init<1)Log.print_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
-Vault::Vault(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
+Vault::Vault(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
     entry(entryv),
     num(numv),
     res(resv),
@@ -372,7 +372,7 @@ Vault::Vault(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folde
         lookuptbl.insert({std::wstring(entry[i].name),static_cast<int>(i)+1});
 }
 
-VaultLang::VaultLang(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):
+VaultLang::VaultLang(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
     Vault{entryv,numv,resv,elem_id_,folder_}
 {
     load(-1);

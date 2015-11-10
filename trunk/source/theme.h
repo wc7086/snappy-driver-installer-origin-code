@@ -72,7 +72,7 @@ public:
     virtual void StartMonitor()=0;
     virtual void StopMonitor()=0;
 };
-VaultInt *CreateVaultLang(entry_t *entry,int num,int res);
-VaultInt *CreateVaultTheme(entry_t *entry,int num,int res);
+VaultInt *CreateVaultLang(entry_t *entry,size_t num,int res);
+VaultInt *CreateVaultTheme(entry_t *entry,size_t num,int res);
 
 #endif
