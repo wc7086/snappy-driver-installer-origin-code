@@ -440,18 +440,19 @@ int Driver::isvalidcat(const State *state)const
 void Driver::print(const State *state)const
 {
     const char *s=state->textas.get(0);
-    wchar_t buf[BUFLEN];
+    WStringShort date;
+    WStringShort vers;
 
+    version.str_date(date);
+    version.str_version(vers);
     Log.print_file("  Name:     %S\n",s+DriverDesc);
     Log.print_file("  Provider: %S\n",s+ProviderName);
-    version.str_date(buf);
-    Log.print_file("  Date:     %S\n",buf);
-    version.str_version(buf);
-    Log.print_file("  Version:  %S\n",buf);
+    Log.print_file("  Date:     %S\n",date.Get());
+    Log.print_file("  Version:  %S\n",vers.Get());
     Log.print_file("  HWID:     %S\n",s+MatchingDeviceId);
     Log.print_file("  inf:      %S%S,%S%S\n",(s+state->getWindir()),s+InfPath,s+InfSection,s+InfSectionExt);
     Log.print_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);
-    //log_file("  Sign:     '%s'(%d)\n",s+cat,catalogfile);
+    //Log.print_file("  Sign:     '%s'(%d)\n",s+cat,catalogfile);
 
     if(Log.isAllowed(LOG_VERBOSE_BATCH))
         Log.print_file("  Filter:   \"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);

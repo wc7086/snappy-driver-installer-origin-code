@@ -611,7 +611,7 @@ int Hwidmatch::isvalid_ver(const State *state)
     state->getWinVer(&major,&minor);
 
     v=getdrp_drvversion();
-    switch(v->v1)
+    switch(v->GetV1())
     {
         case 5:if(major!=5)return 0;break;
         case 6:if(major==5)return 0;break;
@@ -762,18 +762,21 @@ void Hwidmatch::minlen(const char *s,int *len)
 
 void Hwidmatch::calclen(int *limits)
 {
-    char buf[BUFLEN];
     Version *v;
+    char buf[BUFLEN];
+    WStringShort vers;
 
     getdrp_drvsection(buf);
+    v=getdrp_drvversion();
+    v->str_version(vers);
+
     minlen(buf,&limits[0]);
     wsprintfA(buf,"%ws%ws",getdrp_packpath(),getdrp_packname());
     minlen(buf,&limits[1]);
     wsprintfA(buf,"%s%s",getdrp_infpath(),getdrp_infname());
     minlen(buf,&limits[2]);
     minlen(getdrp_drvmanufacturer(),&limits[3]);
-    v=getdrp_drvversion();
-    wsprintfA(buf,"%d.%d.%d.%d",v->v1,v->v2,v->v3,v->v4);
+    wsprintfA(buf,"%ws",vers.Get());
     minlen(buf,&limits[4]);
     minlen(getdrp_drvHWID(),&limits[5]);
     minlen(getdrp_drvdesc(),&limits[6]);
@@ -783,27 +786,32 @@ void Hwidmatch::print_tbl(const int *limits)
 {
     char buf[BUFLEN];
     Version *v;
+    WStringShort date;
+    WStringShort vers;
 
     v=getdrp_drvversion();
-    Log.print_file("  %d |",               altsectscore);
-    Log.print_file(" %08X |",              score);
-    Log.print_file(" %2d.%02d.%4d |",      v->d,v->m,v->y);
-    Log.print_file(" %3d |",               decorscore);
-    Log.print_file(" %d |",                markerscore);
-    Log.print_file(" %3X |",               status);
-                                getdrp_drvsection(buf);
+    v->str_date(date,true);
+    v->str_version(vers);
+
+    Log.print_file("  %d |",      altsectscore);
+    Log.print_file(" %08X |",     score);
+    Log.print_file(" %S |",       date.Get());
+    Log.print_file(" %3d |",      decorscore);
+    Log.print_file(" %d |",       markerscore);
+    Log.print_file(" %3X |",      status);
+        getdrp_drvsection(buf);
     Log.print_file(" %-*s |",limits[0],buf);
 
-    wsprintfA(buf,"%ws\\%ws",       getdrp_packpath(),getdrp_packname());
-    Log.print_file(" %-*s |",limits[1],buf);
-    Log.print_file(" %8X|",              getdrp_infcrc());
+    wsprintfA(buf,"%ws\\%ws",     getdrp_packpath(),getdrp_packname());
+    Log.print_file(" %-*s |",     limits[1],buf);
+    Log.print_file(" %8X|",       getdrp_infcrc());
     wsprintfA(buf,"%s%s",         getdrp_infpath(),getdrp_infname());
-    Log.print_file(" %-*s |",limits[2],buf);
-    Log.print_file(" %-*s |",limits[3],    getdrp_drvmanufacturer());
-    wsprintfA(buf,"%d.%d.%d.%d",  v->v1,v->v2,v->v3,v->v4);
-    Log.print_file(" %*s |",limits[4],buf);
-    Log.print_file(" %-*s |",limits[5],    getdrp_drvHWID());
-    Log.print_file(" %-*s",limits[6],      getdrp_drvdesc());
+    Log.print_file(" %-*s |",     limits[2],buf);
+    Log.print_file(" %-*s |",     limits[3],    getdrp_drvmanufacturer());
+    wsprintfA(buf,"%ws",          vers.Get());
+    Log.print_file(" %*s |",      limits[4],buf);
+    Log.print_file(" %-*s |",     limits[5],    getdrp_drvHWID());
+    Log.print_file(" %-*s",       limits[6],      getdrp_drvdesc());
     Log.print_file("\n");
 }
 
@@ -811,8 +819,12 @@ void Hwidmatch::print_hr()
 {
     char buf[BUFLEN];
     Version *v;
+    WStringShort date;
+    WStringShort vers;
 
     v=getdrp_drvversion();
+    v->str_date(date,true);
+    v->str_version(vers);
 /*    log_file("  Alt:   %d\n",               altsectscore);
     log_file("  Decor: %3d\n",               decorscore);
     log_file("  CRC:  %8X%\n",              getdrp_infcrc(this));
@@ -820,14 +832,14 @@ void Hwidmatch::print_hr()
     log_file("  Status %3X\n",               status);*/
     Log.print_file("  Pack:     %S\\%S\n",       getdrp_packpath(),getdrp_packname());
 
-    Log.print_file("  Name:     %s\n",getdrp_drvdesc());
-    Log.print_file("  Provider: %s\n",    getdrp_drvmanufacturer());
-    Log.print_file("  Date:     %2d.%02d.%4d\n",      v->d,v->m,v->y);
-    Log.print_file("  Version:  %d.%d.%d.%d\n",  v->v1,v->v2,v->v3,v->v4);
-    Log.print_file("  HWID:     %s\n",getdrp_drvHWID());
+    Log.print_file("  Name:     %s\n",     getdrp_drvdesc());
+    Log.print_file("  Provider: %s\n",     getdrp_drvmanufacturer());
+    Log.print_file("  Date:     %S\n",     date.Get());
+    Log.print_file("  Version:  %S\n",     vers.Get());
+    Log.print_file("  HWID:     %s\n",     getdrp_drvHWID());
     getdrp_drvsection(buf);
-    Log.print_file("  inf:      %s%s,%s\n",         getdrp_infpath(),getdrp_infname(),buf);
-    Log.print_file("  Score:    %08X\n",              score);
+    Log.print_file("  inf:      %s%s,%s\n",getdrp_infpath(),getdrp_infname(),buf);
+    Log.print_file("  Score:    %08X\n",   score);
     Log.print_file("\n");
 }
 
@@ -849,10 +861,16 @@ void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,size_
         td.col=D_C(POPUP_TEXT_COLOR);
     }
 
+    WStringShort date;
+    WStringShort vers;
+
+    v->str_date(date);
+    v->str_version(vers);
+
     td.TextOutP(L"$%04d",index);
     td.TextOutP(L"| %d",altsectscore);
-    td.TextOutP(L"| %08X",score);v->str_date(bufw);
-    td.TextOutP(L"| %s",bufw);
+    td.TextOutP(L"| %08X",score);
+    td.TextOutP(L"| %s",date.Get());
     td.TextOutP(L"| %3d",decorscore);
     td.TextOutP(L"| %d",markerscore);
     td.TextOutP(L"| %3X",status);getdrp_drvsection(buf);
@@ -860,8 +878,8 @@ void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,size_
     td.TextOutP(L"| %s\\%s",getdrp_packpath(),getdrp_packname());
     td.TextOutP(L"| %08X",getdrp_infcrc());
     td.TextOutP(L"| %S%S",getdrp_infpath(),getdrp_infname());
-    td.TextOutP(L"| %S",getdrp_drvmanufacturer());v->str_version(bufw);
-    td.TextOutP(L"| %s",bufw);
+    td.TextOutP(L"| %S",getdrp_drvmanufacturer());
+    td.TextOutP(L"| %s",vers.Get());
     td.TextOutP(L"| %S",getdrp_drvHWID());wsprintf(bufw,L"%S",getdrp_drvdesc());
     td.TextOutP(L"| %s",bufw);
 }
