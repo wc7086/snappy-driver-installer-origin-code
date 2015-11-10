@@ -79,7 +79,7 @@ void Device::print_guid(const GUID *g)
 {
     WString buffer;
 
-    if(!SetupDiGetClassDescription(g,buffer.GetV(),buffer.Length(),nullptr))
+    if(!SetupDiGetClassDescription(g,buffer.GetV(),static_cast<DWORD>(buffer.Length()),nullptr))
     {
         Log.print_file("%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",g->Data1,g->Data2,g->Data3,
             (int)(g->Data4[0]),(int)(g->Data4[1]),
@@ -940,6 +940,10 @@ void State::getsysinfo_fast()
     monitors=textas.t_memcpy((char *)buf,(1+buf[0]*2)*2);
 
     // Windows version
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable:4996)
+#endif
     platform.dwOSVersionInfoSize=sizeof(OSVERSIONINFOEX);
     if(!(GetVersionEx((OSVERSIONINFO*)&platform)))
     {
@@ -948,6 +952,9 @@ void State::getsysinfo_fast()
             Log.print_syserr(GetLastError(),L"GetVersionEx()");
     }
     locale=GetUserDefaultLCID();
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
     // Environment
     GetEnvironmentVariable(L"windir",buf,BUFLEN);

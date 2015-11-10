@@ -242,7 +242,7 @@ void Log_t::print_syserr(int r,const wchar_t *s)
 {
     WString buf;
     FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-                    nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),buf.GetV(),buf.Length(),nullptr);
+        nullptr,r,MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),buf.GetV(),static_cast<DWORD>(buf.Length()),nullptr);
     Log.print_err("ERROR with %S:[%x]'%S'\n",s,r,buf.Get());
     error_count++;
 }

@@ -423,13 +423,15 @@ void MainWindow_t::MainLoop(int nCmd)
                     }
                     if((msg.wParam==VK_LEFT)&&kbpanel==KB_FIELD)
                     {
-                        int index,nop;
+                        size_t index;
+                        int nop;
                         manager_g->hitscan(0,0,&index,&nop);
                         manager_g->expand(index,EXPAND_MODE::COLLAPSE);
                     }
                     if((msg.wParam==VK_RIGHT)&&kbpanel==KB_FIELD)
                     {
-                        int index,nop;
+                        size_t index;
+                        int nop;
                         manager_g->hitscan(0,0,&index,&nop);
                         manager_g->expand(index,EXPAND_MODE::EXPAND);
                     }
@@ -449,7 +451,7 @@ void MainWindow_t::MainLoop(int nCmd)
                 {
                     if(msg.wParam==VK_CONTROL||msg.wParam==VK_SPACE)
                     {
-                        Popup.drawpopup(-1,FLOATING_NONE,0,0,hField);
+                        Popup.drawpopup(0,FLOATING_NONE,0,0,hField);
                     }
                     if(msg.wParam==VK_CONTROL)ctrl_down=0;
                     if(msg.wParam==VK_SPACE)  space_down=0;
@@ -1512,7 +1514,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 break;
             }
 
-            if(Popup.floating_itembar>=0&&(i==1||i==0||i==3))
+            if(Popup.floating_itembar>0&&(i==1||i==0||i==3))
             {
                 manager_g->toggle(Popup.floating_itembar);
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
@@ -1523,7 +1525,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 }
                 redrawfield();
             }
-            if(Popup.floating_itembar>=0&&i==2)
+            if(Popup.floating_itembar>0&&i==2)
             {
                 manager_g->expand(Popup.floating_itembar,EXPAND_MODE::TOGGLE);
             }
@@ -1531,7 +1533,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
         case WM_RBUTTONDOWN:
             manager_g->hitscan(x,y,&Popup.floating_itembar,&i);
-            if(Popup.floating_itembar>=0&&(i==0||i==3))
+            if(Popup.floating_itembar>0&&(i==0||i==3))
                 manager_g->contextmenu(x,y);
             break;
 
@@ -1560,7 +1562,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
             }
             {
                 int type=FLOATING_NONE;
-                int itembar_i;
+                size_t itembar_i;
 
                 if(space_down&&kbpanel)break;
 
@@ -1581,11 +1583,11 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 else if(itembar_i==SLOT_RESTORE_POINT)
                     Popup.drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
-                    Popup.drawpopup(-1,FLOATING_DOWNLOAD,x,y,hField);
+                    Popup.drawpopup(0,FLOATING_DOWNLOAD,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
                     Popup.drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
-                    Popup.drawpopup(-1,FLOATING_NONE,0,0,hField);
+                    Popup.drawpopup(0,FLOATING_NONE,0,0,hField);
 
                 if(itembar_i!=field_lasti||i!=field_lastz)redrawfield();
                 field_lasti=itembar_i;

@@ -262,8 +262,8 @@ class data_desc_t // 24
 
 public:
     data_desc_t():manufacturer_index(0),sect_pos(0),desc(0),install(0),install_picked(0),feature(0){}
-    data_desc_t(unsigned manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
-        manufacturer_index(manufacturer_indexv),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
+    data_desc_t(size_t manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
+        manufacturer_index(static_cast<unsigned>(manufacturer_indexv)),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
 
     friend class Driverpack;
     friend class Hwidmatch;
@@ -279,7 +279,7 @@ class data_HWID_t // 12
 public:
     ofst getHWID(){return HWID;}
     data_HWID_t():desc_index(0),inf_pos(0),HWID(0){}
-    data_HWID_t(unsigned desc_indexv,int inf_posv,ofst HWIDv):desc_index(desc_indexv),inf_pos(inf_posv),HWID(HWIDv){}
+    data_HWID_t(size_t desc_indexv,int inf_posv,ofst HWIDv):desc_index(static_cast<unsigned>(desc_indexv)),inf_pos(inf_posv),HWID(HWIDv){}
 
     friend class Driverpack;
     friend class Hwidmatch;

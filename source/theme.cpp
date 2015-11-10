@@ -199,6 +199,7 @@ void Vault::parse()
         {
             wchar_t *r1;
             int r2;
+            size_t ri=static_cast<size_t>(r);
             r1=findstr(rhs);
             r2=findvar(rhs);
 
@@ -220,20 +221,20 @@ void Vault::parse()
                     size_t l=wcslen(r1);
                     for(size_t i=0;i<l;i++)if(r1[i]==1)r1[i]=0;
                 }
-                entry[r].valstr=r1;
-                entry[r].init=1;
+                entry[ri].valstr=r1;
+                entry[ri].init=1;
             }
             else if(r2>=0)      // Var
             {
-                entry[r].val=entry[r2].val;
-                entry[r].init=10+r2;
+                entry[ri].val=entry[r2].val;
+                entry[ri].init=10+r2;
             }
             else                // Number
             {
                 int val=readvalue(rhs);
                 //if(!entry[r].init&&entry[r].val==val)Log.print_err("WARNNING: double definition for '%S'\n",lhs);
-                entry[r].val=val;
-                entry[r].init=2;
+                entry[ri].val=val;
+                entry[ri].init=2;
             }
         }
         lhs=le+1; // next line
@@ -337,7 +338,7 @@ void Vault::loadFromFile(const wchar_t *filename)
     }
     parse();
 
-    for(int i=0;i<num;i++)
+    for(size_t i=0;i<num;i++)
         if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
 }
 
@@ -356,7 +357,7 @@ void Vault::loadFromRes(int id)
     }
     datav[sz]=0;
     parse();
-    for(int i=0;i<num;i++)
+    for(size_t i=0;i<num;i++)
         if(entry[i].init<1)Log.print_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
@@ -367,8 +368,8 @@ Vault::Vault(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folde
     elem_id(elem_id_),
     folder(folder_)
 {
-    for(int i=0;i<num;i++)
-        lookuptbl.insert({std::wstring(entry[i].name),i+1});
+    for(size_t i=0;i<num;i++)
+        lookuptbl.insert({std::wstring(entry[i].name),static_cast<int>(i)+1});
 }
 
 VaultLang::VaultLang(entry_t *entryv,int numv,int resv,int elem_id_,const wchar_t *folder_):

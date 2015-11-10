@@ -796,14 +796,14 @@ void Canvas::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
         DrawFrameControl(hdcMem,&rect,DFC_BUTTON,DFCS_BUTTONCHECK|(checked?DFCS_CHECKED:0));
 }
 
-void Popup_t::drawpopup(int itembar,int type,int x,int y,HWND hwnd)
+void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
 {
     POINT p={x,y};
     HMONITOR hMonitor;
     MONITORINFO mi;
     int needupdate;
 
-    if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar<0)type=FLOATING_NONE;
+    if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar==0)type=FLOATING_NONE;
     if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
 
     if(rtl)p.x+=floating_x;

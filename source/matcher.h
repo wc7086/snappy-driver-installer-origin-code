@@ -81,10 +81,10 @@ public:
     virtual State *getState()=0;
     virtual Collection *getCol()=0;
     virtual size_t getDwidmatch_list()=0;
-    virtual Devicematch *getDevicematch_i(int i)=0;
+    virtual Devicematch *getDevicematch_i(size_t i)=0;
 	virtual size_t getHwidmatch_list() = 0;
     virtual void Insert(const Hwidmatch &a)=0;
-    virtual Hwidmatch *getHwidmatch_i(int i)=0;
+    virtual Hwidmatch *getHwidmatch_i(size_t i)=0;
 
     virtual ~Matcher()=0;
 };
@@ -94,8 +94,8 @@ Matcher *CreateMatcher();
 // Devicematch holds info about device and a list of alternative drivers
 class Devicematch
 {
-    int start_matches;
-    unsigned num_matches;
+    size_t start_matches;
+    size_t num_matches;
     int status;
 
 public:
@@ -103,7 +103,7 @@ public:
     const Driver *driver;
 
 public:
-    Devicematch(Device *cur_device,const Driver *cur_driver,int items,Matcher *matcher);
+    Devicematch(Device *cur_device,const Driver *cur_driver,size_t items,Matcher *matcher);
     int isMissing(const State *state);
     int getStatus(){return status;}
 

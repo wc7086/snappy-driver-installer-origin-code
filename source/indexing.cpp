@@ -222,7 +222,7 @@ void Version::str_date(WStringShort &buf,bool invariant)const
     if(y<1000||!r)
         buf.sprintf(STR(STR_HINT_UNKNOWN));
     else
-        GetDateFormat(invariant?LOCALE_INVARIANT:manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf.GetV(),buf.Length());
+        GetDateFormat(invariant?LOCALE_INVARIANT:manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf.GetV(),static_cast<int>(buf.Length()));
 }
 
 void Version::str_version(WStringShort &buf)const
@@ -331,7 +331,7 @@ void Exporter::Found(const wchar_t *s,const Version *ver)
     Log.set_verbose(LOG_VERBOSE_MANAGER|LOG_VERBOSE_LOG_CON);
     //Log.print_con("Found(%d,%d,%d): [%d]%30S %40s\n",cur_bits,cur_ver,cur_hwid,v,s,GetHWID());
     Log.set_verbose(LOG_VERBOSE_MANAGER);
-    items[cur_hwid].Set(cur_bits,cur_ver,v,ver);
+    items[cur_hwid].Set(cur_bits,cur_ver,static_cast<int>(v),ver);
 }
 void Exporter::PrintStats()
 {
@@ -1498,11 +1498,11 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     // http://msdn.microsoft.com/en-us/library/ff547485(v=VS.85).aspx
     Version *cur_ver;
 
-    int cur_inffile_index;
+    size_t cur_inffile_index;
     data_inffile_t *cur_inffile;
-    int cur_manuf_index;
+    size_t cur_manuf_index;
     data_manufacturer_t *cur_manuf;
-    int cur_desc_index;
+    size_t cur_desc_index;
 
     char secttry[256];
     char line[2048];
@@ -1522,7 +1522,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     cur_inffile->infpath=text_ind.strcpy(line);
     wsprintfA(line,"%ws",inffilename);
     cur_inffile->inffilename=text_ind.strcpy(line);
-    cur_inffile->infsize=inf_len;
+    cur_inffile->infsize=static_cast<ofst>(inf_len);
     cur_inffile->infcrc=0;
 
     WStringShort inffull;
@@ -1690,10 +1690,10 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             char *s1b,*s1e;
             parse_info.readStr(&s1b,&s1e);
 
-            cur_manuf_index=static_cast<ofst>(manufacturer_list.size());
+            cur_manuf_index=manufacturer_list.size();
             manufacturer_list.resize(cur_manuf_index+1);
             cur_manuf=&manufacturer_list[cur_manuf_index];
-            cur_manuf->inffile_index=cur_inffile_index;
+            cur_manuf->inffile_index=static_cast<unsigned>(cur_inffile_index);
             cur_manuf->manufacturer=text_ind.t_memcpyz(s1b,s1e-s1b);
             cur_manuf->sections_n=0;
 
@@ -1757,7 +1757,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                                 }
 
                                 strtolower(installsection,strlen(installsection));
-                                while(strlen(installsection)>=(unsigned)(s1e-s1b))
+                                while(strlen(installsection)>=static_cast<size_t>(s1e-s1b))
                                 {
                                     range3=section_list.equal_range(installsection);
                                     if(range3.first!=range3.second)break;
@@ -1825,7 +1825,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                             }
                             //} feature and install_picked section
 
-                            cur_desc_index=static_cast<ofst>(desc_list.size());
+                            cur_desc_index=desc_list.size();
 
                             desc_list.push_back(data_desc_t(cur_manuf_index,
                                 manufacturer_list[cur_manuf_index].sections_n-1,
@@ -2113,7 +2113,7 @@ void Driverpack::genhashes()
     {
         const char *vv=text_ind.get(HWID_list[i].HWID);
         int val=indexes.gethashcode(vv,strlen(vv));
-        indexes.additem(val,i);
+        indexes.additem(val,static_cast<int>(i));
     }
 }
 
