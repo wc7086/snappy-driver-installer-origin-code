@@ -4,6 +4,7 @@ STR_EMPTY		= ""
 STR_EMPTY_H 		= "" 
 
 STR_LANG_NAME 		= "Svenska" 
+STR_LANG_ID         = "Swedish"
 STR_LANG_CODE 		= 0x1D
 
 // Vänstra panelen 

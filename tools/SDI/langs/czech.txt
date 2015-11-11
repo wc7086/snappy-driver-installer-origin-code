@@ -4,6 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Čeština"
+STR_LANG_ID             = "Czech"
 STR_LANG_CODE           = 0x05
 STR_RTL                 = 0
 

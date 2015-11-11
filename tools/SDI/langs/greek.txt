@@ -3,8 +3,9 @@
 STR_EMPTY                = "" 
 STR_EMPTY_H              = "" 
 
-STR_LANG_NAME = "Ελληνικά" 
-STR_LANG_CODE = 0x08
+STR_LANG_NAME            = "Ελληνικά" 
+STR_LANG_ID              = "Greek"
+STR_LANG_CODE            = 0x08
 
 
 // Αριστερός πίνακας 

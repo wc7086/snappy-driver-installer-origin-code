@@ -262,14 +262,14 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     delete Updater;
     #endif
 
-    // Free allocated resources
-    delete vLang;
-    delete vTheme;
-
     // Save settings
     #ifndef CONSOLE_MODE
     Settings.save();
     #endif
+
+    // Free allocated resources
+    delete vLang;
+    delete vTheme;
 
     // Stop folder monitors
     delete mon_drp;
@@ -541,6 +541,16 @@ void MainWindow_t::theme_refresh()
     if(!hMain||!hField)
     {
         Log.print_err("ERROR in theme_refresh(): hMain is %d, hField is %d\n",hMain,hField);
+        return;
+    }
+
+    if(Settings.autosized)
+    {
+        MoveWindow(hField,Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),Ym(D_X(DRVLIST_OFSY)),XM(D_X(DRVLIST_WX),D_X(DRVLIST_OFSX)),YM(D_X(DRVLIST_WY),D_X(DRVLIST_OFSY)),TRUE);
+        wPanels->arrange();
+        manager_g->setpos();
+        MainWindow.redrawmainwnd();
+        MainWindow.redrawfield();
         return;
     }
 
@@ -945,7 +955,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
         case WM_DESTROY:
             GetWindowRect(hwnd,&rect);
-            if(!IsIconic(hwnd))
+            if(!IsIconic(hwnd)&&!Settings.autosized)
             {
                 Settings.wndwx=rect.right-rect.left;
                 Settings.wndwy=rect.bottom-rect.top;
@@ -960,8 +970,8 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_UPDATELANG:
             hLang->Clear();
             vLang->EnumFiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
-            f=hLang->FindItem(Settings.curlang);
-            if(f==CB_ERR)f=hLang->GetNumItems()-1;
+            f=vLang->PickLang();
+            if(f==0)f=hLang->GetNumItems()-1;
             vLang->SwitchData((int)f);
             hLang->SetCurSel(f);
             //SendMessage(hLang,CB_SETCURSEL,f,0);
@@ -1046,10 +1056,16 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 if(rect.right<D(MAINWND_WX)||rect.bottom<D(MAINWND_WY))
                   if(rect.right<wpos->cx||rect.bottom<wpos->cy)
                 {
-                    wpos->cx=rect.right;
-                    wpos->cy=rect.bottom;
-                    wpos->x=0;
-                    wpos->y=0;
+                    Settings.autosized=true;
+
+                    wpos->x=rect.left;
+                    wpos->y=rect.top;
+                    wpos->cx=rect.right-wpos->x;
+                    wpos->cy=rect.bottom-wpos->y;
+                    Log.print_con("%d,%d,%d,%d\n",rect.left,rect.top,rect.right,rect.bottom);
+                    Settings.scale=750*256/wpos->cy;
+                    Log.print_con("(%d,%d,%d)\n",wpos->cx,wpos->cy,Settings.scale);
+                    MainWindow.theme_refresh();
                 }
             }
             break;
@@ -1105,6 +1121,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             if(ctrl_down&&wParam==L'0')
             {
                 Settings.scale=256;
+                Settings.savedscale=Settings.scale;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
             }
             if(ctrl_down&&wParam==L'A'){SelectAllCommand c;c.LeftClick();}
@@ -1179,8 +1196,8 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             main1x_c=x;
             main1y_c=y;
 
-            i=D_X(PNLITEM_OFSX)+D_X(PANEL_LIST_OFSX);
-            f=D_X(PANEL_LIST_OFSX)?4:0;
+            //i=D_X(PNLITEM_OFSX)+D_X(PANEL_LIST_OFSX);
+            //f=D_X(PANEL_LIST_OFSX)?4:0;
             MoveWindow(hField,Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),Ym(D_X(DRVLIST_OFSY)),XM(D_X(DRVLIST_WX),D_X(DRVLIST_OFSX)),YM(D_X(DRVLIST_WY),D_X(DRVLIST_OFSY)),TRUE);
 
             wPanels->arrange();
@@ -1238,6 +1255,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 Settings.scale-=i/20;
                 if(Settings.scale<150){Settings.scale=150;break;}
                 if(Settings.scale>350){Settings.scale=350;break;}
+                Settings.savedscale=Settings.scale;
                 Settings.wndwx=0;
                 Settings.wndwy=0;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
@@ -1353,6 +1371,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 					LRESULT j=SendMessage((HWND)lParam,CB_GETCURSEL,0,0);
                     SendMessage((HWND)lParam,CB_GETLBTEXT,j,(LPARAM)Settings.curtheme);
 					vTheme->SwitchData((int)j);
+					Settings.autosized=false;
                     theme_refresh();
                 }
             }
