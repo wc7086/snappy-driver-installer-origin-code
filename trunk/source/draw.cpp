@@ -831,15 +831,17 @@ void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
         MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
         if(needupdate)InvalidateRect(hPopup,nullptr,0);
 
-        if(!wait)
         {
-            wait=true;
             TRACKMOUSEEVENT tme;
             tme.cbSize=sizeof(tme);
             tme.hwndTrack=hwnd;
             tme.dwFlags=TME_LEAVE|TME_HOVER;
-            tme.dwHoverTime=(MainWindow.ctrl_down||MainWindow.space_down)?1:Settings.hintdelay;
-            TrackMouseEvent(&tme);
+            tme.dwHoverTime=(MainWindow.ctrl_down||MainWindow.space_down)?0:Settings.hintdelay;
+
+            if(!tme.dwHoverTime)
+                onHover();
+            else
+                TrackMouseEvent(&tme);
         }
     }
     if(type==FLOATING_NONE)ShowWindow(hPopup,SW_HIDE);
