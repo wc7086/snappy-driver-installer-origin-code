@@ -4,6 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Français"
+STR_LANG_ID             = "French"
 STR_LANG_CODE           = 0x0c
 
 // left panel

@@ -23,6 +23,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 #include "update.h"
 #include "install.h"
+#include "langlist.h"
+#include "theme.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -218,6 +220,7 @@ void Settings_t::parse(const wchar_t *str,int ind)
             Log.print_err("Unknown argument '%S'\n",pr);
         if(statemode==STATEMODE_EXIT)break;
     }
+    Settings.savedscale=Settings.scale;
     ExpandEnvironmentStrings(logO_dir,log_dir,BUFLEN);
     LocalFree(argv);
     if(statemode==STATEMODE_EXIT)return;
@@ -241,7 +244,7 @@ void Settings_t::save()
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
-            curlang,curtheme,hintdelay,wndwx,wndwy,scale,filters,
+            STR(STR_LANG_ID),curtheme,hintdelay,wndwx,wndwy,autosized?savedscale:scale,filters,
             Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections);
 
     if(license)fwprintf(f,L"-license ");

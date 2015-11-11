@@ -4,6 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Magyar"
+STR_LANG_ID             = "Hungarian"
 STR_LANG_CODE           = 0x0E
 STR_RTL                 = 0
 

@@ -33,6 +33,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 //{ Global vars
 VaultInt *vLang;
 VaultInt *vTheme;
+wchar_t lang_ids[64][128];
 //}
 
 //{ Vault (imp)
@@ -53,7 +54,7 @@ protected:
     int elem_id;
     const wchar_t *folder;
 
-    wchar_t namelist[64][250];
+    wchar_t namelist[64][128];
 
 protected:
     int  findvar(wchar_t *str);
@@ -68,6 +69,7 @@ public:
     Vault(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
     virtual ~Vault(){}
     void load(int i);
+    int PickLang();
     int PickTheme();
 
     virtual void SwitchData(int i)=0;
@@ -387,6 +389,17 @@ void Vault::load(int i)
     loadFromFile(namelist[i]);
 }
 
+int Vault::PickLang()
+{
+    int f=0;
+    int j=MainWindow.hLang->GetNumItems();
+    for(int i=0;i<j;i++)
+        if(StrStrIW(lang_ids[i],Settings.curlang))
+           {f=i;break;}
+
+    return f;
+}
+
 int Vault::PickTheme()
 {
     int f=0;
@@ -442,6 +455,7 @@ void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
         }
         lst->AddItem(STR(STR_LANG_NAME));
         wcscpy(namelist[i],buf.Get());
+        wcscpy(lang_ids[i],STR(STR_LANG_ID));
         i++;
     }
     while(FindNextFile(hFind,&FindFileData)!=0);

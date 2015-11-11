@@ -4,6 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Беларуская"
+STR_LANG_ID             = "Belarusian"
 STR_LANG_CODE           = 0x23
 
 // Левая панэль

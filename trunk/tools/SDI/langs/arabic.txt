@@ -4,6 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "العربية"
+STR_LANG_ID             = "Arabic"
 STR_LANG_CODE           = 0x01
 STR_RTL                 = 1
 

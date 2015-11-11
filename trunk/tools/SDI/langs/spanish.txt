@@ -4,6 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Español"
+STR_LANG_ID             = "Spanish"
 STR_LANG_CODE           = 0x0A
 
 // left panel

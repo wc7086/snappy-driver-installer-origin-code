@@ -185,6 +185,9 @@ public:
     int virtual_os_version;
     int virtual_arch_type;
 
+    bool autosized=false;
+    int  savedscale;
+
 public:
     Settings_t();
     void parse(const wchar_t *str,int ind);
