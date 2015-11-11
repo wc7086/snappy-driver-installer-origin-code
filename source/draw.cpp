@@ -191,7 +191,7 @@ void ImageImp::LoadFromRes(int id)
         Log.print_err("ERROR in image_loadRes(): failed get_resource\n");
         return;
     }
-    CreateMyBitmap((BYTE *)myResourceData,sz);
+    CreateMyBitmap(static_cast<BYTE *>(myResourceData),sz);
 }
 
 void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
@@ -229,7 +229,7 @@ void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
 
     BYTE *bits;
     ldc=CreateCompatibleDC(nullptr);
-    bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,(void **)&bits,nullptr,0);
+    bitmap=CreateDIBSection(ldc,&bmi,DIB_RGB_COLORS,reinterpret_cast<void **>(&bits),nullptr,0);
     if(!bitmap)
     {
         Log.print_err("ERROR in CreateMyBitmap(): failed CreateDIBSection\n");
@@ -241,16 +241,16 @@ void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
     for(int i=0;i<sy*sx;i++)
     {
         int B,G,R,A;
-        B=(int)*p2++;
-        G=(int)*p2++;
-        R=(int)*p2++;
-        A=(int)*p2++;
+        B=static_cast<int>(*p2++);
+        G=static_cast<int>(*p2++);
+        R=static_cast<int>(*p2++);
+        A=static_cast<int>(*p2++);
         if(A!=255)hasalpha=1;
 
-        *bits++=(BYTE)(B*A/256);
-        *bits++=(BYTE)(G*A/256);
-        *bits++=(BYTE)(R*A/256);
-        *bits++=(BYTE)A;
+        *bits++=static_cast<BYTE>(B*A/256);
+        *bits++=static_cast<BYTE>(G*A/256);
+        *bits++=static_cast<BYTE>(R*A/256);
+        *bits++=static_cast<BYTE>(A);
     }
     SelectObject(ldc,bitmap);
     free(big);

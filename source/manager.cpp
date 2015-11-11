@@ -1300,7 +1300,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
     int x=Xg(D_X(DRVITEM_OFSX),D_X(DRVITEM_WX));
     int wx=XG(D_X(DRVITEM_WX),x);
     int r=D_X(boxindex[itembar->box_status()]+3);
-    int intend=0;
+    size_t intend=0;
     int oldstyle=Settings.flags&FLAG_SHOWDRPNAMES1||Settings.flags&FLAG_OLDSTYLE;
 
     int pos=(itembar->curpos>>16)-D_X(DRVITEM_DIST_Y0);
@@ -1308,9 +1308,9 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
 
     if(!(itembar->first&1))
     {
-        int i=index;
+        size_t i=index;
 
-        while(i>=0&&!(items_list[i].first&1&&items_list[i].isactive))i--;
+        while(i>0&&!(items_list[i].first&1&&items_list[i].isactive))i--;
         if(items_list[i].index==itembar->index)intend=i;
         //itembar->index=intend;
     }

@@ -118,7 +118,7 @@ void Device::read_device_property(HDEVINFO hDevInfo,State *state,int id,ofst *va
     }
     else
     {
-        *val=state->textas.alloc(buffersize);
+        *val=static_cast<ofst>(state->textas.alloc(buffersize));
         p=(PBYTE)(state->textas.get(*val));
         *p=0;
     }
@@ -252,7 +252,7 @@ driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
     //Log.print_con("Fake '%S'\n",buf);
     buf[lstrlen(buf)+2]=0;
     problem=2;
-    HardwareID=state->textas.t_memcpy((char *)buf,lstrlen(buf)*2+4);
+    HardwareID=static_cast<ofst>(state->textas.t_memcpy((char *)buf,lstrlen(buf)*2+4));
 }
 
 Device::Device(HDEVINFO hDevInfo,State *state,int i)
@@ -272,7 +272,7 @@ Device::Device(HDEVINFO hDevInfo,State *state,int i)
     }
 
     SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,nullptr,0,&buffersize);
-    InstanceId=state->textas.alloc(buffersize);
+    InstanceId=static_cast<ofst>(state->textas.alloc(buffersize));
     SetupDiGetDeviceInstanceId(hDevInfo,DeviceInfoDataloc,const_cast<wchar_t *>(state->textas.getw(InstanceId)),buffersize,nullptr);
 
     read_device_property(hDevInfo,state,SPDRP_DEVICEDESC,    &Devicedesc);
@@ -308,7 +308,7 @@ void Driver::read_reg_val(HKEY hkey,State *state,const wchar_t *key,ofst *val)
         return;
     }
 
-    *val=state->textas.alloc(dwSize);
+    *val=static_cast<ofst>(state->textas.alloc(dwSize));
     lr=RegQueryValueEx(hkey,key,nullptr,&dwType,(unsigned char*)state->textas.get(*val),&dwSize);
     if(lr!=ERROR_SUCCESS)
     {
@@ -380,7 +380,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
             unpacked_drp->indexinf(state->textas.getw(state->getWindir()),state->textas.getw(InfPath),buft.get(),len);
         }
 
-        cat=state->opencatfile(this);
+        cat=static_cast<ofst>(state->opencatfile(this));
     }
 
     char sect[BUFLEN];
@@ -915,7 +915,7 @@ void State::getsysinfo_fast()
     wchar_t buf[BUFLEN];
 
     // Battery
-    battery=textas.alloc(sizeof(SYSTEM_POWER_STATUS));
+    battery=static_cast<ofst>(textas.alloc(sizeof(SYSTEM_POWER_STATUS)));
     SYSTEM_POWER_STATUS *batteryloc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
     GetSystemPowerStatus(batteryloc);
 
@@ -937,7 +937,7 @@ void State::getsysinfo_fast()
         }
         i++;
     }
-    monitors=textas.t_memcpy((char *)buf,(1+buf[0]*2)*2);
+    monitors=static_cast<ofst>(textas.t_memcpy((char *)buf,(1+buf[0]*2)*2));
 
     // Windows version
 #ifdef _MSC_VER
@@ -959,10 +959,10 @@ void State::getsysinfo_fast()
     // Environment
     GetEnvironmentVariable(L"windir",buf,BUFLEN);
     wcscat(buf,L"\\inf\\");
-    windir=textas.strcpyw(buf);
+    windir=static_cast<ofst>(textas.strcpyw(buf));
 
     GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
-    temp=textas.strcpyw(buf);
+    temp=static_cast<ofst>(textas.strcpyw(buf));
 
     // 64-bit detection
     architecture=0;
@@ -988,11 +988,11 @@ void State::getsysinfo_slow()
 
     getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
 
-    manuf=textas.strcpyw(smanuf);
-    product=textas.strcpyw(sproduct);
-    model=textas.strcpyw(smodel);
-    cs_manuf=textas.strcpyw(scs_manuf);
-    cs_model=textas.strcpyw(scs_model);
+    manuf=static_cast<ofst>(textas.strcpyw(smanuf));
+    product=static_cast<ofst>(textas.strcpyw(sproduct));
+    model=static_cast<ofst>(textas.strcpyw(smodel));
+    cs_manuf=static_cast<ofst>(textas.strcpyw(scs_manuf));
+    cs_model=static_cast<ofst>(textas.strcpyw(scs_model));
 
     Timers.stop(time_sysinfo);
 }
@@ -1000,11 +1000,11 @@ void State::getsysinfo_slow()
 void State::getsysinfo_slow(const State *prev)
 {
     Timers.reset(time_sysinfo);
-    manuf=textas.strcpyw(prev->textas.getw(prev->manuf));
-    product=textas.strcpyw(prev->textas.getw(prev->product));
-    model=textas.strcpyw(prev->textas.getw(prev->model));
-    cs_manuf=textas.strcpyw(prev->textas.getw(prev->cs_manuf));
-    cs_model=textas.strcpyw(prev->textas.getw(prev->cs_model));
+    manuf=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->manuf)));
+    product=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->product)));
+    model=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->model)));
+    cs_manuf=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->cs_manuf)));
+    cs_model=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->cs_model)));
 }
 
 void State::scanDevices()
@@ -1097,7 +1097,7 @@ const wchar_t *State::get_winverstr()
     return getWindowsName(NUM_OS-1);
 }
 
-int State::opencatfile(const Driver *cur_driver)
+size_t State::opencatfile(const Driver *cur_driver)
 {
     wchar_t filename[BUFLEN];
     char bufa[BUFLEN];

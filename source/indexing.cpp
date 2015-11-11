@@ -466,11 +466,11 @@ void Parser::subStr()
     if(!pack)return;
 
     // Fast string substitution
-    char *v1b=strBeg;
+    const char *v1b=strBeg;
     if(*v1b=='%')
     {
         v1b++;
-        int vers_len=strEnd-v1b-1;
+        ptrdiff_t vers_len=strEnd-v1b-1;
         if(strEnd[-1]!='%')vers_len++;
         if(vers_len<0)vers_len=0;
 
@@ -494,7 +494,7 @@ void Parser::subStr()
         while(*v1b!='%'&&v1b<strEnd)*p_s++=*v1b++;
         if(*v1b=='%')
         {
-            char *p=v1b+1;
+            const char *p=v1b+1;
             while(*p!='%'&&p<strEnd)p++;
             if(*p=='%')
             {
@@ -527,7 +527,7 @@ int Parser::parseItem()
     parseWhitespace(true);
     strBeg=blockBeg;
 
-    char *p=blockBeg;
+    const char *p=blockBeg;
 
     while(p<blockEnd-1)
     {
@@ -564,7 +564,7 @@ int Parser::parseField()
     blockBeg++;
     parseWhitespace();
 
-    char *p=blockBeg;
+    const char *p=blockBeg;
 
     strBeg=strEnd=p;
 
@@ -663,7 +663,7 @@ void Parser::readVersion(Version *t)
     t->setVersion(v1,v2,v3,v4);
 }
 
-void Parser::readStr(char **vb,char **ve)
+void Parser::readStr(const char **vb,const char **ve)
 {
     *vb=strBeg;
     *ve=strEnd;
@@ -1421,9 +1421,9 @@ int Driverpack::genindex()
                 if(outSizeProcessed)
                 {
                     if(StrStrIW(infname,L".inf"))
-                        driverpack_indexinf_async(infpath.Get(),infname,(char *)(outBuffer+offset),outSizeProcessed);
+                        driverpack_indexinf_async(infpath.Get(),infname,outBuffer+offset,outSizeProcessed);
                     else
-                        driverpack_parsecat_async(infpath.Get(),infname,(char *)(outBuffer+offset),outSizeProcessed);
+                        driverpack_parsecat_async(infpath.Get(),infname,outBuffer+offset,outSizeProcessed);
                 }
             }
         }
@@ -1438,7 +1438,7 @@ int Driverpack::genindex()
     return 1;
 }
 
-void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,const char *adr,size_t len)
+void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile1,const BYTE *adr,size_t len)
 {
     inffile_task data;
 
@@ -1453,7 +1453,7 @@ void Driverpack::driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const 
     objs_new->push(data);
 }
 
-void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,const char *adr,size_t len)
+void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile1,const BYTE *adr,size_t len)
 {
     inffile_task data;
 
@@ -1493,7 +1493,7 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
     objs_new->push(data);
 }
 
-void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,char *inf_base,size_t inf_len)
+void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,const char *inf_base,size_t inf_len)
 {
     // http://msdn.microsoft.com/en-us/library/ff547485(v=VS.85).aspx
     Version *cur_ver;
@@ -1506,22 +1506,22 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
     char secttry[256];
     char line[2048];
-    int  strs[16];
+    size_t  strs[16];
 
     std::unordered_map<std::string,std::string> string_list;
     std::unordered_multimap<std::string,sect_data_t> section_list;
 
-    char *p=inf_base,*strend=inf_base+inf_len;
-    char *p2,*sectnmend;
+    const char *p=inf_base,*strend=inf_base+inf_len;
+    const char *p2,*sectnmend;
     sect_data_t *lnk_s2=nullptr;
 
     cur_inffile_index=inffile.size();
     inffile.resize(cur_inffile_index+1);
     cur_inffile=&inffile[cur_inffile_index];
     wsprintfA(line,"%ws",drpdir);
-    cur_inffile->infpath=text_ind.strcpy(line);
+    cur_inffile->infpath=static_cast<ofst>(text_ind.strcpy(line));
     wsprintfA(line,"%ws",inffilename);
-    cur_inffile->inffilename=text_ind.strcpy(line);
+    cur_inffile->inffilename=static_cast<ofst>(text_ind.strcpy(line));
     cur_inffile->infsize=static_cast<ofst>(inf_len);
     cur_inffile->infcrc=0;
 
@@ -1599,7 +1599,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
-        char *s1b,*s1e,*s2b,*s2e;
+        const char *s1b,*s1e,*s2b,*s2e;
 
         parse_info.setRange(lnk);
         while(parse_info.parseItem())
@@ -1625,7 +1625,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     for(auto got=range.first;got!=range.second;++got)
     {
         sect_data_t *lnk=&got->second;
-        char *s1b,*s1e;
+        const char *s1b,*s1e;
 
         parse_info.setRange(lnk);
         while(parse_info.parseItem())
@@ -1661,7 +1661,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                         if(parse_info.parseField())
                         {
                             parse_info.readStr(&s1b,&s1e);
-                            cur_inffile->fields[i]=text_ind.t_memcpyz(s1b,s1e-s1b);
+                            cur_inffile->fields[i]=static_cast<ofst>(text_ind.t_memcpyz(s1b,s1e-s1b));
                         }
                     }
                     break;
@@ -1687,14 +1687,14 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
         parse_info.setRange(lnk);
         while(parse_info.parseItem())
         {
-            char *s1b,*s1e;
+            const char *s1b,*s1e;
             parse_info.readStr(&s1b,&s1e);
 
             cur_manuf_index=manufacturer_list.size();
             manufacturer_list.resize(cur_manuf_index+1);
             cur_manuf=&manufacturer_list[cur_manuf_index];
-            cur_manuf->inffile_index=static_cast<unsigned>(cur_inffile_index);
-            cur_manuf->manufacturer=text_ind.t_memcpyz(s1b,s1e-s1b);
+            cur_manuf->inffile_index=static_cast<ofst>(cur_inffile_index);
+            cur_manuf->manufacturer=static_cast<ofst>(text_ind.t_memcpyz(s1b,s1e-s1b));
             cur_manuf->sections_n=0;
 
             if(parse_info.parseField())
@@ -1722,14 +1722,15 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                         while(parse_info2.parseItem())
                         {
                             parse_info2.readStr(&s1b,&s1e);
-                            int desc_c=text_ind.memcpyz_dup(s1b,s1e-s1b);
+                            size_t desc_c=text_ind.memcpyz_dup(s1b,s1e-s1b);
 
                             parse_info2.parseField();
                             parse_info2.readStr(&s1b,&s1e);
-                            int inst_c=text_ind.memcpyz_dup(s1b,s1e-s1b);
+                            size_t inst_c=text_ind.memcpyz_dup(s1b,s1e-s1b);
 
                             //{ featurescore and install section
-                            int feature_c=0xFF,install_picket_c;
+                            int feature_c=0xFF;
+                            size_t install_picket_c;
 
                             char installsection[BUFLEN];
                             sect_data_t *lnk3;
@@ -1827,9 +1828,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
                             cur_desc_index=desc_list.size();
 
-                            desc_list.push_back(data_desc_t(cur_manuf_index,
-                                manufacturer_list[cur_manuf_index].sections_n-1,
-                                desc_c,inst_c,install_picket_c,feature_c));
+                            desc_list.push_back(data_desc_t(cur_manuf_index,manufacturer_list[cur_manuf_index].sections_n-1,desc_c,inst_c,install_picket_c,feature_c));
 
                             int hwid_pos=0;
                             while(parse_info2.parseField())
@@ -1850,7 +1849,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     strs[cur_manuf->sections_n++]=text_ind.t_memcpyz(s1b,s1e-s1b);
                 }
             }
-            cur_manuf->sections=text_ind.t_memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n);
+            cur_manuf->sections=static_cast<ofst>(text_ind.t_memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n));
         }
     }
 }
@@ -1872,8 +1871,8 @@ Driverpack::Driverpack(wchar_t const *driverpack_path,wchar_t const *driverpack_
     type(DRIVERPACK_TYPE_PENDING_SAVE),
     col(col_v)
 {
-    drppath=text_ind.strcpyw(driverpack_path);
-    drpfilename=text_ind.strcpyw(driverpack_filename);
+    drppath=static_cast<ofst>(text_ind.strcpyw(driverpack_path));
+    drpfilename=static_cast<ofst>(text_ind.strcpyw(driverpack_filename));
     indexes.reset(0);
 }
 
@@ -2294,7 +2293,7 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
         char filename[BUFLEN];
         wsprintfA(filename,"%ws%ws",pathinf,inffilename);
         strtolower(filename,strlen(filename));
-        cat_list.insert({filename,text_ind.memcpyz_dup(bufa,strlen(bufa))});
+        cat_list.insert({filename,static_cast<ofst>(text_ind.memcpyz_dup(bufa,strlen(bufa)))});
         //Log.print_con("(%s)\n##%s\n",filename,bufa);
     }
     else
@@ -2304,20 +2303,20 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char
 
 }
 
-void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,char *bb,size_t inf_len)
+void Driverpack::indexinf(wchar_t const *drpdir,wchar_t const *iinfdilename,const char *inf_base,size_t inf_len)
 {
-    if(inf_len>4&&((bb[0]==-1&&bb[3]==0)||bb[0]==0))
+    if(inf_len>4&&((inf_base[0]==-1&&inf_base[3]==0)||inf_base[0]==0))
     {
         size_t size=inf_len;
 
         char *buf_out=new char[size+2];
-        size=unicode2ansi(bb,buf_out,size);
+        size=unicode2ansi((const unsigned char *)inf_base,buf_out,size);
         indexinf_ansi(drpdir,iinfdilename,buf_out,size);
         delete[] buf_out;
     }
     else
     {
-        indexinf_ansi(drpdir,iinfdilename,bb,inf_len);
+        indexinf_ansi(drpdir,iinfdilename,inf_base,inf_len);
     }
 }
 //}

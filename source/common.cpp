@@ -34,36 +34,36 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 //{ Txt
-ofst Txt::strcpy(const char *str)
+size_t Txt::strcpy(const char *str)
 {
     size_t r=text.size();
     text.insert(text.end(),str,str+strlen(str)+1);
-    return (ofst)r;
+    return r;
 }
 
-ofst Txt::strcpyw(const wchar_t *str)
+size_t Txt::strcpyw(const wchar_t *str)
 {
     size_t r=text.size();
-    text.insert(text.end(),(char *)str,(char *)(str+wcslen(str)+1));
-    return (ofst)r;
+    text.insert(text.end(),reinterpret_cast<const char *>(str),reinterpret_cast<const char *>(str+wcslen(str)+1));
+    return r;
 }
 
-ofst Txt::t_memcpy(const char *mem,size_t sz)
+size_t Txt::t_memcpy(const char *mem,size_t sz)
 {
     size_t r=text.size();
     text.insert(text.end(),mem,mem+sz);
-    return (ofst)r;
+    return r;
 }
 
-ofst Txt::t_memcpyz(const char *mem,size_t sz)
+size_t Txt::t_memcpyz(const char *mem,size_t sz)
 {
     size_t r=text.size();
     text.insert(text.end(),mem,mem+sz);
     text.insert(text.end(),0);
-    return (ofst)r;
+    return r;
 }
 
-ofst Txt::memcpyz_dup(const char *mem,size_t sz)
+size_t Txt::memcpyz_dup(const char *mem,size_t sz)
 {
     std::string str(mem,sz);
     auto it=dub.find(str);
@@ -74,20 +74,20 @@ ofst Txt::memcpyz_dup(const char *mem,size_t sz)
         text.insert(text.end(),mem,mem+sz);
         text.insert(text.end(),0);
 
-        dub.insert({std::move(str),(int)r});
-        return (ofst)r;
+        dub.insert({std::move(str),r});
+        return r;
     }
     else
     {
-        return (ofst)it->second;
+        return it->second;
     }
 }
 
-ofst Txt::alloc(size_t sz)
+size_t Txt::alloc(size_t sz)
 {
     size_t r=text.size();
     text.resize(r+sz);
-    return (ofst)r;
+    return r;
 }
 
 Txt::Txt()
@@ -96,7 +96,7 @@ Txt::Txt()
     text[0]=text[1]=0;
 }
 
-void Txt::reset(int sz)
+void Txt::reset(size_t sz)
 {
     text.resize(sz);
     text.reserve(1024*1024*2); //TODO
@@ -274,8 +274,11 @@ void WString_dyn::vsprintf(const wchar_t *format,va_list args)
 {
     unsigned r=_vscwprintf(format,args)+1;
     if(r>len)Resize(r);
-    //r=vswprintf_s(buf_cur,len,format,args);
+#ifdef _MSC_VER
+    r=vswprintf_s(buf_cur,len,format,args);
+#else
     r=_vswprintf(buf_cur,format,args);
+#endif
     if(debug)Log.print_con("%d,(%S),[%S]\n",r,format,buf_cur);
 }
 
@@ -283,8 +286,11 @@ void WString_dyn::append(const wchar_t *str)
 {
     size_t sz=lstrlen(buf_cur)+lstrlen(str)+1;
     if(sz>len)Resize(sz);
-    //wcscat_s(buf_cur,len,str);
+#ifdef _MSC_VER
+    wcscat_s(buf_cur,len,str);
+#else
     wcscat(buf_cur,str);
+#endif
 }
 
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
@@ -301,26 +307,28 @@ void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
     }
 }
 
-void strtoupper(char *s,size_t len)
+void strtoupper(const char *s1,size_t len)
 {
+    char *s=const_cast<char *>(s1);
     while(len--)
     {
-        *s=(char)toupper(*s);
+        *s=static_cast<char>(toupper(*s));
         s++;
     }
 }
 
-void strtolower(char *s,size_t len)
+void strtolower(const char *s1,size_t len)
 {
+    char *s=const_cast<char *>(s1);
     if(len)
     while(len--)
     {
-        *s=(char)tolower(*s);
+        *s=static_cast<char>(tolower(*s));
         s++;
     }
 }
 
-size_t unicode2ansi(const char *s,char *out,size_t size)
+size_t unicode2ansi(const unsigned char *s,char *out,size_t size)
 {
     size_t ret;
     int flag;
