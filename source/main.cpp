@@ -1124,6 +1124,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 Settings.savedscale=Settings.scale;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
             }
+            if(ctrl_down&&wParam==L'Z'){Log.print_con("\n*************\n");}
             if(ctrl_down&&wParam==L'A'){SelectAllCommand c;c.LeftClick();}
             if(ctrl_down&&wParam==L'N'){SelectNoneCommand c;c.LeftClick();}
             if(ctrl_down&&wParam==L'I'){InstallCommand c;c.LeftClick();}
