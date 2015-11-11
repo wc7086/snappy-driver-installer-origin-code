@@ -253,7 +253,7 @@ public:
     void init();
 
     const wchar_t *get_winverstr();
-    int  opencatfile(const Driver *cur_driver);
+    size_t opencatfile(const Driver *cur_driver);
     void genmarker(); // in matcher.cpp
     void isnotebook_a();
 };

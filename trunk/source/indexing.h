@@ -114,10 +114,10 @@ class inffile_task
 // Sect_data_t
 class sect_data_t
 {
-    char *blockbeg,*blockend;
+    const char *blockbeg,*blockend;
 
 public:
-    sect_data_t(char *bb,char *be):blockbeg(bb),blockend(be){}
+    sect_data_t(const char *bb,const char *be):blockbeg(bb),blockend(be){}
 
     friend class Parser;
     friend class Driverpack;
@@ -195,10 +195,10 @@ class Parser
     const wchar_t *inffile;
     Txt textholder;
 
-    char *blockBeg;
-    char *blockEnd;
-    char *strBeg;
-    char *strEnd;
+    const char *blockBeg;
+    const char *blockEnd;
+    const char *strBeg;
+    const char *strEnd;
 
 private:
     void parseWhitespace(bool eatnewline);
@@ -213,7 +213,7 @@ public:
     int  readHex();
     int  readDate(Version *t);
     void readVersion(Version *t);
-    void readStr(char **vb,char **ve);
+    void readStr(const char **vb,const char **ve);
 
     Parser(const Parser&)=delete;
     Parser &operator=(const Parser&)=delete;
@@ -262,8 +262,13 @@ class data_desc_t // 24
 
 public:
     data_desc_t():manufacturer_index(0),sect_pos(0),desc(0),install(0),install_picked(0),feature(0){}
-    data_desc_t(size_t manufacturer_indexv,int sect_posv,ofst descv,ofst installv,ofst install_pickedv,unsigned int featurev):
-        manufacturer_index(static_cast<unsigned>(manufacturer_indexv)),sect_pos(sect_posv),desc(descv),install(installv),install_picked(install_pickedv),feature(featurev){}
+    data_desc_t(size_t manufacturer_indexv,int sect_posv,size_t descv,size_t installv,size_t install_pickedv,unsigned int featurev):
+        manufacturer_index(static_cast<ofst>(manufacturer_indexv)),
+        sect_pos(sect_posv),
+        desc(static_cast<ofst>(descv)),
+        install(static_cast<ofst>(installv)),
+        install_picked(static_cast<ofst>(install_pickedv)),
+        feature(featurev){}
 
     friend class Driverpack;
     friend class Hwidmatch;
@@ -279,7 +284,10 @@ class data_HWID_t // 12
 public:
     ofst getHWID(){return HWID;}
     data_HWID_t():desc_index(0),inf_pos(0),HWID(0){}
-    data_HWID_t(size_t desc_indexv,int inf_posv,ofst HWIDv):desc_index(static_cast<unsigned>(desc_indexv)),inf_pos(inf_posv),HWID(HWIDv){}
+    data_HWID_t(size_t desc_indexv,int inf_posv,size_t HWIDv):
+        desc_index(static_cast<unsigned>(desc_indexv)),
+        inf_pos(inf_posv),
+        HWID(static_cast<ofst>(HWIDv)){}
 
     friend class Driverpack;
     friend class Hwidmatch;
@@ -340,9 +348,9 @@ class Driverpack
 
 private:
     int  genindex();
-    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,const char *adr,size_t len);
-    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,const char *adr,size_t len);
-    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,size_t inf_len);
+    void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,const unsigned char *adr,size_t len);
+    void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,const unsigned char *adr,size_t len);
+    void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,const char *inf_base,size_t inf_len);
     void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index);
 
     static unsigned int __stdcall loaddrp_thread(void *arg);
@@ -372,7 +380,7 @@ public:
     void fillinfo(const char *sect,const char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
     void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
     void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
-    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,char *inf_base,size_t inf_len);
+    void indexinf(wchar_t const *drpdir,wchar_t const *inffile,const char *inf_base,size_t inf_len);
 
     friend class Hwidmatch;
     friend class Collection;

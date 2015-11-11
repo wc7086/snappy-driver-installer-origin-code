@@ -60,9 +60,9 @@ public:
 
 // Strings
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
-void strtoupper(char *s,size_t len);
-void strtolower(char *s,size_t len);
-size_t unicode2ansi(const char *s,char *out,size_t size);
+void strtoupper(const char *s,size_t len);
+void strtolower(const char *s,size_t len);
+size_t unicode2ansi(const unsigned char *s,char *out,size_t size);
 int _wtoi_my(const wchar_t *str);
 
 class WString_dyn
@@ -130,29 +130,29 @@ int cmpversion(const Version *t1,const Version *t2);
 // Txt
 class Txt
 {
-    std::unordered_map<std::string,int> dub;
+    std::unordered_map<std::string,size_t> dub;
     loadable_vector<char> text;
 
 public:
-    ofst getSize()const{return static_cast<ofst>(text.size());}
-    const char *get(size_t offset)const{return (char *)&text[offset];}
-    char *getV(size_t offset)const{ return (char *)&text[offset]; }
-    const wchar_t *getw(size_t offset)const{ return (wchar_t *)(&text[offset]); }
-    wchar_t *getwV(size_t offset)const{ return (wchar_t *)(&text[offset]); }
-    const wchar_t *getw2(size_t offset)const{ return (wchar_t *)(&text[offset-(text[0]?2:0)]); }
+    size_t getSize()const{return text.size();}
+    const char *get(size_t offset)const{return &text[offset];}
+    char *getV(size_t offset)const{ return const_cast<char *>(&text[offset]); }
+    const wchar_t *getw(size_t offset)const{ return reinterpret_cast<const wchar_t *>(&text[offset]); }
+    wchar_t *getwV(size_t offset)const{ return const_cast<wchar_t *>(reinterpret_cast<const wchar_t *>(&text[offset])); }
+    const wchar_t *getw2(size_t offset)const{ return reinterpret_cast<const wchar_t *>(&text[offset-(text[0]?2:0)]); }
 
-    ofst strcpy(const char *mem);
-	ofst strcpyw(const wchar_t *mem);
-    ofst t_memcpy(const char *mem,size_t sz);
-    ofst t_memcpyz(const char *mem,size_t sz);
-    ofst memcpyz_dup(const char *mem,size_t sz);
-    ofst alloc(size_t sz);
+    size_t strcpy(const char *mem);
+    size_t strcpyw(const wchar_t *mem);
+    size_t t_memcpy(const char *mem,size_t sz);
+    size_t t_memcpyz(const char *mem,size_t sz);
+    size_t memcpyz_dup(const char *mem,size_t sz);
+    size_t alloc(size_t sz);
 
     char *savedata(char *p){return text.savedata(p);}
     char *loaddata(char *p){return text.loaddata(p);};
 
     Txt();
-    void reset(int sz);
+    void reset(size_t sz);
     void shrink();
 };
 
