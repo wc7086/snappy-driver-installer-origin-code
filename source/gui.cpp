@@ -55,6 +55,15 @@ public:
         p->Add(new wTextSys3);
         wPanels->Add(p);
 
+        // Theme/lang
+        p=new wPanel{5,BOX_PANEL3,KB_EXPERT};
+        p->Add(new wText    {STR_LANG});
+        p->Add(new wLang);
+        p->Add(new wText    {STR_THEME});
+        p->Add(new wTheme);
+        p->Add(new wCheckbox{STR_EXPERT,            new ExpertmodeCheckboxCommand});
+        wPanels->Add(p);
+
         // Install
         p=new wPanel{3,BOX_PANEL2};
         wPanels->Add(p);
@@ -73,15 +82,6 @@ public:
         r=new wPanel{1,BOX_PANEL11,KB_INSTALL,false,3};
         r->Add(new wButton  {STR_SELECT_NONE,       new SelectNoneCommand});
         wPanels->Add(r);
-
-        // Theme/lang
-        p=new wPanel{5,BOX_PANEL3,KB_EXPERT};
-        p->Add(new wText    {STR_LANG});
-        p->Add(new wLang);
-        p->Add(new wText    {STR_THEME});
-        p->Add(new wTheme);
-        p->Add(new wCheckbox{STR_EXPERT,            new ExpertmodeCheckboxCommand});
-        wPanels->Add(p);
 
         // Actions
         p=new wPanel{4,BOX_PANEL4,KB_ACTIONS,true};
@@ -198,6 +198,50 @@ void wPanel::NextItem()
         while(cur_item<num&&!widgets[cur_item]->SetFocus())cur_item++;
     }
 
+}
+
+void WidgetComposite::NextPanel()
+{
+    if(MainWindow.kbpanel==KB_FIELD||MainWindow.kbpanel==KB_LANG||MainWindow.kbpanel==KB_THEME)
+    {
+        MainWindow.kbpanel++;
+        return;
+    }
+    while(1)
+    {
+        cur_item++;
+        if(cur_item>=num)
+        {
+            cur_item=0;
+            MainWindow.kbpanel=KB_FIELD;
+            break;
+        }
+        int newkb=dynamic_cast<wPanel*>(widgets[cur_item])->kb;
+        if(newkb&&newkb!=MainWindow.kbpanel&&!widgets[cur_item]->IsHidden())
+        {
+            MainWindow.kbpanel=newkb;
+            break;
+        }
+    }
+}
+void WidgetComposite::PrevPanel()
+{
+    if(MainWindow.kbpanel==KB_EXPERT||MainWindow.kbpanel==KB_THEME||MainWindow.kbpanel==KB_LANG)
+    {
+        MainWindow.kbpanel--;
+        return;
+    }
+    while(1)
+    {
+        cur_item--;
+        if(cur_item<0)cur_item=num-1;
+        int newkb=dynamic_cast<wPanel*>(widgets[cur_item])->kb;
+        if(newkb&&newkb!=MainWindow.kbpanel&&!widgets[cur_item]->IsHidden())
+        {
+            MainWindow.kbpanel=newkb;
+            break;
+        }
+    }
 }
 
 void Widget::hitscan(int x,int y)
@@ -370,9 +414,9 @@ bool wPanel::IsFocused(Widget *a)
 {
     if(MainWindow.kbpanel==KB_INSTALL&&kb==MainWindow.kbpanel)
     {
-        if(MainWindow.kbitem[KB_INSTALL]<0)MainWindow.kbitem[KB_INSTALL]=2;
-        if(MainWindow.kbitem[KB_INSTALL]>2)MainWindow.kbitem[KB_INSTALL]=0;
-        return MainWindow.kbitem[KB_INSTALL]+1==kbi;
+        //if(MainWindow.kbinstall<0)MainWindow.kbinstall=2;
+        //if(MainWindow.kbinstall>2)MainWindow.kbinstall=0;
+        return MainWindow.kbinstall+1==kbi;
     }
     return kb==MainWindow.kbpanel&&WidgetComposite::IsFocused(a);
 }

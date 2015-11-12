@@ -194,6 +194,8 @@ protected:
 public:
     void NextItem(){for(int i=0;i<num;i++)widgets[i]->NextItem();}
     void PrevItem(){for(int i=0;i<num;i++)widgets[i]->PrevItem();}
+    void NextPanel();
+    void PrevPanel();
     virtual void Add(Widget *w)
     {
         widgets[num]=w;
@@ -229,13 +231,15 @@ class wPanel:public WidgetComposite
 
 public:
     wPanel(int sz_,int box_,int kb_=0,bool isAdv=false,int kbi_=0):sz(sz_),indofs(((box_-BOX_PANEL)/2)*18),boxi(box_),kb(kb_),isAdvanced(isAdv),kbi(kbi_){}
-    bool IsHidden(){return !Settings.expertmode&&isAdvanced;}
+    bool IsHidden(){return (!Settings.expertmode&&isAdvanced)||wy==0;}
     void PrevItem();
     void NextItem();
     bool IsFocused(Widget *a);
     void Accept(WidgetVisitor &);
     void arrange();
     void draw(Canvas &canvas);
+
+    friend class WidgetComposite;
 };
 
 // wText

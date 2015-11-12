@@ -402,7 +402,7 @@ goaround:
                 manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
                 itembar->install_status=STR_INST_STOPPING;
             }
-            if(!itembar->checked)manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
+            //if(!itembar->checked)manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
             //itembar->percent=manager_g->items_list[SLOT_EMPTY].percent;
             hwidmatch=itembar->hwidmatch;
             totalextracttime+=extracttime=GetTickCount()-extracttime;
