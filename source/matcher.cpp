@@ -540,7 +540,7 @@ Devicematch::Devicematch(Device *cur_device,const Driver *cur_driver,size_t item
         while(*p)
         {
             matcher->findHWIDs(this,p,dev_pos,1);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
             dev_pos++;
         }
     }
@@ -552,7 +552,7 @@ Devicematch::Devicematch(Device *cur_device,const Driver *cur_driver,size_t item
         while(*p)
         {
             matcher->findHWIDs(this,p,dev_pos,0);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
             dev_pos++;
         }
     }

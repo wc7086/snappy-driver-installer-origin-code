@@ -98,7 +98,7 @@ int  itembar_cmp(const itembar_t *a,const itembar_t *b,const Txt *ta,const Txt *
 class Manager
 {
     std::vector<itembar_t> items_list;
-    long animstart;
+    int animstart;
 
 public:
     Matcher *matcher;
@@ -127,7 +127,7 @@ public:
     void selectall();
 
 // Driver list
-    int countItems();
+    size_t countItems();
     int groupsize(size_t index);
     void setpos();
     int  animate();

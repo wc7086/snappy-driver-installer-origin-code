@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     Log.print_con("Debug info present\n");
     if(backtrace)Log.print_con("Backtrace is loaded\n");
     #endif
-
+    
     #ifdef BENCH_MODE
     System.benchmark();
     #endif
@@ -698,7 +698,7 @@ void escapeAmp(wchar_t *buf,const wchar_t *source)
 //{ GUI Helpers
 HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,int id,DWORD f)
 {
-    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,(HMENU)((size_t)id),ghInst,NULL);
+    return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,(HMENU)(id),ghInst,NULL);
 }
 
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc)
@@ -1740,7 +1740,7 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
     HWND hEditBox;
     RECT rect;
     LPCSTR s;
-    int sz;
+    size_t sz;
 
     switch(Message)
     {
@@ -1775,7 +1775,7 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
                 int r=SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
                 if(r&&wpos->cy-rect.bottom>0)
                 {
-                    sz=rect.bottom-20-wpos->cy;
+                    int sz=rect.bottom-20-wpos->cy;
                     wpos->y=10;
                     wpos->cy=rect.bottom-20;
                     MoveWindow(hwnd,wpos->x,wpos->y,wpos->cx,wpos->cy,1);

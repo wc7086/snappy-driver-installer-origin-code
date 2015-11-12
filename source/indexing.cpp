@@ -148,10 +148,10 @@ void mySzFree(void *p,void *address)
     delete[](char*)(address);
 }
 
-void findosattr(char *bufa,char *adr,size_t len)
+void findosattr(char *bufa,const char *adr,size_t len)
 {
     size_t bufal=0;
-    char *p=adr;
+    const char *p=adr;
     static wchar_t osatt[]={L'O',L'S',L'A',L't',L't'}; // OSAtt
 
     *bufa=0;
@@ -683,7 +683,7 @@ Parser::Parser(char *vb,char *ve):
 {
 }
 
-void Parser::setRange(sect_data_t *lnk)
+void Parser::setRange(const sect_data_t *lnk)
 {
     blockBeg=lnk->blockbeg;
     blockEnd=lnk->blockend;
@@ -709,7 +709,7 @@ int Collection::scanfolder_count(const wchar_t *path)
         }
         else
         {
-            int i,len=lstrlenW(FindFileData.cFileName);
+            size_t i,len=wcslen(FindFileData.cFileName);
             for(i=0;i<6;i++)
                 if(StrStrIW(FindFileData.cFileName,olddrps[i]))
                 {
@@ -747,7 +747,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
         }
         else
         {
-            int len=lstrlenW(FindFileData.cFileName);
+            size_t len=wcslen(FindFileData.cFileName);
             if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
@@ -759,9 +759,9 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
                 {
                     buf.sprintf(L"%s\\%s",path,FindFileData.cFileName);
                     FILE *f=_wfopen(buf.Get(),L"rb");
-                    fseek(f,0,SEEK_END);
-                    len=ftell(f);
-                    fseek(f,0,SEEK_SET);
+                    _fseeki64(f,0,SEEK_END);
+                    len=static_cast<size_t>(_ftelli64(f));
+                    _fseeki64(f,0,SEEK_SET);
                     char *buft=new char[len];
                     fread(buft,len,1,f);
                     fclose(f);
@@ -769,7 +769,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
 
                     if(len)
                     {
-                        if(StrCmpIW(FindFileData.cFileName+lstrlenW(FindFileData.cFileName)-4,L".inf")==0)
+                        if(StrCmpIW(FindFileData.cFileName+wcslen(FindFileData.cFileName)-4,L".inf")==0)
                             driverpack_list[0].indexinf(buf.Get(),FindFileData.cFileName,buft,len);
                         else
                             driverpack_list[0].parsecat(buf.Get(),FindFileData.cFileName,buft,len);
@@ -1966,15 +1966,15 @@ int Driverpack::checkindex()
     FILE *f=_wfopen(filename,L"rb");
     if(!f)return 0;
 
-    fseek(f,0,SEEK_END);
-    int sz=ftell(f);
-    fseek(f,0,SEEK_SET);
+    //_fseeki64(f,0,SEEK_END);
+    //int sz=_ftelli64(f);
+    //_fseeki64(f,0,SEEK_SET);
 
     char buf[3];
     int version;
     fread(buf,3,1,f);
     fread(&version,sizeof(int),1,f);
-    sz-=3+sizeof(int);
+    //sz-=3+sizeof(int);
     fclose(f);
 
     if(memcmp(buf,"SDW",3)!=0||version!=VER_INDEX)if(version!=0x204)return 0;
@@ -1995,9 +1995,9 @@ int Driverpack::loadindex()
     f=_wfopen(filename,L"rb");
     if(!f)return 0;
 
-    fseek(f,0,SEEK_END);
-    sz=ftell(f);
-    fseek(f,0,SEEK_SET);
+    _fseeki64(f,0,SEEK_END);
+    sz=static_cast<size_t>(_ftelli64(f));
+    _fseeki64(f,0,SEEK_SET);
 
     fread(buf,3,1,f);
     fread(&version,sizeof(int),1,f);
@@ -2274,7 +2274,7 @@ void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t 
     wsprintf(buf,L"%s",getFilename());
 
     if(*(getPath()))
-        wsprintf(buf+(len-3)*1,L"%s.%s",getPath()+lstrlenW(col->getDriverpack_dir()),ext);
+        wsprintf(buf+(len-3)*1,L"%s.%s",getPath()+wcslen(col->getDriverpack_dir()),ext);
     else
         wsprintf(buf+(len-3)*1,L".%s",ext);
 
@@ -2283,7 +2283,7 @@ void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t 
     wsprintf(indfile,L"%s\\%s",dir,buf);
 }
 
-void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,char *adr,size_t len)
+void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,const char *adr,size_t len)
 {
     char bufa[BUFLEN];
 
