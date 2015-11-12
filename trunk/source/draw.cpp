@@ -639,9 +639,9 @@ void Canvas::CalcBoundingBox(const wchar_t *str,RECT *rect)
     DrawText(hdcMem,str,-1,rect,DT_WORDBREAK|DT_CALCRECT);
 }
 
-void Canvas::DrawTextRect(const wchar_t *bufw,RECT *rect)
+void Canvas::DrawTextRect(const wchar_t *bufw,RECT *rect,int flags)
 {
-    DrawText(hdcMem,bufw,-1,rect,DT_WORDBREAK);
+    DrawText(hdcMem,bufw,-1,rect,DT_WORDBREAK|flags);
 }
 
 int  Canvas::GetTextExtent(const wchar_t *str)

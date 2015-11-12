@@ -1468,7 +1468,7 @@ void Driverpack::driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const 
         return;
     }
 
-    if(len>4&&((adr[0]==-1&&adr[3]==0)||adr[0]==0))
+    if(len>4&&((adr[0]==0xFF&&adr[3]==0)||adr[0]==0))
     {
         data.adr=new char[len+2];
         if(!data.adr)

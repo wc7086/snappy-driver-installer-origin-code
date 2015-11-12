@@ -65,8 +65,7 @@ public:
     virtual void SwitchData(int i)=0;
     virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
 
-    virtual int PickLang()=0;
-    virtual int PickTheme()=0;
+    virtual int AutoPick()=0;
     virtual Image *GetIcon(int i)=0;
     virtual Image *GetImage(int i)=0;
 

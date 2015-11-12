@@ -336,7 +336,7 @@ size_t unicode2ansi(const unsigned char *s,char *out,size_t size)
     /*if(!out)Log.log_err("Error out:\n");
     if(!s)Log.log_err("Error in:\n");
     if(size<0)Log.log_err("Error size:\n");*/
-    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==-1?2:0)),(int)(size-(s[0]==-1?1:0)),out,(int)size,nullptr,&flag);
+    ret=WideCharToMultiByte(CP_ACP,0,(wchar_t *)(s+(s[0]==0xFF?2:0)),(int)(size-(s[0]==0xFF?1:0)),out,(int)size,nullptr,&flag);
     if(!ret)Log.print_syserr(GetLastError(),L"unicode2ansi()");
     out[size]=0;
     return ret;

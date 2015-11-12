@@ -368,7 +368,6 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
         }
         _fseeki64(f,0,SEEK_END);
         len=static_cast<size_t>(_ftelli64(f));
-        if(len<0)len=0;
         _fseeki64(f,0,SEEK_SET);
         std::unique_ptr<char[]> buft(new char[len]);
         fread(buft.get(),len,1,f);
@@ -628,9 +627,9 @@ void State::print()
         Log.print_file("\n");
         if(batteryloc->BatteryLifePercent!=255)
             Log.print_file("  Charged:      %d\n",batteryloc->BatteryLifePercent);
-        if(batteryloc->BatteryLifeTime!=-1)
+        if(batteryloc->BatteryLifeTime!=static_cast<DWORD>(-1))
             Log.print_file("  LifeTime:     %d mins\n",batteryloc->BatteryLifeTime/60);
-        if(batteryloc->BatteryFullLifeTime!=-1)
+        if(batteryloc->BatteryFullLifeTime!=static_cast<DWORD>(-1))
             Log.print_file("  FullLifeTime: %d mins\n",batteryloc->BatteryFullLifeTime/60);
 
         buf=textas.getwV(monitors);
@@ -737,9 +736,9 @@ void State::popup_sysinfo(Canvas &canvas)
 
     if(battery_loc->BatteryLifePercent!=255)
         td.TextOutSF(STR(STR_SYSINF_CHARGED),L"%d%%",battery_loc->BatteryLifePercent);
-    if(battery_loc->BatteryLifeTime!=-1)
+    if(battery_loc->BatteryLifeTime!=static_cast<DWORD>(-1))
         td.TextOutSF(STR(STR_SYSINF_LIFETIME),L"%d %s",battery_loc->BatteryLifeTime/60,STR(STR_SYSINF_MINS));
-    if(battery_loc->BatteryFullLifeTime!=-1)
+    if(battery_loc->BatteryFullLifeTime!=static_cast<DWORD>(-1))
         td.TextOutSF(STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery_loc->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
 
     wchar_t *buf=textas.getwV(monitors);

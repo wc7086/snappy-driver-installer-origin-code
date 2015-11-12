@@ -33,7 +33,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 //{ Global vars
 VaultInt *vLang;
 VaultInt *vTheme;
-wchar_t lang_ids[64][128];
 //}
 
 //{ Vault (imp)
@@ -69,8 +68,6 @@ public:
     Vault(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
     virtual ~Vault(){}
     void load(int i);
-    int PickLang();
-    int PickTheme();
 
     virtual void SwitchData(int i)=0;
     virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
@@ -83,8 +80,11 @@ public:
 //{ Vault (lang/theme)
 class VaultLang:public Vault
 {
+    wchar_t lang_ids[64][128];
+
 public:
     VaultLang(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
+    int  AutoPick();
     void SwitchData(int i);
     void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
@@ -99,6 +99,7 @@ class VaultTheme:public Vault
     ImageStorange *Icons;
 
 public:
+    int  AutoPick();
     void SwitchData(int i);
     void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
     void StartMonitor();
@@ -389,7 +390,7 @@ void Vault::load(int i)
     loadFromFile(namelist[i]);
 }
 
-int Vault::PickLang()
+int VaultLang::AutoPick()
 {
     int f=0;
     int j=MainWindow.hLang->GetNumItems();
@@ -400,7 +401,7 @@ int Vault::PickLang()
     return f;
 }
 
-int Vault::PickTheme()
+int VaultTheme::AutoPick()
 {
     int f=0;
     int j=MainWindow.hTheme->GetNumItems();
@@ -425,6 +426,35 @@ void VaultTheme::SwitchData(int i)
     load(i);
     Images->LoadAll();
     Icons->LoadAll();
+}
+
+static BOOL CALLBACK EnumLanguageGroupsProc(
+    LGRPID LanguageGroup,
+    LPTSTR lpLanguageGroupString,
+    LPTSTR lpLanguageGroupNameString,
+    DWORD dwFlags,
+    LONG_PTR  lParam
+    )
+{
+    UNREFERENCED_PARAMETER(lpLanguageGroupString);
+    UNREFERENCED_PARAMETER(lpLanguageGroupNameString);
+    UNREFERENCED_PARAMETER(dwFlags);
+
+    LGRPID* plLang=(LGRPID*)(lParam);
+    //Log.print_con("lang %d,%ws,%ws,%d\n",LanguageGroup,lpLanguageGroupString,lpLanguageGroupNameString,dwFlags);
+    if(*plLang==LanguageGroup)
+    {
+        *plLang=0;
+        return false;
+    }
+    return true;
+}
+
+static bool IsLangInstalled(int group)
+{
+    LONG lLang=group;
+    EnumSystemLanguageGroups(EnumLanguageGroupsProc,LGRPID_INSTALLED,(LONG_PTR)&lLang);
+    return lLang==0;
 }
 
 void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
@@ -453,7 +483,7 @@ void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
             lang_auto_str.sprintf(L"Auto (%s)",STR(STR_LANG_NAME));
             lang_auto=i;
         }
-        lst->AddItem(STR(STR_LANG_NAME));
+        lst->AddItem(STR(IsLangInstalled(language[STR_LANG_GROUP].val)?STR_LANG_NAME:STR_LANG_ID));
         wcscpy(namelist[i],buf.Get());
         wcscpy(lang_ids[i],STR(STR_LANG_ID));
         i++;

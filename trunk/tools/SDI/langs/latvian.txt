@@ -5,6 +5,7 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Latviešu"
 STR_LANG_ID             = "Latvian"
+STR_LANG_GROUP          = 0x03 // LGRPID_BALTIC
 STR_LANG_CODE           = 0x26
 
 // left panel
