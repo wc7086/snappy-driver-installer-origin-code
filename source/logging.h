@@ -109,6 +109,8 @@ public:
     void set_mode(int a){log_console=a;}
     int getErrorCount(){return error_count;}
     wchar_t *getTimestamp(){return timestamp;}
+
+    friend class Settings_t;
 };
 extern Log_t Log;
 

@@ -361,10 +361,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     wchar_t i_hwid[BUFLEN];
     wchar_t a_hwid[BUFLEN];
 
-    const char *t=state->textas.get(0);
+    const Txt txt=state->textas;
     int maxln=0;
     int bolder=wx/2;
-    wchar_t *p;
+    const wchar_t *p;
     const Driver *cur_driver=nullptr;
     textdata_vert td(canvas);
     Version *a_v=nullptr;
@@ -378,7 +378,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     {
         int i;
         cur_driver=devicematch_f->driver;
-        wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
+        wsprintf(bufw,L"%s",txt.getw(cur_driver->MatchingDeviceId));
         for(i=0;bufw[i];i++)i_hwid[i]=(char)toupper(bufw[i]);i_hwid[i]=0;
     }
     if(hwidmatch_f)
@@ -428,10 +428,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     td.TextOutF(c0,L"%s",STR(STR_HINT_DEVICE));
     td.ret_ofs(10);
     canvas.SetFont(Popup.hFontP);
-    td.TextOutF(c0,L"%s",t+devicematch_f->device->getDescr());
-    td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),t+devicematch_f->device->Mfg);
+    td.TextOutF(c0,L"%s",txt.get(devicematch_f->device->getDescr()));
+    td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),txt.get(devicematch_f->device->Mfg));
     if(bufw[0])td.TextOutF(c0,L"%s",bufw);
-    td.TextOutF(c0,L"%s",t+devicematch_f->device->Driver);
+    td.TextOutF(c0,L"%s",txt.get(devicematch_f->device->Driver));
     wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
     td.TextOutF(c0,L"%s",bufw);
 
@@ -445,7 +445,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(c0,L"%s",STR(STR_HINT_HARDWAREID));
         td.ret_ofs(bolder+10);
         canvas.SetFont(Popup.hFontP);
-        p=(wchar_t *)(t+devicematch_f->device->HardwareID);
+        p=txt.getw(devicematch_f->device->HardwareID);
         while(*p)
         {
             int pp=0;
@@ -463,7 +463,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(c0,L"%s",STR(STR_HINT_COMPID));
         td.ret_ofs(bolder+10);
         canvas.SetFont(Popup.hFontP);
-        p=(wchar_t *)(t+devicematch_f->device->CompatibleIDs);
+        p=txt.getw(devicematch_f->device->CompatibleIDs);
         while(*p)
         {
             int pp=0;
@@ -501,14 +501,14 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(               c0,L"%s",STR(STR_HINT_INSTDRV));
         td.ret_ofs(10);
         canvas.SetFont(Popup.hFontP);
-        td.TextOutF(               c0,L"%s",t+cur_driver->DriverDesc);
-        td.TextOutF(               cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),t+cur_driver->cat);
-        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),t+cur_driver->ProviderName);
+        td.TextOutF(               c0,L"%s",txt.get(cur_driver->DriverDesc));
+        td.TextOutF(               cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),txt.get(cur_driver->cat));
+        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt.get(cur_driver->ProviderName));
         td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),date.Get());
         td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),vers.Get());
         td.TextOutF(cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
-        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),t+cur_driver->InfPath);
-        td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),t+cur_driver->InfSection,t+cur_driver->InfSectionExt);
+        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),txt.get(cur_driver->InfPath));
+        td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),txt.get(cur_driver->InfSection),txt.get(cur_driver->InfSectionExt));
         td.TextOutF(cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
     }
 

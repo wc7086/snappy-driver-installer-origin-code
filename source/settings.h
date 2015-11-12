@@ -190,7 +190,7 @@ public:
 
 public:
     Settings_t();
-    void parse(const wchar_t *str,int ind);
+    void parse(const wchar_t *str,size_t ind);
     bool load(const wchar_t *filename);
     bool load_cfg_switch(const wchar_t *cmdParams);
     void save();
