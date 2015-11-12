@@ -156,7 +156,7 @@ public:
 class Widget
 {
 public:
-    int x1,y1,wx,wy;
+    int x1=0,y1=0,wx=0,wy=0;
 
 public:
     Command *command=nullptr;

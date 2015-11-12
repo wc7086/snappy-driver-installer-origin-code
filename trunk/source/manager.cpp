@@ -296,7 +296,7 @@ void itembar_t::contextmenu(int x,int y)
 
     const Driver *cur_driver=nullptr;
 
-    const char *t=manager_g->matcher->getState()->textas.get(0);
+    const Txt *txt=&manager_g->matcher->getState()->textas;
     if(devicematch->driver)cur_driver=devicematch->driver;
     int flags2=isactive&2?MF_CHECKED:0;
     int flags3=cur_driver?0:MF_GRAYED;
@@ -308,7 +308,7 @@ void itembar_t::contextmenu(int x,int y)
     HMENU hSub2=CreatePopupMenu();
     if(devicematch->device->getHardwareID())
     {
-        wchar_t *p=(wchar_t *)(t+devicematch->device->getHardwareID());
+        wchar_t *p=txt->getwV(devicematch->device->getHardwareID());
         while(*p)
         {
             escapeAmp(buf,p);
@@ -320,7 +320,7 @@ void itembar_t::contextmenu(int x,int y)
     }
     if(devicematch->device->getCompatibleIDs())
     {
-        wchar_t *p=(wchar_t *)(t+devicematch->device->getCompatibleIDs());
+        wchar_t *p=txt->getwV(devicematch->device->getCompatibleIDs());
         while(*p)
         {
             escapeAmp(buf,p);
@@ -361,7 +361,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     wchar_t i_hwid[BUFLEN];
     wchar_t a_hwid[BUFLEN];
 
-    const Txt txt=state->textas;
+    const Txt *txt=&state->textas;
     int maxln=0;
     int bolder=wx/2;
     const wchar_t *p;
@@ -378,7 +378,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     {
         int i;
         cur_driver=devicematch_f->driver;
-        wsprintf(bufw,L"%s",txt.getw(cur_driver->MatchingDeviceId));
+        wsprintf(bufw,L"%s",txt->getw(cur_driver->MatchingDeviceId));
         for(i=0;bufw[i];i++)i_hwid[i]=(char)toupper(bufw[i]);i_hwid[i]=0;
     }
     if(hwidmatch_f)
@@ -428,10 +428,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     td.TextOutF(c0,L"%s",STR(STR_HINT_DEVICE));
     td.ret_ofs(10);
     canvas.SetFont(Popup.hFontP);
-    td.TextOutF(c0,L"%s",txt.get(devicematch_f->device->getDescr()));
-    td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),txt.get(devicematch_f->device->Mfg));
+    td.TextOutF(c0,L"%s",txt->get(devicematch_f->device->getDescr()));
+    td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),txt->get(devicematch_f->device->Mfg));
     if(bufw[0])td.TextOutF(c0,L"%s",bufw);
-    td.TextOutF(c0,L"%s",txt.get(devicematch_f->device->Driver));
+    td.TextOutF(c0,L"%s",txt->get(devicematch_f->device->Driver));
     wsprintf(bufw,STR(STR_STATUS_NOTPRESENT+devicematch_f->device->print_status()),devicematch_f->device->problem);
     td.TextOutF(c0,L"%s",bufw);
 
@@ -445,7 +445,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(c0,L"%s",STR(STR_HINT_HARDWAREID));
         td.ret_ofs(bolder+10);
         canvas.SetFont(Popup.hFontP);
-        p=txt.getw(devicematch_f->device->HardwareID);
+        p=txt->getw(devicematch_f->device->HardwareID);
         while(*p)
         {
             int pp=0;
@@ -463,7 +463,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(c0,L"%s",STR(STR_HINT_COMPID));
         td.ret_ofs(bolder+10);
         canvas.SetFont(Popup.hFontP);
-        p=txt.getw(devicematch_f->device->CompatibleIDs);
+        p=txt->getw(devicematch_f->device->CompatibleIDs);
         while(*p)
         {
             int pp=0;
@@ -501,14 +501,14 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(               c0,L"%s",STR(STR_HINT_INSTDRV));
         td.ret_ofs(10);
         canvas.SetFont(Popup.hFontP);
-        td.TextOutF(               c0,L"%s",txt.get(cur_driver->DriverDesc));
-        td.TextOutF(               cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),txt.get(cur_driver->cat));
-        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt.get(cur_driver->ProviderName));
+        td.TextOutF(               c0,L"%s",txt->get(cur_driver->DriverDesc));
+        td.TextOutF(cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),txt->get(cur_driver->cat));
+        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt->get(cur_driver->ProviderName));
         td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),date.Get());
         td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),vers.Get());
         td.TextOutF(cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
-        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),txt.get(cur_driver->InfPath));
-        td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),txt.get(cur_driver->InfSection),txt.get(cur_driver->InfSectionExt));
+        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),txt->get(cur_driver->InfPath));
+        td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),txt->get(cur_driver->InfSection),txt->get(cur_driver->InfSectionExt));
         td.TextOutF(cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
     }
 
@@ -1507,7 +1507,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                 {
                     case STR_INST_FAILED:
                     case STR_EXTR_FAILED:
-                        wsprintf(bufw,L"%s %X",STR(itembar->install_status),itembar->val1);
+                        wsprintf(bufw,L"%s %X",STR(itembar->install_status),static_cast<unsigned>(itembar->val1));
                         break;
 
                     case STR_INST_EXTRACT:
@@ -1515,7 +1515,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                         break;
 
                     case STR_EXTR_EXTRACTING:
-                        wsprintf(bufw,L"%s %d%%",STR(STR_EXTR_EXTRACTING),itembar->percent/10);
+                        wsprintf(bufw,L"%s %d%%",STR(STR_EXTR_EXTRACTING),static_cast<int>(itembar->percent/10));
                         break;
 
                     case 0:
@@ -1551,7 +1551,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                 // Device desc
                 if(itembar->devicematch)
                 {
-                    wsprintf(bufw,L"%ws",matcher->getState()->textas.get(itembar->devicematch->device->Devicedesc));
+                    wsprintf(bufw,L"%ws",matcher->getState()->textas.getw(itembar->devicematch->device->Devicedesc));
                     canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
                     RECT rect;
                     int wx1=wx-D_X(ITEM_TEXT_OFS_X)-D_X(ITEM_ICON_OFS_X);
@@ -1703,7 +1703,7 @@ void Manager::restorepos1(Manager *manager_prev)
         {
             if(!isRebootDesired())selectall();
             if((Settings.flags&FLAG_EXTRACTONLY)==0)
-            wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.get(matcher->getState()->getTemp()));
+            wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.getw(matcher->getState()->getTemp()));
             install(INSTALLDRIVERS);
         }
         else
@@ -1857,7 +1857,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
 
     size_t group=items_list[i].index;
     const Driver *cur_driver=items_list[i].devicematch->driver;
-    const char *t=matcher->getState()->textas.get(0);
+    const Txt *txt=&matcher->getState()->textas;
 
     memset(limits,0,sizeof(limits));
 
@@ -1873,7 +1873,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
 
     if(cur_driver)
     {
-        wsprintf(bufw,L"%s",t+cur_driver->MatchingDeviceId);
+        wsprintf(bufw,L"%s",txt->getw(cur_driver->MatchingDeviceId));
         for(k=0;bufw[k];k++)i_hwid[k]=(char)toupper(bufw[k]);i_hwid[k]=0;
 
         WStringShort date;
@@ -1887,11 +1887,11 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
         td.TextOutP(L"| %08X",cur_driver->calc_score_h(matcher->getState()));
         td.TextOutP(L"| %s",date.Get());
         for(k=0;k<6;k++)td.limitskip();
-        td.TextOutP(L"| %s%s",t+matcher->getState()->getWindir(),t+cur_driver->InfPath);
-        td.TextOutP(L"| %s",t+cur_driver->ProviderName);
+        td.TextOutP(L"| %s%s",txt->getw(matcher->getState()->getWindir()),txt->getw(cur_driver->InfPath));
+        td.TextOutP(L"| %s",txt->getw(cur_driver->ProviderName));
         td.TextOutP(L"| %s",vers.Get());
         td.TextOutP(L"| %s",i_hwid);
-        td.TextOutP(L"| %s",t+cur_driver->DriverDesc);
+        td.TextOutP(L"| %s",txt->getw(cur_driver->DriverDesc));
         td.y+=lne;
     }
     td.y+=lne;

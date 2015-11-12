@@ -201,8 +201,8 @@ void State::genmarker()
     const wchar_t *str=getManuf();
     if(!str)return;
 
-    for(int i=0;i<NUM_FILTERS;i++)
-    for(int j=1;filter_list[i][j];j++)
+    for(size_t i=0;i<NUM_FILTERS;i++)
+    for(size_t j=1;filter_list[i][j];j++)
         if(StrStrIW(str,filter_list[i][j]))
             wsprintfA(marker,"%S_nb",filter_list[i][0]);
 
@@ -978,84 +978,84 @@ int Hwidmatch::getdrp_packontorrent()const
 //inffile
 const char *Hwidmatch::getdrp_infpath()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->text_ind.get(drp->inffile[inffile_index].infpath);
 }
 const char *Hwidmatch::getdrp_infname()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->text_ind.get(drp->inffile[inffile_index].inffilename);
 }
 const char *Hwidmatch::getdrp_drvfield(int n)const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     if(!drp->inffile[inffile_index].fields[n])return "";
     return drp->text_ind.get(drp->inffile[inffile_index].fields[n]);
 }
 const char *Hwidmatch::getdrp_drvcat(int n)const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     if(!drp->inffile[inffile_index].cats[n])return "";
     return drp->text_ind.get(drp->inffile[inffile_index].cats[n]);
 }
 Version *Hwidmatch::getdrp_drvversion()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return &drp->inffile[inffile_index].version;
 }
 int Hwidmatch::getdrp_infsize()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->inffile[inffile_index].infsize;
 }
 int Hwidmatch::getdrp_infcrc()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
-    int inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t inffile_index=drp->manufacturer_list[manufacturer_index].inffile_index;
     return drp->inffile[inffile_index].infcrc;
 }
 
 //manufacturer
 const char *Hwidmatch::getdrp_drvmanufacturer()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     return drp->text_ind.get(drp->manufacturer_list[manufacturer_index].manufacturer);
 }
 void Hwidmatch::getdrp_drvsection(char *buf)const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
-    int manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t manufacturer_index=drp->desc_list[desc_index].manufacturer_index;
     drp->getdrp_drvsectionAtPos(buf,drp->desc_list[desc_index].sect_pos,manufacturer_index);
 }
 
 //desc
 const char *Hwidmatch::getdrp_drvdesc()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->text_ind.get(drp->desc_list[desc_index].desc);
 }
 const char *Hwidmatch::getdrp_drvinstall()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->text_ind.get(drp->desc_list[desc_index].install);
 }
 const char *Hwidmatch::getdrp_drvinstallPicked()const
 {
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->text_ind.get(drp->desc_list[desc_index].install_picked);
 }
 int Hwidmatch::getdrp_drvfeature()const
@@ -1064,7 +1064,7 @@ int Hwidmatch::getdrp_drvfeature()const
     p=StrStrIA(getdrp_infpath(),"feature_");
     if(p)return atoi(p+8);
 
-    int desc_index=drp->HWID_list[HWID_index].desc_index;
+    size_t desc_index=drp->HWID_list[HWID_index].desc_index;
     return drp->desc_list[desc_index].feature&0xFF;
 }
 

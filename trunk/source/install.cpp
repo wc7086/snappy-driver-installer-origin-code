@@ -313,7 +313,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
         manager_g->items_list[SLOT_RESTORE_POINT].percent=0;
     }
     totalextracttime=totalinstalltime=0;
-    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()));
+    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getWindir()));
     _wremove(buf);
 goaround:
     itembar=&manager_g->items_list[0];
@@ -478,7 +478,7 @@ goaround:
                 goto goaround;
     }
     // Instalation competed by this point
-    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getWindir()));
+    wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getWindir()));
     wsprintf(cmd,L"%s\\%ssetupAPI.log",Settings.log_dir,Log.getTimestamp());
     if(!(Settings.flags&FLAG_NOLOGFILE))CopyFile(buf,cmd,0);
 
