@@ -1481,15 +1481,14 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                 RECT rect;
                 int wx1=wx-D_X(ITEM_TEXT_OFS_X)-D_X(ITEM_ICON_OFS_X);
                 rect.left=x+D_X(ITEM_TEXT_OFS_X);
-                if(rtl)rect.left=x+D_X(ITEM_TEXT_OFS_X)+wx1/2-canvas.GetTextExtent(bufw)-10;
                 rect.top=pos;
                 if(intend)wx1-=D_X(DRVITEM_LINE_INTEND);
-                rect.right=rect.left+wx1/2;
+                rect.right=rect.left+wx1/2-D_X(20);
                 rect.bottom=rect.top+90;
                 if(oldstyle)
                     canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
                 else
-                    canvas.DrawTextRect(bufw,&rect);
+                    canvas.DrawTextRect(bufw,&rect,rtl?DT_RIGHT:0);
 
 
                 // Available driver status

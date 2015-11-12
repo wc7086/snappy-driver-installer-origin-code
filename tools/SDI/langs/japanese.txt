@@ -5,6 +5,7 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "日本語"
 STR_LANG_ID             = "Japanese"
+STR_LANG_GROUP          = 0x07 // LGRPID_JAPANESE
 STR_LANG_CODE           = 0x11
 
 // left panel

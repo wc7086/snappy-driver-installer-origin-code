@@ -212,7 +212,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     Log.print_con("Debug info present\n");
     if(backtrace)Log.print_con("Backtrace is loaded\n");
     #endif
-    
+
     #ifdef BENCH_MODE
     System.benchmark();
     #endif
@@ -970,7 +970,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_UPDATELANG:
             hLang->Clear();
             vLang->EnumFiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
-            f=vLang->PickLang();
+            f=vLang->AutoPick();
             if(f==0)f=hLang->GetNumItems()-1;
             vLang->SwitchData((int)f);
             hLang->SetCurSel(f);
@@ -982,7 +982,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             hTheme->Clear();
             vTheme->EnumFiles(hTheme,L"themes");
             f=hTheme->FindItem(Settings.curtheme);
-            if(f==CB_ERR)f=vTheme->PickTheme();
+            if(f==CB_ERR)f=vTheme->AutoPick();
 			vTheme->SwitchData((int)f);
             if(Settings.wndwx)D(MAINWND_WX)=Settings.wndwx;
             if(Settings.wndwy)D(MAINWND_WY)=Settings.wndwy;
@@ -1121,6 +1121,18 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             if(ctrl_down&&wParam==L'0')
             {
                 Settings.scale=256;
+                Settings.savedscale=Settings.scale;
+                PostMessage(hwnd,WM_UPDATETHEME,0,0);
+            }
+            if(ctrl_down&&wParam==VK_OEM_PLUS)
+            {
+                Settings.scale-=6;
+                Settings.savedscale=Settings.scale;
+                PostMessage(hwnd,WM_UPDATETHEME,0,0);
+            }
+            if(ctrl_down&&wParam==VK_OEM_MINUS)
+            {
+                Settings.scale+=6;
                 Settings.savedscale=Settings.scale;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
             }
@@ -1775,21 +1787,21 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
                 int r=SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
                 if(r&&wpos->cy-rect.bottom>0)
                 {
-                    int sz=rect.bottom-20-wpos->cy;
+                    int sz1=rect.bottom-20-wpos->cy;
                     wpos->y=10;
                     wpos->cy=rect.bottom-20;
                     MoveWindow(hwnd,wpos->x,wpos->y,wpos->cx,wpos->cy,1);
 
                     GetRelativeCtrlRect(GetDlgItem(hwnd,IDC_EDIT1),&rect);
-                    rect.bottom+=sz;
+                    rect.bottom+=sz1;
                     MoveWindow(GetDlgItem(hwnd,IDC_EDIT1),rect.left,rect.top,rect.right,rect.bottom,1);
 
                     GetRelativeCtrlRect(GetDlgItem(hwnd,IDOK),&rect);
-                    rect.top+=sz;
+                    rect.top+=sz1;
                     MoveWindow(GetDlgItem(hwnd,IDOK),rect.left,rect.top,rect.right,rect.bottom,1);
 
                     GetRelativeCtrlRect(GetDlgItem(hwnd,IDCANCEL),&rect);
-                    rect.top+=sz;
+                    rect.top+=sz1;
                     MoveWindow(GetDlgItem(hwnd,IDCANCEL),rect.left,rect.top,rect.right,rect.bottom,1);
                 }
             }

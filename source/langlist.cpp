@@ -30,6 +30,7 @@ entry_t language[STR_NM]=
 // Lang info
     DEF_STR("STR_LANG_NAME")
     DEF_VAL("STR_LANG_ID")
+    DEF_VAL("STR_LANG_GROUP")
     DEF_VAL("STR_LANG_CODE")
     DEF_VAL("STR_RTL")
 

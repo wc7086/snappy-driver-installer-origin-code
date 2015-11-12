@@ -5,6 +5,7 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Հայերեն"
 STR_LANG_ID             = "Armenian"
+STR_LANG_GROUP          = 0x11 // LGRPID_ARMENIAN
 STR_LANG_CODE           = 0x2B
 
 // Левая панель

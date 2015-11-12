@@ -5,6 +5,7 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "English"
 STR_LANG_ID             = "English"
+STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x09
 STR_RTL                 = 0
 

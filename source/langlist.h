@@ -26,6 +26,7 @@ enum
 // Lang info
     STR_LANG_NAME,
     STR_LANG_ID,
+    STR_LANG_GROUP,
     STR_LANG_CODE,
     STR_RTL,
 
