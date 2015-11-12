@@ -276,7 +276,7 @@ int cmpversion(const Version *t1,const Version *t2)
 //{
 Exporter::~Exporter()
 {
-    if(!f)return;
+    if(f==nullptr)return;
     int i;
 
     /*i=0;
