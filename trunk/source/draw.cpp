@@ -165,9 +165,9 @@ void ImageImp::LoadFromFile(wchar_t *filename)
         Log.print_err("ERROR in image_loadFile(): file '%S' not found\n",name.Get());
         return;
     }
-    fseek(f,0,SEEK_END);
-    size_t sz=ftell(f);
-    fseek(f,0,SEEK_SET);
+    _fseeki64(f,0,SEEK_END);
+    size_t sz=static_cast<size_t>(_ftelli64(f));
+    _fseeki64(f,0,SEEK_SET);
     std::unique_ptr<BYTE[]> imgbuf(new BYTE[sz]);
 
     sz=fread(imgbuf.get(),1,sz,f);
@@ -182,7 +182,7 @@ void ImageImp::LoadFromFile(wchar_t *filename)
 
 void ImageImp::LoadFromRes(int id)
 {
-    int sz;
+    size_t sz;
     HGLOBAL myResourceData;
 
     get_resource(id,&myResourceData,&sz);
@@ -437,7 +437,7 @@ void Canvas::begin(HWND nhwnd,int nx,int ny,bool mirror)
             Log.print_err("ERROR in canvas_begin(): failed CreateCompatibleBitmap\n");
         else
         {
-            oldbitmap=(HBITMAP)SelectObject(hdcMem,bitmap);
+            oldbitmap=static_cast<HBITMAP>(SelectObject(hdcMem,bitmap));
             if(!oldbitmap)Log.print_err("ERROR in canvas_begin(): failed SelectObject(bitmap)\n");
         }
     }
@@ -534,17 +534,17 @@ void format_time(wchar_t *buf,long long val)
     hours%=24;
 
     wcscpy(buf,L"\x221E");
-    if(secs) wsprintf(buf,L"%d %s",(int)secs,STR(STR_UPD_TSEC));
-    if(mins) wsprintf(buf,L"%d %s %d %s",(int)mins,STR(STR_UPD_TMIN),(int)secs,STR(STR_UPD_TSEC));
-    if(hours)wsprintf(buf,L"%d %s %d %s",(int)hours,STR(STR_UPD_THOUR),(int)mins,STR(STR_UPD_TMIN));
-    if(days) wsprintf(buf,L"%d %s %d %s",(int)days,STR(STR_UPD_TDAY),(int)hours,STR(STR_UPD_THOUR));
+    if(secs) wsprintf(buf,L"%d %s",static_cast<int>(secs),STR(STR_UPD_TSEC));
+    if(mins) wsprintf(buf,L"%d %s %d %s",static_cast<int>(mins),STR(STR_UPD_TMIN),static_cast<int>(secs),STR(STR_UPD_TSEC));
+    if(hours)wsprintf(buf,L"%d %s %d %s",static_cast<int>(hours),STR(STR_UPD_THOUR),static_cast<int>(mins),STR(STR_UPD_TMIN));
+    if(days) wsprintf(buf,L"%d %s %d %s",static_cast<int>(days),STR(STR_UPD_TDAY),static_cast<int>(hours),STR(STR_UPD_THOUR));
 }
 //}
 
 //{ Draw
 void Canvas::DrawTextXY(int x1,int y1,LPCTSTR buf)
 {
-    TextOut(hdcMem,x1,y1,buf,(int)wcslen(buf));
+    TextOut(hdcMem,x1,y1,buf,static_cast<int>(wcslen(buf)));
 }
 
 //{ ClipRegion
@@ -647,7 +647,7 @@ void Canvas::DrawTextRect(const wchar_t *bufw,RECT *rect)
 int  Canvas::GetTextExtent(const wchar_t *str)
 {
     SIZE ss;
-    GetTextExtentPoint32(hdcMem,str,(int)wcslen(str),&ss);
+    GetTextExtentPoint32(hdcMem,str,static_cast<int>(wcslen(str)),&ss);
     return ss.cx;
 }
 
@@ -726,14 +726,14 @@ void Canvas::DrawLine(int x1,int y1,int x2,int y2)
 void Canvas::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
     HPEN newpen,oldpen;
-    HBRUSH newbrush,oldbrush;
+    HBRUSH /*newbrush,*/oldbrush;
     HGDIOBJ r;
     unsigned r32;
 
     if(x1>x2)return;
-    //oldbrush=(HBRUSH)SelectObject(hdc,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH));
-    newbrush=CreateSolidBrush(color1);
-    oldbrush=(HBRUSH)SelectObject(hdcMem,newbrush);
+    oldbrush=static_cast<HBRUSH>(SelectObject(hdcMem,GetStockObject(color1&0xFF000000?NULL_BRUSH:DC_BRUSH)));
+    //newbrush=CreateSolidBrush(color1);
+    //oldbrush=(HBRUSH)SelectObject(hdcMem,newbrush);
     if(color1&0xFF000000)(HBRUSH)SelectObject(hdcMem,GetStockObject(NULL_BRUSH));
 
     if(!oldbrush)Log.print_err("ERROR in drawrect(): failed SelectObject(GetStockObject)\n");
@@ -742,7 +742,7 @@ void Canvas::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,in
 
     newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
     if(!newpen)Log.print_err("ERROR in drawrect(): failed CreatePen\n");
-    oldpen=(HPEN)SelectObject(hdcMem,newpen);
+    oldpen=static_cast<HPEN>(SelectObject(hdcMem,newpen));
     if(!oldpen)Log.print_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
 
     if(rn)
@@ -759,8 +759,8 @@ void Canvas::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,in
     if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
     if(newpen)r32=DeleteObject(newpen);
     if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
-    r32=DeleteObject(newbrush);
-    if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
+    //r32=DeleteObject(newbrush);
+    //if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
 }
 
 void Canvas::DrawWidget(int x1,int y1,int x2,int y2,int id)
@@ -911,8 +911,8 @@ HICON Canvas::CreateMirroredIcon(HICON hiconOrg)
                     ii.hbmMask=ii.hbmColor=nullptr;
                     hbm=CreateCompatibleBitmap(hdcScreen,bm.bmWidth,bm.bmHeight);
                     hbmMask=CreateBitmap(bm.bmWidth,bm.bmHeight,1,1,nullptr);
-                    hbmOld=(HBITMAP)SelectObject(hdcBitmap,hbm);
-                    hbmOldMask=(HBITMAP)SelectObject(hdcMask,hbmMask);
+                    hbmOld=static_cast<HBITMAP>(SelectObject(hdcBitmap,hbm));
+                    hbmOldMask=static_cast<HBITMAP>(SelectObject(hdcMask,hbmMask));
                     DrawIconEx(hdcBitmap,0,0,hiconOrg,bm.bmWidth,bm.bmHeight,0,nullptr,DI_IMAGE);
                     DrawIconEx(hdcMask,0,0,hiconOrg,bm.bmWidth,bm.bmHeight,0,nullptr,DI_MASK);
                     SelectObject(hdcBitmap,hbmOld);

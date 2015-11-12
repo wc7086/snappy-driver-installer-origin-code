@@ -246,7 +246,7 @@ void Vault::parse()
     data_ptr=std::move(datav_ptr);
 }
 
-static void myswab(const char *s,char *d,int sz)
+static void myswab(const char *s,char *d,size_t sz)
 {
     while(sz--)
     {
@@ -265,9 +265,9 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
         return false;
     }
 
-    fseek(f,0,SEEK_END);
-    int sz=ftell(f);
-    fseek(f,0,SEEK_SET);
+    _fseeki64(f,0,SEEK_END);
+    size_t sz=static_cast<size_t>(_ftelli64(f));
+    _fseeki64(f,0,SEEK_SET);
     if(sz<10)
     {
         Log.print_err("ERROR in loadfile(): '%S' has only %d bytes\n",filename,sz);
@@ -281,7 +281,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
     fread(datav,2,1,f);
     if(!memcmp(datav,"\xEF\xBB",2))// UTF-8
     {
-        int szo;
+        size_t szo;
         fread(datav,1,1,f);
         sz-=3;
         size_t q=fread(datav,1,sz,f);
@@ -347,12 +347,12 @@ void Vault::loadFromFile(const wchar_t *filename)
 void Vault::loadFromRes(int id)
 {
     char *data1;
-    int sz;
+    size_t sz;
 
     get_resource(id,(void **)&data1,&sz);
     datav_ptr.reset(new wchar_t[sz+1]);
     wchar_t *datav=datav_ptr.get();
-    for(int i=0;i<sz;i++)
+    for(size_t i=0;i<sz;i++)
     {
         if(data1[i]==L'\r')datav[i]=L' ';else
         datav[i]=data1[i];

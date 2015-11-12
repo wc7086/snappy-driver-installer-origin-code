@@ -112,7 +112,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     wchar_t buf[BUFLEN];
     void *install64bin;
     HANDLE thr;
-    int size;
+    size_t size;
     FILE *f;
 
     *ret=1;*needrb=1;

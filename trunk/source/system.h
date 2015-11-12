@@ -50,7 +50,7 @@ public:
 };
 ThreadAbs *CreateThread();
 
-void get_resource(int id,void **data,int *size);
+void get_resource(int id,void **data,size_t *size);
 void mkdir_r(const wchar_t *path);
 void StrFormatSize(long long val,wchar_t *buf,int len);
 void ShowHelp();

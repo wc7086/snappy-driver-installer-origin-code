@@ -127,7 +127,7 @@ void Hashtable::reset(size_t size1)
     size=(int)size1;
     if(!size)size=1;
     items.resize(size);
-    items.reserve(size*4);
+    items.reserve(size*sizeof(int));
     memset(items.data(),0,size*sizeof(Hashitem));
 }
 
@@ -284,7 +284,7 @@ void WString_dyn::vsprintf(const wchar_t *format,va_list args)
 
 void WString_dyn::append(const wchar_t *str)
 {
-    size_t sz=lstrlen(buf_cur)+lstrlen(str)+1;
+    size_t sz=wcslen(buf_cur)+wcslen(str)+1;
     if(sz>len)Resize(sz);
 #ifdef _MSC_VER
     wcscat_s(buf_cur,len,str);

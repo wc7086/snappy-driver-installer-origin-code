@@ -74,7 +74,7 @@ bool SystemImp::ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_
     if(GetOpenFileName(&ofn))return true;
     return false;
 }
-void get_resource(int id,void **data,int *size)
+void get_resource(int id,void **data,size_t *size)
 {
     HRSRC myResource=FindResource(nullptr,MAKEINTRESOURCE(id),(wchar_t *)RESFILE);
     if(!myResource)
@@ -107,12 +107,12 @@ void mkdir_r(const wchar_t *path)
     while((p=wcschr(p,L'\\')))
     {
         *p=0;
-        if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
+        if(_wmkdir(buf)<0&&errno!=EEXIST&&wcslen(buf)>2)
             Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
         *p=L'\\';
         p++;
     }
-    if(_wmkdir(buf)<0&&errno!=EEXIST&&lstrlenW(buf)>2)
+    if(_wmkdir(buf)<0&&errno!=EEXIST&&wcslen(buf)>2)
         Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 
@@ -341,13 +341,14 @@ void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfByt
 			pNotify=(PFILE_NOTIFY_INFORMATION)&pMonitor->buffer[offset];
 			offset+=pNotify->NextEntryOffset;
 
-            lstrcpynW(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(wchar_t)+1);
+            wcsncpy(szFile,pNotify->FileName,pNotify->FileNameLength/sizeof(wchar_t)+1);
 
 			if(!monitor_pause)
 			{
                 FILE *f;
                 wchar_t buf[BUFLEN];
-                int m=0,sz=-1,flag;
+                int m=0,flag;
+                size_t sz=0;
 
                 errno=0;
                 wsprintf(buf,L"%ws\\%ws",pMonitor->dir,szFile);
@@ -361,8 +362,8 @@ void CALLBACK FilemonImp::monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfByt
                 }
                 if(f)
                 {
-                    fseek(f,0,SEEK_END);
-                    sz=ftell(f);
+                    _fseeki64(f,0,SEEK_END);
+                    sz=static_cast<size_t>(_ftelli64(f));
                     fclose(f);
                 }
                 /*
@@ -623,7 +624,7 @@ static BOOL CALLBACK ShowHelpProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPAR
 
     HWND hEditBox;
     LPCSTR s;
-    int sz;
+    size_t sz;
 
     switch(Message)
     {

@@ -194,7 +194,7 @@ void Device::printHWIDS(const State *state)
         while(*p)
         {
             Log.print_file("  %S\n",p);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
         }
     }
     else
@@ -209,7 +209,7 @@ void Device::printHWIDS(const State *state)
         while(*p)
         {
             Log.print_file("  %S\n",p);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
         }
     }
 }
@@ -224,7 +224,7 @@ const wchar_t *Device::getHWIDby(int num,const State *state)
         while(*p)
         {
             if(i==num)return p;
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
             i++;
         }
     }
@@ -234,7 +234,7 @@ const wchar_t *Device::getHWIDby(int num,const State *state)
         while(*p)
         {
             if(i==num)return p;
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
             i++;
         }
     }
@@ -250,9 +250,9 @@ driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
 
     wsprintf(buf,L"%S",ex.GetHWID());
     //Log.print_con("Fake '%S'\n",buf);
-    buf[lstrlen(buf)+2]=0;
+    buf[wcslen(buf)+2]=0;
     problem=2;
-    HardwareID=static_cast<ofst>(state->textas.t_memcpy((char *)buf,lstrlen(buf)*2+4));
+    HardwareID=static_cast<ofst>(state->textas.t_memcpy((char *)buf,wcslen(buf)*2+4));
 }
 
 Device::Device(HDEVINFO hDevInfo,State *state,int i)
@@ -357,7 +357,7 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     else
     {
         FILE *f;
-        int len;
+        size_t len;
 
         //log_file("Reading '%S' for (%S)\n",filename.Get(),state->textas.get(MatchingDeviceId));
         f=_wfopen(filename.Get(),L"rb");
@@ -366,10 +366,10 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
             Log.print_err("ERROR: file not found '%S'\n",filename.Get());
             return;
         }
-        fseek(f,0,SEEK_END);
-        len=ftell(f);
+        _fseeki64(f,0,SEEK_END);
+        len=static_cast<size_t>(_ftelli64(f));
         if(len<0)len=0;
-        fseek(f,0,SEEK_SET);
+        _fseeki64(f,0,SEEK_SET);
         std::unique_ptr<char[]> buft(new char[len]);
         fread(buft.get(),len,1,f);
         fclose(f);
@@ -401,7 +401,7 @@ int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
     while(*p)
     {
         if(!StrCmpIW(p,str))return dev_pos;
-        p+=lstrlenW(p)+1;
+        p+=wcslen(p)+1;
         dev_pos++;
     }
     return -1;
@@ -628,9 +628,9 @@ void State::print()
         Log.print_file("\n");
         if(batteryloc->BatteryLifePercent!=255)
             Log.print_file("  Charged:      %d\n",batteryloc->BatteryLifePercent);
-        if(batteryloc->BatteryLifeTime!=0xFFFFFFFF)
+        if(batteryloc->BatteryLifeTime!=-1)
             Log.print_file("  LifeTime:     %d mins\n",batteryloc->BatteryLifeTime/60);
-        if(batteryloc->BatteryFullLifeTime!=0xFFFFFFFF)
+        if(batteryloc->BatteryFullLifeTime!=-1)
             Log.print_file("  FullLifeTime: %d mins\n",batteryloc->BatteryFullLifeTime/60);
 
         buf=textas.getwV(monitors);
@@ -737,12 +737,12 @@ void State::popup_sysinfo(Canvas &canvas)
 
     if(battery_loc->BatteryLifePercent!=255)
         td.TextOutSF(STR(STR_SYSINF_CHARGED),L"%d%%",battery_loc->BatteryLifePercent);
-    if(battery_loc->BatteryLifeTime!=0xFFFFFFFF)
+    if(battery_loc->BatteryLifeTime!=-1)
         td.TextOutSF(STR(STR_SYSINF_LIFETIME),L"%d %s",battery_loc->BatteryLifeTime/60,STR(STR_SYSINF_MINS));
-    if(battery_loc->BatteryFullLifeTime!=0xFFFFFFFF)
+    if(battery_loc->BatteryFullLifeTime!=-1)
         td.TextOutSF(STR(STR_SYSINF_FULLLIFETIME),L"%d %s",battery_loc->BatteryFullLifeTime/60,STR(STR_SYSINF_MINS));
 
-    wchar_t *buf=(wchar_t *)(textas.get(monitors));
+    wchar_t *buf=textas.getwV(monitors);
     td.ret();
     canvas.SetFont(Popup.hFontBold);
     td.TextOutF(STR(STR_SYSINF_MONITORS));
@@ -867,9 +867,9 @@ int  State::load(const wchar_t *filename)
         return 0;
     }
 
-    fseek(f,0,SEEK_END);
-    sz=ftell(f);
-    fseek(f,0,SEEK_SET);
+    _fseeki64(f,0,SEEK_END);
+    sz=static_cast<size_t>(_ftelli64(f));
+    _fseeki64(f,0,SEEK_SET);
 
     fread(buf,3,1,f);
     fread(&version,sizeof(int),1,f);
@@ -1114,9 +1114,9 @@ size_t State::opencatfile(const Driver *cur_driver)
     //Log.print_con("Open '%S'\n",filename);
     if(f)
     {
-        fseek(f,0,SEEK_END);
-        int len=ftell(f);
-        fseek(f,0,SEEK_SET);
+        _fseeki64(f,0,SEEK_END);
+        size_t len=static_cast<size_t>(_ftelli64(f));
+        _fseeki64(f,0,SEEK_SET);
         std::unique_ptr<char[]> buft(new char[len]);
         fread(buft.get(),len,1,f);
         fclose(f);
@@ -1172,7 +1172,7 @@ void State::isnotebook_a()
     {
         int x=buf[1+i*2];
         int y=buf[2+i*2];
-        int diag=(int)(sqrt(x*x+y*y)/2.54);
+        int diag=sqrt(x*x+y*y)/2.54;
 
         if(diag<min_v||(diag==min_v&&iswide(x,y)))
         {
@@ -1190,7 +1190,7 @@ void State::isnotebook_a()
             while(*p)
             {
                 if(StrStrIW(p,L"*ACPI0003"))batdev=1;
-                p+=lstrlenW(p)+1;
+                p+=wcslen(p)+1;
             }
         }
     }

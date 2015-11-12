@@ -84,7 +84,7 @@ enum DRIVERPACK_TYPE
 };
 
 // Misc functions
-void findosattr(char *bufa,char *adr,size_t len);
+void findosattr(char *bufa,const char *adr,size_t len);
 void *mySzAlloc(void *p,size_t size);
 void mySzFree(void *p,void *address);
 
@@ -220,7 +220,7 @@ public:
     Parser(Driverpack *drp,std::unordered_map<std::string,std::string> &string_listv,const wchar_t *inf);
     Parser(char *vb,char *ve);
 
-    void setRange(sect_data_t *lnk);
+    void setRange(const sect_data_t *lnk);
 };
 
 // Indexes
@@ -379,7 +379,7 @@ public:
 
     void fillinfo(const char *sect,const char *hwid,unsigned start_index,int *inf_pos,ofst *cat,int *catalogfile,int *feature);
     void getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t *indfile);
-    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,char *adr,size_t len);
+    void parsecat(wchar_t const *pathinf,wchar_t const *inffile,const char *adr,size_t len);
     void indexinf(wchar_t const *drpdir,wchar_t const *inffile,const char *inf_base,size_t inf_len);
 
     friend class Hwidmatch;

@@ -313,7 +313,7 @@ void itembar_t::contextmenu(int x,int y)
             escapeAmp(buf,p);
             InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
             InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
             i++;
         }
     }
@@ -325,7 +325,7 @@ void itembar_t::contextmenu(int x,int y)
             escapeAmp(buf,p);
             InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING,ID_HWID_WEB+i,buf);
             InsertMenu(hSub2,i,MF_BYPOSITION|MF_STRING,ID_HWID_CLIP+i,buf);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
             i++;
         }
     }
@@ -452,7 +452,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
         }
     }
     if(devicematch_f->device->CompatibleIDs)
@@ -470,7 +470,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
             if(!StrCmpIW(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
-            p+=lstrlenW(p)+1;
+            p+=wcslen(p)+1;
         }
     }
     if(!cur_driver||!hwidmatch_f)cm_hwid=0;
@@ -913,7 +913,7 @@ void Manager::hitscan(int x,int y,size_t *r,int *zone)
 void Manager::clear()
 {
     itembar_t *itembar;
-    unsigned i;
+    size_t i;
 
     itembar=&items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<items_list.size();i++,itembar++)
@@ -932,7 +932,7 @@ void Manager::updateoverall()
 {
     int _totalitems=0;
     int _processeditems=0;
-    unsigned j;
+    size_t j;
 
     if(installmode==MODE_NONE)
     {
@@ -1024,7 +1024,7 @@ void Manager::testitembars()
 void Manager::toggle(size_t index)
 {
     itembar_t *itembar,*itembar1;
-    unsigned i;
+    size_t i;
     size_t group;
 
     #ifdef USE_TORRENT
@@ -1227,7 +1227,7 @@ void Manager::setpos()
 int Manager::animate()
 {
     int chg=0;
-    long tt1=GetTickCount()-animstart;
+    int tt1=GetTickCount()-animstart;
 
     // Move itembars
     for(auto &itembar:items_list)
@@ -1280,9 +1280,9 @@ int Manager::groupsize(size_t index)
     return num;
 }
 
-int Manager::countItems()
+size_t Manager::countItems()
 {
-    unsigned j,cnt=0;
+    size_t j,cnt=0;
     itembar_t *itembar;
 
 	if(items_list.size()<=RES_SLOTS)return 0;
@@ -1729,7 +1729,7 @@ void Manager::restorepos(Manager *manager_old)
 {
     itembar_t *itembar_new,*itembar_old;
     Txt *t_new,*t_old;
-    unsigned i,j;
+    size_t i,j;
     bool show_changes=manager_old->items_list.size()>20;
 
     //if(statemode==STATEMODE_LOAD)show_changes=0;

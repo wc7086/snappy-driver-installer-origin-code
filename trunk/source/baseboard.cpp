@@ -194,13 +194,13 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
                 else
                     if((vtProp.vt&VT_ARRAY))
                     {
-                        long lLower,lUpper;
+                        LONG lLower,lUpper;
                         UINT32 Element=0;
                         SAFEARRAY *pSafeArray=vtProp.parray;
                         SafeArrayGetLBound(pSafeArray,1,&lLower);
                         SafeArrayGetUBound(pSafeArray,1,&lUpper);
 
-                        for(long i=lLower;i<=lUpper;i++)
+                        for(LONG i=lLower;i<=lUpper;i++)
                         {
                             hres=SafeArrayGetElement(pSafeArray,&i,&Element);
                             *type=Element;
