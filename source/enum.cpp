@@ -172,13 +172,13 @@ void Device::print(const State *state)
         "Device is currently stopped"
     };
 
-    const char *s=state->textas.get(0);
+    const Txt *txt=&state->textas;
     Log.print_file("DeviceInfo\n");
-    Log.print_file("  Name:         %S\n",s+Devicedesc);
+    Log.print_file("  Name:         %S\n",txt->get(Devicedesc));
     Log.print_file("  Status:       ");
     Log.print_file(deviceststus_str[print_status()],problem);
-    Log.print_file("\n  Manufacturer: %S\n",s+Mfg);
-    Log.print_file("  HWID_reg      %S\n",s+Driver);
+    Log.print_file("\n  Manufacturer: %S\n",txt->getw(Mfg));
+    Log.print_file("  HWID_reg      %S\n",txt->getw(Driver));
     Log.print_file("  Class:        ");print_guid(&DeviceInfoData.ClassGuid);
     Log.print_file("  Location:     \n");
     Log.print_file("  ConfigFlags:  %d\n",ConfigFlags);
@@ -385,8 +385,8 @@ void Driver::scaninf(State *state,Driverpack *unpacked_drp,int &inf_pos)
     char sect[BUFLEN];
     char hwid[BUFLEN];
     inf_pos=-1;
-    wsprintfA(sect,"%ws%ws",state->textas.get(InfSection),state->textas.get(InfSectionExt));
-    wsprintfA(hwid,"%ws",state->textas.get(MatchingDeviceId));
+    wsprintfA(sect,"%ws%ws",state->textas.getw(InfSection),state->textas.getw(InfSectionExt));
+    wsprintfA(hwid,"%ws",state->textas.getw(MatchingDeviceId));
     unpacked_drp->fillinfo(sect,hwid,start_index,&inf_pos,&cat,&catalogfile,&feature);
 
     //log_file("Added  %d,%d,%d,%d\n",feature,catalogfile,cat,inf_pos);
@@ -438,23 +438,23 @@ int Driver::isvalidcat(const State *state)const
 
 void Driver::print(const State *state)const
 {
-    const char *s=state->textas.get(0);
+    const Txt *txt=&state->textas;
     WStringShort date;
     WStringShort vers;
 
     version.str_date(date);
     version.str_version(vers);
-    Log.print_file("  Name:     %S\n",s+DriverDesc);
-    Log.print_file("  Provider: %S\n",s+ProviderName);
+    Log.print_file("  Name:     %S\n",txt->getw(DriverDesc));
+    Log.print_file("  Provider: %S\n",txt->getw(ProviderName));
     Log.print_file("  Date:     %S\n",date.Get());
     Log.print_file("  Version:  %S\n",vers.Get());
-    Log.print_file("  HWID:     %S\n",s+MatchingDeviceId);
-    Log.print_file("  inf:      %S%S,%S%S\n",(s+state->getWindir()),s+InfPath,s+InfSection,s+InfSectionExt);
+    Log.print_file("  HWID:     %S\n",txt->getw(MatchingDeviceId));
+    Log.print_file("  inf:      %S%S,%S%S\n",txt->getw(state->getWindir()),txt->getw(InfPath),txt->getw(InfSection),txt->getw(InfSectionExt));
     Log.print_file("  Score:    %08X %04x\n",calc_score_h(state),identifierscore);
-    //Log.print_file("  Sign:     '%s'(%d)\n",s+cat,catalogfile);
+    //Log.print_file("  Sign:     '%s'(%d)\n",txt->get(cat),catalogfile);
 
     if(Log.isAllowed(LOG_VERBOSE_BATCH))
-        Log.print_file("  Filter:   \"%S\"=a,%S\n",s+DriverDesc,s+MatchingDeviceId);
+        Log.print_file("  Filter:   \"%S\"=a,%S\n",txt->getw(DriverDesc),txt->getw(MatchingDeviceId));
 }
 
 Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp)
@@ -485,14 +485,14 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
 
     if(DriverDate)
     {
-        wsprintfA(bufa,"%ws",state->textas.get(DriverDate));
+        wsprintfA(bufa,"%ws",state->textas.getw(DriverDate));
         Parser pi{bufa,bufa+strlen(bufa)};
         pi.readDate(&version);
     }
 
     if(DriverVersion)
     {
-        wsprintfA(bufa,"%ws",state->textas.get(DriverVersion));
+        wsprintfA(bufa,"%ws",state->textas.getw(DriverVersion));
         Parser pi{bufa,bufa+strlen(bufa)};
         pi.readVersion(&version);
     }
@@ -1171,7 +1171,7 @@ void State::isnotebook_a()
     {
         int x=buf[1+i*2];
         int y=buf[2+i*2];
-        int diag=sqrt(x*x+y*y)/2.54;
+        int diag=static_cast<int>(sqrt(x*x+y*y)/2.54);
 
         if(diag<min_v||(diag==min_v&&iswide(x,y)))
         {

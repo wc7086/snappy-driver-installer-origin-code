@@ -1050,9 +1050,9 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                     wpos->y=rect.top;
                     wpos->cx=rect.right-wpos->x;
                     wpos->cy=rect.bottom-wpos->y;
-                    Log.print_con("%d,%d,%d,%d\n",rect.left,rect.top,rect.right,rect.bottom);
+                    //Log.print_con("%d,%d,%d,%d\n",rect.left,rect.top,rect.right,rect.bottom);
                     Settings.scale=750*256/wpos->cy;
-                    Log.print_con("(%d,%d,%d)\n",wpos->cx,wpos->cy,Settings.scale);
+                    //Log.print_con("(%d,%d,%d)\n",wpos->cx,wpos->cy,Settings.scale);
                     MainWindow.theme_refresh();
                 }
             }
@@ -1421,7 +1421,7 @@ void InstallCommand::LeftClick(bool)
     if(installmode==MODE_NONE)
     {
         if((Settings.flags&FLAG_EXTRACTONLY)==0)
-        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
+        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getTemp()));
         manager_g->install(INSTALLDRIVERS);
     }
 }
@@ -1540,7 +1540,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((Settings.flags&FLAG_EXTRACTONLY)==0)
-                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.get(manager_g->matcher->getState()->getTemp()));
+                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getTemp()));
                     manager_g->install(INSTALLDRIVERS);
                 }
                 redrawfield();

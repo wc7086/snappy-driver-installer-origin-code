@@ -181,7 +181,7 @@ int Version::setDate(int d_,int m_,int y_)
     int flag=0;
     if(y<100)y+=1900;
     if(y<1990)flag=1;
-    if(y>2013)flag=2;
+    if(y>2015)flag=2;
     switch(m)
     {
         case 1:case 3:case 5:case 7:case 8:case 10:case 12:
@@ -221,6 +221,8 @@ void Version::str_date(WStringShort &buf,bool invariant)const
 
     if(y<1000||!r)
         buf.sprintf(STR(STR_HINT_UNKNOWN));
+    else if(invariant)
+        buf.sprintf(L"%02d/%02d/%d",m,d,y);
     else
         GetDateFormat(invariant?LOCALE_INVARIANT:manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf.GetV(),static_cast<int>(buf.Length()));
 }
@@ -518,7 +520,7 @@ void Parser::subStr()
     if(!flag)return;
 
     *p_s=0;
-    strBeg=textholder.getV(textholder.strcpy(static_buf));
+    strBeg=textholder.get(textholder.strcpy(static_buf));
     strEnd=strBeg+strlen(strBeg);
 }
 
@@ -645,7 +647,6 @@ int Parser::readHex()
 
 int Parser::readDate(Version *t)
 {
-
     while(strBeg<strEnd&&!(*strBeg>='0'&&*strBeg<='9'))strBeg++;
     int m=readNumber();
     int d=readNumber();
@@ -1506,7 +1507,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
     char secttry[256];
     char line[2048];
-    int  strs[16];
+    ofst  strs[64];
 
     std::unordered_map<std::string,std::string> string_list;
     std::unordered_multimap<std::string,sect_data_t> section_list;
@@ -1701,7 +1702,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
             {
                 parse_info.readStr(&s1b,&s1e);
                 strtolower(s1b,s1e-s1b);
-                strs[cur_manuf->sections_n++]=text_ind.t_memcpyz(s1b,s1e-s1b);
+                strs[cur_manuf->sections_n++]=static_cast<ofst>(text_ind.t_memcpyz(s1b,s1e-s1b));
                 while(1)
                 {
                     if(cur_manuf->sections_n>1)
@@ -1846,7 +1847,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
                     parse_info.readStr(&s1b,&s1e);
                     if(s1b>s1e)break;
                     strtolower(s1b,s1e-s1b);
-                    strs[cur_manuf->sections_n++]=text_ind.t_memcpyz(s1b,s1e-s1b);
+                    strs[cur_manuf->sections_n++]=static_cast<ofst>(text_ind.t_memcpyz(s1b,s1e-s1b));
                 }
             }
             cur_manuf->sections=static_cast<ofst>(text_ind.t_memcpyz((char *)strs,sizeof(int)*cur_manuf->sections_n));
@@ -2147,7 +2148,7 @@ void Driverpack::print_index_hr()
     f=_wfopen(filename,L"wt");
 
     Log.print_con("Saving %S\n",filename);
-    fwprintf(f,L"%S\\%S (%u inf files)\n",getPath(),getFilename(),n);
+    fprintf(f,"%S\\%S (%d inf files)\n",getPath(),getFilename(),static_cast<int>(n));
     for(inffile_index=0;inffile_index<n;inffile_index++)
     {
         d_i=&inffile[inffile_index];

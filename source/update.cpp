@@ -716,7 +716,7 @@ void UpdaterImp::updateTorrentStatus()
     if(torrenttime)t->elapsed=GetTickCount()-torrenttime;
     if(t->downloadspeed)
     {
-        averageSpeed=(int)(SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed);
+        averageSpeed=static_cast<int>(SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed);
         if(averageSpeed)t->remaining=(t->downloadsize-t->downloaded)/averageSpeed*1000;
     }
 
@@ -988,7 +988,7 @@ void UpdaterImp::downloadTorrent()
     downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
     i=UpdateDialog.populate(0);
     Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
-    for(i=0;i<numfiles;i++)hTorrent.file_priority(i,0);
+    for(int j=0;j<numfiles;j++)hTorrent.file_priority(j,0);
     Timers.stop(time_chkupdate);
 }
 
