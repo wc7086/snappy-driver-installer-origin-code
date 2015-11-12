@@ -16,13 +16,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "settings.h"
-#include "gui.h"
 #include "logging.h"
 #include "matcher.h"
 #include "common.h"
 #include "manager.h"
 #include "theme.h"
+#include "settings.h"
+#include "gui.h"
 
 #include <windows.h>
 

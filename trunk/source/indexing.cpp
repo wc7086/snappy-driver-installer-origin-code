@@ -1506,7 +1506,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
 
     char secttry[256];
     char line[2048];
-    size_t  strs[16];
+    int  strs[16];
 
     std::unordered_map<std::string,std::string> string_list;
     std::unordered_multimap<std::string,sect_data_t> section_list;
