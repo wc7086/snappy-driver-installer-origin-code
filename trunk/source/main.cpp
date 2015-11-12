@@ -748,21 +748,10 @@ void MainWindow_t::redrawmainwnd()
 
 void MainWindow_t::tabadvance(int v)
 {
-/*    if(v>0)
+    if(v>0)
         wPanels->NextPanel();
     else
         wPanels->PrevPanel();
-*/
-    while(1)
-    {
-        kbpanel+=v;
-        if(!kbpanel)kbpanel=KB_PANEL_CHK;
-        if(kbpanel>KB_PANEL_CHK)kbpanel=KB_FIELD;
-
-        if(kbpanel==KB_PANEL_CHK&&!D_X(PANEL12_WY))continue;
-        if(!Settings.expertmode&&kbpanel>=KB_ACTIONS&&kbpanel<=KB_PANEL3)continue;
-        break;
-    }
 
     if(kbpanel==KB_LANG)
         hLang->Focus();
@@ -775,7 +764,6 @@ void MainWindow_t::tabadvance(int v)
     wPanels->Accept(hv);
 
     redrawfield();
-    //redrawmainwnd();
 }
 
 extern int setaa;
@@ -790,8 +778,9 @@ void MainWindow_t::arrowsAdvance(int v)
 
     if(kbpanel==KB_INSTALL)
     {
-        kbitem[kbpanel]+=v;
-        if(kbitem[kbpanel]<0)kbitem[kbpanel]=2;
+        kbinstall+=v;
+        if(kbinstall<0)kbinstall=2;
+        if(kbinstall>2)kbinstall=0;
 
         HoverVisiter hv{0,0};
         wPanels->Accept(hv);
@@ -800,13 +789,12 @@ void MainWindow_t::arrowsAdvance(int v)
     }
     if(kbpanel==KB_FIELD)
     {
-        kbitem[kbpanel]+=v;
+        kbfield+=v;
         setaa=1;
         redrawfield();
         return;
     }
 
-    //for(int i=0;i<NUM_PANELS;i++)panels[i].keybAdvance(v);
     HoverVisiter hv{0,0};
     wPanels->Accept(hv);
     redrawmainwnd();

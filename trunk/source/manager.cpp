@@ -235,6 +235,7 @@ int itembar_t::box_status()
                 case STR_INST_REBOOT:
                     return BOX_DRVITEM_D2;
 
+                case STR_INST_STOPPING:
                 case STR_INST_FAILED:
                 case STR_EXTR_FAILED:
                     return BOX_DRVITEM_DE;
@@ -862,8 +863,8 @@ void Manager::hitscan(int x,int y,size_t *r,int *zone)
         for(i=0;i<items_list.size();i++,itembar++)
         if(itembar->isactive&&(itembar->first&2)==0)max_cnt++;
 
-        if(MainWindow.kbitem[MainWindow.kbpanel]<0)MainWindow.kbitem[MainWindow.kbpanel]=max_cnt-1;
-        if(MainWindow.kbitem[MainWindow.kbpanel]>=max_cnt)MainWindow.kbitem[MainWindow.kbpanel]=0;
+        if(MainWindow.kbfield<0)MainWindow.kbfield=max_cnt-1;
+        if(MainWindow.kbfield>=max_cnt)MainWindow.kbfield=0;
     }
 
     y-=-D_X(DRVITEM_DIST_Y0);
@@ -877,7 +878,7 @@ void Manager::hitscan(int x,int y,size_t *r,int *zone)
         if(MainWindow.kbpanel==KB_FIELD)
         {
             *r=i;
-            if(MainWindow.kbitem[MainWindow.kbpanel]==cnt)
+            if(MainWindow.kbfield==cnt)
             {
                 if(setaa)
                 {
@@ -941,6 +942,7 @@ void Manager::updateoverall()
     }
     itembar_t *itembar1=&items_list[RES_SLOTS];
     for(j=RES_SLOTS;j<items_list.size();j++,itembar1++)
+    if(itembar1->install_status!=STR_INST_STOPPING)
     {
         if(itembar1->checked||itembar1->install_status){_totalitems++;}
         if(itembar1->install_status&&!itembar1->checked){_processeditems++;}
@@ -1034,9 +1036,16 @@ void Manager::toggle(size_t index)
     itembar1=&items_list[index];
     if(index>=RES_SLOTS&&!itembar1->hwidmatch)return;
     itembar1->checked^=1;
-    if(!itembar1->checked&&installmode)
+    if(installmode)
     {
-        itembar1->install_status=STR_INST_STOPPING;
+        if(itembar1->checked)
+        {
+            if(itembar1->install_status==STR_INST_STOPPING)itembar1->install_status=0;
+        }
+        else
+        {
+            itembar1->install_status=STR_INST_STOPPING;
+        }
     }
     if(index==SLOT_RESTORE_POINT)
     {

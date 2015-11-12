@@ -63,10 +63,10 @@ enum KB_ID
 {
     KB_NONE           =  0,
     KB_FIELD          =  1,
-    KB_INSTALL        =  2,
-    KB_LANG           =  3,
-    KB_THEME          =  4,
-    KB_EXPERT         =  5,
+    KB_LANG           =  2,
+    KB_THEME          =  3,
+    KB_EXPERT         =  4,
+    KB_INSTALL        =  5,
     KB_ACTIONS        =  6,
     KB_PANEL1         =  7,
     KB_PANEL2         =  8,
@@ -174,7 +174,7 @@ public:
     int space_down;
     int shift_down;
 
-    int kbpanel,kbitem[KB_PANEL_CHK+1];
+    int kbpanel,kbfield,kbinstall;
 
 private:
     static LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
