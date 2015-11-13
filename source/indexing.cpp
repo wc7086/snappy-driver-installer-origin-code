@@ -23,6 +23,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "matcher.h"
 #include "indexing.h"
 #include "theme.h"
+#include "system.h"
+#include "manager.h"
 
 #include "7zip.h"
 #ifdef _MSC_VER
@@ -30,8 +32,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 // Depend on Win32API
-#include "manager.h"
-#include "system.h"
 #include "enum.h"
 #include "main.h"
 
@@ -852,13 +852,20 @@ void Collection::populate()
     if(drp_count&&num_thr>2)num_thr=2;
     #endif
 
-    HANDLE thr[16],cons[16];
-    for(int i=0;i<num_thr_1;i++)
-        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::indexinf_thread,&queuedriverpack1,0,nullptr);
-
     drplist_t queuedriverpack;
+    ThreadAbs *cons[16];
     for(int i=0;i<num_thr;i++)
-        cons[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::loaddrp_thread,&queuedriverpack,0,nullptr);
+    {
+        cons[i]=CreateThread();
+        cons[i]->start(&Driverpack::loaddrp_thread,&queuedriverpack);
+    }
+
+    ThreadAbs *thr[16];
+    for(int i=0;i<num_thr_1;i++)
+    {
+        thr[i]=CreateThread();
+        thr[i]->start(&Driverpack::indexinf_thread,&queuedriverpack1);
+    }
 //}thread
 
     if(Settings.flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
@@ -869,8 +876,8 @@ void Collection::populate()
 
     for(int i=0;i<num_thr;i++)
     {
-        WaitForSingleObject(cons[i],INFINITE);
-        System.CloseHandle_log(cons[i],L"driverpack_genindex",L"cons");
+        cons[i]->join();
+        delete cons[i];
     }
 
     loadOnlineIndexes();
@@ -885,8 +892,8 @@ void Collection::populate()
 
     for(int i=0;i<num_thr_1;i++)
     {
-        WaitForSingleObject(thr[i],INFINITE);
-        System.CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
+        thr[i]->join();
+        delete thr[i];
     }
 //}thread
     Settings.flags&=~COLLECTION_FORCE_REINDEXING;
@@ -916,10 +923,13 @@ void Collection::save()
         if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
 
     if(count_)Log.print_con("Saving indexes...\n");
-    HANDLE thr[16];
+    ThreadAbs *thr[16];
     drplist_t queuedriverpack_loc;
     for(int i=0;i<num_cores;i++)
-        thr[i]=(HANDLE)_beginthreadex(nullptr,0,&Driverpack::savedrp_thread,&queuedriverpack_loc,0,nullptr);
+    {
+        thr[i]=CreateThread();
+        thr[i]->start(&Driverpack::savedrp_thread,&queuedriverpack_loc);
+    }
     for(auto &driverpack:driverpack_list)
         if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)
             queuedriverpack_loc.push(driverpack_task{&driverpack});
@@ -927,8 +937,8 @@ void Collection::save()
     for(int i=0;i<num_cores;i++)queuedriverpack_loc.push(driverpack_task{nullptr});
     for(int i=0;i<num_cores;i++)
     {
-        WaitForSingleObject(thr[i],INFINITE);
-        System.CloseHandle_log(thr[i],L"driverpack_genindex",L"thr");
+        thr[i]->join();
+        delete thr[i];
     }
     manager_g->itembar_settext(SLOT_INDEXING,0);
     if(count_)Log.print_con("DONE\n");

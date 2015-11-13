@@ -16,15 +16,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "system.h"
 #include "common.h"
 #include "logging.h"
 #include "settings.h"
 #include "cli.h"
 
-#include <windows.h>
-
-// Depend on Win32API
-#include "system.h"
+#include <strings.h>
 
 #define INSTALLEDVENFILENAMEDEFPATH L"%temp%\\SDI2\\InstalledID.txt"
 

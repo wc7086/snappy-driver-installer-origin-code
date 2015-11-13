@@ -23,10 +23,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "theme.h"
 #include "gui.h"
+#include "system.h"
 
 #include <windows.h>
 
-#include "system.h"
 #include "enum.h"
 #include "main.h"
 #include "device.h"

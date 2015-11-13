@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"
 #include "gui.h"
 #include "theme.h"
+#include "system.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -39,7 +40,6 @@ typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtS
 #include "enum.h"
 #include "main.h"
 #include "draw.h"
-#include "system.h"
 
 // Autoclicker
 #define AUTOCLICKER_CONFIRM
@@ -111,7 +111,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     wchar_t cmd[BUFLEN];
     wchar_t buf[BUFLEN];
     void *install64bin;
-    HANDLE thr;
+    ThreadAbs *thr=CreateThread();
     size_t size;
     FILE *f;
 
@@ -135,7 +135,7 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
 
     Autoclicker.setflag(1);
     Log.save();
-    thr=(HANDLE)_beginthreadex(nullptr,0,&Autoclicker_t::thread_clicker,nullptr,0,nullptr);
+    thr->start(&Autoclicker_t::thread_clicker,nullptr);
     {
         if(Settings.flags&FLAG_DISABLEINSTALL)
             Sleep(2000);
@@ -158,8 +158,9 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
         }
     }
     Autoclicker.setflag(0);
-    WaitForSingleObject(thr,INFINITE);
-    System.CloseHandle_log(thr,L"driver_install",L"thr");
+
+    thr->join();
+    delete thr;
     if(*ret==1)SaveHWID(hwid);
 }
 

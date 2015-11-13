@@ -27,6 +27,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"    // non-portable
 #include "gui.h"
 #include "theme.h"
+#include "system.h" // non-portable
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -38,7 +39,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "enum.h"   // non-portable
 #include "main.h"
-#include "system.h" // non-portable
 #include "draw.h"   // non-portable
 
 #include "model.h"
@@ -230,12 +230,13 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     Bundle bundle[2];
     manager_v[0].init(bundle[bundle_display].getMatcher());
     manager_v[1].init(bundle[bundle_display].getMatcher());
-    deviceupdate_event=CreateEvent();
+    deviceupdate_event=CreateEventWr();
 
     // Start device/driver scan
     bundle[bundle_display].bundle_prep();
     invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
-    HANDLE thr=(HANDLE)_beginthreadex(nullptr,0,&Bundle::thread_loadall,&bundle[0],0,nullptr);
+    ThreadAbs *thr=CreateThread();
+    thr->start(&Bundle::thread_loadall,&bundle[0]);
 
     // Check updates
     #ifdef USE_TORRENT
@@ -253,8 +254,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Wait till the device scan thread is finished
     if(MainWindow.hMain)deviceupdate_exitflag=1;
     deviceupdate_event->raise();
-    WaitForSingleObject(thr,INFINITE);
-    System.CloseHandle_log(thr,L"WinMain",L"thr");
+    thr->join();
+    delete thr;
     delete deviceupdate_event;
 
     // Stop libtorrent
@@ -321,7 +322,7 @@ void MainWindow_t::MainLoop(int nCmd)
     if(!RegisterClassEx(&wcx))
     {
         Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
-        System.UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
+        System.UnregisterClass_log(classMain,L"gui",L"classMain");
         return;
     }
 
@@ -331,8 +332,8 @@ void MainWindow_t::MainLoop(int nCmd)
     if(!RegisterClassEx(&wcx))
     {
         Log.print_err("ERROR in gui(): failed to register '%S' class\n",wcx.lpszClassName);
-        System.UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
-        System.UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
+        System.UnregisterClass_log(classMain,L"gui",L"classMain");
+        System.UnregisterClass_log(classPopup,L"gui",L"classPopup");
         return;
     }
 
@@ -467,9 +468,9 @@ void MainWindow_t::MainLoop(int nCmd)
         }
     }
 
-    System.UnregisterClass_log(classMain,ghInst,L"gui",L"classMain");
-    System.UnregisterClass_log(classPopup,ghInst,L"gui",L"classPopup");
-    System.UnregisterClass_log(classField,ghInst,L"gui",L"classField");
+    System.UnregisterClass_log(classMain,L"gui",L"classMain");
+    System.UnregisterClass_log(classPopup,L"gui",L"classPopup");
+    System.UnregisterClass_log(classField,L"gui",L"classField");
 }
 //}
 

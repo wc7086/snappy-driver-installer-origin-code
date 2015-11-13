@@ -25,6 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"
 #include "langlist.h"
 #include "theme.h"
+#include "system.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -32,7 +33,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shellapi.h>
 #endif
 
-#include "system.h"
 #include "main.h"
 #include "draw.h"
 

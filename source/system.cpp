@@ -16,7 +16,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "common.h"
+#include "settings.h"
 #include "logging.h"
+#include "manager.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -31,11 +34,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shlwapi.h>        // for PathFileExists
 #include <shlobj.h>         // for SHBrowseForFolder
 
-#include "common.h"
-#include "system.h"
 #include "main.h"
-#include "settings.h"
-#include "manager.h"
+#include "system.h"
 
 SystemImp System;
 int monitor_pause=0;
@@ -154,8 +154,8 @@ class EventImp:public Event
     HANDLE h;
 
 public:
-    EventImp():
-        h(CreateEvent(nullptr,0,0,nullptr))
+    EventImp(bool manual):
+        h(CreateEvent(nullptr,manual?1:0,0,nullptr))
     {
     }
     ~EventImp()
@@ -174,11 +174,15 @@ public:
     {
         SetEvent(h);
     }
+    void reset()
+    {
+        ResetEvent(h);
+    }
 };
 
-Event *CreateEvent()
+Event *CreateEventWr(bool manual)
 {
-    return new EventImp;
+    return new EventImp{manual};
 }
 //}
 
@@ -197,7 +201,11 @@ public:
     }
     ~ThreadImp()
     {
-        if(h)CloseHandle(h);
+        if(h)
+        {
+            if(!CloseHandle(h))
+                Log.print_err("ERROR in ThreadImpS(): failed CloseHandle\n");
+        }
     }
 };
 ThreadAbs *CreateThread()
@@ -205,15 +213,9 @@ ThreadAbs *CreateThread()
     return new ThreadImp;
 }
 
-void SystemImp::CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj)
+void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj)
 {
-    if(!CloseHandle(h))
-        Log.print_err("ERROR in %S(): failed CloseHandle(%S)\n",func,obj);
-}
-
-void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj)
-{
-    if(!UnregisterClass(lpClassName,hInstance))
+    if(!UnregisterClass(lpClassName,ghInst))
         Log.print_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
 }
 
@@ -243,11 +245,6 @@ int SystemImp::canWrite(const wchar_t *path)
         GetVolumeInformation(nullptr,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
 
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
-}
-
-void SystemImp::getClassDesc(const GUID *guid,wchar_t *bufw)
-{
-    SetupDiGetClassDescription(guid,bufw,BUFLEN,nullptr);
 }
 
 void SystemImp::CreateDir(const wchar_t *filename)

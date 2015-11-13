@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"
 #include "gui.h"
 #include "theme.h"
+#include "system.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -34,7 +35,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "enum.h"
 #include "main.h"
-#include "system.h"
 #include "draw.h"
 
 //{ Global vars
@@ -421,7 +421,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     }
 
     bufw[0]=0;
-    System.getClassDesc(&devicematch_f->device->DeviceInfoData.ClassGuid,bufw);
+    devicematch_f->device->getClassDesc(bufw);
 
     canvas.SetFont(Popup.hFontBold);
     td.ret();

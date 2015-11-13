@@ -23,13 +23,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "gui.h"
 #include "theme.h"
+#include "system.h"
 
 #include <windows.h>
 
 // Depend on Win32API
 #include "draw.h"     // todo: lots of Win32
 #include "enum.h"     // needs Version from indexing.h
-#include "system.h"
 #include "main.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()

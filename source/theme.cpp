@@ -20,12 +20,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "logging.h"
 #include "settings.h"
 #include "theme.h"
+#include "system.h"
 
 #include <windows.h>
 
 #include "draw.h"
 #include "main.h"
-#include "system.h"
 
 #include <memory>
 #include <string.h>

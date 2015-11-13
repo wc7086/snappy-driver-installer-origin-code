@@ -16,11 +16,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include <stddef.h>
 #include "theme.h"
 
 #include <windows.h>
-
 
 entry_t language[STR_NM]=
 {

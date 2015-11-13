@@ -29,6 +29,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #endif
 
+//{ Event
 class Event
 {
 public:
@@ -36,9 +37,12 @@ public:
     virtual void wait()=0;
     virtual bool isRaised()=0;
     virtual void raise()=0;
+    virtual void reset()=0;
 };
-Event *CreateEvent();
+Event *CreateEventWr(bool manual=false);
+//}
 
+//{ ThreadAbs
 typedef unsigned ( __stdcall *threadCallback)(void *arg);
 
 class ThreadAbs
@@ -49,12 +53,14 @@ public:
     virtual void join()=0;
 };
 ThreadAbs *CreateThread();
+//}
 
 void get_resource(int id,void **data,size_t *size);
 void mkdir_r(const wchar_t *path);
 void StrFormatSize(long long val,wchar_t *buf,int len);
 void ShowHelp();
 
+//{ System
 class SystemImp
 {
 public:
@@ -72,13 +78,12 @@ public:
     void CreateDir(const wchar_t *filename);
     void fileDelSpec(wchar_t *filename);
 
-    void getClassDesc(const GUID *guid,wchar_t *bufw);
-    void CloseHandle_log(HANDLE h,const wchar_t *func,const wchar_t *obj);
-    void UnregisterClass_log(const wchar_t *lpClassName,HINSTANCE hInstance,const wchar_t *func,const wchar_t *obj);
+    void UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj);
 };
 extern SystemImp System;
+//}
 
-// FileMonitor
+//{ FileMonitor
 class Filemon
 {
 public:
@@ -88,5 +93,6 @@ public:
 typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
 Filemon *CreateFilemon(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback);
 extern int monitor_pause;
+//}
 
 #endif

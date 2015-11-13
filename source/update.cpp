@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "theme.h"
 #include "gui.h"
+#include "system.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -52,7 +53,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "main.h"
-#include "system.h"
 #include "draw.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
@@ -111,8 +111,8 @@ public:
 // Updater
 class UpdaterImp:public Updater_t
 {
-    static HANDLE downloadmangar_event;
-    static HANDLE thandle_download;
+    static Event *downloadmangar_event;
+    static ThreadAbs *thandle_download;
 
     static int downloadmangar_exitflag;
     static bool finishedupdating;
@@ -185,8 +185,8 @@ int Updater_t::connections=0;
 int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
-HANDLE UpdaterImp::downloadmangar_event=nullptr;
-HANDLE UpdaterImp::thandle_download=nullptr;
+Event *UpdaterImp::downloadmangar_event=nullptr;
+ThreadAbs *UpdaterImp::thandle_download=nullptr;
 //}
 
 //{ UpdateDialog
@@ -820,7 +820,7 @@ void UpdaterImp::checkUpdates()
     if(System.canWrite(L"update"))
     {
         downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_TORRENT;
-        SetEvent(downloadmangar_event);
+        downloadmangar_event->raise();
     }
 }
 
@@ -889,8 +889,9 @@ UpdaterImp::UpdaterImp()
     TorrentStatus.sessionpaused=1;
     downloadmangar_exitflag=DOWNLOAD_STATUS_WAITING;
 
-    downloadmangar_event=CreateEvent(nullptr,1,0,nullptr);
-    thandle_download=(HANDLE)_beginthreadex(nullptr,0,&thread_download,nullptr,0,nullptr);
+    downloadmangar_event=CreateEventWr(true);
+    thandle_download=CreateThread();
+    thandle_download->start(&thread_download,nullptr);
 }
 
 UpdaterImp::~UpdaterImp()
@@ -898,10 +899,10 @@ UpdaterImp::~UpdaterImp()
     if(thandle_download)
     {
         downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
-        SetEvent(downloadmangar_event);
-        WaitForSingleObject(thandle_download,INFINITE);
-        System.CloseHandle_log(thandle_download,L"thandle_download",L"thr");
-        System.CloseHandle_log(downloadmangar_event,L"downloadmangar_event",L"event");
+        downloadmangar_event->raise();
+        thandle_download->join();
+        delete thandle_download;
+        delete downloadmangar_event;
     }
 }
 
@@ -971,6 +972,7 @@ void UpdaterImp::downloadTorrent()
         Log.print_con(".");
         if(hTorrent.torrent_file())
         {
+            downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
             Log.print_con("DONE\n");
             break;
         }
@@ -985,9 +987,9 @@ void UpdaterImp::downloadTorrent()
     }
 
     // Pupulate list
-    downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
+    //downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
     i=UpdateDialog.populate(0);
-    Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
+    Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d [%d]\n",i>>8,i&0xFF,downloadmangar_exitflag);
     for(int j=0;j<numfiles;j++)hTorrent.file_priority(j,0);
     Timers.stop(time_chkupdate);
 }
@@ -1005,7 +1007,7 @@ void UpdaterImp::resumeDownloading()
         hTorrent.force_recheck();
         Log.print_con("torrent_resume\n");
         downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_DATA;
-        SetEvent(downloadmangar_event);
+        downloadmangar_event->raise();
     }
     hSession->resume();
     finisheddownloading=0;
@@ -1019,7 +1021,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     // Wait till is allowed to download the torrent
     Log.print_con("{thread_download\n");
-    WaitForSingleObject(downloadmangar_event,INFINITE);
+    downloadmangar_event->wait();
     if(downloadmangar_exitflag!=DOWNLOAD_STATUS_DOWLOADING_TORRENT)
     {
         Log.print_con("}thread_download(never started)\n");
@@ -1036,7 +1038,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
     }
 
     Updater1->updateTorrentStatus();
-    ResetEvent(downloadmangar_event);
+    downloadmangar_event->reset();
 
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {
@@ -1044,7 +1046,8 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
         if(Settings.flags&FLAG_AUTOUPDATE&&System.canWrite(L"update"))
             UpdateDialog.openDialog();
         else
-            WaitForSingleObject(downloadmangar_event,INFINITE);
+            downloadmangar_event->wait();
+
         if(downloadmangar_exitflag==DOWNLOAD_STATUS_STOPPING)break;
 
         // Downloading loop
@@ -1126,7 +1129,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
         Updater1->updateTorrentStatus();
         monitor_pause=0;
         Log.print_con("}torrent_stop\n");
-        ResetEvent(downloadmangar_event);
+        downloadmangar_event->reset();
     }
 
     if(hSession)
