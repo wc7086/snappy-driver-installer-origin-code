@@ -23,6 +23,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "theme.h"
 #include "gui.h"
+#include "system.h"
 
 #include "7zip.h"
 #include "device.h"
@@ -31,7 +32,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "enum.h"
 #include "main.h"
-#include "system.h"
 #include "draw.h"
 
 //{ Global variables
@@ -212,6 +212,11 @@ void Device::printHWIDS(const State *state)
             p+=wcslen(p)+1;
         }
     }
+}
+
+void Device::getClassDesc(wchar_t *bufw)
+{
+    SetupDiGetClassDescription(&DeviceInfoData.ClassGuid,bufw,BUFLEN,nullptr);
 }
 
 const wchar_t *Device::getHWIDby(int num,const State *state)

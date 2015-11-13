@@ -98,12 +98,12 @@ public:
     ofst getDescr()const{return Devicedesc;}
     ofst getRet()const{return ret;}
     ofst getProblem()const{return problem;}
-    GUID *getGUID(){return &DeviceInfoData.ClassGuid;}
 
     int  print_status();
     void print(const State *state);
     void printHWIDS(const State *state);
     const wchar_t *getHWIDby(int num,const State *state);
+    void getClassDesc(wchar_t *str);
 
     //Device(const Device &)=delete;
     //Device &operator=(const Device &)=delete;

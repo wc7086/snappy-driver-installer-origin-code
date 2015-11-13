@@ -18,6 +18,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef COM_HEADER_H
 #define COM_HEADER_H
 
+#include <stddef.h>
 #include "svnrev.h"
 
 typedef unsigned ofst;

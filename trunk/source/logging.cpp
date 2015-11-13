@@ -19,6 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "logging.h"
 #include "settings.h"
+#include "system.h"
 
 #include <windows.h>
 #include <ctime>
@@ -28,7 +29,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 // Depend on Win32API
-#include "system.h"
 #include "main.h"
 
 //{ Global variables
