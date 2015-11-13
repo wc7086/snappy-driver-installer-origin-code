@@ -402,19 +402,15 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     }
 
     // Device info (hwidmatch_f,devicematch_f)
-    canvas.SetFont(Popup->hFontBold);
     td.ret();
-    td.TextOutF(c0,L"%s",STR(STR_HINT_ANALYSIS));
+    td.TextOutBold(L"%s",STR(STR_HINT_ANALYSIS));
     td.ret_ofs(10);
-    canvas.SetFont(Popup->hFontP);
     td.TextOutF(c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
-        canvas.SetFont(Popup->hFontBold);
         td.ret();
-        td.TextOutF(c0,L"%s",STR(STR_HINT_DRP));
+        td.TextOutBold(L"%s",STR(STR_HINT_DRP));
         td.ret_ofs(10);
-        canvas.SetFont(Popup->hFontP);
         td.TextOutF(c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
         td.TextOutF(hwidmatch_f->calc_notebook()?c0:D_C(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
@@ -423,11 +419,9 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     bufw[0]=0;
     devicematch_f->device->getClassDesc(bufw);
 
-    canvas.SetFont(Popup->hFontBold);
     td.ret();
-    td.TextOutF(c0,L"%s",STR(STR_HINT_DEVICE));
+    td.TextOutBold(L"%s",STR(STR_HINT_DEVICE));
     td.ret_ofs(10);
-    canvas.SetFont(Popup->hFontP);
     td.TextOutF(c0,L"%s",txt->get(devicematch_f->device->getDescr()));
     td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),txt->get(devicematch_f->device->Mfg));
     if(bufw[0])td.TextOutF(c0,L"%s",bufw);
@@ -440,11 +434,9 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     td.y=D_X(POPUP_OFSY);
     if(devicematch_f->device->HardwareID)
     {
-        canvas.SetFont(Popup->hFontBold);
         td.ret_ofs(bolder);
-        td.TextOutF(c0,L"%s",STR(STR_HINT_HARDWAREID));
+        td.TextOutBold(L"%s",STR(STR_HINT_HARDWAREID));
         td.ret_ofs(bolder+10);
-        canvas.SetFont(Popup->hFontP);
         p=txt->getw(devicematch_f->device->HardwareID);
         while(*p)
         {
@@ -458,11 +450,9 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     }
     if(devicematch_f->device->CompatibleIDs)
     {
-        canvas.SetFont(Popup->hFontBold);
         td.ret_ofs(bolder);
-        td.TextOutF(c0,L"%s",STR(STR_HINT_COMPID));
+        td.TextOutBold(L"%s",STR(STR_HINT_COMPID));
         td.ret_ofs(bolder+10);
-        canvas.SetFont(Popup->hFontP);
         p=txt->getw(devicematch_f->device->CompatibleIDs);
         while(*p)
         {
@@ -497,10 +487,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         cur_driver->version.str_version(vers);
 
         td.ret();
-        canvas.SetFont(Popup->hFontBold);
-        td.TextOutF(               c0,L"%s",STR(STR_HINT_INSTDRV));
+        td.TextOutBold(L"%s",STR(STR_HINT_INSTDRV));
         td.ret_ofs(10);
-        canvas.SetFont(Popup->hFontP);
         td.TextOutF(               c0,L"%s",txt->get(cur_driver->DriverDesc));
         td.TextOutF(cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),txt->get(cur_driver->cat));
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt->get(cur_driver->ProviderName));
@@ -523,12 +511,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
         td.y=maxln;
-        canvas.SetFont(Popup->hFontBold);
         td.ret_ofs(bolder);
-        td.TextOutF(               c0,L"%s",STR(STR_HINT_AVAILDRV));
+        td.TextOutBold(L"%s",STR(STR_HINT_AVAILDRV));
         td.ret_ofs(bolder+10);
         wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
-        canvas.SetFont(Popup->hFontP);
         td.TextOutF(               c0,L"%s",bufw+1000);
         td.TextOutF(hwidmatch_f->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
         td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
@@ -1848,7 +1834,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
     int maxsz=0;
 	int limits[30];
     int c0=D_C(POPUP_TEXT_COLOR);
-    textdata_horiz_t td(canvas,Popup->horiz_sh,limits,1);
+    textdata_horiz_t td(canvas,Popup->getShift(),limits,1);
 
     if(i<RES_SLOTS)return;
 
@@ -1867,9 +1853,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
             itembar->hwidmatch->popup_driverline(limits,canvas,td.y,0,k);
 
 
-    canvas.SetFont(Popup->hFontBold);
-    td.TextOutF(c0,STR(STR_HINT_INSTDRV));
-    canvas.SetFont(Popup->hFontP);
+    td.TextOutBold(STR(STR_HINT_INSTDRV));
 
     if(cur_driver)
     {
@@ -1895,10 +1879,8 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
         td.y+=lne;
     }
     td.y+=lne;
-    canvas.SetFont(Popup->hFontBold);
     td.ret();
-    td.TextOutF(c0,STR(STR_HINT_AVAILDRVS));
-    canvas.SetFont(Popup->hFontP);
+    td.TextOutBold(STR(STR_HINT_AVAILDRVS));
 
     itembar=&items_list[0];
     for(k=0;k<items_list.size();k++,itembar++)
@@ -1906,8 +1888,8 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
     {
         if(k==i)
         {
-            canvas.DrawEmptyRect(D_X(POPUP_OFSX)+Popup->horiz_sh,td.y,
-                            wx+Popup->horiz_sh-D_X(POPUP_OFSX),td.y+lne,
+            canvas.DrawEmptyRect(D_X(POPUP_OFSX)+Popup->getShift(),td.y,
+                            wx+Popup->getShift()-D_X(POPUP_OFSX),td.y+lne,
                             D_C(POPUP_LST_SELECTED_COLOR));
         }
         itembar->hwidmatch->popup_driverline(limits,canvas,td.y,1,k);

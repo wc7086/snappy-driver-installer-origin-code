@@ -81,6 +81,7 @@ public:
     void sprintf(const wchar_t *format,...);
     void vsprintf(const wchar_t *format,va_list args);
     void append(const wchar_t *str);
+    void strcpy(const wchar_t *str);
 
     wchar_t *GetV()const{return buf_cur;}
     const wchar_t *Get()const{return buf_cur;}

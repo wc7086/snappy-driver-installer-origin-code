@@ -293,6 +293,13 @@ void WString_dyn::append(const wchar_t *str)
 #endif
 }
 
+void WString_dyn::strcpy(const wchar_t *str)
+{
+    size_t sz=wcslen(str)+1;
+    if(sz>len)Resize(sz);
+    wcscpy(buf_cur,str);
+}
+
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep)
 {
     wchar_t *s;

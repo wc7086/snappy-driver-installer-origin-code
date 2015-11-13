@@ -427,6 +427,7 @@ public:
 
     void TextOutF(int col,const wchar_t *format,...);
     void TextOutF(const wchar_t *format,...);
+    void TextOutBold(const wchar_t *format,...);
     void ret();
     void nl();
     void ret_ofs(int a);

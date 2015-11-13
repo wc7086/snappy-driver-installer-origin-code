@@ -909,9 +909,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
             // Popup
             Popup=new Popup_t;
-            Popup->hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
-                classPopup,L"",WS_POPUP,
-                0,0,0,0,hwnd,(HMENU)nullptr,ghInst,nullptr);
+            Popup->init();
 
             // Lang
             hLang=new Combobox(hwnd,ID_LANG);
@@ -1265,11 +1263,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
             }
             if(space_down)
-            {
-                Popup->horiz_sh-=i/5;
-                if(Popup->horiz_sh>0)Popup->horiz_sh=0;
-                InvalidateRect(Popup->hPopup,nullptr,0);
-            }
+                Popup->AddShift(i);
             else
                 SendMessage(hField,WM_VSCROLL,MAKELONG(i>0?SB_LINEUP:SB_LINEDOWN,0),0);
             break;
@@ -1639,6 +1633,20 @@ Popup_t::Popup_t():
     hFontBold(wFont::Create())
 {
 }
+void Popup_t::init()
+{
+    hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
+        MainWindow.classPopup,L"",WS_POPUP,
+        0,0,0,0,MainWindow.hMain,(HMENU)nullptr,ghInst,nullptr);
+}
+
+void Popup_t::AddShift(int i)
+{
+    horiz_sh-=i/5;
+    if(horiz_sh>0)horiz_sh=0;
+    InvalidateRect(hPopup,nullptr,0);
+}
+
 Popup_t::~Popup_t()
 {
     delete hFontP;
