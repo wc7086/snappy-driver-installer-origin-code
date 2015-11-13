@@ -58,6 +58,8 @@ void ShowHelp();
 class SystemImp
 {
 public:
+    bool IsLangInstalled(int group);
+
     int canWrite(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
     void benchmark();

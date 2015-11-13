@@ -36,14 +36,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Declarations
 class Image;
 class Combobox;
-class VaultInt;
+class Vaul;
 struct entry_t;
 
 // Global vars
 extern entry_t language[STR_NM];
 extern entry_t theme[THEME_NM];
-extern VaultInt *vLang;
-extern VaultInt *vTheme;
+extern Vaul *vLang;
+extern Vaul *vTheme;
 
 // Entry
 struct entry_t
@@ -58,10 +58,10 @@ struct entry_t
 };
 
 // Vault
-class VaultInt
+class Vaul
 {
 public:
-    virtual ~VaultInt(){}
+    virtual ~Vaul(){}
     virtual void SwitchData(int i)=0;
     virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
 
@@ -72,7 +72,7 @@ public:
     virtual void StartMonitor()=0;
     virtual void StopMonitor()=0;
 };
-VaultInt *CreateVaultLang(entry_t *entry,size_t num,int res);
-VaultInt *CreateVaultTheme(entry_t *entry,size_t num,int res);
+Vaul *CreateVaultLang(entry_t *entry,size_t num,int res);
+Vaul *CreateVaultTheme(entry_t *entry,size_t num,int res);
 
 #endif

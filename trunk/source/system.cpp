@@ -41,6 +41,35 @@ SystemImp System;
 int monitor_pause=0;
 HFONT CLIHelp_Font;
 
+static BOOL CALLBACK EnumLanguageGroupsProc(
+    LGRPID LanguageGroup,
+    LPTSTR lpLanguageGroupString,
+    LPTSTR lpLanguageGroupNameString,
+    DWORD dwFlags,
+    LONG_PTR  lParam
+    )
+{
+    UNREFERENCED_PARAMETER(lpLanguageGroupString);
+    UNREFERENCED_PARAMETER(lpLanguageGroupNameString);
+    UNREFERENCED_PARAMETER(dwFlags);
+
+    LGRPID* plLang=(LGRPID*)(lParam);
+    //Log.print_con("lang %d,%ws,%ws,%d\n",LanguageGroup,lpLanguageGroupString,lpLanguageGroupNameString,dwFlags);
+    if(*plLang==LanguageGroup)
+    {
+        *plLang=0;
+        return false;
+    }
+    return true;
+}
+
+bool SystemImp::IsLangInstalled(int group)
+{
+    LONG lLang=group;
+    EnumSystemLanguageGroups(EnumLanguageGroupsProc,LGRPID_INSTALLED,(LONG_PTR)&lLang);
+    return lLang==0;
+}
+
 bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)
 {
     BROWSEINFO lpbi;

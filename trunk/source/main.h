@@ -20,7 +20,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 //{ Defines
 class Manager;
-class Font;
+class wFont;
 class Matcher;
 class Hwidmatch;
 class Canvas;
@@ -123,8 +123,8 @@ public:
     void onHover();
     void onLeave();
 
-    Font *hFontP;
-    Font *hFontBold;
+    wFont *hFontP;
+    wFont *hFontBold;
     HWND hPopup=nullptr;
     size_t floating_itembar=0;
     int horiz_sh=0;
@@ -160,7 +160,7 @@ private:
     size_t field_lasti;
     int field_lastz;
 
-    Font *hFont;
+    wFont *hFont;
 
 public:
     int main1x_c,main1y_c;

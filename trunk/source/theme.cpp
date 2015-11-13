@@ -30,107 +30,24 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include <string.h>
 
+#include "theme_imp.h"
+
 //{ Global vars
-VaultInt *vLang;
-VaultInt *vTheme;
+Vaul *vLang;
+Vaul *vTheme;
 //}
 
-//{ Vault (imp)
-class Vault:public VaultInt
-{
-    Vault(const Vault&)=delete;
-    Vault &operator=(const Vault&)=delete;
-
-protected:
-    entry_t *entry;
-    size_t num;
-    std::unique_ptr<wchar_t []> data_ptr,odata_ptr,datav_ptr;
-
-    std::unordered_map <std::wstring,int> lookuptbl;
-    int res;
-
-    Filemon *mon;
-    int elem_id;
-    const wchar_t *folder;
-
-    wchar_t namelist[64][128];
-
-protected:
-    int  findvar(wchar_t *str);
-    wchar_t *findstr(wchar_t *str)const;
-    int  readvalue(const wchar_t *str);
-    void parse();
-    bool loadFromEncodedFile(const wchar_t *filename);
-    void loadFromFile(const wchar_t *filename);
-    void loadFromRes(int id);
-
-public:
-    Vault(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
-    virtual ~Vault(){}
-    void load(int i);
-
-    virtual void SwitchData(int i)=0;
-    virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
-    virtual void StartMonitor()=0;
-    virtual void StopMonitor(){delete mon;};
-    void updateCallback(const wchar_t *szFile,int action,int lParam);
-};
-//}
-
-//{ Vault (lang/theme)
-class VaultLang:public Vault
-{
-    wchar_t lang_ids[64][128];
-
-public:
-    VaultLang(entry_t *entry,size_t num,int res,int elem_id_,const wchar_t *folder_);
-    int  AutoPick();
-    void SwitchData(int i);
-    void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
-    void StartMonitor();
-    Image *GetIcon(int){return nullptr;}
-    Image *GetImage(int){return nullptr;}
-    static void updateCallback(const wchar_t *szFile,int action,int lParam);
-};
-
-class VaultTheme:public Vault
-{
-    ImageStorange *Images;
-    ImageStorange *Icons;
-
-public:
-    int  AutoPick();
-    void SwitchData(int i);
-    void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0);
-    void StartMonitor();
-    Image *GetIcon(int i){return Icons->GetImage(i);}
-    Image *GetImage(int i){return Images->GetImage(i);}
-
-    VaultTheme(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
-        Vault{entryv,numv,resv,elem_id_,folder_}
-    {
-        Images=CreateImageStorange(BOX_NUM,boxindex,4);
-        Icons=CreateImageStorange(ICON_NUM,iconindex);
-    }
-    ~VaultTheme()
-    {
-        delete Images;
-        delete Icons;
-    }
-    static void updateCallback(const wchar_t *szFile,int action,int lParam);
-};
-VaultInt *CreateVaultLang(entry_t *entry,size_t num,int res)
+Vaul *CreateVaultLang(entry_t *entry,size_t num,int res)
 {
     return new VaultLang(entry,num,res,WM_UPDATELANG,L"langs");
 }
-VaultInt *CreateVaultTheme(entry_t *entry,size_t num,int res)
+Vaul *CreateVaultTheme(entry_t *entry,size_t num,int res)
 {
     return new VaultTheme(entry,num,res,WM_UPDATETHEME,L"themes");
 }
-//}
 
-//{ Vault definitions
-int Vault::findvar(wchar_t *str)
+//{ Vault
+int VaultImp::findvar(wchar_t *str)
 {
     int i;
     wchar_t *p;
@@ -149,7 +66,7 @@ int Vault::findvar(wchar_t *str)
     return i;
 }
 
-wchar_t *Vault::findstr(wchar_t *str)const
+wchar_t *VaultImp::findstr(wchar_t *str)const
 {
     wchar_t *b,*e;
 
@@ -162,7 +79,7 @@ wchar_t *Vault::findstr(wchar_t *str)const
     return b;
 }
 
-int Vault::readvalue(const wchar_t *str)
+int VaultImp::readvalue(const wchar_t *str)
 {
     const wchar_t *p;
 
@@ -170,7 +87,7 @@ int Vault::readvalue(const wchar_t *str)
     return p?wcstol(str,nullptr,16):_wtoi_my(str);
 }
 
-void Vault::parse()
+void VaultImp::parse()
 {
     wchar_t *lhs,*rhs,*le;
     le=lhs=datav_ptr.get();
@@ -257,7 +174,7 @@ static void myswab(const char *s,char *d,size_t sz)
     }
 }
 
-bool Vault::loadFromEncodedFile(const wchar_t *filename)
+bool VaultImp::loadFromEncodedFile(const wchar_t *filename)
 {
     FILE *f=_wfopen(filename,L"rb");
     if(!f)
@@ -331,7 +248,7 @@ bool Vault::loadFromEncodedFile(const wchar_t *filename)
     }
 }
 
-void Vault::loadFromFile(const wchar_t *filename)
+void VaultImp::loadFromFile(const wchar_t *filename)
 {
     if(!filename[0])return;
     if(!loadFromEncodedFile(filename))
@@ -345,7 +262,7 @@ void Vault::loadFromFile(const wchar_t *filename)
         if(entry[i].init>=10)entry[i].val=entry[entry[i].init-10].val;
 }
 
-void Vault::loadFromRes(int id)
+void VaultImp::loadFromRes(int id)
 {
     char *data1;
     size_t sz;
@@ -364,7 +281,7 @@ void Vault::loadFromRes(int id)
         if(entry[i].init<1)Log.print_err("ERROR in vault_loadfromres: not initialized '%S'\n",entry[i].name);
 }
 
-Vault::Vault(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
+VaultImp::VaultImp(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
     entry(entryv),
     num(numv),
     res(resv),
@@ -375,19 +292,20 @@ Vault::Vault(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *fo
         lookuptbl.insert({std::wstring(entry[i].name),static_cast<int>(i)+1});
 }
 
-VaultLang::VaultLang(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
-    Vault{entryv,numv,resv,elem_id_,folder_}
-{
-    load(-1);
-}
-
-
-void Vault::load(int i)
+void VaultImp::load(int i)
 {
     //Log.print_con("vault %d,'%S'\n",i,namelist[i]);
     loadFromRes(res);
     if(i<0)return;
     loadFromFile(namelist[i]);
+}
+//}
+
+//{ Lang/theme
+VaultLang::VaultLang(entry_t *entryv,size_t numv,int resv,int elem_id_,const wchar_t *folder_):
+    VaultImp{entryv,numv,resv,elem_id_,folder_}
+{
+    load(-1);
 }
 
 int VaultLang::AutoPick()
@@ -411,9 +329,7 @@ int VaultTheme::AutoPick()
 
     return f;
 }
-//}
 
-//{ Lang/theme
 void VaultLang::SwitchData(int i)
 {
     if(Settings.flags&FLAG_NOGUI)return;
@@ -427,36 +343,6 @@ void VaultTheme::SwitchData(int i)
     Images->LoadAll();
     Icons->LoadAll();
 }
-
-static BOOL CALLBACK EnumLanguageGroupsProc(
-    LGRPID LanguageGroup,
-    LPTSTR lpLanguageGroupString,
-    LPTSTR lpLanguageGroupNameString,
-    DWORD dwFlags,
-    LONG_PTR  lParam
-    )
-{
-    UNREFERENCED_PARAMETER(lpLanguageGroupString);
-    UNREFERENCED_PARAMETER(lpLanguageGroupNameString);
-    UNREFERENCED_PARAMETER(dwFlags);
-
-    LGRPID* plLang=(LGRPID*)(lParam);
-    //Log.print_con("lang %d,%ws,%ws,%d\n",LanguageGroup,lpLanguageGroupString,lpLanguageGroupNameString,dwFlags);
-    if(*plLang==LanguageGroup)
-    {
-        *plLang=0;
-        return false;
-    }
-    return true;
-}
-
-static bool IsLangInstalled(int group)
-{
-    LONG lLang=group;
-    EnumSystemLanguageGroups(EnumLanguageGroupsProc,LGRPID_INSTALLED,(LONG_PTR)&lLang);
-    return lLang==0;
-}
-
 void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
 {
     WStringShort buf;
@@ -483,7 +369,7 @@ void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
             lang_auto_str.sprintf(L"Auto (%s)",STR(STR_LANG_NAME));
             lang_auto=i;
         }
-        lst->AddItem(STR(IsLangInstalled(language[STR_LANG_GROUP].val)?STR_LANG_NAME:STR_LANG_ID));
+        lst->AddItem(STR(System.IsLangInstalled(language[STR_LANG_GROUP].val)?STR_LANG_NAME:STR_LANG_ID));
         wcscpy(namelist[i],buf.Get());
         wcscpy(lang_ids[i],STR(STR_LANG_ID));
         i++;
