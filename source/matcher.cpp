@@ -849,7 +849,7 @@ void Hwidmatch::popup_driverline(int *limits,Canvas &canvas,int y,int mode,size_
     wchar_t bufw[BUFLEN];
     Version *v=getdrp_drvversion();
 
-    textdata_horiz_t td(canvas,Popup->horiz_sh,limits,mode);
+    textdata_horiz_t td(canvas,Popup->getShift(),limits,mode);
     td.y=y;
     td.col=0;
 

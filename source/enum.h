@@ -224,6 +224,7 @@ public:
     int isLaptop;
 
 private:
+    int getbaseboard(WStringShort &manuf,WStringShort &model,WStringShort &product,WStringShort &cs_manuf,WStringShort &cs_model,int *type);
     void fakeOSversion();
 
 public:
@@ -263,7 +264,5 @@ public:
 int GetMonitorDevice(const wchar_t* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(const wchar_t* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
-
-int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 
 #endif

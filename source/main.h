@@ -114,20 +114,24 @@ private:
     int floating_type=0;
     int floating_x=1,floating_y=1;
     bool wait=false;
+    int horiz_sh=0;
 
 public:
     Popup_t();
     ~Popup_t();
+    void init();
     void drawpopup(size_t itembar,int type,int x,int y,HWND hwnd);
     void popup_resize(int x,int y);
     void onHover();
     void onLeave();
 
+    int  getShift(){ return horiz_sh; }
+    void AddShift(int v);
+
     wFont *hFontP;
     wFont *hFontBold;
-    HWND hPopup=nullptr;
+    HWND hPopup;
     size_t floating_itembar=0;
-    int horiz_sh=0;
 
     LRESULT PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 };
@@ -161,6 +165,8 @@ private:
     int field_lastz;
 
     wFont *hFont;
+
+    friend class Popup_t;
 
 public:
     int main1x_c,main1y_c;

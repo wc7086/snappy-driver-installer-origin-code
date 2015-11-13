@@ -712,6 +712,20 @@ void textdata_t::TextOutF(const wchar_t *format,...)
     va_end(args);
 }
 
+void textdata_t::TextOutBold(const wchar_t *format,...)
+{
+    WStringShort buffer;
+    va_list args;
+    va_start(args,format);
+    buffer.vsprintf(format,args);
+
+    pcanvas->SetFont(Popup->hFontBold);
+    TextOut_CM(x,y,buffer.Get(),col,&maxsz,1);
+    pcanvas->SetFont(Popup->hFontP);
+    y+=wy;
+    va_end(args);
+}
+
 void textdata_vert::TextOutSF(const wchar_t *str,const wchar_t *format,...)
 {
     WStringShort buffer;

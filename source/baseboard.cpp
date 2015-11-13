@@ -17,25 +17,25 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 #include "common.h"
+#include "logging.h"
 #include "indexing.h"
 
-#include <stdio.h>          // for sprintf
+//#include <stdio.h>          // for sprintf
 #include <comdef.h>         // for _bstr_t
 #include <Wbemidl.h>        // for IWbemLocator
 #include <shobjidl.h>       // for TBPF_NORMAL
 
 #include "main.h"
+#include "enum.h"
 
 const IID IID_ITaskbarList3={0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf}};
 const IID my_CLSID_TaskbarList={0x56fdf344,0xfd6d,0x11d0,{0x95,0x8a,0x00,0x60,0x97,0xc9,0xa0,0x90}};
 
-int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type);
 void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long total);
 
-int init=0;
-int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manuf,wchar_t *cs_model,int *type)
+int initsec=0;
+int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &product1,WStringShort &cs_manuf1,WStringShort &cs_model1,int *type)
 {
-    *manuf=*model=*product=*cs_model=0;
     *type=0;
 
     if(ex.IsActive())return 0;
@@ -43,17 +43,17 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     HRESULT hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))
     {
-        printf("FAILED to initialize COM library. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to initialize COM library. Error code = 0x%lX\n",hres);
         return 0;
     }
 
-    if(!init)
+    if(!initsec)
     {
         hres=CoInitializeSecurity(nullptr,-1,nullptr,nullptr,RPC_C_AUTHN_LEVEL_DEFAULT,
                                   RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE,nullptr);
         if(FAILED(hres))
         {
-            printf("FAILED to initialize security. Error code = 0x%lX\n",hres);
+            Log.print_err("FAILED to initialize security. Error code = 0x%lX\n",hres);
             CoUninitialize();
             return 0;
         }
@@ -63,7 +63,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     hres=CoCreateInstance(CLSID_WbemLocator,nullptr,CLSCTX_INPROC_SERVER,IID_IWbemLocator,(LPVOID *)&pLoc);
     if(FAILED(hres))
     {
-        printf("FAILED to create IWbemLocator object. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to create IWbemLocator object. Error code = 0x%lX\n",hres);
         CoUninitialize();
         return 0;
     }
@@ -72,7 +72,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
     hres=pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"),nullptr,nullptr,nullptr,0,nullptr,nullptr,&pSvc);
     if(FAILED(hres))
     {
-        printf("FAILED to connect to root\\cimv2. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to connect to root\\cimv2. Error code = 0x%lX\n",hres);
         pLoc->Release();
         CoUninitialize();
         return 0;
@@ -84,7 +84,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
                            RPC_C_AUTHN_LEVEL_CALL,RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE);
     if(FAILED(hres))
     {
-        printf("FAILED to set proxy blanket. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to set proxy blanket. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -98,7 +98,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
-        printf("FAILED to query for Win32_BaseBoard. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to query for Win32_BaseBoard. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -118,15 +118,15 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
             vtProp1.bstrVal=nullptr;
             pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
-            if(vtProp1.bstrVal)wcscpy(manuf,vtProp1.bstrVal);
+            if(vtProp1.bstrVal)manuf1.strcpy(vtProp1.bstrVal);
 
             vtProp2.bstrVal=nullptr;
             hres=pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
-            if(vtProp2.bstrVal)wcscpy(model,vtProp2.bstrVal);
+            if(vtProp2.bstrVal)model1.strcpy(vtProp2.bstrVal);
 
             vtProp3.bstrVal=nullptr;
             pclsObj->Get(L"Product",0,&vtProp3,nullptr,nullptr);
-            if(vtProp3.bstrVal)wcscpy(product,vtProp3.bstrVal);
+            if(vtProp3.bstrVal)product1.strcpy(vtProp3.bstrVal);
         }
     }
 
@@ -136,7 +136,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
-        printf("FAILED to query for Win32_ComputerSystem. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to query for Win32_ComputerSystem. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -156,11 +156,11 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
 
             vtProp1.bstrVal=nullptr;
             pclsObj->Get(L"Manufacturer",0,&vtProp1,nullptr,nullptr);
-            if(vtProp1.bstrVal)wcscpy(cs_manuf,vtProp1.bstrVal);
+            if(vtProp1.bstrVal)cs_manuf1.strcpy(vtProp1.bstrVal);
 
             vtProp2.bstrVal=nullptr;
             pclsObj->Get(L"Model",0,&vtProp2,nullptr,nullptr);
-            if(vtProp2.bstrVal)wcscpy(cs_model,vtProp2.bstrVal);
+            if(vtProp2.bstrVal)cs_model1.strcpy(vtProp2.bstrVal);
         }
     }
 
@@ -170,7 +170,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         WBEM_FLAG_FORWARD_ONLY|WBEM_FLAG_RETURN_IMMEDIATELY,nullptr,&pEnumerator);
     if(FAILED(hres))
     {
-        printf("FAILED to query for Win32_SystemEnclosure. Error code = 0x%lX\n",hres);
+        Log.print_err("FAILED to query for Win32_SystemEnclosure. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
         CoUninitialize();
@@ -212,7 +212,7 @@ int getbaseboard(wchar_t *manuf,wchar_t *model,wchar_t *product,wchar_t *cs_manu
         }
     }
 
-    init=1;
+    initsec=1;
 
     pSvc->Release();
     pLoc->Release();

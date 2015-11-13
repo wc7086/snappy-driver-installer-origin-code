@@ -987,9 +987,8 @@ void UpdaterImp::downloadTorrent()
     }
 
     // Pupulate list
-    //downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
     i=UpdateDialog.populate(0);
-    Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d [%d]\n",i>>8,i&0xFF,downloadmangar_exitflag);
+    Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
     for(int j=0;j<numfiles;j++)hTorrent.file_priority(j,0);
     Timers.stop(time_chkupdate);
 }
