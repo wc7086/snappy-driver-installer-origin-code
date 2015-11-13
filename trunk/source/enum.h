@@ -116,6 +116,7 @@ public:
 
     friend class Manager; // TODO: friend
     friend class itembar_t; // TODO: friend
+    friend class CanvasImp;
 };
 
 // Driver

@@ -84,7 +84,7 @@ int getWindowsVer(int a)
 //}
 
 //{ Objects
-Popup_t Popup;
+Popup_t *Popup=nullptr;
 MainWindow_t MainWindow;
 Settings_t Settings;
 //}
@@ -452,7 +452,7 @@ void MainWindow_t::MainLoop(int nCmd)
                 {
                     if(msg.wParam==VK_CONTROL||msg.wParam==VK_SPACE)
                     {
-                        Popup.drawpopup(0,FLOATING_NONE,0,0,hField);
+                        Popup->drawpopup(0,FLOATING_NONE,0,0,hField);
                     }
                     if(msg.wParam==VK_CONTROL)ctrl_down=0;
                     if(msg.wParam==VK_SPACE)  space_down=0;
@@ -518,13 +518,13 @@ void MainWindow_t::lang_refresh()
     hLang->SetMirroring();
     hTheme->SetMirroring();
     setMirroring(hField);
-    setMirroring(Popup.hPopup);
+    setMirroring(Popup->hPopup);
 
     RECT rect;
     GetWindowRect(hMain,&rect);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
-    InvalidateRect(Popup.hPopup,nullptr,0);
+    InvalidateRect(Popup->hPopup,nullptr,0);
 }
 
 void MainWindow_t::theme_refresh()
@@ -532,8 +532,8 @@ void MainWindow_t::theme_refresh()
     hFont->SetFont(D_STR(FONT_NAME),D_X(FONT_SIZE));
     int fz=D_X(POPUP_FONT_SIZE);
     if(fz<10)fz=10;
-    Popup.hFontP->SetFont(D_STR(FONT_NAME),fz);
-    Popup.hFontBold->SetFont(D_STR(FONT_NAME),fz,true);
+    Popup->hFontP->SetFont(D_STR(FONT_NAME),fz);
+    Popup->hFontBold->SetFont(D_STR(FONT_NAME),fz,true);
     D(POPUP_WY)=fz*120/100*Settings.scale/256;
 
     hLang->SetFont(hFont);
@@ -820,11 +820,11 @@ LRESULT MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
     switch(uMsg)
     {
         case WM_MOUSELEAVE:
-            Popup.onLeave();
+            Popup->onLeave();
             break;
 
         case WM_MOUSEHOVER:
-            Popup.onHover();
+            Popup->onHover();
             break;
 
         case WM_ACTIVATE:
@@ -908,7 +908,8 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             hField=CreateWindowMF(classField,nullptr,hwnd,0,WS_VSCROLL);
 
             // Popup
-            Popup.hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
+            Popup=new Popup_t;
+            Popup->hPopup=CreateWindowEx(WS_EX_LAYERED|WS_EX_NOACTIVATE|WS_EX_TOPMOST|WS_EX_TRANSPARENT,
                 classPopup,L"",WS_POPUP,
                 0,0,0,0,hwnd,(HMENU)nullptr,ghInst,nullptr);
 
@@ -953,6 +954,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             vLang->StopMonitor();
             vTheme->StopMonitor();
             delete canvasMain;
+            delete Popup;
             PostQuitMessage(0);
             break;
 
@@ -1192,7 +1194,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
         case WM_SIZE:
             SetLayeredWindowAttributes(hMain,0,(BYTE)D_1(MAINWND_TRANSPARENCY),LWA_ALPHA);
-            SetLayeredWindowAttributes(Popup.hPopup,0,(BYTE)D_1(POPUP_TRANSPARENCY),LWA_ALPHA);
+            SetLayeredWindowAttributes(Popup->hPopup,0,(BYTE)D_1(POPUP_TRANSPARENCY),LWA_ALPHA);
 
             GetWindowRect(hwnd,&rect);
             main1x_c=x;
@@ -1264,9 +1266,9 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             }
             if(space_down)
             {
-                Popup.horiz_sh-=i/5;
-                if(Popup.horiz_sh>0)Popup.horiz_sh=0;
-                InvalidateRect(Popup.hPopup,nullptr,0);
+                Popup->horiz_sh-=i/5;
+                if(Popup->horiz_sh>0)Popup->horiz_sh=0;
+                InvalidateRect(Popup->hPopup,nullptr,0);
             }
             else
                 SendMessage(hField,WM_VSCROLL,MAKELONG(i>0?SB_LINEUP:SB_LINEDOWN,0),0);
@@ -1277,19 +1279,19 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             switch(wp)
             {
                 case ID_SCHEDULE:
-                    manager_g->toggle(Popup.floating_itembar);
+                    manager_g->toggle(Popup->floating_itembar);
                     redrawfield();
                     break;
 
                 case ID_SHOWALT:
-                    if(Popup.floating_itembar==SLOT_RESTORE_POINT)
+                    if(Popup->floating_itembar==SLOT_RESTORE_POINT)
                     {
                         System.run_command(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
                         System.run_command(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
                     }
                     else
                     {
-                        manager_g->expand(Popup.floating_itembar,EXPAND_MODE::TOGGLE);
+                        manager_g->expand(Popup->floating_itembar,EXPAND_MODE::TOGGLE);
                     }
                     break;
 
@@ -1392,7 +1394,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 void RestPointCheckboxCommand::RightClick(int x,int y)
 {
-    Popup.floating_itembar=SLOT_RESTORE_POINT;
+    Popup->floating_itembar=SLOT_RESTORE_POINT;
     manager_g->contextmenu(x-Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),y-Ym(D_X(DRVLIST_OFSY)));
 }
 
@@ -1509,25 +1511,25 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
         case WM_LBUTTONUP:
             if(!mouseclick)break;
-            manager_g->hitscan(x,y,&Popup.floating_itembar,&i);
-            if(Popup.floating_itembar==SLOT_SNAPSHOT)
+            manager_g->hitscan(x,y,&Popup->floating_itembar,&i);
+            if(Popup->floating_itembar==SLOT_SNAPSHOT)
             {
                 Settings.statemode=STATEMODE_REAL;
                 invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
-            if(Popup.floating_itembar==SLOT_DPRDIR)
+            if(Popup->floating_itembar==SLOT_DPRDIR)
             {
                 *Settings.drpext_dir=0;
                 invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
             }
-            if(Popup.floating_itembar==SLOT_EXTRACTING)
+            if(Popup->floating_itembar==SLOT_EXTRACTING)
             {
                 if(installmode==MODE_INSTALLING)
                     installmode=MODE_STOPPING;
                 else if(installmode==MODE_NONE)
                     manager_g->clear();
             }
-            if(Popup.floating_itembar==SLOT_DOWNLOAD)
+            if(Popup->floating_itembar==SLOT_DOWNLOAD)
             {
                 #ifdef USE_TORRENT
                 Updater->OpenDialog();
@@ -1535,9 +1537,9 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 break;
             }
 
-            if(Popup.floating_itembar>0&&(i==1||i==0||i==3))
+            if(Popup->floating_itembar>0&&(i==1||i==0||i==3))
             {
-                manager_g->toggle(Popup.floating_itembar);
+                manager_g->toggle(Popup->floating_itembar);
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((Settings.flags&FLAG_EXTRACTONLY)==0)
@@ -1546,15 +1548,15 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
                 }
                 redrawfield();
             }
-            if(Popup.floating_itembar>0&&i==2)
+            if(Popup->floating_itembar>0&&i==2)
             {
-                manager_g->expand(Popup.floating_itembar,EXPAND_MODE::TOGGLE);
+                manager_g->expand(Popup->floating_itembar,EXPAND_MODE::TOGGLE);
             }
             break;
 
         case WM_RBUTTONDOWN:
-            manager_g->hitscan(x,y,&Popup.floating_itembar,&i);
-            if(Popup.floating_itembar>0&&(i==0||i==3))
+            manager_g->hitscan(x,y,&Popup->floating_itembar,&i);
+            if(Popup->floating_itembar>0&&(i==0||i==3))
                 manager_g->contextmenu(x,y);
             break;
 
@@ -1592,23 +1594,23 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
                 manager_g->hitscan(x,y,&itembar_i,&i);
                 if((i==0||i==3)&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||Settings.expertmode))
-                    Popup.drawpopup(itembar_i,type,x,y,hField);
+                    Popup->drawpopup(itembar_i,type,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_AUTORUN)
-                    Popup.drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_RECYCLER)
-                    Popup.drawpopup(STR_VIRUS_RECYCLER_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(STR_VIRUS_RECYCLER_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_HIDDEN)
-                    Popup.drawpopup(STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_EXTRACTING&&installmode)
-                    Popup.drawpopup((instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup((instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_RESTORE_POINT)
-                    Popup.drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
-                    Popup.drawpopup(0,FLOATING_DOWNLOAD,x,y,hField);
+                    Popup->drawpopup(0,FLOATING_DOWNLOAD,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
-                    Popup.drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
-                    Popup.drawpopup(0,FLOATING_NONE,0,0,hField);
+                    Popup->drawpopup(0,FLOATING_NONE,0,0,hField);
 
                 if(itembar_i!=field_lasti||i!=field_lastz)redrawfield();
                 field_lasti=itembar_i;
@@ -1629,7 +1631,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
 
 LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
-    return Popup.PopupProcedure2(hwnd,message,wParam,lParam);
+    return Popup->PopupProcedure2(hwnd,message,wParam,lParam);
 }
 
 Popup_t::Popup_t():
@@ -1658,7 +1660,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             rect.right=D_X(POPUP_WX);
             rect.bottom=floating_y;
 
-            canvasPopup->SetFont(Popup.hFontP);
+            canvasPopup->SetFont(Popup->hFontP);
             canvasPopup->CalcBoundingBox(STR(floating_itembar),&rect);
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
@@ -1683,7 +1685,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             switch(floating_type)
             {
                 case FLOATING_SYSINFO:
-                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup->hFontP);
                     manager_g->matcher->getState()->popup_sysinfo(*canvasPopup);
                     break;
 
@@ -1692,28 +1694,28 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
                     rect.top+=D_X(POPUP_OFSY);
                     rect.right-=D_X(POPUP_OFSX);
                     rect.bottom-=D_X(POPUP_OFSY);
-                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup->hFontP);
                     canvasPopup->SetTextColor(D_C(POPUP_TEXT_COLOR));
                     canvasPopup->DrawTextRect(STR(floating_itembar),&rect);
                     break;
 
                 case FLOATING_CMPDRIVER:
-                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup->hFontP);
                     manager_g->popup_drivercmp(manager_g,*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
                 case FLOATING_DRIVERLST:
-                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup->hFontP);
                     manager_g->popup_driverlist(*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
                 case FLOATING_ABOUT:
-                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup->hFontP);
                     popup_about(*canvasPopup);
                     break;
 
                 case FLOATING_DOWNLOAD:
-                    canvasPopup->SetFont(Popup.hFontP);
+                    canvasPopup->SetFont(Popup->hFontP);
                     #ifdef USE_TORRENT
                     Updater->ShowPopup(*canvasPopup);
                     #endif

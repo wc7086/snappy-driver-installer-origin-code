@@ -281,7 +281,7 @@ void itembar_t::contextmenu(int x,int y)
     if(!hwidmatch&&index!=SLOT_RESTORE_POINT)flags1|=MF_GRAYED;
     if(rtl)x=MainWindow.mainx_c-x;
 
-    if(Popup.floating_itembar==SLOT_RESTORE_POINT)
+    if(Popup->floating_itembar==SLOT_RESTORE_POINT)
     {
         InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
         InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
@@ -292,7 +292,7 @@ void itembar_t::contextmenu(int x,int y)
         TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
         return;
     }
-    if(Popup.floating_itembar<RES_SLOTS)return;
+    if(Popup->floating_itembar<RES_SLOTS)return;
 
     const Driver *cur_driver=nullptr;
 
@@ -402,19 +402,19 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     }
 
     // Device info (hwidmatch_f,devicematch_f)
-    canvas.SetFont(Popup.hFontBold);
+    canvas.SetFont(Popup->hFontBold);
     td.ret();
     td.TextOutF(c0,L"%s",STR(STR_HINT_ANALYSIS));
     td.ret_ofs(10);
-    canvas.SetFont(Popup.hFontP);
+    canvas.SetFont(Popup->hFontP);
     td.TextOutF(c0,L"$%04d",index1);
     if(hwidmatch_f)
     {
-        canvas.SetFont(Popup.hFontBold);
+        canvas.SetFont(Popup->hFontBold);
         td.ret();
         td.TextOutF(c0,L"%s",STR(STR_HINT_DRP));
         td.ret_ofs(10);
-        canvas.SetFont(Popup.hFontP);
+        canvas.SetFont(Popup->hFontP);
         td.TextOutF(c0,L"%s\\%s",hwidmatch_f->getdrp_packpath(),hwidmatch_f->getdrp_packname());
         td.TextOutF(hwidmatch_f->calc_notebook()?c0:D_C(POPUP_CMP_INVALID_COLOR)
                  ,L"%S%S",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
@@ -423,11 +423,11 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     bufw[0]=0;
     devicematch_f->device->getClassDesc(bufw);
 
-    canvas.SetFont(Popup.hFontBold);
+    canvas.SetFont(Popup->hFontBold);
     td.ret();
     td.TextOutF(c0,L"%s",STR(STR_HINT_DEVICE));
     td.ret_ofs(10);
-    canvas.SetFont(Popup.hFontP);
+    canvas.SetFont(Popup->hFontP);
     td.TextOutF(c0,L"%s",txt->get(devicematch_f->device->getDescr()));
     td.TextOutF(c0,L"%s%s",STR(STR_HINT_MANUF),txt->get(devicematch_f->device->Mfg));
     if(bufw[0])td.TextOutF(c0,L"%s",bufw);
@@ -440,11 +440,11 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     td.y=D_X(POPUP_OFSY);
     if(devicematch_f->device->HardwareID)
     {
-        canvas.SetFont(Popup.hFontBold);
+        canvas.SetFont(Popup->hFontBold);
         td.ret_ofs(bolder);
         td.TextOutF(c0,L"%s",STR(STR_HINT_HARDWAREID));
         td.ret_ofs(bolder+10);
-        canvas.SetFont(Popup.hFontP);
+        canvas.SetFont(Popup->hFontP);
         p=txt->getw(devicematch_f->device->HardwareID);
         while(*p)
         {
@@ -458,11 +458,11 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     }
     if(devicematch_f->device->CompatibleIDs)
     {
-        canvas.SetFont(Popup.hFontBold);
+        canvas.SetFont(Popup->hFontBold);
         td.ret_ofs(bolder);
         td.TextOutF(c0,L"%s",STR(STR_HINT_COMPID));
         td.ret_ofs(bolder+10);
-        canvas.SetFont(Popup.hFontP);
+        canvas.SetFont(Popup->hFontP);
         p=txt->getw(devicematch_f->device->CompatibleIDs);
         while(*p)
         {
@@ -497,10 +497,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         cur_driver->version.str_version(vers);
 
         td.ret();
-        canvas.SetFont(Popup.hFontBold);
+        canvas.SetFont(Popup->hFontBold);
         td.TextOutF(               c0,L"%s",STR(STR_HINT_INSTDRV));
         td.ret_ofs(10);
-        canvas.SetFont(Popup.hFontP);
+        canvas.SetFont(Popup->hFontP);
         td.TextOutF(               c0,L"%s",txt->get(cur_driver->DriverDesc));
         td.TextOutF(cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),txt->get(cur_driver->cat));
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt->get(cur_driver->ProviderName));
@@ -523,12 +523,12 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         hwidmatch_f->getdrp_drvsection((CHAR *)(bufw+500));
 
         td.y=maxln;
-        canvas.SetFont(Popup.hFontBold);
+        canvas.SetFont(Popup->hFontBold);
         td.ret_ofs(bolder);
         td.TextOutF(               c0,L"%s",STR(STR_HINT_AVAILDRV));
         td.ret_ofs(bolder+10);
         wsprintf(bufw+1000,L"%S",hwidmatch_f->getdrp_drvdesc());
-        canvas.SetFont(Popup.hFontP);
+        canvas.SetFont(Popup->hFontP);
         td.TextOutF(               c0,L"%s",bufw+1000);
         td.TextOutF(hwidmatch_f->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),hwidmatch_f->getdrp_drvcat(hwidmatch_f->pickcat(state)));
         td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
@@ -542,7 +542,7 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
 
     int zz=td.getMaxsz();
     if(!devicematch_f->device->HardwareID&&!hwidmatch_f)zz/=2;
-    Popup.popup_resize((zz+10+p0*2)*2,td.y+D_X(POPUP_OFSY));
+    Popup->popup_resize((zz+10+p0*2)*2,td.y+D_X(POPUP_OFSY));
 }
 
 int itembar_cmp(const itembar_t *a,const itembar_t *b,const Txt *ta,const Txt *tb)
@@ -1174,9 +1174,9 @@ void Manager::set_rstpnt(int checked)
 }
 
 void Manager::itembar_setactive(size_t i,int val){ items_list[i].isactive=val; }
-void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index){ items_list[Popup.floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index); }
-void Manager::contextmenu(int x,int y){items_list[Popup.floating_itembar].contextmenu(x,y);}
-const wchar_t *Manager::getHWIDby(int id)const{return items_list[Popup.floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
+void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index){ items_list[Popup->floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index); }
+void Manager::contextmenu(int x,int y){items_list[Popup->floating_itembar].contextmenu(x,y);}
+const wchar_t *Manager::getHWIDby(int id)const{return items_list[Popup->floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
 
 void Manager::getINFpath(int wp)
 {
@@ -1186,7 +1186,7 @@ void Manager::getINFpath(int wp)
     buf.sprintf(L"%s%s%s",
             (wp==ID_LOCATEINF)?L"/select,":L"",
             state->textas.get(state->getWindir()),
-            state->textas.get(items_list[Popup.floating_itembar].devicematch->driver->getInfPath()));
+            state->textas.get(items_list[Popup->floating_itembar].devicematch->driver->getInfPath()));
 
     if(wp==ID_OPENINF)
         System.run_command(buf.Get(),L"",SW_SHOW,0);
@@ -1581,7 +1581,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             {
                 canvas.DrawIcon(x+D_X(ITEM_ICON_OFS_X),pos+D_X(ITEM_ICON_OFS_Y),
                                 (itembar->hwidmatch)?itembar->hwidmatch->getdrp_drvfield(ClassGuid_):nullptr,
-                                &itembar->devicematch->device->DeviceInfoData.ClassGuid);
+                                itembar->devicematch->device);
             }
 
             // Expand icon
@@ -1848,7 +1848,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
     int maxsz=0;
 	int limits[30];
     int c0=D_C(POPUP_TEXT_COLOR);
-    textdata_horiz_t td(canvas,Popup.horiz_sh,limits,1);
+    textdata_horiz_t td(canvas,Popup->horiz_sh,limits,1);
 
     if(i<RES_SLOTS)return;
 
@@ -1867,9 +1867,9 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
             itembar->hwidmatch->popup_driverline(limits,canvas,td.y,0,k);
 
 
-    canvas.SetFont(Popup.hFontBold);
+    canvas.SetFont(Popup->hFontBold);
     td.TextOutF(c0,STR(STR_HINT_INSTDRV));
-    canvas.SetFont(Popup.hFontP);
+    canvas.SetFont(Popup->hFontP);
 
     if(cur_driver)
     {
@@ -1895,10 +1895,10 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
         td.y+=lne;
     }
     td.y+=lne;
-    canvas.SetFont(Popup.hFontBold);
+    canvas.SetFont(Popup->hFontBold);
     td.ret();
     td.TextOutF(c0,STR(STR_HINT_AVAILDRVS));
-    canvas.SetFont(Popup.hFontP);
+    canvas.SetFont(Popup->hFontP);
 
     itembar=&items_list[0];
     for(k=0;k<items_list.size();k++,itembar++)
@@ -1906,8 +1906,8 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
     {
         if(k==i)
         {
-            canvas.DrawEmptyRect(D_X(POPUP_OFSX)+Popup.horiz_sh,td.y,
-                            wx+Popup.horiz_sh-D_X(POPUP_OFSX),td.y+lne,
+            canvas.DrawEmptyRect(D_X(POPUP_OFSX)+Popup->horiz_sh,td.y,
+                            wx+Popup->horiz_sh-D_X(POPUP_OFSX),td.y+lne,
                             D_C(POPUP_LST_SELECTED_COLOR));
         }
         itembar->hwidmatch->popup_driverline(limits,canvas,td.y,1,k);
@@ -1917,7 +1917,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
     RECT rect;
     GetWindowRect(GetDesktopWindow(),&rect);
     p.y=0;p.x=0;
-    ClientToScreen(Popup.hPopup,&p);
+    ClientToScreen(Popup->hPopup,&p);
 
     maxsz=0;
     for(k=0;k<30;k++)maxsz+=limits[k];
@@ -1928,6 +1928,6 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
         td.TextOutF(c0,STR(STR_HINT_SCROLL));
         td.y+=lne;
     }
-    Popup.popup_resize(maxsz+D_X(POPUP_OFSX)*3,td.y+D_X(POPUP_OFSY));
+    Popup->popup_resize(maxsz+D_X(POPUP_OFSX)*3,td.y+D_X(POPUP_OFSY));
 }
 //}

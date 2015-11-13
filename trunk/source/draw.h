@@ -22,6 +22,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 class Image;
 class ClipRegionImp;
 class ImageImp;
+class Device;
 
 // Global vars
 extern int rtl;
@@ -131,7 +132,7 @@ public:
     virtual void DrawLine(int x1,int y1,int x2,int y2)=0;
     virtual void DrawCheckbox(int x,int y,int wx,int wy,int checked,int active)=0;
     virtual void DrawConnection(int x,int pos,int ofsy,int curpos)=0;
-    virtual void DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)=0;
+    virtual void DrawIcon(int x1,int y1,const char *guid_driverpack,const Device *device)=0;
 
     virtual void SetTextColor(int color)=0;
     virtual void SetFont(wFont *font)=0;
