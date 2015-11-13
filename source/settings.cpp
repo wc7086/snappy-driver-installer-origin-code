@@ -105,7 +105,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
     Log.print_con("Args:[%S]\n",str);
     int argc;
     wchar_t **argv=CommandLineToArgvW(str,&argc);
-    for(size_t i=ind;i<argc;i++)
+    for(size_t i=ind;i<static_cast<size_t>(argc);i++)
     {
         wchar_t *pr=argv[i];
         if(pr[0]=='/')pr[0]='-';
@@ -158,7 +158,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
             statemode=STATEMODE_EXIT;
             break;
         }
-        
+
         if(!wcscmp(pr,L"-PATH"))
         {
             wcscpy(drpext_dir,argv[++i]);
@@ -194,7 +194,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argflg(pr,L"-reindex",        COLLECTION_FORCE_REINDEXING))continue;
         if(argflg(pr,L"-index_hr",       COLLECTION_PRINT_INDEX))continue;
         if(argflg(pr,L"-nogui",          FLAG_NOGUI))continue;
-        if(argflg(pr,L"-autoinstall",    FLAG_AUTOCLOSE))continue;
+        if(argflg(pr,L"-autoinstall",    FLAG_AUTOINSTALL))continue;
         if(argflg(pr,L"-autoclose",      FLAG_AUTOCLOSE))continue;
         if(argflg(pr,L"-autoupdate",     FLAG_AUTOUPDATE))continue;
 
@@ -218,7 +218,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if( StrStrIW(pr,SAVE_INSTALLED_ID_DEF))Parse_save_installed_id_swith(pr);else
         if( StrStrIW(pr,HWIDINSTALLED_DEF))    Parse_HWID_installed_swith(pr); else
         if( StrStrIW(pr,GFG_DEF))              continue;
-        
+
         Log.print_err("Unknown argument '%S'\n",pr);
         if(statemode==STATEMODE_EXIT)break;
     }

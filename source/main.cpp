@@ -487,7 +487,7 @@ const wchar_t MainWindow_t::classField[]=L"classSDIField";
 const wchar_t MainWindow_t::classPopup[]=L"classSDIPopup";
 MainWindow_t::MainWindow_t()
 {
-    hFont=new Font;
+    hFont=wFont::Create();
     hLang=nullptr;
     hTheme=nullptr;
 
@@ -900,7 +900,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     {
         case WM_CREATE:
             // Canvas
-            canvasMain=new Canvas;
+            canvasMain=Canvas::Create();
             hMain=hwnd;
 
             // Field
@@ -1460,7 +1460,7 @@ LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam
     switch(message)
     {
         case WM_CREATE:
-            canvasField=new Canvas;
+            canvasField=Canvas::Create();
             break;
 
         case WM_PAINT:
@@ -1632,8 +1632,8 @@ LRESULT CALLBACK PopupProcedure(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPar
 }
 
 Popup_t::Popup_t():
-    hFontP(new Font()),
-    hFontBold(new Font())
+    hFontP(wFont::Create()),
+    hFontBold(wFont::Create())
 {
 }
 Popup_t::~Popup_t()
@@ -1667,7 +1667,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             break;
 
         case WM_CREATE:
-            canvasPopup=new Canvas;
+            canvasPopup=Canvas::Create();
             break;
 
         case WM_DESTROY:

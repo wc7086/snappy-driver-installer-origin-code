@@ -201,6 +201,7 @@
 		<Unit filename="../source/device.h" />
 		<Unit filename="../source/draw.cpp" />
 		<Unit filename="../source/draw.h" />
+		<Unit filename="../source/draw_imp.h" />
 		<Unit filename="../source/enum.cpp" />
 		<Unit filename="../source/enum.h" />
 		<Unit filename="../source/gui.cpp" />
@@ -228,6 +229,7 @@
 		<Unit filename="../source/system.h" />
 		<Unit filename="../source/theme.cpp" />
 		<Unit filename="../source/theme.h" />
+		<Unit filename="../source/theme_imp.h" />
 		<Unit filename="../source/themelist.cpp" />
 		<Unit filename="../source/themelist.h" />
 		<Unit filename="../source/update.cpp" />
