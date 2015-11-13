@@ -464,7 +464,7 @@ void wTextSys1::Accept(WidgetVisitor &visitor)
 HoverVisiter::~HoverVisiter()
 {
     if(popup_active==false)
-        Popup.drawpopup(0,FLOATING_NONE,x,y,MainWindow.hMain);
+        Popup->drawpopup(0,FLOATING_NONE,x,y,MainWindow.hMain);
 }
 
 void HoverVisiter::VisitWidget(Widget *a)
@@ -472,7 +472,7 @@ void HoverVisiter::VisitWidget(Widget *a)
     a->hitscan(x,y);
     if(a->isSelected&&a->str_id)
     {
-        Popup.drawpopup(a->str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
+        Popup->drawpopup(a->str_id+1,FLOATING_TOOLTIP,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -494,7 +494,7 @@ void HoverVisiter::VisitwLogo(wLogo *a)
     if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        Popup.drawpopup(0,FLOATING_ABOUT,x,y,MainWindow.hMain);
+        Popup->drawpopup(0,FLOATING_ABOUT,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -505,7 +505,7 @@ void HoverVisiter::VisitwTextRev(wTextRev *a)
     if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        Popup.drawpopup(0,FLOATING_ABOUT,x,y,MainWindow.hMain);
+        Popup->drawpopup(0,FLOATING_ABOUT,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }
@@ -516,7 +516,7 @@ void HoverVisiter::VisitwTextSys1(wTextSys1 *a)
     if(a->isSelected)
     {
         SetCursor(LoadCursor(nullptr,IDC_HAND));
-        Popup.drawpopup(a->str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
+        Popup->drawpopup(a->str_id,FLOATING_SYSINFO,x,y,MainWindow.hMain);
         popup_active=true;
     }
 }

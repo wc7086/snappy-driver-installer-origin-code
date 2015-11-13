@@ -564,7 +564,7 @@ void CanvasImp::loadGUID(GUID *g,const char *s)
     (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));*/
 }
 
-void CanvasImp::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device)
+void CanvasImp::DrawIcon(int x1,int y1,const char *guid_driverpack,const Device *device)
 {
     HICON hIcon=nullptr;
     BOOL ret=false;
@@ -574,7 +574,7 @@ void CanvasImp::DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *g
         loadGUID(&gd,guid_driverpack);
         ret=SetupDiLoadClassIcon(&gd,&hIcon,nullptr);
     }
-    if(!ret)ret=SetupDiLoadClassIcon(guid_device,&hIcon,nullptr);
+    if(!ret)ret=SetupDiLoadClassIcon(&device->DeviceInfoData.ClassGuid,&hIcon,nullptr);
     if(hIcon)
     {
         if(rtl)
@@ -775,7 +775,7 @@ void popup_about(Canvas &canvas)
     td.TextOutF(L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
     td.TextOutF(L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
 
-    Popup.popup_resize(D_X(POPUP_WX),rect.bottom+D_X(POPUP_OFSY));
+    Popup->popup_resize(D_X(POPUP_WX),rect.bottom+D_X(POPUP_OFSY));
 }
 
 void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
@@ -838,11 +838,11 @@ void Popup_t::onHover()
         if(floating_type==FLOATING_CMPDRIVER||floating_type==FLOATING_DRIVERLST)
         {
             rtl=0;
-            setMirroring(Popup.hPopup);
+            setMirroring(hPopup);
             rtl=1;
         }
         else
-            setMirroring(Popup.hPopup);
+            setMirroring(hPopup);
     }
     InvalidateRect(hPopup,nullptr,0);
     ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
@@ -851,7 +851,7 @@ void Popup_t::onHover()
 void Popup_t::onLeave()
 {
     wait=false;
-    ShowWindow(Popup.hPopup,SW_HIDE);
+    ShowWindow(hPopup,SW_HIDE);
     //InvalidateRect(hPopup,nullptr,0);
 }
 //}

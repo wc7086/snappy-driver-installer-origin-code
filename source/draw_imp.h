@@ -124,7 +124,7 @@ public:
     void DrawLine(int x1,int y1,int x2,int y2);
     void DrawCheckbox(int x,int y,int wx,int wy,int checked,int active);
     void DrawConnection(int x,int pos,int ofsy,int curpos);
-    void DrawIcon(int x1,int y1,const char *guid_driverpack,const GUID *guid_device);
+    void DrawIcon(int x1,int y1,const char *guid_driverpack,const Device *device);
 
     void SetTextColor(int color);
     void SetFont(wFont *font);

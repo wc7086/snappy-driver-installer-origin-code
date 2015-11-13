@@ -27,7 +27,7 @@ class Canvas;
 class Console_t;
 class Combobox;
 
-extern class Popup_t Popup;
+extern class Popup_t *Popup;
 
 #include "resources.h"
 

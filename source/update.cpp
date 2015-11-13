@@ -358,8 +358,8 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
     switch(uMsg)
     {
         case WM_MOUSEMOVE:
-            Popup.drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
-            ShowWindow(Popup.hPopup,SW_SHOWNOACTIVATE);
+            Popup->drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
+            ShowWindow(Popup->hPopup,SW_SHOWNOACTIVATE);
             if(!bMouseInWindow)
             {
                 bMouseInWindow=1;
@@ -373,7 +373,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
 
         case WM_MOUSELEAVE:
             bMouseInWindow=0;
-            Popup.drawpopup(0,FLOATING_NONE,0,0,hWnd);
+            Popup->drawpopup(0,FLOATING_NONE,0,0,hWnd);
             break;
 
         default:
@@ -881,7 +881,7 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
     td.TextOutSF(STR(STR_DWN_WASTED),STR(STR_DWN_WASTED_F),num1,num2);
 
 //    TextOutSF(&td,L"Paused",L"%d,%d",t.sessionpaused,t.torrentpaused);
-    Popup.popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D_X(POPUP_OFSY));
+    Popup->popup_resize((int)(td.getMaxsz()+POPUP_SYSINFO_OFS+p0+p1),td.y+D_X(POPUP_OFSY));
 }
 
 UpdaterImp::UpdaterImp()
@@ -1059,7 +1059,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
             // Show progress
             Updater1->updateTorrentStatus();
             MainWindow.ShowProgressInTaskbar(true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
-            InvalidateRect(Popup.hPopup,nullptr,0);
+            InvalidateRect(Popup->hPopup,nullptr,0);
 
             // Send libtorrent messages to log
             std::unique_ptr<alert> holder;
