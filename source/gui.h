@@ -214,7 +214,8 @@ public:
     }
     void draw(Canvas &canvas)
     {
-        for(int i=0;i<num;i++)widgets[i]->draw(canvas);
+        if(num-1>=0)widgets[num-1]->draw(canvas);
+        for(int i=0;i<num-1;i++)widgets[i]->draw(canvas);
     }
     void arrange()
     {
@@ -389,6 +390,7 @@ class ClickVisiter:public WidgetVisitor
     CHECKBOX act;
     int value=0;
     bool right;
+    bool triggered=false;
 
 public:
     ClickVisiter(int xv,int yv,bool rightv=false):x(xv),y(yv),action_id(0),act(CHECKBOX::TOGGLE),right(rightv){}
