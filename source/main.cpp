@@ -27,7 +27,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"    // non-portable
 #include "gui.h"
 #include "theme.h"
-#include "system.h" // non-portable
+#include "system.h"     // non-portable
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -44,7 +44,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "model.h"
 
 //{ Global variables
-
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 Console_t *Console;
@@ -286,7 +285,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
         signal(SIGSEGV,SIG_DFL);*/
 
     // Stop logging
-    //time_total=GetTickCount()-time_total;
+    //time_total=System.GetTickCountWr()-time_total;
     Timers.print();
     Log.stop();
     delete Console;
@@ -303,7 +302,7 @@ void MainWindow_t::MainLoop(int nCmd)
     WNDCLASSEX wcx;
     memset(&wcx,0,sizeof(WNDCLASSEX));
     wcx.cbSize=         sizeof(WNDCLASSEX);
-    wcx.lpfnWndProc=    WndProc;
+    wcx.lpfnWndProc=    WndProcMainCallback;
     wcx.hInstance=      ghInst;
     wcx.hIcon=          LoadIcon(ghInst,MAKEINTRESOURCE(IDI_ICON1));
     wcx.hCursor=        LoadCursor(nullptr,IDC_ARROW);
@@ -327,7 +326,7 @@ void MainWindow_t::MainLoop(int nCmd)
     }
 
     // Register classField
-    wcx.lpfnWndProc=WindowGraphProcedure;
+    wcx.lpfnWndProc=WndProcFieldCallback;
     wcx.lpszClassName=classField;
     if(!RegisterClassEx(&wcx))
     {
@@ -374,7 +373,7 @@ void MainWindow_t::MainLoop(int nCmd)
 
     if(Settings.license)
     {
-        //time_test=GetTickCount()-time_total;log_times();
+        //time_test=System.GetTickCountWr()-time_total;log_times();
         ShowWindow(hMain,(Settings.flags&FLAG_NOGUI)?SW_HIDE:nCmd);
 
         int done=0;
@@ -514,17 +513,16 @@ void MainWindow_t::lang_refresh()
     }
 
     rtl=language[STR_RTL].val;
+    setMirroring(hField);
     setMirroring(hMain);
     hLang->SetMirroring();
     hTheme->SetMirroring();
-    setMirroring(hField);
-    setMirroring(Popup->hPopup);
+    Popup->setMirroring();
 
     RECT rect;
     GetWindowRect(hMain,&rect);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
-    InvalidateRect(Popup->hPopup,nullptr,0);
 }
 
 void MainWindow_t::theme_refresh()
@@ -721,8 +719,8 @@ void setMirroring(HWND hwnd)
 
 void checktimer(const wchar_t *str,long long t,int uMsg)
 {
-    if(GetTickCount()-t>20&&Log.isAllowed(LOG_VERBOSE_LAGCOUNTER))
-        Log.print_con("GUI lag in %S[%X]: %ld\n",str,uMsg,GetTickCount()-t);
+    if(System.GetTickCountWr()-t>20&&Log.isAllowed(LOG_VERBOSE_LAGCOUNTER))
+        Log.print_con("GUI lag in %S[%X]: %ld\n",str,uMsg,System.GetTickCountWr()-t);
 }
 
 void MainWindow_t::redrawfield()
@@ -803,12 +801,12 @@ void MainWindow_t::arrowsAdvance(int v)
 //}
 
 //{ GUI
-LRESULT CALLBACK MainWindow_t::WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+/*LRESULT CALLBACK MainWindow_t::WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     return MainWindow.WndProcCommon2(hwnd,uMsg,wParam,lParam);
-}
+}*/
 
-LRESULT MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT MainWindow_t::WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(wParam);
 
@@ -878,12 +876,12 @@ LRESULT MainWindow_t::WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
     return 0;
 }
 
-LRESULT CALLBACK MainWindow_t::WndProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindow_t::WndProcMainCallback(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
-    return MainWindow.WndProc2(hwnd,uMsg,wParam,lParam);
+    return MainWindow.WndProcMain(hwnd,uMsg,wParam,lParam);
 }
 
-LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     RECT rect;
     short x,y;
@@ -891,12 +889,12 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     int i;
 	int f;
     int wp;
-    long long timer=GetTickCount();
+    long long timer=System.GetTickCountWr();
 
     x=LOWORD(lParam);
     y=HIWORD(lParam);
 
-    if(WndProcCommon2(hwnd,uMsg,wParam,lParam))
+    if(WndProcCommon(hwnd,uMsg,wParam,lParam))
     switch(uMsg)
     {
         case WM_CREATE:
@@ -1192,7 +1190,7 @@ LRESULT MainWindow_t::WndProc2(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
         case WM_SIZE:
             SetLayeredWindowAttributes(hMain,0,(BYTE)D_1(MAINWND_TRANSPARENCY),LWA_ALPHA);
-            SetLayeredWindowAttributes(Popup->hPopup,0,(BYTE)D_1(POPUP_TRANSPARENCY),LWA_ALPHA);
+            Popup->setTransparency();
 
             GetWindowRect(hwnd,&rect);
             main1x_c=x;
@@ -1438,22 +1436,22 @@ void SelectNoneCommand::LeftClick(bool)
 }
 //}
 
-LRESULT CALLBACK MainWindow_t::WindowGraphProcedure(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
+LRESULT CALLBACK MainWindow_t::WndProcFieldCallback(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
-    return MainWindow.WindowGraphProcedure2(hwnd,uMsg,wParam,lParam);
+    return MainWindow.WndProcField(hwnd,uMsg,wParam,lParam);
 }
 
-LRESULT MainWindow_t::WindowGraphProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
+LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam)
 {
     SCROLLINFO si;
     RECT rect;
     int x,y;
-    long long timer=GetTickCount();
+    long long timer=System.GetTickCountWr();
     int i;
 
     x=LOWORD(lParam);
     y=HIWORD(lParam);
-    if(WndProcCommon2(hwnd,message,wParam,lParam))
+    if(WndProcCommon(hwnd,message,wParam,lParam))
     switch(message)
     {
         case WM_CREATE:

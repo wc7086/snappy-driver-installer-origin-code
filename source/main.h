@@ -117,6 +117,7 @@ private:
     int horiz_sh=0;
 
 public:
+    HWND hPopup;
     Popup_t();
     ~Popup_t();
     void init();
@@ -124,13 +125,15 @@ public:
     void popup_resize(int x,int y);
     void onHover();
     void onLeave();
+    void setMirroring();
+    void setTransparency();
+    void getPos(long int *x,long int *y);
 
     int  getShift(){ return horiz_sh; }
     void AddShift(int v);
 
     wFont *hFontP;
     wFont *hFontBold;
-    HWND hPopup;
     size_t floating_itembar=0;
 
     LRESULT PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
@@ -183,12 +186,11 @@ public:
     int kbpanel,kbfield,kbinstall;
 
 private:
-    static LRESULT CALLBACK WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-    static LRESULT CALLBACK WndProc(HWND,UINT,WPARAM,LPARAM);
-    static LRESULT CALLBACK WindowGraphProcedure(HWND,UINT,WPARAM,LPARAM);
-    LRESULT WndProcCommon2(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
-    LRESULT WndProc2(HWND,UINT,WPARAM,LPARAM);
-    LRESULT WindowGraphProcedure2(HWND,UINT,WPARAM,LPARAM);
+    static LRESULT CALLBACK WndProcMainCallback(HWND,UINT,WPARAM,LPARAM);
+    static LRESULT CALLBACK WndProcFieldCallback(HWND,UINT,WPARAM,LPARAM);
+    LRESULT WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
+    LRESULT WndProcMain(HWND,UINT,WPARAM,LPARAM);
+    LRESULT WndProcField(HWND,UINT,WPARAM,LPARAM);
 
 public:
     void MainLoop(int nCmd);

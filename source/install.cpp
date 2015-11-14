@@ -332,12 +332,12 @@ goaround:
         hwidmatch->print_hr();
         wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
-        manager_g->animstart=GetTickCount();
+        manager_g->animstart=System.GetTickCountWr();
         MainWindow.offset_target=(itembar->curpos>>16);
         SetTimer(MainWindow.hMain,1,1000/60,nullptr);
 
         // Extract
-        extracttime=GetTickCount();
+        extracttime=System.GetTickCountWr();
         wsprintf(inf,L"%s\\%S%S",
                 unpacked?hwidmatch->getdrp_packpath():extractdir,
                 hwidmatch->getdrp_infpath(),
@@ -406,7 +406,7 @@ goaround:
             //if(!itembar->checked)manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
             //itembar->percent=manager_g->items_list[SLOT_EMPTY].percent;
             hwidmatch=itembar->hwidmatch;
-            totalextracttime+=extracttime=GetTickCount()-extracttime;
+            totalextracttime+=extracttime=System.GetTickCountWr()-extracttime;
             Log.print_con("Ret %d, %ld secs\n",r,extracttime/1000);
             if(r&&itembar->install_status!=STR_INST_STOPPING)
             {
@@ -433,14 +433,14 @@ goaround:
             itembar->install_status=STR_INST_INSTALL;
             MainWindow.redrawfield();
 
-            installtime=GetTickCount();
+            installtime=System.GetTickCountWr();
             LeaveCriticalSection(&sync);
             if(installmode==MODE_INSTALLING)
                 driver_install(hwid,inf,&ret,&needrb);
             else
                 ret=1;
             EnterCriticalSection(&sync);
-            totalinstalltime+=installtime=GetTickCount()-installtime;
+            totalinstalltime+=installtime=System.GetTickCountWr()-installtime;
             itembar=&manager_g->items_list[itembar_act];
 
             if(ret==1)installed++;else failed++;

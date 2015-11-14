@@ -28,8 +28,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 
 // Depend on Win32API
-#include "draw.h"     // todo: lots of Win32
-#include "enum.h"     // needs Version from indexing.h
+#include "draw.h"     // todo: HANDLE, RECT
+#include "enum.h"     // todo: lots of Win32
 #include "main.h"     // todo: lots of Win32
 
 #include <setupapi.h>       // for SetupDiGetClassDescription()
@@ -838,11 +838,11 @@ void Popup_t::onHover()
         if(floating_type==FLOATING_CMPDRIVER||floating_type==FLOATING_DRIVERLST)
         {
             rtl=0;
-            setMirroring(hPopup);
+            ::setMirroring(hPopup);
             rtl=1;
         }
         else
-            setMirroring(hPopup);
+            ::setMirroring(hPopup);
     }
     InvalidateRect(hPopup,nullptr,0);
     ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
@@ -852,7 +852,27 @@ void Popup_t::onLeave()
 {
     wait=false;
     ShowWindow(hPopup,SW_HIDE);
-    //InvalidateRect(hPopup,nullptr,0);
+}
+
+void Popup_t::setMirroring()
+{
+    ::setMirroring(hPopup);
+    InvalidateRect(hPopup,nullptr,0);
+}
+
+void Popup_t::setTransparency()
+{
+    SetLayeredWindowAttributes(hPopup,0,(BYTE)D_1(POPUP_TRANSPARENCY),LWA_ALPHA);
+}
+
+void Popup_t::getPos(long int *x,long int *y)
+{
+    POINT p;
+    p.x=0;
+    p.y=0;
+    ClientToScreen(hPopup,&p);
+    *x=p.x;
+    *y=p.y;
 }
 //}
 

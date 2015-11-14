@@ -713,7 +713,7 @@ void UpdaterImp::updateTorrentStatus()
     t->wasted=(int)st.total_redundant_bytes;
     t->wastedhashfailes=(int)st.total_failed_bytes;
 
-    if(torrenttime)t->elapsed=GetTickCount()-torrenttime;
+    if(torrenttime)t->elapsed=System.GetTickCountWr()-torrenttime;
     if(t->downloadspeed)
     {
         averageSpeed=static_cast<int>(SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed);
@@ -1011,7 +1011,7 @@ void UpdaterImp::resumeDownloading()
     hSession->resume();
     finisheddownloading=0;
     finishedupdating=0;
-    torrenttime=GetTickCount();
+    torrenttime=System.GetTickCountWr();
 }
 
 unsigned int __stdcall UpdaterImp::thread_download(void *arg)

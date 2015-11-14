@@ -53,15 +53,15 @@ Timers_t::Timers_t():
 
 void Timers_t::start(int a)
 {
-    timers[a]=GetTickCount();
+    timers[a]=System.GetTickCountWr();
 }
 void Timers_t::stop(int a)
 {
-    if(timers[a])timers[a]=GetTickCount()-timers[a];
+    if(timers[a])timers[a]=System.GetTickCountWr()-timers[a];
 }
 void Timers_t::stoponce(int a,int b)
 {
-    if(!timers[a])timers[a]=GetTickCount()-timers[b];
+    if(!timers[a])timers[a]=System.GetTickCountWr()-timers[b];
 }
 
 void Timers_t::print()
@@ -76,7 +76,7 @@ void Timers_t::print()
     Log.print_con("  startup:    %7ld (%ld)\n",timers[time_startup],timers[time_startup]-timers[time_devicescan]-timers[time_indexes]-timers[time_matcher]-timers[time_sysinfo]);
     Log.print_con("  indexsave:  %7ld\n",timers[time_indexsave]);
     Log.print_con("  indexprint: %7ld\n",timers[time_indexprint]);
-    Log.print_con("  total:      %7ld\n",GetTickCount()-timers[time_total]);
+    Log.print_con("  total:      %7ld\n",System.GetTickCountWr()-timers[time_total]);
     Log.print_con("  test:       %7ld\n",timers[time_test]);
 }
 

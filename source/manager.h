@@ -98,7 +98,7 @@ int  itembar_cmp(const itembar_t *a,const itembar_t *b,const Txt *ta,const Txt *
 class Manager
 {
     std::vector<itembar_t> items_list;
-    int animstart;
+    unsigned animstart;
 
 public:
     Matcher *matcher;
