@@ -43,11 +43,6 @@ public:
         wPanel *p,*r;
         wPanels=new WidgetComposite;
 
-        // Revision
-        p=new wPanel{1,BOX_PANEL8};
-        p->Add(new wTextRev);
-        wPanels->Add(p);
-
         // SysInfo
         p=new wPanel{3,BOX_PANEL1};
         p->Add(new wTextSys1);
@@ -127,6 +122,11 @@ public:
         // Logo
         p=new wLogo{1,BOX_PANEL13};
         p->Add(new wText    {0});
+        wPanels->Add(p);
+
+        // Revision
+        p=new wPanel{1,BOX_PANEL8};
+        p->Add(new wTextRev);
         wPanels->Add(p);
     }
 };
@@ -501,6 +501,7 @@ void HoverVisiter::VisitwLogo(wLogo *a)
 
 void HoverVisiter::VisitwTextRev(wTextRev *a)
 {
+    if(popup_active)return;
     a->hitscan(x,y);
     if(a->isSelected)
     {
@@ -538,6 +539,7 @@ void ClickVisiter::VisitwCheckbox(wCheckbox *a)
     a->hitscan(x,y);
     if(a->isSelected||action_id==a->command->GetActionID())
     {
+        triggered=true;
         if(right)
         {
             a->command->RightClick(x,y);
@@ -612,6 +614,8 @@ void ClickVisiter::VisitwLogo(wLogo *a)
 
 void ClickVisiter::VisitwTextRev(wTextRev *a)
 {
+    if(triggered)return;
+
     a->hitscan(x,y);
     if(a->isSelected&&!right)
         System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
