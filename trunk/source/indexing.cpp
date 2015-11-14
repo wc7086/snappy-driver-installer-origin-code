@@ -1912,7 +1912,7 @@ unsigned int __stdcall Driverpack::indexinf_thread(void *arg)
     inffile_task t;
     driverpack_task data;
     WStringShort bufw2;
-    long long tm=0,last=0;
+    unsigned tm=0,last=0;
 
     while(drplist->wait_and_pop(data),data.drp)
     {
@@ -1925,12 +1925,12 @@ unsigned int __stdcall Driverpack::indexinf_thread(void *arg)
         while(1)
         {
             data.drp->objs_new->wait_and_pop(t);
-            if(last)tm+=GetTickCount()-last;
+            if(last)tm+=System.GetTickCountWr()-last;
             if(!t.adr)
             {
                 t.drp->genhashes();
                 t.drp->text_ind.shrink();
-                last=GetTickCount();
+                last=System.GetTickCountWr();
                 //Log.print_con("Trm %ws\n",data.drp->getFilename());
                 delete data.drp->objs_new;
                 break;
@@ -1943,7 +1943,7 @@ unsigned int __stdcall Driverpack::indexinf_thread(void *arg)
             delete[] t.pathinf;
             delete[] t.inffile;
             delete[] t.adr;
-            last=GetTickCount();
+            last=System.GetTickCountWr();
         }
         //Log.print_con("Fin %ws\n",data.drp->getFilename());
     }

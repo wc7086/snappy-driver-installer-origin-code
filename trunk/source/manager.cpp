@@ -868,7 +868,7 @@ void Manager::hitscan(int x,int y,size_t *r,int *zone)
             {
                 if(setaa)
                 {
-                    animstart=GetTickCount();
+                    animstart=System.GetTickCountWr();
                     MainWindow.offset_target=(itembar->curpos>>16);
                     SetTimer(MainWindow.hMain,1,1000/60,nullptr);
                     setaa=0;
@@ -1216,13 +1216,13 @@ void Manager::setpos()
         }
     }
     SetTimer(MainWindow.hMain,1,1000/60,nullptr);
-    animstart=GetTickCount();
+    animstart=System.GetTickCountWr();
 }
 
 int Manager::animate()
 {
     int chg=0;
-    int tt1=GetTickCount()-animstart;
+    int tt1=System.GetTickCountWr()-animstart;
 
     // Move itembars
     for(auto &itembar:items_list)
@@ -1325,7 +1325,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
     ClipRegion hrgn{x,(pos<cutoff)?cutoff:pos,x+wx,pos+D_X(DRVITEM_WY),r};
     int cl=((zone>=0)?1:0);
     if(index==SLOT_EXTRACTING&&itembar->install_status&&installmode==MODE_NONE)
-        cl=((GetTickCount()-animstart)/200)%2;
+        cl=((System.GetTickCountWr()-animstart)/200)%2;
     canvas.SetClipRegion(hrgn2);
     if(intend&&D_1(DRVITEM_LINE_WIDTH)&&!(itembar->first&2))
         canvas.DrawConnection(x,pos,ofsy,items_list[intend].curpos>>16);
@@ -1898,8 +1898,7 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
 
     RECT rect;
     GetWindowRect(GetDesktopWindow(),&rect);
-    p.y=0;p.x=0;
-    ClientToScreen(Popup->hPopup,&p);
+    Popup->getPos(&p.x,&p.y);
 
     maxsz=0;
     for(k=0;k<30;k++)maxsz+=limits[k];
