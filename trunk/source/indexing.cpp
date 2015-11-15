@@ -1865,7 +1865,7 @@ void Driverpack::indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffilename,
     }
 }
 
-void Driverpack::getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index)
+void Driverpack::getdrp_drvsectionAtPos(char *buf,size_t pos,size_t manuf_index)
 {
     const int *rr=reinterpret_cast<const int *>(text_ind.get(manufacturer_list[manuf_index].sections));
     if(pos)

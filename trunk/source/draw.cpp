@@ -605,7 +605,7 @@ void CanvasImp::DrawLine(int x1,int y1,int x2,int y2)
 
 void CanvasImp::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2,int w,int rn)
 {
-    HPEN newpen,oldpen;
+    HPEN newpen,oldpen=nullptr;
     HBRUSH /*newbrush,*/oldbrush;
     HGDIOBJ r;
     unsigned r32;
@@ -621,9 +621,13 @@ void CanvasImp::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2
     if(r32==CLR_INVALID)Log.print_err("ERROR in drawrect(): failed SetDCBrushColor\n");
 
     newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
-    if(!newpen)Log.print_err("ERROR in drawrect(): failed CreatePen\n");
-    oldpen=static_cast<HPEN>(SelectObject(hdcMem,newpen));
-    if(!oldpen)Log.print_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
+    if(newpen)
+    { 
+        oldpen=static_cast<HPEN>(SelectObject(hdcMem,newpen));
+        if(!oldpen)Log.print_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
+    }
+    else
+        Log.print_err("ERROR in drawrect(): failed CreatePen\n");
 
     if(rn)
         RoundRect(hdcMem,x1,y1,x2,y2,rn,rn);
@@ -635,12 +639,16 @@ void CanvasImp::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2
         r=SelectObject(hdcMem,oldpen);
         if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldpen)\n");
     }
-    r=SelectObject(hdcMem,oldbrush);
-    if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
-    if(newpen)r32=DeleteObject(newpen);
-    if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
-    //r32=DeleteObject(newbrush);
-    //if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newbrush)\n");
+    if(oldbrush)
+    {
+        r=SelectObject(hdcMem,oldbrush);
+        if(!r)Log.print_err("ERROR in drawrect(): failed SelectObject(oldbrush)\n");
+    }
+    if(newpen)
+    {
+        r32=DeleteObject(newpen);
+        if(!r32)Log.print_err("ERROR in drawrect(): failed DeleteObject(newpen)\n");
+    }
 }
 
 void CanvasImp::DrawWidget(int x1,int y1,int x2,int y2,int id)

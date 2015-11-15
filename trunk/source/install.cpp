@@ -108,29 +108,29 @@ int _7z_setcomplited(long long i)
 
 void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
 {
-    wchar_t cmd[BUFLEN];
-    wchar_t buf[BUFLEN];
+    WStringShort cmd;
+    WStringShort buf;
     void *install64bin;
     ThreadAbs *thr=CreateThread();
     size_t size;
     FILE *f;
 
     *ret=1;*needrb=1;
-    wsprintf(cmd,L"%s\\install64.exe",extractdir);
-    if(!System.FileExists(cmd))
+    cmd.sprintf(L"%s\\install64.exe",extractdir);
+    if(!System.FileExists(cmd.Get()))
     {
         mkdir_r(extractdir);
         Log.print_con("Dir: (%S)\n",extractdir);
-        f=_wfopen(cmd,L"wb");
+        f=_wfopen(cmd.Get(),L"wb");
         if(f)
         {
-            Log.print_con("Created '%S'\n",cmd);
+            Log.print_con("Created '%S'\n",cmd.Get());
             get_resource(IDR_INSTALL64,&install64bin,&size);
             fwrite(install64bin,1,size,f);
             fclose(f);
         }
         else
-            Log.print_con("Failed to create '%S'\n",cmd);
+            Log.print_con("Failed to create '%S'\n",cmd.Get());
     }
 
     Autoclicker.setflag(1);
@@ -147,10 +147,10 @@ void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb)
     if((Settings.flags&FLAG_DISABLEINSTALL)==0)
     if((unsigned)*ret==0xE0000235||manager_g->matcher->getState()->getArchitecture())//ERROR_IN_WOW64
     {
-        wsprintf(buf,L"\"%s\" \"%s\"",hwid,inf);
-        wsprintf(cmd,L"%s\\install64.exe",extractdir);
-        Log.print_con("'%S %S'\n",cmd,buf);
-        *ret=System.run_command(cmd,buf,SW_HIDE,1);
+        buf.sprintf(L"\"%s\" \"%s\"",hwid,inf);
+        cmd.sprintf(L"%s\\install64.exe",extractdir);
+        Log.print_con("'%S %S'\n",cmd.Get(),buf.Get());
+        *ret=System.run_command(cmd.Get(),buf.Get(),SW_HIDE,1);
         if((*ret&0x7FFFFFFF)==1)
         {
             *needrb=(*ret&0x80000000)?1:0;
