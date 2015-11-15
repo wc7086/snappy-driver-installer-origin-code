@@ -16,17 +16,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "logging.h"
-#include "matcher.h"
 #include "common.h"
+#include "logging.h"
+#include "system.h"
+#include "settings.h"
 #include "manager.h"
 #include "theme.h"
-#include "settings.h"
 #include "gui.h"
-#include "system.h"
 
 #include <windows.h>
 
+// Depend on Win32API
 #include "enum.h"
 #include "main.h"
 #include "draw.h"
@@ -374,7 +374,7 @@ void wTextSys1::draw(Canvas &canvas)
 
 void wTextSys2::draw(Canvas &canvas)
 {
-    State *state=manager_g->matcher->getState();
+    State *state=manager_g->getState();
     WStringShort buf;
 
     buf.sprintf(L"%s (%d-bit)%s",state->get_winverstr(),state->getArchitecture()?64:32,rtl?L"\u200E":L"");
@@ -386,7 +386,7 @@ void wTextSys2::draw(Canvas &canvas)
 
 void wTextSys3::draw(Canvas &canvas)
 {
-    State *state=manager_g->matcher->getState();
+    State *state=manager_g->getState();
     WStringShort buf;
 
     buf.sprintf(L"%s",(wx<10+SYSINFO_COL1)?state->getProduct():state->get_szCSDVersion());
@@ -627,7 +627,7 @@ void ClickVisiter::VisitwTextSys1(wTextSys1 *a)
     if(a->isSelected)
     {
         if(right)
-            manager_g->matcher->getState()->contextmenu2(x,y);
+            manager_g->getState()->contextmenu2(x,y);
         else
             System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
     }

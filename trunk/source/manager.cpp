@@ -18,24 +18,25 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 #include "common.h"
 #include "logging.h"
-#include "matcher.h"
+#include "system.h"
 #include "settings.h"
+#include "matcher.h"
 #include "indexing.h"
 #include "manager.h"
 #include "update.h"
 #include "install.h"
 #include "gui.h"
 #include "theme.h"
-#include "system.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
 #include <process.h>
 #endif
 
+// Depend on Win32API
 #include "enum.h"
-#include "main.h"
 #include "draw.h"
+#include "main.h"
 
 //{ Global vars
 const status_t statustnl[NUM_STATUS]=
@@ -441,8 +442,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         while(*p)
         {
             int pp=0;
-            if(!StrCmpIW(i_hwid,p))pp|=1;
-            if(!StrCmpIW(a_hwid,p))pp|=2;
+            if(!wcsicmp(i_hwid,p))pp|=1;
+            if(!wcsicmp(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=wcslen(p)+1;
@@ -457,8 +458,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         while(*p)
         {
             int pp=0;
-            if(!StrCmpIW(i_hwid,p))pp|=1;
-            if(!StrCmpIW(a_hwid,p))pp|=2;
+            if(!wcsicmp(i_hwid,p))pp|=1;
+            if(!wcsicmp(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=wcslen(p)+1;
@@ -778,6 +779,16 @@ void Manager::print_tbl()
         }
 
     Log.print_file("}manager_print[%d]\n\n",act);
+}
+
+int Manager::getlocale()
+{
+    return manager_g->matcher->getState()->getLocale();
+}
+
+State *Manager::getState()
+{
+    return matcher->getState();
 }
 
 void Manager::print_hr()

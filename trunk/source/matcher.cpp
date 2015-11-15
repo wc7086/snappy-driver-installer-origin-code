@@ -17,19 +17,20 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 #include "common.h"
+#include "logging.h"
+#include "system.h"
+#include "settings.h"
 #include "indexing.h"
 #include "matcher.h"
-#include "logging.h"
-#include "settings.h"
 #include "theme.h"
 #include "gui.h"
-#include "system.h"
 
 #include <windows.h>
 
+// Depend on Win32API
 #include "enum.h"
-#include "main.h"
-#include "device.h"
+#include "main.h"    // for Popup
+#include "device.h"  // for CM_PROB_DISABLED
 
 //{ Global variables
 
@@ -207,47 +208,6 @@ void State::genmarker()
             wsprintfA(marker,"%S_nb",filter_list[i][0]);
 
     Log.print_con("Marker: '%s'\n",marker);
-}
-
-int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
-{
-    if(dev_ishw&&inf_pos==0)    // device hardware ID and a hardware ID in an INF
-        return 0x0000+dev_pos;
-
-    if(dev_ishw)                // device hardware ID and a compatible ID in an INF
-        return 0x1000+dev_pos+0x100*inf_pos;
-
-    if(inf_pos==0)              // device compatible ID and a hardware ID in an INF
-        return 0x2000+dev_pos;
-
-                                // device compatible ID and a compatible ID in an INF
-        return 0x3000+dev_pos+0x100*inf_pos;
-}
-
-int calc_signature(int catalogfile,const State *state,int isnt)
-{
-    if(state->getArchitecture())
-    {
-        if(catalogfile&(1<<CatalogFile|1<<CatalogFile_nt|1<<CatalogFile_ntamd64|1<<CatalogFile_ntia64))
-            return 0;
-    }
-    else
-    {
-        if(catalogfile&(1<<CatalogFile|1<<CatalogFile_nt|1<<CatalogFile_ntx86))
-            return 0;
-    }
-    if(isnt)return 0x8000;
-    return 0xC000;
-}
-
-unsigned calc_score(int catalogfile,int feature,int rank,const State *state,int isnt)
-{
-    int major,minor;
-    state->getWinVer(&major,&minor);
-    if(major>=6)
-        return (calc_signature(catalogfile,state,isnt)<<16)+(feature<<16)+rank;
-    else
-        return calc_signature(catalogfile,state,isnt)+rank;
 }
 
 int calc_secttype(const char *s)
@@ -581,7 +541,7 @@ int Devicematch::isMissing(const State *state)
         if(StrStrIW(device->getHWIDby(0,state),L"BTHENUM"))return 1;
         //if(memcmp(device->getGUID(),&nonPnP,sizeof(GUID)))return 1;
     }
-    if(driver&&!StrCmpIW(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
+    if(driver&&!wcsicmp(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
     return 0;
 }
 //}

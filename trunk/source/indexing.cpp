@@ -18,12 +18,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 //#define MERGE_FINDER
 #include "com_header.h"
 #include "common.h"
-#include "settings.h"
 #include "logging.h"
+#include "system.h"
+#include "settings.h"
 #include "matcher.h"
 #include "indexing.h"
-#include "theme.h"
-#include "system.h"
 #include "manager.h"
 
 #include "7zip.h"
@@ -168,110 +167,6 @@ void findosattr(char *bufa,const char *adr,size_t len)
         }
         p++;
     }
-}
-//}
-
-//{ Version
-int Version::setDate(int d_,int m_,int y_)
-{
-    d=d_;
-    m=m_;
-    y=y_;
-
-    int flag=0;
-    if(y<100)y+=1900;
-    if(y<1990)flag=1;
-    if(y>2015)flag=2;
-    switch(m)
-    {
-        case 1:case 3:case 5:case 7:case 8:case 10:case 12:
-            if(d<1||d>31)flag=3;
-            break;
-        case 4:case 6:case 9:case 11:
-            if(d<1||d>30)flag=4;
-            break;
-        case 2:
-            if(d<1||d>((((y%4==0)&&(y%100))||(y%400==0))?29:28))flag=5;
-            break;
-        default:
-            flag=6;
-    }
-    return flag;
-}
-
-void Version::setVersion(int v1_,int v2_,int v3_,int v4_)
-{
-    v1=v1_;
-    v2=v2_;
-    v3=v3_;
-    v4=v4_;
-}
-
-void Version::str_date(WStringShort &buf,bool invariant)const
-{
-    SYSTEMTIME tm;
-    FILETIME ft;
-
-    memset(&tm,0,sizeof(SYSTEMTIME));
-    tm.wDay=(WORD)d;
-    tm.wMonth=(WORD)m;
-    tm.wYear=(WORD)y;
-    SystemTimeToFileTime(&tm,&ft);
-    int r=FileTimeToSystemTime(&ft,&tm);
-
-    if(y<1000||!r)
-        buf.sprintf(STR(STR_HINT_UNKNOWN));
-    else if(invariant)
-        buf.sprintf(L"%02d/%02d/%d",m,d,y);
-    else
-        GetDateFormat(invariant?LOCALE_INVARIANT:manager_g->matcher->getState()->getLocale(),0,&tm,nullptr,buf.GetV(),static_cast<int>(buf.Length()));
-}
-
-void Version::str_version(WStringShort &buf)const
-{
-    if(v1<0)
-        buf.sprintf(STR(STR_HINT_UNKNOWN));
-    else
-        buf.sprintf(L"%d.%d.%d.%d",v1,v2,v3,v4);
-}
-
-int cmpdate(const Version *t1,const Version *t2)
-{
-    int res;
-
-    if(Settings.flags&FLAG_FILTERSP&&t2->y<1000)return 0;
-
-    res=t1->y-t2->y;
-    if(res)return res;
-
-    res=t1->m-t2->m;
-    if(res)return res;
-
-    res=t1->d-t2->d;
-    if(res)return res;
-
-    return 0;
-}
-
-int cmpversion(const Version *t1,const Version *t2)
-{
-    int res;
-
-    if(Settings.flags&FLAG_FILTERSP&&t2->v1<0)return 0;
-
-    res=t1->v1-t2->v1;
-    if(res)return res;
-
-    res=t1->v2-t2->v2;
-    if(res)return res;
-
-    res=t1->v3-t2->v3;
-    if(res)return res;
-
-    res=t1->v4-t2->v4;
-    if(res)return res;
-
-    return 0;
 }
 //}
 
@@ -719,7 +614,7 @@ int Collection::scanfolder_count(const wchar_t *path)
                     System.run_command(L"cmd",buf.Get(),SW_HIDE,1);
                     break;
                 }
-            if(i==6&&StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
+            if(i==6&&wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 Driverpack drp{path,FindFileData.cFileName,this};
                 if(Settings.flags&COLLECTION_FORCE_REINDEXING||!drp.checkindex())cnt++;
@@ -749,14 +644,14 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
         else
         {
             size_t len=wcslen(FindFileData.cFileName);
-            if(StrCmpIW(FindFileData.cFileName+len-3,L".7z")==0)
+            if(wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
                 reinterpret_cast<drplist_t *>(arg)->push(driverpack_task{&driverpack_list.back()});
             }
             else
-                if((StrCmpIW(FindFileData.cFileName+len-4,L".inf")==0||
-                    StrCmpIW(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
+                if((wcsicmp(FindFileData.cFileName+len-4,L".inf")==0||
+                    wcsicmp(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
                 {
                     buf.sprintf(L"%s\\%s",path,FindFileData.cFileName);
                     FILE *f=_wfopen(buf.Get(),L"rb");
@@ -770,7 +665,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
 
                     if(len)
                     {
-                        if(StrCmpIW(FindFileData.cFileName+wcslen(FindFileData.cFileName)-4,L".inf")==0)
+                        if(wcsicmp(FindFileData.cFileName+wcslen(FindFileData.cFileName)-4,L".inf")==0)
                             driverpack_list[0].indexinf(buf.Get(),FindFileData.cFileName,buft,len);
                         else
                             driverpack_list[0].parsecat(buf.Get(),FindFileData.cFileName,buft,len);
@@ -960,7 +855,7 @@ void Collection::save()
             {
                 wchar_t buf1[BUFLEN];
                 driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf1);
-                if(!StrCmpIW(buf1,filename.Get()))break;
+                if(!wcsicmp(buf1,filename.Get()))break;
             }
             if(i==driverpack_list.size())
             {
@@ -1402,8 +1297,8 @@ int Driverpack::genindex()
             SzArEx_GetFileNameUtf16(&db,i,(UInt16 *)fullname);
 
             size_t namelen=wcslen(fullname)-4;
-            if(StrCmpIW(fullname+namelen,L".inf")==0||
-               StrCmpIW(fullname+namelen,L".cat")==0)
+            if(wcsicmp(fullname+namelen,L".inf")==0||
+               wcsicmp(fullname+namelen,L".cat")==0)
             {
                 //Log.print_con("{");
 

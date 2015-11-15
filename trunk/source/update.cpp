@@ -19,14 +19,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef USE_TORRENT
 #include "common.h"
-#include "settings.h"
 #include "logging.h"
+#include "settings.h"
+#include "system.h"
 #include "matcher.h"
 #include "update.h"
 #include "manager.h"
 #include "theme.h"
 #include "gui.h"
-#include "system.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -52,6 +52,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <process.h>
 #endif
 
+// Depend on Win32API
 #include "main.h"
 #include "draw.h"
 

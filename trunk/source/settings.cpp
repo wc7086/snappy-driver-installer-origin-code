@@ -14,18 +14,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #include "com_header.h"
-#include <wchar.h>
 #include "common.h"
+#include "logging.h"
+#include "system.h"
 #include "settings.h"
 #include "cli.h"
-#include "logging.h"
 #include "update.h"
 #include "install.h"
-#include "langlist.h"
 #include "theme.h"
-#include "system.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -96,7 +93,7 @@ bool Settings_t::argopt(const wchar_t *s,const wchar_t *cmp,int *d)
 
 bool Settings_t::argflg(const wchar_t *s,const wchar_t *cmp,int f)
 {
-    if(!StrCmpIW(s,cmp)){flags|=f;return true;}
+    if(!wcsicmp(s,cmp)){flags|=f;return true;}
     return false;
 }
 
@@ -147,7 +144,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argflg(pr,L"-checkupdates",   FLAG_CHECKUPDATES))continue;
         if(argflg(pr,L"-onlyupdates",    FLAG_ONLYUPDATES))continue;
 
-        if(!StrCmpIW(pr,L"-7z"))
+        if(!wcsicmp(pr,L"-7z"))
         {
             WStringShort cmd;
             cmd.sprintf(L"7za.exe %s",StrStrIW(str,L"-7z")+4);
@@ -159,7 +156,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
             break;
         }
 
-        if(!wcscmp(pr,L"-PATH"))
+        if(!wcsicmp(pr,L"-PATH"))
         {
             wcscpy(drpext_dir,argv[++i]);
             flags|=FLAG_AUTOCLOSE|
@@ -167,7 +164,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
                 FLAG_PRESERVECFG;
             continue;
         }
-        if(!wcscmp(pr,L"-install")&&argc-i==3)
+        if(!wcsicmp(pr,L"-install")&&argc-i==3)
         {
             wchar_t buf[BUFLEN];
             Log.print_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
@@ -182,7 +179,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
             statemode=STATEMODE_EXIT;
             break;
         }
-        if(!StrCmpIW(pr,L"-?"))
+        if(!wcsicmp(pr,L"-?"))
         {
             ShowHelp();
             //Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;

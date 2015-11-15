@@ -16,14 +16,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "logging.h"
-#include "matcher.h"
-#include "settings.h"
 #include "common.h"
-#include "manager.h"
+#include "logging.h"
+#include "system.h"
+#include "settings.h"
 #include "gui.h"
 #include "theme.h"
-#include "system.h"
 
 #include <windows.h>
 
@@ -622,7 +620,7 @@ void CanvasImp::DrawFilledRect(int x1,int y1,int x2,int y2,int color1,int color2
 
     newpen=CreatePen(w?PS_SOLID:PS_NULL,w,color2);
     if(newpen)
-    { 
+    {
         oldpen=static_cast<HPEN>(SelectObject(hdcMem,newpen));
         if(!oldpen)Log.print_err("ERROR in drawrect(): failed SelectObject(newpen)\n");
     }

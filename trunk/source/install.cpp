@@ -16,17 +16,17 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
+#include "common.h"
 #include "logging.h"
+#include "system.h"
+#include "settings.h"
 #include "cli.h"
 #include "matcher.h"
-#include "settings.h"
-#include "common.h"
 #include "update.h"
 #include "manager.h"
 #include "install.h"
 #include "gui.h"
 #include "theme.h"
-#include "system.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -37,9 +37,10 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 #include "device.h"
 
+// Depend on Win32API
 #include "enum.h"
-#include "main.h"
 #include "draw.h"
+#include "main.h"
 
 // Autoclicker
 #define AUTOCLICKER_CONFIRM

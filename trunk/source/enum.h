@@ -265,4 +265,10 @@ int GetMonitorDevice(const wchar_t* adapterName,DISPLAY_DEVICE *ddMon);
 int GetMonitorSizeFromEDID(const wchar_t* adapterName,int *Width,int *Height);
 int iswide(int x,int y);
 
+// Calc
+int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
+unsigned calc_score(int catalogfile,int feature,int rank,const State *state,int isnt);
+int calc_secttype(const char *s);
+int calc_signature(int catalogfile,const State *state,int isnt);
+
 #endif

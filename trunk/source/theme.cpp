@@ -19,11 +19,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "common.h"
 #include "logging.h"
 #include "settings.h"
-#include "theme.h"
 #include "system.h"
+#include "theme.h"
 
 #include <windows.h>
 
+// Depend on Win32API
 #include "draw.h"
 #include "main.h"
 
