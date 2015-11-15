@@ -23,11 +23,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 
 #include <windows.h>
-#undef _INC_SHLWAPI
 #ifdef _MSC_VER
+#include <process.h>
+#include <errno.h>
 #include <commdlg.h>
 #include <direct.h>
 #include <shellapi.h>
+#else
+#undef _INC_SHLWAPI
 #endif
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for PathFileExists

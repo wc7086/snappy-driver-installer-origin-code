@@ -81,9 +81,9 @@ void Device::print_guid(const GUID *g)
     if(!SetupDiGetClassDescription(g,buffer.GetV(),static_cast<DWORD>(buffer.Length()),nullptr))
     {
         Log.print_file("%08lX-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",g->Data1,g->Data2,g->Data3,
-            (int)(g->Data4[0]),(int)(g->Data4[1]),
-            (int)(g->Data4[2]),(int)(g->Data4[3]),(int)(g->Data4[4]),
-            (int)(g->Data4[5]),(int)(g->Data4[6]),(int)(g->Data4[7]));
+            g->Data4[0],g->Data4[1],
+            g->Data4[2],g->Data4[3],g->Data4[4],
+            g->Data4[5],g->Data4[6],g->Data4[7]);
 
         unsigned lr=GetLastError();
         if(lr!=0xE0000206)Log.print_syserr(lr,L"print_guid()");
@@ -403,7 +403,7 @@ int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
     int dev_pos=0;
     while(*p)
     {
-        if(!wcsicmp(p,str))return dev_pos;
+        if(!_wcsicmp(p,str))return dev_pos;
         p+=wcslen(p)+1;
         dev_pos++;
     }

@@ -541,7 +541,7 @@ int Devicematch::isMissing(const State *state)
         if(StrStrIW(device->getHWIDby(0,state),L"BTHENUM"))return 1;
         //if(memcmp(device->getGUID(),&nonPnP,sizeof(GUID)))return 1;
     }
-    if(driver&&!wcsicmp(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
+    if(driver&&!_wcsicmp(state->textas.getw(driver->getMatchingDeviceId()),L"PCI\\CC_0300"))return 1;
     return 0;
 }
 //}
@@ -605,7 +605,7 @@ int Hwidmatch::calc_catalogfile()
 
 int Hwidmatch::calc_altsectscore(const State *state,int curscore)
 {
-    int desc_index,manufacturer_index;
+    size_t desc_index,manufacturer_index;
 
     desc_index=drp->HWID_list[HWID_index].desc_index;
     manufacturer_index=drp->desc_list[desc_index].manufacturer_index;

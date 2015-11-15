@@ -109,7 +109,7 @@ public:
 class Hwidmatch
 {
     Driverpack *drp;
-    int HWID_index;
+    size_t HWID_index;
 
     Devicematch *devicematch;
 
@@ -126,8 +126,8 @@ private:
     int calc_markerscore(const State *state,const char *path);
 
 public:
-    void setHWID_index(int index){HWID_index=index;}
-    int getHWID_index(){return HWID_index;}
+    void setHWID_index(size_t index){HWID_index=index;}
+    size_t getHWID_index(){return HWID_index;}
     void setStatus(int status1){status=status1;}
     int getStatus(){return status;}
     unsigned getScore(){return score;}
