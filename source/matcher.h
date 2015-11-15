@@ -58,12 +58,6 @@ struct markers_t
 extern const char *nts[NUM_DECS];
 extern const markers_t markers[NUM_MARKERS];
 
-// Calc
-int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos);
-unsigned calc_score(int catalogfile,int feature,int rank,const State *state,int isnt);
-int calc_secttype(const char *s);
-int calc_signature(int catalogfile,const State *state,int isnt);
-
 // Misc
 int cmpunsigned(unsigned a,unsigned b);
 

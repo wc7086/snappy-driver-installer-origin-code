@@ -18,17 +18,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#ifdef _MSC_VER
-#include <shlwapi.h>
-#else
-#ifndef _INC_SHLWAPI
-#define _INC_SHLWAPI
-  extern "C" __stdcall char *StrStrIA(const char *lpFirst,const char *lpSrch);
-  extern "C" __stdcall wchar_t *StrStrIW(const wchar_t *lpFirst,const wchar_t *lpSrch);
-  extern "C" __stdcall int StrCmpIW(const wchar_t *psz1,const wchar_t *psz2);
-#endif
-#endif
-
 //{ Event
 class Event
 {

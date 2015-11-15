@@ -17,25 +17,24 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 #include "common.h"
-#include "settings.h"
 #include "logging.h"
+#include "settings.h"
+#include "system.h"
 #include "manager.h"
 
 #include <windows.h>
+#undef _INC_SHLWAPI
 #ifdef _MSC_VER
 #include <commdlg.h>
 #include <direct.h>
 #include <shellapi.h>
 #endif
-
-#include <process.h>
-#include <errno.h>
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for PathFileExists
 #include <shlobj.h>         // for SHBrowseForFolder
 
+// Depend on Win32API
 #include "main.h"
-#include "system.h"
 
 SystemImp System;
 int monitor_pause=0;

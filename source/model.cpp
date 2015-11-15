@@ -17,19 +17,20 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 #include "common.h"
+#include "logging.h"
+#include "system.h"
+#include "settings.h"
 #include "indexing.h"
 #include "matcher.h"
-#include "logging.h"
-#include "settings.h"
 #include "manager.h"
 #include "update.h"
-#include "system.h"
 
 #include <windows.h>
 
+// Depend on Win32API
 #include "enum.h"
-#include "model.h"
 #include "main.h"
+#include "model.h"
 
 extern Event *deviceupdate_event;
 extern volatile int deviceupdate_exitflag;

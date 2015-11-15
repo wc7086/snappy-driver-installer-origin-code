@@ -16,9 +16,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "logging.h"
 #include "common.h"
-#include "matcher.h"
+#include "logging.h"
+#include "system.h"     // non-portable
 #include "settings.h"
 #include "cli.h"
 #include "indexing.h"
@@ -27,20 +27,20 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"    // non-portable
 #include "gui.h"
 #include "theme.h"
-#include "system.h"     // non-portable
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
+#include <shobjidl.h>       // for TBPF_NORMAL
 #ifdef _MSC_VER
 #include <shellapi.h>
 #include <process.h>
 #include <signal.h>
 #endif
 
+// Depend on Win32API
 #include "enum.h"   // non-portable
-#include "main.h"
 #include "draw.h"   // non-portable
-
+#include "main.h"
 #include "model.h"
 
 //{ Global variables
@@ -745,6 +745,27 @@ void MainWindow_t::redrawmainwnd()
     InvalidateRect(hMain,nullptr,0);
 }
 
+void MainWindow_t::ShowProgressInTaskbar(bool show,long long complited,long long total)
+{
+    int hres;
+    ITaskbarList3 *pTL;
+    static const IID my_CLSID_TaskbarList={0x56fdf344,0xfd6d,0x11d0,{0x95,0x8a,0x00,0x60,0x97,0xc9,0xa0,0x90}};
+
+    CoInitializeEx(nullptr,COINIT_MULTITHREADED);
+    hres=CoCreateInstance(my_CLSID_TaskbarList,nullptr,CLSCTX_ALL,IID_ITaskbarList3,(LPVOID*)&pTL);
+    if(FAILED(hres))
+    {
+        CoUninitialize();
+        //printf("FAILED to create IID_ITaskbarList3 object. Error code = 0x%X\n",hres);
+        return;
+    }
+    //printf("%d,%d\n",flags,complited);
+    pTL->SetProgressValue(hMain,complited,total);
+    pTL->SetProgressState(hMain,show?TBPF_NORMAL:TBPF_NOPROGRESS);
+    pTL->Release();
+    CoUninitialize();
+}
+
 void MainWindow_t::tabadvance(int v)
 {
     if(v>0)
@@ -956,7 +977,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
         case WM_UPDATELANG:
             hLang->Clear();
-            vLang->EnumFiles(hLang,L"langs",manager_g->matcher->getState()->getLocale());
+            vLang->EnumFiles(hLang,L"langs",manager_g->getState()->getLocale());
             f=vLang->AutoPick();
             if(f==0)f=hLang->GetNumItems()-1;
             vLang->SwitchData((int)f);
@@ -1416,7 +1437,7 @@ void InstallCommand::LeftClick(bool)
     if(installmode==MODE_NONE)
     {
         if((Settings.flags&FLAG_EXTRACTONLY)==0)
-        wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getTemp()));
+        wsprintf(extractdir,L"%s\\SDI",manager_g->getState()->textas.getw(manager_g->getState()->getTemp()));
         manager_g->install(INSTALLDRIVERS);
     }
 }
@@ -1535,7 +1556,7 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((Settings.flags&FLAG_EXTRACTONLY)==0)
-                    wsprintf(extractdir,L"%s\\SDI",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getTemp()));
+                    wsprintf(extractdir,L"%s\\SDI",manager_g->getState()->textas.getw(manager_g->getState()->getTemp()));
                     manager_g->install(INSTALLDRIVERS);
                 }
                 redrawfield();
@@ -1692,7 +1713,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             {
                 case FLOATING_SYSINFO:
                     canvasPopup->SetFont(Popup->hFontP);
-                    manager_g->matcher->getState()->popup_sysinfo(*canvasPopup);
+                    manager_g->getState()->popup_sysinfo(*canvasPopup);
                     break;
 
                 case FLOATING_TOOLTIP:

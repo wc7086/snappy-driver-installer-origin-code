@@ -19,6 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define COM_HEADER_H
 
 #include <stddef.h>
+#include <wchar.h>
 #include "svnrev.h"
 
 typedef unsigned ofst;
@@ -56,5 +57,15 @@ typedef unsigned ofst;
 #define TORRENT_USE_ICONV 0
 #define TORRENT_USE_IPV6 0
 #define TORRENT_USE_TOMMATH
+
+#ifdef _MSC_VER
+#include <shlwapi.h>
+#else
+#ifndef _INC_SHLWAPI
+#define _INC_SHLWAPI
+  extern "C" __stdcall char *StrStrIA(const char *lpFirst,const char *lpSrch);
+  extern "C" __stdcall wchar_t *StrStrIW(const wchar_t *lpFirst,const wchar_t *lpSrch);
+#endif
+#endif
 
 #endif

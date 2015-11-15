@@ -23,8 +23,12 @@ class Txt;
 class Devicematch;
 class Hwidmatch;
 class Matcher;
+class Manager;
+class State;
 
 #include <vector>
+
+extern Manager *manager_g;
 
 // EXPAND_MODE
 enum class EXPAND_MODE
@@ -53,7 +57,6 @@ enum SLOTS
 };
 
 #define NUM_STATUS 6
-class Manager;
 struct status_t
 {
     int filter,status;
@@ -114,6 +117,8 @@ public:
     void filter(int options);
     void print_tbl();
     void print_hr();
+    int  getlocale();
+    State *getState();
 
 // User interaction
     void hitscan(int x,int y,size_t *i,int *zone);

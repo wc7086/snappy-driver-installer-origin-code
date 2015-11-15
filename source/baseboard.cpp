@@ -18,18 +18,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "com_header.h"
 #include "common.h"
 #include "logging.h"
-#include "indexing.h"
 
-//#include <stdio.h>          // for sprintf
 #include <comdef.h>         // for _bstr_t
 #include <Wbemidl.h>        // for IWbemLocator
-#include <shobjidl.h>       // for TBPF_NORMAL
 
-#include "main.h"
+// Depend on Win32API
 #include "enum.h"
-
-const IID IID_ITaskbarList3={0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f,0x8a,0x5e,0xef,0xaf}};
-const IID my_CLSID_TaskbarList={0x56fdf344,0xfd6d,0x11d0,{0x95,0x8a,0x00,0x60,0x97,0xc9,0xa0,0x90}};
 
 void ShowProgressInTaskbar(HWND hwnd,bool show,long long complited,long long total);
 
@@ -37,8 +31,6 @@ int initsec=0;
 int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &product1,WStringShort &cs_manuf1,WStringShort &cs_model1,int *type)
 {
     *type=0;
-
-    if(ex.IsActive())return 0;
 
     HRESULT hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))
@@ -219,24 +211,4 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
     CoUninitialize();
 
     return 1;
-}
-
-void MainWindow_t::ShowProgressInTaskbar(bool show,long long complited,long long total)
-{
-    int hres;
-    ITaskbarList3 *pTL;
-
-    CoInitializeEx(nullptr,COINIT_MULTITHREADED);
-    hres=CoCreateInstance(my_CLSID_TaskbarList,nullptr,CLSCTX_ALL,IID_ITaskbarList3,(LPVOID*)&pTL);
-    if(FAILED(hres))
-    {
-        CoUninitialize();
-        //printf("FAILED to create IID_ITaskbarList3 object. Error code = 0x%X\n",hres);
-        return;
-    }
-    //printf("%d,%d\n",flags,complited);
-    pTL->SetProgressValue(hMain,complited,total);
-    pTL->SetProgressState(hMain,show?TBPF_NORMAL:TBPF_NOPROGRESS);
-    pTL->Release();
-    CoUninitialize();
 }

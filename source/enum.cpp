@@ -17,13 +17,12 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "com_header.h"
 #include "common.h"
-#include "indexing.h"
-#include "matcher.h"
 #include "logging.h"
+#include "system.h"
 #include "settings.h"
+#include "indexing.h"
 #include "theme.h"
 #include "gui.h"
-#include "system.h"
 
 #include "7zip.h"
 #include "device.h"
@@ -32,7 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "enum.h"
 #include "main.h"
-#include "draw.h"
+#include "draw.h" // for rtl
 
 //{ Global variables
 
@@ -404,7 +403,7 @@ int Driver::findHWID_in_list(const wchar_t *p,const wchar_t *str)
     int dev_pos=0;
     while(*p)
     {
-        if(!StrCmpIW(p,str))return dev_pos;
+        if(!wcsicmp(p,str))return dev_pos;
         p+=wcslen(p)+1;
         dev_pos++;
     }
@@ -420,6 +419,32 @@ void Driver::calc_dev_pos(const Device *cur_device,const State *state,int *ishw,
         *ishw=0;
         *dev_pos=findHWID_in_list(state->textas.getw(cur_device->getCompatibleIDs()),state->textas.getw(MatchingDeviceId));
     }
+}
+
+int calc_signature(int catalogfile,const State *state,int isnt)
+{
+    if(state->getArchitecture())
+    {
+        if(catalogfile&(1<<CatalogFile|1<<CatalogFile_nt|1<<CatalogFile_ntamd64|1<<CatalogFile_ntia64))
+            return 0;
+    }
+    else
+    {
+        if(catalogfile&(1<<CatalogFile|1<<CatalogFile_nt|1<<CatalogFile_ntx86))
+            return 0;
+    }
+    if(isnt)return 0x8000;
+    return 0xC000;
+}
+
+unsigned calc_score(int catalogfile,int feature,int rank,const State *state,int isnt)
+{
+    int major,minor;
+    state->getWinVer(&major,&minor);
+    if(major>=6)
+        return (calc_signature(catalogfile,state,isnt)<<16)+(feature<<16)+rank;
+    else
+        return calc_signature(catalogfile,state,isnt)+rank;
 }
 
 unsigned Driver::calc_score_h(const State *state)const
@@ -460,6 +485,21 @@ void Driver::print(const State *state)const
 
     if(Log.isAllowed(LOG_VERBOSE_BATCH))
         Log.print_file("  Filter:   \"%S\"=a,%S\n",txt->getw(DriverDesc),txt->getw(MatchingDeviceId));
+}
+
+int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
+{
+    if(dev_ishw&&inf_pos==0)    // device hardware ID and a hardware ID in an INF
+        return 0x0000+dev_pos;
+
+    if(dev_ishw)                // device hardware ID and a compatible ID in an INF
+        return 0x1000+dev_pos+0x100*inf_pos;
+
+    if(inf_pos==0)              // device compatible ID and a hardware ID in an INF
+        return 0x2000+dev_pos;
+
+                                // device compatible ID and a compatible ID in an INF
+        return 0x3000+dev_pos+0x100*inf_pos;
 }
 
 Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp)
@@ -980,7 +1020,8 @@ void State::getsysinfo_slow()
 
     Timers.start(time_sysinfo);
 
-    getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
+    if(!ex.IsActive())
+        getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
 
     manuf=static_cast<ofst>(textas.strcpyw(smanuf.Get()));
     product=static_cast<ofst>(textas.strcpyw(sproduct.Get()));

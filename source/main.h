@@ -95,7 +95,6 @@ enum MessagesWND
 //{ Global variables
 
 // Manager
-extern Manager *manager_g;
 extern int volatile installmode;
 extern int invaidate_set;
 extern int num_cores;

@@ -16,9 +16,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
-#include "system.h"
 #include "common.h"
 #include "logging.h"
+#include "system.h"
 #include "settings.h"
 #include "cli.h"
 

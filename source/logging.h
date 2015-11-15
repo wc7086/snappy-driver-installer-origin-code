@@ -18,8 +18,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef GUICON_H
 #define GUICON_H
 
-#include <stdio.h>
-
 // Timer
 enum TIMER
 {
