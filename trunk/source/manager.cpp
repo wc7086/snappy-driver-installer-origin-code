@@ -442,8 +442,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         while(*p)
         {
             int pp=0;
-            if(!wcsicmp(i_hwid,p))pp|=1;
-            if(!wcsicmp(a_hwid,p))pp|=2;
+            if(!_wcsicmp(i_hwid,p))pp|=1;
+            if(!_wcsicmp(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=wcslen(p)+1;
@@ -458,8 +458,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         while(*p)
         {
             int pp=0;
-            if(!wcsicmp(i_hwid,p))pp|=1;
-            if(!wcsicmp(a_hwid,p))pp|=2;
+            if(!_wcsicmp(i_hwid,p))pp|=1;
+            if(!_wcsicmp(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
             td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=wcslen(p)+1;
@@ -586,7 +586,11 @@ void Manager::populate()
 {
     size_t remap[1024*8];
     matcher->sorta(remap);
-    items_list.resize(RES_SLOTS);
+
+    items_list.clear();
+
+    for(int i=0;i<RES_SLOTS;i++)
+        items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
 
     for(size_t i=0;i<matcher->getDwidmatch_list();i++)
     {

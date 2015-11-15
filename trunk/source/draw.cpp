@@ -108,15 +108,15 @@ void Combobox::Clear()
 }
 void Combobox::AddItem(const wchar_t *str)
 {
-    SendMessage(handle,CB_ADDSTRING,0,(LPARAM)str);
+    SendMessage(handle,CB_ADDSTRING,0,reinterpret_cast<LPARAM>(str));
 }
 int Combobox::FindItem(const wchar_t *str)
 {
-    return (int)SendMessage(handle,CB_FINDSTRINGEXACT,(WPARAM)-1,(LPARAM)str);
+    return static_cast<int>(SendMessage(handle,CB_FINDSTRINGEXACT,static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(str)));
 }
 int Combobox::GetNumItems()
 {
-    return (int)SendMessage(handle,CB_GETCOUNT,0,0);
+    return static_cast<int>(SendMessage(handle,CB_GETCOUNT,0,0));
 }
 void Combobox::SetCurSel(int i)
 {
@@ -380,10 +380,10 @@ Canvas *Canvas::Create(){return new CanvasImp;}
 
 void CanvasImp::DrawConnection(int x1,int pos,int ofsy,int curpos)
 {
-    HPEN oldpen,newpen;
+    HGDIOBJ oldpen,newpen;
 
     newpen=CreatePen(PS_SOLID,D_1(DRVITEM_LINE_WIDTH),D_C(DRVITEM_LINE_COLOR));
-    oldpen=(HPEN)SelectObject(hdcMem,newpen);
+    oldpen=SelectObject(hdcMem,newpen);
     MoveToEx(hdcMem,x1-D_X(DRVITEM_LINE_INTEND)/2,curpos-D_X(DRVITEM_DIST_Y0)+D_X(DRVITEM_WY)-ofsy,nullptr);
     LineTo(hdcMem,x1-D_X(DRVITEM_LINE_INTEND)/2,pos+D_X(DRVITEM_WY)/2);
     LineTo(hdcMem,x1,pos+D_X(DRVITEM_WY)/2);

@@ -85,7 +85,7 @@ public:
 
 public:
     itembar_t(Devicematch *devicematch,Hwidmatch *match,size_t groupindex,size_t rm,int first);
-    itembar_t(){}
+    //itembar_t(){}
     void itembar_setpos(int *pos,int *cnt,bool addspace);
     void str_status(wchar_t *buf);
     void drawbutton(Canvas &canvas,int x,int pos,const wchar_t *str1,const wchar_t *str2);

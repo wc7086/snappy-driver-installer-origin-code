@@ -614,7 +614,7 @@ int Collection::scanfolder_count(const wchar_t *path)
                     System.run_command(L"cmd",buf.Get(),SW_HIDE,1);
                     break;
                 }
-            if(i==6&&wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
+            if(i==6&&_wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 Driverpack drp{path,FindFileData.cFileName,this};
                 if(Settings.flags&COLLECTION_FORCE_REINDEXING||!drp.checkindex())cnt++;
@@ -644,14 +644,14 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
         else
         {
             size_t len=wcslen(FindFileData.cFileName);
-            if(wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
+            if(_wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
                 reinterpret_cast<drplist_t *>(arg)->push(driverpack_task{&driverpack_list.back()});
             }
             else
-                if((wcsicmp(FindFileData.cFileName+len-4,L".inf")==0||
-                    wcsicmp(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
+                if((_wcsicmp(FindFileData.cFileName+len-4,L".inf")==0||
+                    _wcsicmp(FindFileData.cFileName+len-4,L".cat")==0)&&loaded_unpacked==0)
                 {
                     buf.sprintf(L"%s\\%s",path,FindFileData.cFileName);
                     FILE *f=_wfopen(buf.Get(),L"rb");
@@ -665,7 +665,7 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
 
                     if(len)
                     {
-                        if(wcsicmp(FindFileData.cFileName+wcslen(FindFileData.cFileName)-4,L".inf")==0)
+                        if(_wcsicmp(FindFileData.cFileName+wcslen(FindFileData.cFileName)-4,L".inf")==0)
                             driverpack_list[0].indexinf(buf.Get(),FindFileData.cFileName,buft,len);
                         else
                             driverpack_list[0].parsecat(buf.Get(),FindFileData.cFileName,buft,len);
@@ -855,7 +855,7 @@ void Collection::save()
             {
                 wchar_t buf1[BUFLEN];
                 driverpack_list[i].getindexfilename(index_bin_dir,L"bin",buf1);
-                if(!wcsicmp(buf1,filename.Get()))break;
+                if(!_wcsicmp(buf1,filename.Get()))break;
             }
             if(i==driverpack_list.size())
             {
@@ -1297,8 +1297,8 @@ int Driverpack::genindex()
             SzArEx_GetFileNameUtf16(&db,i,(UInt16 *)fullname);
 
             size_t namelen=wcslen(fullname)-4;
-            if(wcsicmp(fullname+namelen,L".inf")==0||
-               wcsicmp(fullname+namelen,L".cat")==0)
+            if(_wcsicmp(fullname+namelen,L".inf")==0||
+                _wcsicmp(fullname+namelen,L".cat")==0)
             {
                 //Log.print_con("{");
 
@@ -2034,7 +2034,7 @@ size_t Driverpack::printstats()
 void Driverpack::print_index_hr()
 {
     int pos;
-    unsigned inffile_index,manuf_index,HWID_index,desc_index;
+    size_t inffile_index,manuf_index,HWID_index,desc_index;
     size_t n=inffile.size();
     Version *t;
     data_inffile_t *d_i;
@@ -2043,8 +2043,8 @@ void Driverpack::print_index_hr()
     wchar_t filename[BUFLEN];
     FILE *f;
     int cnts[NUM_DECS],plain;
-    unsigned HWID_index_last=0;
-    unsigned manuf_index_last=0;
+    size_t HWID_index_last=0;
+    size_t manuf_index_last=0;
     WStringShort date;
     WStringShort vers;
     int i;

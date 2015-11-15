@@ -62,6 +62,7 @@ Settings_t::Settings_t()
     expertmode=0;
     hintdelay=500;
     scale=256;
+    savedscale=scale;
     wndwx=0,wndwy=0;
     filters=
         (1<<ID_SHOW_MISSING)+
@@ -93,7 +94,7 @@ bool Settings_t::argopt(const wchar_t *s,const wchar_t *cmp,int *d)
 
 bool Settings_t::argflg(const wchar_t *s,const wchar_t *cmp,int f)
 {
-    if(!wcsicmp(s,cmp)){flags|=f;return true;}
+    if(!_wcsicmp(s,cmp)){ flags|=f;return true; }
     return false;
 }
 
@@ -144,7 +145,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argflg(pr,L"-checkupdates",   FLAG_CHECKUPDATES))continue;
         if(argflg(pr,L"-onlyupdates",    FLAG_ONLYUPDATES))continue;
 
-        if(!wcsicmp(pr,L"-7z"))
+        if(!_wcsicmp(pr,L"-7z"))
         {
             WStringShort cmd;
             cmd.sprintf(L"7za.exe %s",StrStrIW(str,L"-7z")+4);
@@ -156,7 +157,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
             break;
         }
 
-        if(!wcsicmp(pr,L"-PATH"))
+        if(!_wcsicmp(pr,L"-PATH"))
         {
             wcscpy(drpext_dir,argv[++i]);
             flags|=FLAG_AUTOCLOSE|
@@ -164,7 +165,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
                 FLAG_PRESERVECFG;
             continue;
         }
-        if(!wcsicmp(pr,L"-install")&&argc-i==3)
+        if(!_wcsicmp(pr,L"-install")&&argc-i==3)
         {
             wchar_t buf[BUFLEN];
             Log.print_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
@@ -179,7 +180,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
             statemode=STATEMODE_EXIT;
             break;
         }
-        if(!wcsicmp(pr,L"-?"))
+        if(!_wcsicmp(pr,L"-?"))
         {
             ShowHelp();
             //Settings.flags|=FLAG_AUTOCLOSE|FLAG_NOGUI;

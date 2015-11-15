@@ -439,7 +439,7 @@ public:
 
 class textdata_horiz_t:public textdata_t
 {
-    int i;
+    size_t i;
 	int *limits;
     int mode;
 
