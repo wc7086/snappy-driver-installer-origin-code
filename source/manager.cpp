@@ -1450,7 +1450,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             break;
 
         default:
-            if(itembar->first&2)
+            if(itembar->first&2&&itembar->hwidmatch)
             {
                     /*wsprintf(bufw,L"%ws",matcher->state->text+itembar->devicematch->device->Devicedesc);
                     canvas.setTextColor(D_C(boxindex[box_status(index)]+14));

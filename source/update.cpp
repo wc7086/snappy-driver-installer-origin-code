@@ -87,13 +87,10 @@ class UpdateDialog_t
     static int bMouseInWindow;
     static HWND hUpdate;
     int totalsize;
-    static HWND hListg;
 
 private:
     int  getnewver(const char *ptr);
     int  getcurver(const char *ptr);
-    static LPARAM CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort);
-    void ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,const wchar_t *str);
     void calctotalsize();
     void updateTexts();
 
@@ -172,7 +169,6 @@ enum DOWNLOAD_STATUS
 
 // UpdateDialog (static)
 const int UpdateDialog_t::cxn[]={199,60,44,70,70,90};
-HWND UpdateDialog_t::hListg;
 HWND UpdateDialog_t::hUpdate=nullptr;
 WNDPROC UpdateDialog_t::wpOrigButtonProc;
 int UpdateDialog_t::bMouseInWindow=0;
@@ -187,6 +183,86 @@ bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
 Event *UpdaterImp::downloadmangar_event=nullptr;
 ThreadAbs *UpdaterImp::thandle_download=nullptr;
+//}
+
+//{ ListView
+class ListView_t
+{
+public:
+    HWND hListg;
+
+    void init(HWND hwnd)
+    {
+        hListg=GetDlgItem(hwnd,IDLIST);
+        ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
+    }
+    void close()
+    {
+        hListg=nullptr;
+    }
+    bool IsVisible(){ return hListg!=nullptr; }
+    void DisableRedraw(bool clearlist)
+    {
+        if(hListg)
+        {
+            SendMessage(hListg,WM_SETREDRAW,0,0);
+            if(clearlist)SendMessage(hListg,LVM_DELETEALLITEMS,0,0L);
+        }
+    }
+    static LPARAM CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
+    {
+        UNREFERENCED_PARAMETER(lParamSort);
+        return lParam1-lParam2;
+    }
+    void EnableRedraw()
+    {
+        if(hListg)
+        {
+            ListView_SortItems(hListg,CompareFunc,0);
+            SendMessage(hListg,WM_SETREDRAW,1,0);
+        }
+    }
+
+    int GetItemCount()
+    {
+        return ListView_GetItemCount(hListg);
+    }
+    int GetCheckState(int i)
+    {
+        return ListView_GetCheckState(hListg,i);
+    }
+    void SetCheckState(int i,int val)
+    {
+        ListView_SetCheckState(hListg,i,val);
+    }
+    void GetItemText(int i,int sub,wchar_t *buf,int sz)
+    {
+        ListView_GetItemText(hListg,i,sub,buf,sz);
+    }
+    void GetItem(LVITEM *item)
+    {
+        ListView_GetItem(hListg,item);
+    }
+    int InsertItem(const LVITEM *lvI)
+    {
+        return ListView_InsertItem(hListg,lvI);
+    }
+    void InsertColumn(int i,const LVCOLUMN *lvc)
+    {
+        ListView_InsertColumn(hListg,i,lvc);
+    }
+    void SetItemTextUpdate(int iItem,int iSubItem,const wchar_t *str)
+    {
+        wchar_t buf[BUFLEN];
+
+        *buf=0;
+        ListView_GetItemText(hListg,iItem,iSubItem,buf,BUFLEN);
+        if(wcscmp(str,buf)!=0)
+            ListView_SetItemText(hListg,iItem,iSubItem,const_cast<wchar_t *>(str));
+    }
+};
+ListView_t ListView;
+
 //}
 
 //{ UpdateDialog
@@ -231,30 +307,14 @@ int UpdateDialog_t::getcurver(const char *ptr)
 
 static bool yes1(libtorrent::torrent_status const&){return true;}
 
-LPARAM CALLBACK UpdateDialog_t::CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
-{
-	UNREFERENCED_PARAMETER(lParamSort);
-    return lParam1-lParam2;
-}
-
-void UpdateDialog_t::ListView_SetItemTextUpdate(HWND hwnd,int iItem,int iSubItem,const wchar_t *str)
-{
-    wchar_t buf[BUFLEN];
-
-    *buf=0;
-    ListView_GetItemText(hwnd,iItem,iSubItem,buf,BUFLEN);
-    if(wcscmp(str,buf)!=0)
-        ListView_SetItemText(hwnd,iItem,iSubItem,const_cast<wchar_t *>(str));
-}
-
 void UpdateDialog_t::calctotalsize()
 {
     totalsize=0;
-    for(int i=0;i<ListView_GetItemCount(hListg);i++)
-    if(ListView_GetCheckState(hListg,i))
+    for(int i=0;i<ListView.GetItemCount();i++)
+    if(ListView.GetCheckState(i))
     {
         wchar_t buf[BUFLEN];
-        ListView_GetItemText(hListg,i,1,buf,32);
+        ListView.GetItemText(i,1,buf,32);
         totalsize+=_wtoi_my(buf);
     }
 }
@@ -304,19 +364,19 @@ void UpdateDialog_t::setCheckboxes()
     }
 
     // Driverpacks
-    for(int i=0;i<ListView_GetItemCount(hListg);i++)
+    for(int i=0;i<ListView.GetItemCount();i++)
     {
         LVITEM item;
         item.mask=LVIF_PARAM;
         item.iItem=i;
-        ListView_GetItem(hListg,&item);
+        ListView.GetItem(&item);
         int val=0;
 
         if(item.lParam==-2)val=baseChecked;
         if(item.lParam==-1)val=indexesChecked;
         if(item.lParam>=0)val=hTorrent.file_priority((int)item.lParam);
 
-        ListView_SetCheckState(hListg,i,val);
+        ListView.SetCheckState(i,val);
     }
 }
 
@@ -329,13 +389,13 @@ void UpdateDialog_t::setPriorities()
 
     // Set priorities for driverpacks
     int base_pri=0,indexes_pri=0;
-    for(int i=0;i<ListView_GetItemCount(hListg);i++)
+    for(int i=0;i<ListView.GetItemCount();i++)
     {
         LVITEM item;
         item.mask=LVIF_PARAM;
         item.iItem=i;
-        ListView_GetItem(hListg,&item);
-        int val=ListView_GetCheckState(hListg,i);
+        ListView.GetItem(&item);
+        int val=ListView.GetCheckState(i);
 
         if(item.lParam==-2)base_pri=val?2:0;
         if(item.lParam==-1)indexes_pri=val?2:0;
@@ -390,7 +450,6 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
     wchar_t buf[32];
     int i;
 
-    hListg=GetDlgItem(hwnd,IDLIST);
     thispcbut=GetDlgItem(hwnd,IDCHECKTHISPC);
     chk=GetDlgItem(hwnd,IDONLYUPDATE);
 
@@ -398,7 +457,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
     {
         case WM_INITDIALOG:
             setMirroring(hwnd);
-            ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
+            ListView.init(hwnd);
             lvc.mask=LVCF_FMT|LVCF_WIDTH|LVCF_SUBITEM|LVCF_TEXT;
             lvc.pszText=const_cast<wchar_t *>(L"");
             for(i=0;i<6;i++)
@@ -406,7 +465,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                 lvc.cx=cxn[i];
                 lvc.iSubItem=i;
                 lvc.fmt=i?LVCFMT_RIGHT:LVCFMT_LEFT;
-                ListView_InsertColumn(hListg,i,&lvc);
+                ListView.InsertColumn(i,&lvc);
             }
 
             hUpdate=hwnd;
@@ -432,7 +491,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 
         case WM_DESTROY:
             SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)wpOrigButtonProc);
-            hListg=nullptr;
+            ListView.close();
             break;
 
         case WM_TIMER:
@@ -472,8 +531,8 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 
                 case IDCHECKALL:
                 case IDUNCHECKALL:
-                    for(i=0;i<ListView_GetItemCount(hListg);i++)
-                        ListView_SetCheckState(hListg,i,LOWORD(wParam)==IDCHECKALL?1:0);
+                    for(i=0;i<ListView.GetItemCount();i++)
+                        ListView.SetCheckState(i,LOWORD(wParam)==IDCHECKALL?1:0);
                     if(Settings.flags&FLAG_AUTOUPDATE)
                     {
                         Settings.flags&=~FLAG_AUTOUPDATE;
@@ -482,11 +541,11 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     return TRUE;
 
                 case IDCHECKTHISPC:
-                    for(i=0;i<ListView_GetItemCount(hListg);i++)
+                    for(i=0;i<ListView.GetItemCount();i++)
                     {
                         *buf=0;
-                        ListView_GetItemText(hListg,i,5,buf,32);
-                        ListView_SetCheckState(hListg,i,StrStrIW(buf,STR(STR_UPD_YES))?1:0);
+                        ListView.GetItemText(i,5,buf,32);
+                        ListView.SetCheckState(i,StrStrIW(buf,STR(STR_UPD_YES))?1:0);
                     }
                     return TRUE;
 
@@ -545,8 +604,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     }
 
     // Disable redrawing of the list
-    if(hListg)SendMessage(hListg,WM_SETREDRAW,0,0);
-    if(clearlist)ListView_DeleteAllItems(hListg);
+    ListView.DisableRedraw(clearlist);
 
     // Setup LVITEM
     LVITEM lvI;
@@ -561,33 +619,33 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     //newver=300;
     int row=0;
     if(newver>SVN_REV)ret+=newver<<8;
-    if(newver>SVN_REV&&hListg)
+    if(newver>SVN_REV&&ListView.IsVisible())
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
-        if(!update)row=ListView_InsertItem(hListg,&lvI);
+        if(!update)row=ListView.InsertItem(&lvI);
         wsprintf(buf,L"%d %s",(int)(basesize/1024/1024),STR(STR_UPD_MB));
-        ListView_SetItemTextUpdate(hListg,row,1,buf);
+        ListView.SetItemTextUpdate(row,1,buf);
         wsprintf(buf,L"%d%%",(int)(basedownloaded*100/basesize));
-        ListView_SetItemTextUpdate(hListg,row,2,buf);
+        ListView.SetItemTextUpdate(row,2,buf);
         wsprintf(buf,L" SDI_R%d",newver);
-        ListView_SetItemTextUpdate(hListg,row,3,buf);
+        ListView.SetItemTextUpdate(row,3,buf);
         wsprintf(buf,L" SDI_R%d",SVN_REV);
-        ListView_SetItemTextUpdate(hListg,row,4,buf);
-        ListView_SetItemTextUpdate(hListg,row,5,STR(STR_UPD_YES));
+        ListView.SetItemTextUpdate(row,4,buf);
+        ListView.SetItemTextUpdate(row,5,STR(STR_UPD_YES));
         row++;
     }
 
     // Add indexes to the list
     lvI.lParam    =-1;
-    if(missingindexes&&hListg)
+    if(missingindexes&&ListView.IsVisible())
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_INDEXES));
-        if(!update)row=ListView_InsertItem(hListg,&lvI);
+        if(!update)row=ListView.InsertItem(&lvI);
         wsprintf(buf,L"%d %s",(int)(indexsize/1024/1024),STR(STR_UPD_MB));
-        ListView_SetItemTextUpdate(hListg,row,1,buf);
+        ListView.SetItemTextUpdate(row,1,buf);
         wsprintf(buf,L"%d%%",(int)(indexdownloaded*100/indexsize));
-        ListView_SetItemTextUpdate(hListg,row,2,buf);
-        ListView_SetItemTextUpdate(hListg,row,5,STR(STR_UPD_YES));
+        ListView.SetItemTextUpdate(row,2,buf);
+        ListView.SetItemTextUpdate(row,5,STR(STR_UPD_YES));
         row++;
     }
 
@@ -616,33 +674,29 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             else
                 if(newver>oldver)ret++;
 
-            if(newver>oldver&&hListg)
+            if(newver>oldver&&ListView.IsVisible())
             {
                 lvI.lParam=i;
-                if(!update)row=ListView_InsertItem(hListg,&lvI);
+                if(!update)row=ListView.InsertItem(&lvI);
                 wsprintf(buf,L"%d %s",sz,STR(STR_UPD_MB));
-                ListView_SetItemTextUpdate(hListg,row,1,buf);
+                ListView.SetItemTextUpdate(row,1,buf);
                 wsprintf(buf,L"%d%%",(int)(file_progress[i]*100/ti->file_at(i).size));
-                ListView_SetItemTextUpdate(hListg,row,2,buf);
+                ListView.SetItemTextUpdate(row,2,buf);
                 wsprintf(buf,L"%d",newver);
-                ListView_SetItemTextUpdate(hListg,row,3,buf);
+                ListView.SetItemTextUpdate(row,3,buf);
                 wsprintf(buf,L"%d",oldver);
                 if(!oldver)wsprintf(buf,L"%ws",STR(STR_UPD_MISSING));
-                ListView_SetItemTextUpdate(hListg,row,4,buf);
+                ListView.SetItemTextUpdate(row,4,buf);
                 wsprintf(buf,L"%S",filename);
                 wsprintf(buf,L"%ws",STR(STR_UPD_YES+manager_g->manager_drplive(buf)));
-                ListView_SetItemTextUpdate(hListg,row,5,buf);
+                ListView.SetItemTextUpdate(row,5,buf);
                 row++;
             }
         }
     }
 
     // Enable redrawing of the list
-    if(hListg)
-    {
-        ListView_SortItems(hListg,CompareFunc,0);
-        SendMessage(hListg,WM_SETREDRAW,1,0);
-    }
+    ListView.EnableRedraw();
 
     if(update)return ret;
 

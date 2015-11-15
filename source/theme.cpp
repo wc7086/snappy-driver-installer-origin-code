@@ -203,9 +203,9 @@ bool VaultImp::loadFromEncodedFile(const wchar_t *filename)
         fread(datav,1,1,f);
         sz-=3;
         size_t q=fread(datav,1,sz,f);
-        szo=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,(int)q,nullptr,0);
+        szo=MultiByteToWideChar(CP_UTF8,0,reinterpret_cast<LPCSTR>(datav),static_cast<int>(q),nullptr,0);
         wchar_t *dataloc1=new wchar_t[szo+1];
-        sz=MultiByteToWideChar(CP_UTF8,0,(LPCSTR)datav,(int)q,dataloc1,szo);
+        sz=MultiByteToWideChar(CP_UTF8,0,reinterpret_cast<LPCSTR>(datav),static_cast<int>(q),dataloc1,static_cast<int>(szo));
         fclose(f);
         dataloc1[sz]=0;
         datav_ptr.reset(dataloc1);
@@ -239,7 +239,7 @@ bool VaultImp::loadFromEncodedFile(const wchar_t *filename)
         wchar_t *p=datav;(sz)--;
         while(!feof(f))
         {
-            fgetws(p,sz,f);
+            fgetws(p,static_cast<int>(sz),f);
             p+=wcslen(p);
         }
         fclose(f);

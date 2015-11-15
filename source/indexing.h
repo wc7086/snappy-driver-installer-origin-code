@@ -351,7 +351,7 @@ private:
     void driverpack_parsecat_async(wchar_t const *pathinf,wchar_t const *inffile,const unsigned char *adr,size_t len);
     void driverpack_indexinf_async(wchar_t const *pathinf,wchar_t const *inffile,const unsigned char *adr,size_t len);
     void indexinf_ansi(wchar_t const *drpdir,wchar_t const *inffile,const char *inf_base,size_t inf_len);
-    void getdrp_drvsectionAtPos(char *buf,int pos,int manuf_index);
+    void getdrp_drvsectionAtPos(char *buf,size_t pos,size_t manuf_index);
 
     static unsigned int __stdcall loaddrp_thread(void *arg);
     static unsigned int __stdcall indexinf_thread(void *arg);
