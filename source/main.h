@@ -102,7 +102,7 @@ extern HINSTANCE ghInst;
 extern CRITICAL_SECTION sync;
 extern Console_t *Console;
 
-// Window
+// Popup
 class Popup_t
 {
     Popup_t(const Popup_t&)=delete;
@@ -233,7 +233,7 @@ void escapeAmpUrl(wchar_t *buf,const wchar_t *source);
 void escapeAmp(wchar_t *buf,const wchar_t *source);
 
 // GUI Helpers
-HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,int id,DWORD f);
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,intptr_t id,DWORD f);
 void GetRelativeCtrlRect(HWND hWnd,RECT *rc);
 void setMirroring(HWND hwnd);
 void checktimer(const wchar_t *str,long long t,int uMsg);

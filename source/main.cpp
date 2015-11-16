@@ -695,7 +695,7 @@ void escapeAmp(wchar_t *buf,const wchar_t *source)
 //}
 
 //{ GUI Helpers
-HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,int id,DWORD f)
+HWND CreateWindowMF(const wchar_t *type,const wchar_t *name,HWND hwnd,intptr_t id,DWORD f)
 {
     return CreateWindow(type,name,WS_CHILD|WS_VISIBLE|f,0,0,0,0,hwnd,(HMENU)(id),ghInst,NULL);
 }
@@ -931,11 +931,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             Popup->init();
 
             // Lang
-            hLang=new Combobox(hwnd,ID_LANG);
+            hLang=Combobox::Create(&hwnd,ID_LANG);
             PostMessage(hwnd,WM_UPDATELANG,0,0);
 
             // Theme
-            hTheme=new Combobox(hwnd,ID_THEME);
+            hTheme=Combobox::Create(&hwnd,ID_THEME);
             PostMessage(hwnd,WM_UPDATETHEME,1,0);
 
             // Misc
@@ -1236,7 +1236,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
         case WM_PAINT:
             GetClientRect(hwnd,&rect);
-            canvasMain->begin(hwnd,rect.right,rect.bottom);
+            canvasMain->begin(&hwnd,rect.right,rect.bottom);
 
             canvasMain->DrawWidget(0,0,rect.right+1,rect.bottom+1,BOX_MAINWND);
             canvasMain->SetFont(hFont);
@@ -1483,7 +1483,7 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
             y=getscrollpos();
 
             GetClientRect(hwnd,&rect);
-            canvasField->begin(hwnd,rect.right,rect.bottom);
+            canvasField->begin(&hwnd,rect.right,rect.bottom);
             canvasField->CopyCanvas(canvasMain,Xm(D_X(DRVLIST_OFSX),D_X(DRVLIST_WX)),Ym(D_X(DRVLIST_OFSY)));
             canvasField->SetFont(hFont);
             manager_g->draw(*canvasField,y);
@@ -1706,7 +1706,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
 
         case WM_PAINT:
             GetClientRect(hwnd,&rect);
-            canvasPopup->begin(hwnd,rect.right,rect.bottom,floating_type!=FLOATING_CMPDRIVER&&floating_type!=FLOATING_DRIVERLST);
+            canvasPopup->begin(&hwnd,rect.right,rect.bottom,floating_type!=FLOATING_CMPDRIVER&&floating_type!=FLOATING_DRIVERLST);
 
             canvasPopup->DrawWidget(0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)

@@ -2097,7 +2097,7 @@ void Driverpack::print_index_hr()
                             for(HWID_index=HWID_index_last;HWID_index<HWID_list.size();HWID_index++)
                                 if(HWID_list[HWID_index].desc_index==desc_index)
                                 {
-                                    if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%u,%u\n",HWID_index_last,HWID_index);
+                                    if(HWID_index_last+1!=HWID_index&&HWID_index)fprintf(f,"Skip:%u,%u\n",static_cast<unsigned>(HWID_index_last),static_cast<unsigned>(HWID_index));
                                     HWID_index_last=HWID_index;
                                     hwidmatch.setHWID_index(HWID_index_last);
 
@@ -2136,7 +2136,7 @@ void Driverpack::print_index_hr()
             }
             fprintf(f,"\n");
     }
-    fprintf(f,"  HWIDS:%u/%u\n",HWID_index_last+1,(unsigned)HWID_list.size());
+    fprintf(f,"  HWIDS:%u\n",(unsigned)HWID_list.size());
     fclose(f);
 }
 

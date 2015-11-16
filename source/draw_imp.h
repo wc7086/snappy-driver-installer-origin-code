@@ -21,7 +21,7 @@ class wFontImp:public wFont
 private:
     HFONT hFont;
     friend class CanvasImp;
-    friend class Combobox;
+    friend class ComboboxImp;
 
 public:
     wFontImp():hFont(nullptr){}
@@ -47,6 +47,25 @@ public:
     void setRegion(int x1,int y1,int x2,int y2);
 
     friend class CanvasImp;
+};
+//}
+
+//{ Combobox
+class ComboboxImp:public Combobox
+{
+    HWND handle;
+
+public:
+    ComboboxImp(HWND hwnd,int id);
+    void Clear();
+    void AddItem(const wchar_t *str);
+    int FindItem(const wchar_t *str);
+    int GetNumItems();
+    void SetCurSel(int i);
+    void Focus();
+    void SetFont(wFont *font);
+    void Move(int x1,int y1,int wx,int wy);
+    void SetMirroring();
 };
 //}
 
@@ -111,7 +130,7 @@ public:
     ~CanvasImp();
 
     void CopyCanvas(Canvas *source,int x1,int y1);
-    void begin(HWND hwnd,int x,int y,bool mirror=true);
+    void begin(p_wnd_handle_type hwnd,int x,int y,bool mirror=true);
     void end();
 
     void SetClipRegion(ClipRegion &clip);

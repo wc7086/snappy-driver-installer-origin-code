@@ -227,6 +227,7 @@
 		<Unit filename="../source/svnrev.h" />
 		<Unit filename="../source/system.cpp" />
 		<Unit filename="../source/system.h" />
+		<Unit filename="../source/system_imp.h" />
 		<Unit filename="../source/theme.cpp" />
 		<Unit filename="../source/theme.h" />
 		<Unit filename="../source/theme_imp.h" />

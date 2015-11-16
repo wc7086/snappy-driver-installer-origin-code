@@ -195,7 +195,7 @@ public:
     void init(HWND hwnd)
     {
         hListg=GetDlgItem(hwnd,IDLIST);
-        ListView_SetExtendedListViewStyle(hListg,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
+        SendMessage(hListg,LVM_SETEXTENDEDLISTVIEWSTYLE,0,LVS_EX_CHECKBOXES|LVS_EX_FULLROWSELECT);
     }
     void close()
     {
@@ -219,7 +219,7 @@ public:
     {
         if(hListg)
         {
-            ListView_SortItems(hListg,CompareFunc,0);
+            SendMessage(hListg,LVM_SORTITEMS,0,(LPARAM)CompareFunc);
             SendMessage(hListg,WM_SETREDRAW,1,0);
         }
     }
@@ -240,17 +240,21 @@ public:
     {
         ListView_GetItemText(hListg,i,sub,buf,sz);
     }
-    void GetItem(LVITEM *item)
-    {
-        ListView_GetItem(hListg,item);
-    }
     int InsertItem(const LVITEM *lvI)
     {
         return ListView_InsertItem(hListg,lvI);
     }
+    void GetItem(LVITEM *item)
+    {
+        SendMessage(hListg,LVM_GETITEM,0,(LPARAM)item);
+    }
     void InsertColumn(int i,const LVCOLUMN *lvc)
     {
-        ListView_InsertColumn(hListg,i,lvc);
+        SendMessage(hListg,LVM_INSERTCOLUMN,i,reinterpret_cast<LPARAM>(lvc));
+    }
+    void SetColumn(int i,const LVCOLUMN *lvc)
+    {
+        SendMessage(hListg,LVM_SETCOLUMN,i,reinterpret_cast<LPARAM>(lvc));
     }
     void SetItemTextUpdate(int iItem,int iSubItem,const wchar_t *str)
     {
@@ -345,7 +349,7 @@ void UpdateDialog_t::updateTexts()
     for(int i=0;i<6;i++)
     {
         lvc.pszText=const_cast<wchar_t *>(STR(STR_UPD_COL_NAME+i));
-        ListView_SetColumn(GetDlgItem(hUpdate,IDLIST),i,&lvc);
+        ListView.SetColumn(i,&lvc);
     }
 }
 
