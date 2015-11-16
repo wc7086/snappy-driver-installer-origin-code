@@ -23,6 +23,8 @@ class Image;
 class ClipRegionImp;
 class ImageImp;
 class Device;
+//typedef HWND *p_wnd_handle_type;
+typedef void *p_wnd_handle_type;
 
 // Global vars
 extern int rtl;
@@ -59,19 +61,20 @@ public:
 //{ Combobox
 class Combobox
 {
-    HWND handle;
-
 public:
-    Combobox(HWND hwnd,int id);
-    void Clear();
-    void AddItem(const wchar_t *str);
-    int FindItem(const wchar_t *str);
-    int GetNumItems();
-    void SetCurSel(int i);
-    void Focus();
-    void SetFont(wFont *font);
-    void Move(int x1,int y1,int wx,int wy);
-    void SetMirroring();
+    virtual ~Combobox(){}
+
+    virtual void Clear()=0;
+    virtual void AddItem(const wchar_t *str)=0;
+    virtual int FindItem(const wchar_t *str)=0;
+    virtual int GetNumItems()=0;
+    virtual void SetCurSel(int i)=0;
+    virtual void Focus()=0;
+    virtual void SetFont(wFont *font)=0;
+    virtual void Move(int x1,int y1,int wx,int wy)=0;
+    virtual void SetMirroring()=0;
+
+    static Combobox *Create(p_wnd_handle_type hwnd,int id);
 };
 //}
 
@@ -119,7 +122,7 @@ public:
     virtual ~Canvas(){}
 
     virtual void CopyCanvas(Canvas *source,int x1,int y1)=0;
-    virtual void begin(HWND hwnd,int x,int y,bool mirror=true)=0;
+    virtual void begin(p_wnd_handle_type hwnd,int x,int y,bool mirror=true)=0;
     virtual void end()=0;
 
     virtual void SetClipRegion(ClipRegion &clip)=0;

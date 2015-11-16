@@ -39,6 +39,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "main.h"
 
+#include "system_imp.h"
+
 SystemImp System;
 int monitor_pause=0;
 HFONT CLIHelp_Font;
@@ -152,74 +154,6 @@ void mkdir_r(const wchar_t *path)
         Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
 }
 
-//{ Event
-class EventImp:public Event
-{
-    EventImp(const EventImp&)=delete;
-	EventImp &operator = (const EventImp&) = delete;
-
-    HANDLE h;
-
-public:
-    EventImp(bool manual):
-        h(CreateEvent(nullptr,manual?1:0,0,nullptr))
-    {
-    }
-    ~EventImp()
-    {
-        CloseHandle(h);
-    }
-    void wait()
-    {
-        WaitForSingleObject(h,INFINITE);
-    }
-    bool isRaised()
-    {
-        return WaitForSingleObject(h,0)==WAIT_OBJECT_0;
-    }
-    void raise()
-    {
-        SetEvent(h);
-    }
-    void reset()
-    {
-        ResetEvent(h);
-    }
-};
-
-Event *CreateEventWr(bool manual)
-{
-    return new EventImp{manual};
-}
-//}
-
-class ThreadImp:public ThreadAbs
-{
-    HANDLE h=nullptr;
-
-public:
-    void start(threadCallback callback,void *arg)
-    {
-        h=(HANDLE)_beginthreadex(nullptr,0,callback,arg,0,nullptr);
-    }
-    void join()
-    {
-        if(h)WaitForSingleObject(h,INFINITE);
-    }
-    ~ThreadImp()
-    {
-        if(h)
-        {
-            if(!CloseHandle(h))
-                Log.print_err("ERROR in ThreadImpS(): failed CloseHandle\n");
-        }
-    }
-};
-ThreadAbs *CreateThread()
-{
-    return new ThreadImp;
-}
-
 void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj)
 {
     if(!UnregisterClass(lpClassName,ghInst))
@@ -294,37 +228,6 @@ int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int w
 }
 
 //{ FileMonitor
-struct FilemonDataPOD
-{
-	OVERLAPPED ol;
-	HANDLE     hDir;
-	BYTE       buffer[32*1024];
-	LPARAM     lParam;
-	DWORD      notifyFilter;
-	BOOL       fStop;
-	wchar_t    dir[BUFLEN];
-	int        subdirs;
-	FileChangeCallback callback;
-};
-
-class FilemonImp:public Filemon
-{
-    FilemonDataPOD data;
-
-private:
-    static void CALLBACK monitor_callback(DWORD dwErrorCode,DWORD dwNumberOfBytesTransfered,LPOVERLAPPED lpOverlapped);
-    static int refresh(FilemonDataPOD &data);
-
-public:
-    FilemonImp(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback);
-    ~FilemonImp();
-};
-
-Filemon *CreateFilemon(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback)
-{
-    return new FilemonImp(szDirectory,subdirs,callback);
-}
-
 FilemonImp::FilemonImp(const wchar_t *szDirectory, int subdirs_, FileChangeCallback callback_)
 {
 	wcscpy(data.dir,szDirectory);

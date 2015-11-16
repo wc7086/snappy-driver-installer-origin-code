@@ -98,46 +98,51 @@ void ClipRegion::setRegion(int x1,int y1,int x2,int y2){imp->setRegion(x1,y1,x2,
 //}
 
 //{ ComboBox
-Combobox::Combobox(HWND hwnd,int id)
+ComboboxImp::ComboboxImp(HWND hwnd,int id)
 {
     handle=CreateWindowMF(WC_COMBOBOX,L"",hwnd,id,CBS_DROPDOWNLIST|CBS_HASSTRINGS|WS_OVERLAPPED|WS_VSCROLL);
 }
-void Combobox::Clear()
+void ComboboxImp::Clear()
 {
     SendMessage(handle,CB_RESETCONTENT,0,0);
 }
-void Combobox::AddItem(const wchar_t *str)
+void ComboboxImp::AddItem(const wchar_t *str)
 {
     SendMessage(handle,CB_ADDSTRING,0,reinterpret_cast<LPARAM>(str));
 }
-int Combobox::FindItem(const wchar_t *str)
+int ComboboxImp::FindItem(const wchar_t *str)
 {
     return static_cast<int>(SendMessage(handle,CB_FINDSTRINGEXACT,static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(str)));
 }
-int Combobox::GetNumItems()
+int ComboboxImp::GetNumItems()
 {
     return static_cast<int>(SendMessage(handle,CB_GETCOUNT,0,0));
 }
-void Combobox::SetCurSel(int i)
+void ComboboxImp::SetCurSel(int i)
 {
     SendMessage(handle,CB_SETCURSEL,i,0);
 }
-void Combobox::Focus()
+void ComboboxImp::Focus()
 {
     SetFocus(handle);
 }
-void Combobox::SetFont(wFont *font)
+void ComboboxImp::SetFont(wFont *font)
 {
     SendMessage(handle,WM_SETFONT,(WPARAM)dynamic_cast<wFontImp *>(font)->hFont,MAKELPARAM(FALSE,0));
 }
-void Combobox::Move(int x1,int y1,int wx,int wy)
+void ComboboxImp::Move(int x1,int y1,int wx,int wy)
 {
     MoveWindow(handle,x1,y1,wx,wy,false);
 }
 
-void Combobox::SetMirroring()
+void ComboboxImp::SetMirroring()
 {
     setMirroring(handle);
+}
+
+Combobox *Combobox::Create(p_wnd_handle_type hwnd,int id)
+{
+    return new ComboboxImp(*reinterpret_cast<HWND *>(hwnd),id);
 }
 //}
 
@@ -430,11 +435,11 @@ CanvasImp::~CanvasImp()
     }
 }
 
-void CanvasImp::begin(HWND nhwnd,int nx,int ny,bool mirror)
+void CanvasImp::begin(p_wnd_handle_type nhwnd,int nx,int ny,bool mirror)
 {
     unsigned r32;
 
-    hwnd=nhwnd;
+    hwnd=*reinterpret_cast<HWND *>(nhwnd);
     localDC=BeginPaint(hwnd,&ps);
     if(!localDC)Log.print_err("ERROR in canvas_begin(): failed BeginPaint\n");
 
