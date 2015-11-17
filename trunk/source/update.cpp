@@ -27,6 +27,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "theme.h"
 #include "gui.h"
+#include "draw.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -54,7 +55,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 // Depend on Win32API
 #include "main.h"
-#include "draw.h"
 
 #define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005

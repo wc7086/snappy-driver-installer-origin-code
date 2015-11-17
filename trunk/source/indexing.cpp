@@ -170,154 +170,6 @@ void findosattr(char *bufa,const char *adr,size_t len)
 }
 //}
 
-//{
-Exporter::~Exporter()
-{
-    if(f==nullptr)return;
-    int i;
-
-    /*i=0;
-    for(int bits=0;bits<num_windowsbits;bits++)
-    for(int ver=0;ver<num_windowver;ver++)
-            items[0].Set(bits,ver,i++);*/
-
-    /*i=0;
-    for(auto &itm:hwids)
-    {
-        fprintf(f,"%04d:%s\n",i,itm.c_str());
-        //size+=s.length()+1;
-        i++;
-    }*/
-
-    i=0;
-    auto itm=hwids.begin();
-    for(auto &s:items)
-    {
-        fprintf(f,"%04d: ",i);
-        for(int j=0;j<num_windowver*num_windowsbits;j++)fprintf(f,"%02X ",s.Get(j)&0xFF);
-        fprintf(f,"%s\n",(*itm).c_str());
-        ++itm;
-        ++i;
-    }
-
-    i=0;
-    for(auto &s:items)
-    {
-        fprintf(f,"%04d: ",i);
-        for(int j=0;j<num_windowver*num_windowsbits;j++)fprintf(f,"%2d.%2d.%4d | ",s.GetDay(j),s.GetMonth(j),s.GetYear(j));
-        fprintf(f,"\n");
-        i++;
-    }
-
-    if(f)fclose(f);
-}
-void Exporter::AddHwid(const char *s)
-{
-    hwids.insert(s);
-}
-void Exporter::AddPack(const wchar_t *s)
-{
-    packs.emplace_back(s);
-}
-void Exporter::Found(const wchar_t *s,const Version *ver)
-{
-    if(!f)return;
-
-    auto it=find(packs.begin(),packs.end(),s);
-    size_t v=(it==packs.end())?0:it-packs.begin();
-    Log.set_verbose(LOG_VERBOSE_MANAGER|LOG_VERBOSE_LOG_CON);
-    //Log.print_con("Found(%d,%d,%d): [%d]%30S %40s\n",cur_bits,cur_ver,cur_hwid,v,s,GetHWID());
-    Log.set_verbose(LOG_VERBOSE_MANAGER);
-    items[cur_hwid].Set(cur_bits,cur_ver,static_cast<int>(v),ver);
-}
-void Exporter::PrintStats()
-{
-#if 0
-    f=fopen("export.txt","wt");
-    Log.set_verbose(LOG_VERBOSE_MANAGER);
-
-    long long size=0;
-
-    int i=0;
-    fprintf(f,"%d\n",int(packs.size()));
-    for(auto &p:packs)
-    {
-        fprintf(f,"%02X: %S\n",i,p.c_str());
-        i++;
-    }
-
-    items.resize(hwids.size());
-    fprintf(f,"%d\n",int(hwids.size()));
-
-    Log.print_con("Sum: %d; %d bytes\n",hwids.size(),size);
-    Log.print_con("Tests: %d\n",hwids.size()*num_windowsbits*num_windowver*num_hwidpos);
-    Log.print_con("Total bytes: %d\n",size+hwids.size()*(num_windowsbits*num_windowver*num_hwidpos));
-
-    cur_hwid=0;
-    cur_bits=0;
-    cur_ver=0;
-    cur_pos=0;
-    hwids_it=hwids.begin();
-
-    /*for(unsigned j=0;j<3355;j++)
-    {
-        cur_hwid++;
-        hwids_it++;
-    }*/
-    //hwids_it++;
-    //hwids_it++;
-    //for(int j=0;j<num_windowver*num_windowsbits;j++)items[0].Set(0,j,j,nullptr);
-    //for(int j=0;j<num_windowver*num_windowsbits;j++)items[1].Set(0,j,j,nullptr);
-    //hwids_it++;
-    //items[cur_hwid].Set(0,0,-1,nullptr);
-    //items[cur_hwid].Set(0,1,-1,nullptr);
-    invalidate(INVALIDATE_DEVICES);
-#endif
-}
-bool Exporter::Advance()
-{
-    if(!f)return false;
-
-    //if(cur_hwid<hwids.size())
-    //if(cur_hwid<5)
-    {
-        Log.set_verbose(LOG_VERBOSE_MANAGER|LOG_VERBOSE_LOG_CON);
-        //Log.print_con("Try %d,%d,%d\n",cur_hwid,cur_bits,cur_ver);
-        //items[cur_hwid].Set(cur_bits,cur_ver,-1,nullptr);
-        if(cur_ver==0&&cur_bits==0&&cur_hwid%10==0)Log.print_con("%d/%d (%d%%)\n",cur_hwid,hwids.size(),100*cur_hwid/hwids.size());
-        Log.set_verbose(LOG_VERBOSE_MANAGER);
-    }
-
-    cur_ver++;
-    if(cur_ver<num_windowver)return true;
-    cur_ver=0;
-
-    cur_bits++;
-    if(cur_bits<num_windowsbits)return true;
-    cur_bits=0;
-
-    ++cur_hwid;
-    ++hwids_it;
-    if(cur_hwid<hwids.size())return true;
-    //if(cur_hwid<100)return true;
-
-    Log.set_verbose(LOG_VERBOSE_LOG_CON|LOG_VERBOSE_TIMES);
-    Timers.print();
-    return false;
-}
-
-void Exporter::SetWindowVer()
-{
-    if(!f)return;
-
-    Settings.virtual_os_version=getWindowsVer(cur_ver);
-    Settings.virtual_arch_type=cur_bits?64:32;
-}
-
-Exporter ex;
-
-//}
-
 //{ Parser
 void Parser::parseWhitespace(bool eatnewline=false)
 {
@@ -884,11 +736,7 @@ void Collection::print_index_hr()
     Timers.start(time_indexprint);
 
     for(auto &drp:driverpack_list)
-    {
-        ex.AddPack(drp.getFilename());
         drp.print_index_hr();
-    }
-    ex.PrintStats();
 
     Timers.stop(time_indexprint);
 }
@@ -2113,7 +1961,6 @@ void Driverpack::print_index_hr()
                                     else
                                         wsprintfA(buf,"  ");
 
-                                    ex.AddHwid(hwidmatch.getdrp_drvHWID());
                                     fprintf(f,"       %s %-50s%-20s\t%s\n",buf,
                                             hwidmatch.getdrp_drvHWID(),
                                             hwidmatch.getdrp_drvinstall(),

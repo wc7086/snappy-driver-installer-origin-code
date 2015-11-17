@@ -22,11 +22,11 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "gui.h"
 #include "theme.h"
+#include "draw.h"
 
 #include <windows.h>
 
 // Depend on Win32API
-#include "draw.h"     // todo: HANDLE, RECT
 #include "enum.h"     // todo: lots of Win32
 #include "main.h"     // todo: lots of Win32
 
@@ -517,14 +517,14 @@ void CanvasImp::ClearClipRegion()
     SelectClipRgn(hdcMem,nullptr);
 }
 
-void CanvasImp::CalcBoundingBox(const wchar_t *str,RECT *rect)
+void CanvasImp::CalcBoundingBox(const wchar_t *str,RECT_WR *rect)
 {
-    DrawText(hdcMem,str,-1,rect,DT_WORDBREAK|DT_CALCRECT);
+    DrawText(hdcMem,str,-1,reinterpret_cast<RECT *>(rect),DT_WORDBREAK|DT_CALCRECT);
 }
 
-void CanvasImp::DrawTextRect(const wchar_t *bufw,RECT *rect,int flags)
+void CanvasImp::DrawTextRect(const wchar_t *bufw,RECT_WR *rect,int flags)
 {
-    DrawText(hdcMem,bufw,-1,rect,DT_WORDBREAK|flags);
+    DrawText(hdcMem,bufw,-1,reinterpret_cast<RECT *>(rect),DT_WORDBREAK|flags);
 }
 
 int  CanvasImp::GetTextExtent(const wchar_t *str)
@@ -772,7 +772,7 @@ void popup_about(Canvas &canvas)
     td.TextOutF(L"Snappy Driver Installer %s",STR(STR_ABOUT_VER));
     td.nl();
 
-    RECT rect;
+    RECT_WR rect;
     rect.left=td.getX();
     rect.top=td.getY();
     rect.right=D_X(POPUP_WX)-D_X(POPUP_OFSX)*2;

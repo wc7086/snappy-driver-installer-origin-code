@@ -39,7 +39,6 @@ typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtS
 
 // Depend on Win32API
 #include "enum.h"
-#include "draw.h"
 #include "main.h"
 
 // Autoclicker
@@ -564,14 +563,14 @@ const wnddata_t Autoclicker_t::clicktbl[NUM_CLICKDATA]=
     },
     // Windows 7 and Windows 8.1 (rare)
     {
-        500,230,
-        500,230,
+        500,-1,
+        500,-1,
 #ifdef AUTOCLICKER_CONFIRM
-        47,120,  // continue
-        448,66   // continue
+        47,-1,  // continue
+        448,-1   // continue
 #else
         47,67,     // stop
-        448,53     // stop
+        448,-1     // stop
 #endif
     },
     // Windows 7 and Windows 8.1 (rare)

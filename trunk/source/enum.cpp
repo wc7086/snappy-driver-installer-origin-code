@@ -23,6 +23,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "indexing.h"
 #include "theme.h"
 #include "gui.h"
+#include "draw.h" // for rtl
 
 #include "7zip.h"
 #include "device.h"
@@ -31,7 +32,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "enum.h"
 #include "main.h"
-#include "draw.h" // for rtl
 
 //{ Global variables
 
@@ -252,7 +252,7 @@ driver_index(-1),Devicedesc(0),HardwareID(0),CompatibleIDs(0),Driver(0),
 {
     wchar_t buf[BUFLEN];
 
-    wsprintf(buf,L"%S",ex.GetHWID());
+    //wsprintf(buf,L"%S",ex.GetHWID());
     //Log.print_con("Fake '%S'\n",buf);
     buf[wcslen(buf)+2]=0;
     problem=2;
@@ -547,8 +547,6 @@ Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_dr
 //{ State
 void State::fakeOSversion()
 {
-    ex.SetWindowVer();
-
     if(Settings.virtual_arch_type==32)architecture=0;
     if(Settings.virtual_arch_type==64)architecture=1;
     if(Settings.virtual_os_version)
@@ -1020,8 +1018,7 @@ void State::getsysinfo_slow()
 
     Timers.start(time_sysinfo);
 
-    if(!ex.IsActive())
-        getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
+    getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
 
     manuf=static_cast<ofst>(textas.strcpyw(smanuf.Get()));
     product=static_cast<ofst>(textas.strcpyw(sproduct.Get()));
@@ -1051,12 +1048,6 @@ void State::scanDevices()
     Driverpack unpacked_drp{L"",L"windir.7z",&collection};
 
     Timers.start(time_devicescan);
-    if(ex.IsActive())
-    {
-        Devices_list.emplace_back((Device(this)));
-        Timers.stop(time_devicescan);
-        return;
-    }
     //collection.init(textas.getw(windir),L"",L"");
 
     hDevInfo=SetupDiGetClassDevs(nullptr,nullptr,nullptr,DIGCF_PRESENT|DIGCF_ALLCLASSES);

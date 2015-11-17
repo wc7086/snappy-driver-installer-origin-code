@@ -140,11 +140,6 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             Log.print_con("}2Sync\n");
             bundle[bundle_shadow].bundle_init();
             LeaveCriticalSection(&sync);
-
-            if(ex.Advance())
-            {
-                invalidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
-            }
         }
     }
 
