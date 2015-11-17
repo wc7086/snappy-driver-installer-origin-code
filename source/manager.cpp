@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "install.h"
 #include "gui.h"
+#include "draw.h"
 #include "theme.h"
 
 #include <windows.h>
@@ -35,7 +36,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 // Depend on Win32API
 #include "enum.h"
-#include "draw.h"
 #include "main.h"
 
 //{ Global vars
@@ -821,8 +821,6 @@ void Manager::print_hr()
 
             if(itembar->hwidmatch)
             {
-                ex.Found(itembar->hwidmatch->getdrp_packname(),itembar->hwidmatch->getdrp_drvversion());
-
                 Log.print_file("Available driver\n");
                 itembar->hwidmatch->print_hr();
             }
@@ -1488,7 +1486,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                 pos+=D_X(ITEM_TEXT_OFS_Y);
                 wsprintf(bufw,L"%S",itembar->hwidmatch->getdrp_drvdesc());
                 canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
-                RECT rect;
+                RECT_WR rect;
                 int wx1=wx-D_X(ITEM_TEXT_OFS_X)-D_X(ITEM_ICON_OFS_X);
                 rect.left=x+D_X(ITEM_TEXT_OFS_X);
                 rect.top=pos;
@@ -1554,7 +1552,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                 {
                     wsprintf(bufw,L"%ws",matcher->getState()->textas.getw(itembar->devicematch->device->Devicedesc));
                     canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
-                    RECT rect;
+                    RECT_WR rect;
                     int wx1=wx-D_X(ITEM_TEXT_OFS_X)-D_X(ITEM_ICON_OFS_X);
                     rect.left=x+D_X(ITEM_TEXT_OFS_X);
                     rect.top=pos;

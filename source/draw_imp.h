@@ -148,8 +148,8 @@ public:
     void SetTextColor(int color);
     void SetFont(wFont *font);
     void DrawTextXY(int x,int y,const wchar_t *buf);
-    void DrawTextRect(const wchar_t *bufw,RECT *rect,int flags=0);
-    void CalcBoundingBox(const wchar_t *str,RECT *rect);
+    void DrawTextRect(const wchar_t *bufw,RECT_WR *rect,int flags=0);
+    void CalcBoundingBox(const wchar_t *str,RECT_WR *rect);
     int  GetTextExtent(const wchar_t *str);
 };
 //}

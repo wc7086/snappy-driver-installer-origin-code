@@ -31,7 +31,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "main.h"
-#include "draw.h"
 
 int volatile installmode=MODE_NONE;
 int invaidate_set;

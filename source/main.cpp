@@ -26,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "install.h"    // non-portable
 #include "gui.h"
+#include "draw.h"   // non-portable
 #include "theme.h"
 
 #include <windows.h>
@@ -39,7 +40,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 // Depend on Win32API
 #include "enum.h"   // non-portable
-#include "draw.h"   // non-portable
 #include "main.h"
 #include "model.h"
 
@@ -1688,7 +1688,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             rect.bottom=floating_y;
 
             canvasPopup->SetFont(Popup->hFontP);
-            canvasPopup->CalcBoundingBox(STR(floating_itembar),&rect);
+            canvasPopup->CalcBoundingBox(STR(floating_itembar),reinterpret_cast<RECT_WR *>(&rect));
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
             popup_resize(rect.right-rect.left+D_X(POPUP_OFSX)*2,rect.bottom-rect.top+D_X(POPUP_OFSY)*2);
@@ -1723,7 +1723,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
                     rect.bottom-=D_X(POPUP_OFSY);
                     canvasPopup->SetFont(Popup->hFontP);
                     canvasPopup->SetTextColor(D_C(POPUP_TEXT_COLOR));
-                    canvasPopup->DrawTextRect(STR(floating_itembar),&rect);
+                    canvasPopup->DrawTextRect(STR(floating_itembar),reinterpret_cast<RECT_WR *>(&rect));
                     break;
 
                 case FLOATING_CMPDRIVER:

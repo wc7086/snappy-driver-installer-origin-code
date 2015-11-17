@@ -23,13 +23,13 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 #include "theme.h"
 #include "gui.h"
+#include "draw.h"
 
 #include <windows.h>
 
 // Depend on Win32API
 #include "enum.h"
 #include "main.h"
-#include "draw.h"
 
 //{ Global vars
 WidgetComposite *wPanels=nullptr;

@@ -44,6 +44,16 @@ public:
 ThreadAbs *CreateThread();
 //}
 
+//{ RECT
+struct RECT_WR
+{
+    long left;
+    long top;
+    long right;
+    long bottom;
+};
+//}
+
 void get_resource(int id,void **data,size_t *size);
 void mkdir_r(const wchar_t *path);
 void StrFormatSize(long long val,wchar_t *buf,int len);
