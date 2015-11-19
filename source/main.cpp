@@ -1132,13 +1132,13 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                 Settings.savedscale=Settings.scale;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
             }
-            if(ctrl_down&&wParam==VK_OEM_PLUS)
+            if(ctrl_down&&(wParam==VK_OEM_PLUS||wParam==VK_ADD))
             {
                 Settings.scale-=6;
                 Settings.savedscale=Settings.scale;
                 PostMessage(hwnd,WM_UPDATETHEME,0,0);
             }
-            if(ctrl_down&&wParam==VK_OEM_MINUS)
+            if(ctrl_down&&(wParam==VK_OEM_MINUS||wParam==VK_SUBTRACT))
             {
                 Settings.scale+=6;
                 Settings.savedscale=Settings.scale;

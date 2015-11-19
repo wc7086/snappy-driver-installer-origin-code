@@ -17,7 +17,7 @@ echo 64-bit
 set xOS="x64_R"
 :cont
 
-for /f "tokens=*" %%a in ('dir /b "%~dp0SDI_%xOS%*.exe"') do set "SDIEXE=%%a"
+for /f "tokens=*" %%a in ('dir /b /od "%~dp0SDI_%xOS%*.exe"') do set "SDIEXE=%%a"
 if exist "%~dp0%SDIEXE%" (
  start "Snappy Driver Installer" /d"%~dp0" "%~dp0%SDIEXE%" %1 %2 %3 %4 %5 %6 %7 %8 %9
  exit
