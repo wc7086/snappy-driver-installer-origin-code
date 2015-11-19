@@ -587,10 +587,11 @@ void Manager::populate()
     size_t remap[1024*8];
     matcher->sorta(remap);
 
-    items_list.clear();
+    items_list.resize(RES_SLOTS);
+    /*items_list.clear();
 
     for(int i=0;i<RES_SLOTS;i++)
-        items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));
+        items_list.push_back(itembar_t(nullptr,nullptr,i,0,1));*/
 
     for(size_t i=0;i<matcher->getDwidmatch_list();i++)
     {
