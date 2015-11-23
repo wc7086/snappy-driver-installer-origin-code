@@ -1126,7 +1126,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             }
 
         case WM_KEYUP:
-            if(ctrl_down&&wParam==L'0')
+            if(ctrl_down&&(wParam==L'0'||wParam==VK_NUMPAD0))
             {
                 Settings.scale=256;
                 Settings.savedscale=Settings.scale;
