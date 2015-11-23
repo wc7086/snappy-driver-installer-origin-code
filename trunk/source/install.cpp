@@ -43,7 +43,7 @@ typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtS
 
 // Autoclicker
 #define AUTOCLICKER_CONFIRM
-#define NUM_CLICKDATA 5
+#define NUM_CLICKDATA 6
 struct wnddata_t
 {
     // Main wnd
@@ -191,7 +191,7 @@ void removeextrainfs(wchar_t *inf)
 
 unsigned int __stdcall Manager::thread_install(void *arg)
 {
-	UNREFERENCED_PARAMETER(arg);
+    UNREFERENCED_PARAMETER(arg);
 
     itembar_t *itembar,*itembar1;
     wchar_t cmd[BUFLEN];
@@ -563,14 +563,26 @@ const wnddata_t Autoclicker_t::clicktbl[NUM_CLICKDATA]=
     },
     // Windows 7 and Windows 8.1 (rare)
     {
-        500,-1,
-        500,-1,
+        500,280,
+        500,280,
 #ifdef AUTOCLICKER_CONFIRM
-        47,-1,  // continue
-        448,-1   // continue
+        47,149,  // continue
+        448,87   // continue
+#else
+        47,77,     // stop
+        448,72     // stop
+#endif
+    },
+    // Windows 7 and Windows 8.1 (rare)
+    {
+        500,230,
+        500,230,
+#ifdef AUTOCLICKER_CONFIRM
+        47,120,  // continue
+        448,66   // continue
 #else
         47,67,     // stop
-        448,-1     // stop
+        448,53     // stop
 #endif
     },
     // Windows 7 and Windows 8.1 (rare)
