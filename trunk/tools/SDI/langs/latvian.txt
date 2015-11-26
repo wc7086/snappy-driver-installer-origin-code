@@ -25,6 +25,7 @@ STR_THEME               = "Tēma"
 STR_THEME_H             = ""
 STR_EXPERT              = "Eksperta mode"
 STR_EXPERT_H            = "Ieslēgt eksperta modi.\n\nPadoms: Turiet nospiestu Ctrl, vai probelu virs vadītāja, lai saņemtu papildus informāciju.
+
 STR_OPENLOGS            = "Atvērt log failu"
 STR_OPENLOGS_H          = "Atvērt mapi ar logiem un attēliem.\n\nJūs varat iesniegt šos failus, lai saņemtu palīdzību."
 STR_SNAPSHOT            = "Ielādēt attēlu..."

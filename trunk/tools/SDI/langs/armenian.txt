@@ -128,9 +128,9 @@ STR_ABOUT_LICENSE       = "Snappy Driver Installer-ը տարածվում է GNU 
 // Թռուցիկ պատուհան(Ctrl կամ դատարկ ստեղնը սեղմած պահելու ժամանակ)
 STR_HINT_UNKNOWN        = "անհայտ է"
 STR_HINT_ANALYSIS       = "Վերլուծություն"
+STR_HINT_SIGNATURE      = "Ստորագրություն: "
 STR_HINT_DRP            = "Դրայվերպակ"
 STR_HINT_DEVICE         = "Սարքավորում"
-STR_HINT_SIGNATURE      = "Ստորագրություն: "
 STR_HINT_HARDWAREID     = "HardwareID"
 STR_HINT_COMPID         = "CompatibleID"
 STR_HINT_INSTDRV        = "Տեղադրված դրայվեր"

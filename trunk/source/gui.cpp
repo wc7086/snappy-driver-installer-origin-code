@@ -84,6 +84,7 @@ public:
         p->Add(new wButton  {STR_SNAPSHOT,          new SnapshotCommand});
         p->Add(new wButton  {STR_EXTRACT,           new ExtractCommand});
         p->Add(new wButton  {STR_DRVDIR,            new DrvDirCommand});
+        //p->Add(new wButton  {STR_OPTIONS_BTN,       new DrvDirCommand});
         wPanels->Add(p);
 
         // Filters (found)

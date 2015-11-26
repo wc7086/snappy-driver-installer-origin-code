@@ -35,6 +35,8 @@ STR_EXTRACT             = "Extract to..."
 STR_EXTRACT_H           = "Extract selected drivers\n\nYou can use it to create backup drivers by selecting current drivers."
 STR_DRVDIR              = "Select driver dir..."
 STR_DRVDIR_H            = "Choose another folder with driverpacks or unpacked drivers.\n\nYou can use it to search drivers on a driver CD/DVD."
+STR_OPTIONS_BTN         = "Options..."
+STR_OPTIONS_BTN_H       = "Open dialog box with settings."
 
 STR_SHOW_FOUND          = "Found in driverpacks"
 STR_SHOW_FOUND_H        = "Drivers are found in driverpacks and can be installed.\n\nWe advise you to install drivers from the following categories: not installed, newer, better match."
@@ -326,3 +328,26 @@ STR_TR_ST4              = "finished"
 STR_TR_ST5              = "seeding"
 STR_TR_ST6              = "allocating space"
 STR_TR_ST7              = "checking resume data"
+
+// Options dialog
+STR_OPTION_TITLE        = "Options"
+STR_OPTION_VIEW_TAB     = "View"
+STR_OPTION_UPDATES_TAB  = "Updates"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Driverpack names"
+STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
+STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
+STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
+STR_OPTION_SCALLING     = "Interface scaling"
+STR_OPTION_CONSOLE      = "Show console window"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "Check for new version of app/driverpacks"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Port"
+STR_OPTION_MAX_DOWNLOAD = "Max download speed in bytes/s(0:unlimited)"
+STR_OPTION_MAX_UPLOAD   = "Max upload speed in bytes/s(0:unlimited)"
