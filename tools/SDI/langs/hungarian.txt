@@ -206,7 +206,6 @@ STR_CLOSE_DRPEXT        = "(Klikk ide az alapértelmezett mappába való visszat
 STR_NOUPDATES           = "Driverek frissítve"
 STR_INITIALIZING        = "Inicializálás..."
 
-
 // Progressbar
 STR_INST_EXTRACT        = "Kicsomagolás... %d%% (1. a 2-bõl)"
 STR_INST_INSTALL        = "Telepítés... (2. a 2-bõl)"

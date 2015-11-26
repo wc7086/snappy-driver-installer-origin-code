@@ -4,7 +4,7 @@ STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Azərbaycanca"
-STR_LANG_ID             = "Azerbaijan"
+STR_LANG_ID             = "Azerbaijani"
 STR_LANG_CODE           = 0x2C
 
 // Sol panel

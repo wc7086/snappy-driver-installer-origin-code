@@ -128,6 +128,7 @@ STR_ABOUT_SIZE          = 12
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "inconnu"
 STR_HINT_ANALYSIS       = "Analyse"
+//STR_HINT_SIGNATURE      = "" // Translate
 STR_HINT_DRP            = "Driverpack"
 STR_HINT_DEVICE         = "Périphérique"
 STR_HINT_HARDWAREID     = "HardwareID"
@@ -233,6 +234,8 @@ STR_REST_CREATING       = "Création d'un point de restauration en cours..."
 STR_REST_CREATED        = "Point de restauration créé"
 STR_REST_FAILED         = "Echec de la création d'un point de restauration"
 
+//STR_INST_QUIT_TITLE     = "" // Translate
+//STR_INST_QUIT_MSG       = "" // Translate
 STR_HINT_STOPINST       = "Cliquer ici pour annuler l'installation."
 STR_HINT_STOPEXTR       = "Cliquer ici pour arrêter l'extraction."
 STR_HINT_DRIVER         = "Appuyer sur la touche CTRL pour comparer le pilote installé avec celui disponible.\nAppuyer sur la barre ESPACE pour afficher les informations sur les pilotes alternatifs."

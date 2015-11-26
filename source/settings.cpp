@@ -275,6 +275,7 @@ void Settings_t::loginfo()
         Log.print_con("  extractdir='%S'\n",extractdir);
         Log.print_con("  lang=%S\n",curlang);
         Log.print_con("  theme=%S\n",curtheme);
+        Log.print_con("  scale=%d\n",scale);
         Log.print_con("  expertmode=%d\n",expertmode);
         Log.print_con("  filters=%d\n",filters);
         Log.print_con("  autoinstall=%d\n",(flags&FLAG_AUTOINSTALL)?1:0);
