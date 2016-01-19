@@ -15,3 +15,5 @@ REGISTER_CODEC_E(PPMD,
     NCompress::NPpmd::CEncoder(),
     0x30401,
     "PPMD")
+
+void registerPPMD(){}

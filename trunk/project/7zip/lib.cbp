@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="7-ZIP 15.08 beta" />
+		<Option title="7-ZIP 15.14" />
 		<Option platforms="Windows;" />
 		<Option makefile="makefile" />
 		<Option compiler="gcc" />
@@ -123,7 +123,6 @@
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zExtract.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zFolderInStream.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zFolderInStream.h" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zFolderOutStream.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zFolderOutStream.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zHandler.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/7zHandler.h" />
@@ -141,7 +140,6 @@
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/7z/StdAfx.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CoderMixer2.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CoderMixer2.h" />
-		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CrossThreadProgress.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/CrossThreadProgress.h" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/DummyOutStream.cpp" />
 		<Unit filename="../../external/SevenZ/build/CPP/7zip/Archive/Common/DummyOutStream.h" />
