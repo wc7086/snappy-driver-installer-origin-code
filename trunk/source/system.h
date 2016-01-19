@@ -66,6 +66,8 @@ public:
     bool IsLangInstalled(int group);
     unsigned GetTickCountWr();
 
+    bool IsScreenReaderActive();
+
     int canWrite(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
     void benchmark();
