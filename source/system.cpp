@@ -79,6 +79,13 @@ unsigned SystemImp::GetTickCountWr()
     return GetTickCount();
 }
 
+bool SystemImp::IsScreenReaderActive()
+{
+    bool bActive=false;
+    bool bReturn=SystemParametersInfo(SPI_GETSCREENREADER,0,&bActive,0);
+    return bReturn&&bActive;
+}
+
 bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)
 {
     BROWSEINFO lpbi;
