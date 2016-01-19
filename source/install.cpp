@@ -43,7 +43,7 @@ typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtS
 
 // Autoclicker
 #define AUTOCLICKER_CONFIRM
-#define NUM_CLICKDATA 6
+#define NUM_CLICKDATA 7
 struct wnddata_t
 {
     // Main wnd
@@ -95,11 +95,20 @@ void _7z_total(long long i)
 int _7z_setcomplited(long long i)
 {
     if(Settings.statemode==STATEMODE_EXIT)return S_OK;
-    if(installmode==MODE_STOPPING)return E_ABORT;
+    if(installmode==MODE_STOPPING)
+    {
+        Log.print_con("MODE_STOPPING\n");
+        return E_ABORT;
+    }
     if(manager_g->items_list.empty())return S_OK;
-    if(!manager_g->items_list[itembar_act].checked)return E_ABORT;
+    if(!manager_g->items_list[itembar_act].checked)
+    {
+        Log.print_con("stop:itembar_act %d\n",itembar_act);
+        return E_ABORT;
+    }
 
     ar_proceed=i;
+    //Log.print_con("PR %d/%d\n",ar_proceed,ar_total);
     manager_g->items_list[itembar_act].updatecur();
     manager_g->updateoverall();
     MainWindow.redrawfield();
@@ -538,7 +547,7 @@ goaround:
 //{ Autoclicker
 const wnddata_t Autoclicker_t::clicktbl[NUM_CLICKDATA]=
 {
-    // Windows XP
+    // Windows XP (normal)
     {
         396,-1,
         390,283,
@@ -548,6 +557,17 @@ const wnddata_t Autoclicker_t::clicktbl[NUM_CLICKDATA]=
         245,249,  // stop
 #endif
         132,23
+    },
+    // Windows XP (rare)
+    {
+        396,-1,
+        390,283,
+#ifdef AUTOCLICKER_CONFIRM
+        164,249,// continue
+#else
+        275,249,  // stop
+#endif
+        105,23
     },
     // Windows 7 and Windows 8.1 (normal)
     {
