@@ -181,6 +181,7 @@
 			<Add library="boost_system_tr" />
 			<Add library="uuid" />
 			<Add library="wbemuuid" />
+			<Add library="sapi" />
 			<Add directory="../external" />
 		</Linker>
 		<ExtraCommands>
