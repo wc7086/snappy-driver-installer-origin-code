@@ -32,7 +32,8 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
 {
     *type=0;
 
-    HRESULT hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
+    HRESULT hres;
+    hres=CoInitializeEx(nullptr,COINIT_MULTITHREADED);
     if(FAILED(hres))
     {
         Log.print_err("FAILED to initialize COM library. Error code = 0x%lX\n",hres);
@@ -43,12 +44,12 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
     {
         hres=CoInitializeSecurity(nullptr,-1,nullptr,nullptr,RPC_C_AUTHN_LEVEL_DEFAULT,
                                   RPC_C_IMP_LEVEL_IMPERSONATE,nullptr,EOAC_NONE,nullptr);
-        if(FAILED(hres))
+        /*if(FAILED(hres))
         {
             Log.print_err("FAILED to initialize security. Error code = 0x%lX\n",hres);
-            CoUninitialize();
+            //CoUninitialize();
             return 0;
-        }
+        }*/
     }
 
     IWbemLocator *pLoc=nullptr;
@@ -56,7 +57,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
     if(FAILED(hres))
     {
         Log.print_err("FAILED to create IWbemLocator object. Error code = 0x%lX\n",hres);
-        CoUninitialize();
+        //CoUninitialize();
         return 0;
     }
 
@@ -66,7 +67,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
     {
         Log.print_err("FAILED to connect to root\\cimv2. Error code = 0x%lX\n",hres);
         pLoc->Release();
-        CoUninitialize();
+        //CoUninitialize();
         return 0;
     }
 
@@ -79,7 +80,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
         Log.print_err("FAILED to set proxy blanket. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
-        CoUninitialize();
+        //CoUninitialize();
         return 0;
     }
 
@@ -93,7 +94,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
         Log.print_err("FAILED to query for Win32_BaseBoard. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
-        CoUninitialize();
+        //CoUninitialize();
         return 0;
     }
     else
@@ -131,7 +132,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
         Log.print_err("FAILED to query for Win32_ComputerSystem. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
-        CoUninitialize();
+        //CoUninitialize();
         return 0;
     }
     else
@@ -165,7 +166,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
         Log.print_err("FAILED to query for Win32_SystemEnclosure. Error code = 0x%lX\n",hres);
         pSvc->Release();
         pLoc->Release();
-        CoUninitialize();
+        //CoUninitialize();
         return 0;
     }
     else
@@ -208,7 +209,7 @@ int State::getbaseboard(WStringShort &manuf1,WStringShort &model1,WStringShort &
 
     pSvc->Release();
     pLoc->Release();
-    CoUninitialize();
+    //CoUninitialize();
 
     return 1;
 }

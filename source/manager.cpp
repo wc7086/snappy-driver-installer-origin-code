@@ -1060,6 +1060,10 @@ void Manager::toggle(size_t index)
 
     if(itembar1->checked)expand(index,EXPAND_MODE::COLLAPSE);
     MainWindow.redrawmainwnd();
+
+    WStringShort str;
+    str.sprintf(L"%d drivers selected",countItems());
+    System.Speak(str.Get());
 }
 
 void Manager::expand(size_t index,EXPAND_MODE f)
@@ -1109,6 +1113,8 @@ void Manager::selectnone()
     }
     itembar=&items_list[RES_SLOTS];
     for(i=RES_SLOTS;i<items_list.size();i++,itembar++)itembar->checked=0;
+
+    System.Speak(L"0 drivers selected");
 }
 
 void Manager::selectall()
@@ -1135,6 +1141,10 @@ void Manager::selectall()
             group=itembar->index;
         }
     }
+
+    WStringShort str;
+    str.sprintf(L"%d drivers selected",countItems());
+    System.Speak(str.Get());
 }
 //}
 

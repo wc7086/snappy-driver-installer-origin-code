@@ -62,11 +62,21 @@ void ShowHelp();
 //{ System
 class SystemImp
 {
+    ThreadAbs *narrator;
+    static Event *narratorE;
+    static WStringShort str;
+    static bool nar_active;
+
 public:
+    SystemImp();
+    ~SystemImp();
+
     bool IsLangInstalled(int group);
     unsigned GetTickCountWr();
 
     bool IsScreenReaderActive();
+    static unsigned int __stdcall thread_narrator(void *arg);
+    void Speak(const wchar_t *str);
 
     int canWrite(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);

@@ -35,6 +35,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <setupapi.h>       // for SHELLEXECUTEINFO
 #include <shlwapi.h>        // for PathFileExists
 #include <shlobj.h>         // for SHBrowseForFolder
+#include <sapi.h>
 
 // Depend on Win32API
 #include "main.h"
@@ -83,7 +84,63 @@ bool SystemImp::IsScreenReaderActive()
 {
     bool bActive=false;
     bool bReturn=SystemParametersInfo(SPI_GETSCREENREADER,0,&bActive,0);
+    Speak(L"Hello 12 to 224");
     return bReturn&&bActive;
+}
+
+Event *SystemImp::narratorE;
+WStringShort SystemImp::str;
+bool SystemImp::nar_active;
+
+SystemImp::SystemImp()
+{
+    nar_active=true;
+    narrator=CreateThread();
+    narratorE=CreateEventWr();
+    narrator->start(&thread_narrator,nullptr);
+}
+
+SystemImp::~SystemImp()
+{
+    nar_active=0;
+    narratorE->raise();
+    narrator->join();
+    delete narrator;
+    delete narratorE;
+}
+
+unsigned int __stdcall SystemImp::thread_narrator(void *arg)
+{
+    ISpVoice *pVoice=nullptr;
+
+    if(FAILED(CoInitialize(nullptr)))return 0;
+    HRESULT hr=CoCreateInstance(CLSID_SpVoice,nullptr,CLSCTX_ALL,IID_ISpVoice,(void **)&pVoice);
+
+    while(nar_active)
+    {
+        narratorE->wait();
+        if(!nar_active)break;
+        if(SUCCEEDED(hr))
+        {
+            WStringShort str1;
+            str1.strcpy(str.Get());
+            str.strcpy(L"");
+            hr=pVoice->Speak(str1.Get(),0,nullptr);
+
+        }
+
+    }
+    pVoice->Release();
+    return 0;
+}
+
+void SystemImp::Speak(const wchar_t *str1)
+{
+    if(!Settings.speakmode)return;
+
+    str.append(L" ");
+    str.append(str1);
+    narratorE->raise();
 }
 
 bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)

@@ -281,6 +281,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
 
         if(hinstLib&&WIN5f_SRSetRestorePointW)
         {
+            System.Speak(L"Creating a restore point");
             manager_g->items_list[SLOT_RESTORE_POINT].percent=500;
             manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_REST_CREATING;
             itembar_act=SLOT_RESTORE_POINT;
@@ -332,11 +333,15 @@ goaround:
     {
         int unpacked=0;
         int limits[7];
+        Hwidmatch *hwidmatch=itembar->hwidmatch;
+
+        WStringShort str;
+        str.sprintf(L"Installing %S. %d drivers to go",hwidmatch->getdrp_drvdesc(),manager_g->countItems());
+        System.Speak(str.Get());
 
         memset(limits,0,sizeof(limits));
         itembar_act=i;
         ar_proceed=0;
-        Hwidmatch *hwidmatch=itembar->hwidmatch;
         Log.print_con("Installing $%04d\n",i);
         hwidmatch->print_hr();
         wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
@@ -520,6 +525,8 @@ goaround:
         manager_g->items_list[SLOT_EXTRACTING].install_status=
             needreboot?STR_INST_COMPLITED_RB:STR_INST_COMPLITED;
         installmode=MODE_SCANNING;
+
+        System.Speak(L"Installation completed.");
 
         MainWindow.ShowProgressInTaskbar(false);
         FLASHWINFO fi;
