@@ -14,11 +14,12 @@ set c_do=0D
 set c_skip=02
 
 rem Versions
-set BOOST_VER2=1.59.0
-set BOOST_VER=1_59_0
+set BOOST_VER=1_60_0
+set BOOST_VER2=1.60.0
+set BOOST_VER3=1_60
 set LIBTORRENT_VER2=1.0.6
 set LIBTORRENT_VER=1_0_6
-set LIBWEBP_VER=0.4.3
+set LIBWEBP_VER=0.5.0
 set GCC_VERSION=5.2.0
 set GCC_VERSION2=52
 set MSVC_VERSION=12.0
@@ -114,10 +115,10 @@ goto mainmenu
 :buildboost
 rem Install BOOST (32-bit)
 if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (call :ColorText %c_skip% "Skipping installing BOOST32"&echo. & goto skipinstallboost32)
-copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
+rem copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
-bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH%
+bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH% define=BOOST_USE_WINAPI_VERSION=0x0501
 popd
 :skipinstallboost32
 
@@ -127,7 +128,7 @@ pushd %BOOST_ROOT%
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 call :ColorText %c_do% "Installing BOOST64"&echo.
-bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64
+bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64 define=BOOST_USE_WINAPI_VERSION=0x0501
 set path=%oldpath%
 popd
 :skipinstallboost64
@@ -348,7 +349,9 @@ rem Build bjam.exe
 if /I exist "%BOOST_ROOT%\bjam.exe" (call :ColorText %c_skip% "Skipping building bjam.exe"&echo. & goto skipbuildbjam)
 call :ColorText %c_do% "Building BJAM"&echo.
 pushd %BOOST_ROOT%
+set SAVED_TOOLSET=%TOOLSET%
 call bootstrap.bat %TOOLSET2%
+set TOOLSET=%SAVED_TOOLSET%
 popd
 :skipbuildbjam
 
@@ -382,17 +385,17 @@ call :ColorText %c_do% "Building libtorrent32"&echo.
 copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 pushd "%LIBTORRENT_PATH%\examples"
 
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% myrelease exception-handling=on %EXTRA_OPTIONS%
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% mydebug exception-handling=on %EXTRA_OPTIONS%
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% myrelease exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% mydebug exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
 
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib /Y
 copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a /Y
 copy ..\bin\msvc-%MSVC_VERSION%\myrls\libtorrent.lib %LIBDIR%\Release_Win32 /Y
 copy ..\bin\msvc-%MSVC_VERSION%\mydbg\libtorrent.lib %LIBDIR%\Debug_Win32 /Y
 
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %LIBBOOST32% /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls\libboost_system-vc120-mt-s-1_59.lib %LIBDIR%\Release_Win32\libboost_system.lib /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg\libboost_system-vc120-mt-sg-1_59.lib %LIBDIR%\Debug_Win32\libboost_system.lib /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-%BOOST_VER3%.a %LIBBOOST32% /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls\libboost_system-vc120-mt-s-%BOOST_VER3%.lib %LIBDIR%\Release_Win32\libboost_system.lib /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg\libboost_system-vc120-mt-sg%BOOST_VER3%.lib %LIBDIR%\Debug_Win32\libboost_system.lib /Y
 popd
 :skipbuildlibtorrent
 
@@ -407,17 +410,17 @@ copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% myrelease64 exception-handling=on %EXTRA_OPTIONS%
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% mydebug64 exception-handling=on %EXTRA_OPTIONS%
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% myrelease64 exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% mydebug64 exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
 
 copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib /Y
 copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
 copy ..\bin\msvc-%MSVC_VERSION%\myrls\adrs-mdl-64\libtorrent.lib %LIBDIR%\Release_x64 /Y
 copy ..\bin\msvc-%MSVC_VERSION%\mydbg\adrs-mdl-64\libtorrent.lib %LIBDIR%\Debug_x64 /Y
 
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-1_59.a %LIBBOOST64% /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls%ADR64%\libboost_system-vc120-mt-s-1_59.lib %LIBDIR%\Release_x64\libboost_system.lib /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg%ADR64%\libboost_system-vc120-mt-sg-1_59.lib %LIBDIR%\Debug_x64\libboost_system.lib /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-%BOOST_VER3%.a %LIBBOOST64% /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls%ADR64%\libboost_system-vc120-mt-s-%BOOST_VER3%.lib %LIBDIR%\Release_x64\libboost_system.lib /Y
+copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg%ADR64%\libboost_system-vc120-mt-sg-%BOOST_VER3%.lib %LIBDIR%\Debug_x64\libboost_system.lib /Y
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64
