@@ -109,7 +109,7 @@ SystemImp::~SystemImp()
     delete narratorE;
 }
 
-unsigned int __stdcall SystemImp::thread_narrator(void *arg)
+unsigned int __stdcall SystemImp::thread_narrator(void *)
 {
     ISpVoice *pVoice=nullptr;
 

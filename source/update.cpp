@@ -1192,6 +1192,8 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     if(hSession)
     {
+        hSession->pause();
+        hSession->abort();
         Log.print_con("Closing torrent session...");
         delete hSession;
         Log.print_con("DONE\n");
