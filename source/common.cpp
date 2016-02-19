@@ -378,7 +378,7 @@ void WString_dyn::sprintf(const wchar_t *format,...)
 }
 void WString_dyn::vsprintf(const wchar_t *format,va_list args)
 {
-    unsigned r=_vscwprintf(format,args)+1;
+    unsigned r=System._vscwprintf_dll(format,args)+1;
     if(r>len)Resize(r);
 #ifdef _MSC_VER
     r=vswprintf_s(buf_cur,len,format,args);

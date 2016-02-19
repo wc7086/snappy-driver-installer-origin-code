@@ -34,9 +34,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <shobjidl.h>       // for TBPF_NORMAL
 #ifdef _MSC_VER
 #include <shellapi.h>
+#endif
 #include <process.h>
 #include <signal.h>
-#endif
 
 // Depend on Win32API
 #include "enum.h"   // non-portable
