@@ -30,9 +30,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 
 #include <windows.h>
-#ifdef _MSC_VER
 #include <process.h>
-#endif
 
 // Depend on Win32API
 #include "enum.h"

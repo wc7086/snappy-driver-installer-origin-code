@@ -23,8 +23,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "manager.h"
 
 #include <windows.h>
-#ifdef _MSC_VER
 #include <process.h>
+#ifdef _MSC_VER
 #include <errno.h>
 #include <commdlg.h>
 #include <direct.h>
@@ -84,7 +84,7 @@ bool SystemImp::IsScreenReaderActive()
 {
     bool bActive=false;
     bool bReturn=SystemParametersInfo(SPI_GETSCREENREADER,0,&bActive,0);
-    Speak(L"Hello 12 to 224");
+    //Speak(L"Hello 12 to 224");
     return bReturn&&bActive;
 }
 
@@ -289,6 +289,17 @@ int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int w
     WaitForSingleObject(ShExecInfo.hProcess,INFINITE);
     GetExitCodeProcess(ShExecInfo.hProcess,&ret);
     return ret;
+}
+
+int SystemImp::_vscwprintf_dll(const wchar_t * _Format,va_list _ArgList)
+{
+    if(!_vscwprintf_init_lazy)
+    {
+        HINSTANCE hinstLib=LoadLibrary(L"msvcrt.dll");
+        _vscwprintf_func=(WINAPI5_vscwprintf)GetProcAddress(hinstLib,"_vscwprintf");
+        _vscwprintf_init_lazy=true;
+    }
+    return _vscwprintf_func?_vscwprintf_func(_Format,_ArgList):1024*4;
 }
 
 //{ FileMonitor

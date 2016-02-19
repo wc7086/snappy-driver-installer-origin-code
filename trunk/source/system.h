@@ -59,6 +59,8 @@ void mkdir_r(const wchar_t *path);
 void StrFormatSize(long long val,wchar_t *buf,int len);
 void ShowHelp();
 
+typedef int (__cdecl *WINAPI5_vscwprintf)(const wchar_t * __restrict__ _Format,va_list _ArgList);
+
 //{ System
 class SystemImp
 {
@@ -66,6 +68,9 @@ class SystemImp
     static Event *narratorE;
     static WStringShort str;
     static bool nar_active;
+
+    WINAPI5_vscwprintf _vscwprintf_func=nullptr;
+    bool _vscwprintf_init_lazy=false;
 
 public:
     SystemImp();
@@ -91,6 +96,7 @@ public:
     void fileDelSpec(wchar_t *filename);
 
     void UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj);
+    int _vscwprintf_dll(const wchar_t * _Format,va_list _ArgList);
 };
 extern SystemImp System;
 //}
