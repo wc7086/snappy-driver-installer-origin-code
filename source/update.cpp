@@ -1210,7 +1210,7 @@ bool UpdaterImp::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 bool UpdaterImp::isPaused(){return TorrentStatus.sessionpaused;}
 bool UpdaterImp::isUpdateCompleted(){return finishedupdating;}
 
-int  UpdaterImp::Populate(int flags){return UpdateDialog.populate(flags);}
+int  UpdaterImp::Populate(int flags){return UpdateDialog.populate(flags,!flags);}
 void UpdaterImp::SetFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
 void UpdaterImp::OpenDialog(){UpdateDialog.openDialog();}
 //}
