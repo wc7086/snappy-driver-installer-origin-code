@@ -365,7 +365,8 @@ void VaultLang::EnumFiles(Combobox *lst,const wchar_t *path,int locale)
     {
         buf.sprintf(L"%s\\%s\\%s",Settings.data_dir,path,FindFileData.cFileName);
         loadFromFile(buf.Get());
-        if(language[STR_LANG_CODE].val==(locale&0xFF))
+        if((((language[STR_LANG_CODE].val&0xFF00)==0)&&language[STR_LANG_CODE].val==(locale&0xFF))||
+           (language[STR_LANG_CODE].val==locale))
         {
             lang_auto_str.sprintf(L"Auto (%s)",STR(STR_LANG_NAME));
             lang_auto=i;
