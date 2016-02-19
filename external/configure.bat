@@ -115,7 +115,7 @@ goto mainmenu
 :buildboost
 rem Install BOOST (32-bit)
 if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (call :ColorText %c_skip% "Skipping installing BOOST32"&echo. & goto skipinstallboost32)
-rem copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
+copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
 bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH% define=BOOST_USE_WINAPI_VERSION=0x0501
