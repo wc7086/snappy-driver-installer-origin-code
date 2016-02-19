@@ -972,10 +972,10 @@ void UpdaterImp::downloadTorrent()
     add_torrent_params params;
 
     Timers.start(time_chkupdate);
-    hSession=new session();
+    hSession=new session(fingerprint("LT",LIBTORRENT_VERSION_MAJOR,LIBTORRENT_VERSION_MINOR,0,0),session::add_default_plugins);
 
     hSession->start_lsd();
-    hSession->start_upnp();
+    //hSession->start_upnp();
     hSession->start_natpmp();
 
     // Connecting
@@ -1192,6 +1192,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     if(hSession)
     {
+        hSession->remove_torrent(hTorrent);
         hSession->pause();
         hSession->abort();
         Log.print_con("Closing torrent session...");
