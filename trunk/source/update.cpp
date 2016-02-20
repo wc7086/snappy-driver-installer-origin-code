@@ -1167,6 +1167,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                     System.run_command(L"cmd",buf.Get(),SW_HIDE,0);
                 }
                 if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
+                downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
 
                 // Flash in taskbar
                 MainWindow.ShowProgressInTaskbar(false);
@@ -1176,9 +1177,11 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
                 fi.uCount=1;
                 fi.dwTimeout=0;
-                FlashWindowEx(&fi);
-                downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
-                invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                if(installmode==MODE_NONE)
+                {
+                    FlashWindowEx(&fi);
+                    invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                }
             }
         }
         // Download is completed
