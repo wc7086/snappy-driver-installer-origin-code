@@ -152,11 +152,13 @@ public:
     int isdrivervalid();
     int isvalidcat(const State *state);
     int pickcat(const State *state);
+    int cmpnames(const Hwidmatch *match2);
 
 // <<< GETTERS
     //driverpack
     const wchar_t *getdrp_packpath()const;
     const wchar_t *getdrp_packname()const;
+    void getdrp_packnameVirtual(WStringShort &s)const;
     int   getdrp_packontorrent()const;
     //inffile
     const char *getdrp_infpath()const;
