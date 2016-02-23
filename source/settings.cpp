@@ -259,6 +259,7 @@ void Settings_t::save()
 
     if(flags&FLAG_CHECKUPDATES)fwprintf(f,L"-checkupdates ");
     if(flags&FLAG_ONLYUPDATES)fwprintf(f,L"-onlyupdates ");
+    if(flags&FLAG_KEEPUNPACKINDEX)fwprintf(f,L"-keepunpackedindex ");
     fclose(f);
 }
 

@@ -15,6 +15,6 @@ del out\%1 -y
 set path=%CD%;%PATH%
 cd temp
 call ..\bat\%1.bat
-rem ..\bin\7za.exe a ..\out\%1 -mmt=off -m0=BCJ2 -m1=LZMA2:d%dict%m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -ir!*.inf -ir!*.cat *.ini
-rem ..\bin\7za.exe a ..\out\%1 -mmt=off -m0=BCJ2 -m1=LZMA2:d%dict%m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -xr!*.inf -xr!*.cat -x!*.ini
+rem ..\bin\7za.exe a ..\out\%1 -mmt=off -m0=BCJ2 -m1=LZMA2:d%dict%m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 *.ini -ir!*.inf -ir!*.cat -ir!*.nfo -ir!*.url -ir!*.txt
+rem ..\bin\7za.exe a ..\out\%1 -mmt=off -m0=BCJ2 -m1=LZMA2:d%dict%m:fb273 -m2=LZMA2:d512k -m3=LZMA2:d512k -mb0:1 -mb0s1:2 -mb0s2:3 -xr!*.inf -xr!*.cat -x!*.ini -x!*.nfo -x!*.url -x!*.txt
 cd ..
