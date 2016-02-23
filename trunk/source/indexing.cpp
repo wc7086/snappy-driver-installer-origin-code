@@ -453,11 +453,14 @@ int Collection::scanfolder_count(const wchar_t *path)
         {
             if(lstrcmp(FindFileData.cFileName,L"..")==0)continue;
             buf.sprintf(L"%s\\%ws",path,FindFileData.cFileName);
-            cnt+=scanfolder_count(buf.Get());
+            if(!loaded_unpacked)
+                cnt+=scanfolder_count(buf.Get());
         }
         else
         {
             size_t i,len=wcslen(FindFileData.cFileName);
+            if(len<3)continue;
+
             for(i=0;i<6;i++)
                 if(StrStrIW(FindFileData.cFileName,olddrps[i]))
                 {
@@ -491,11 +494,14 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
         {
             if(lstrcmp(FindFileData.cFileName,L"..")==0)continue;
             buf.sprintf(L"%s\\%ws",path,FindFileData.cFileName);
-            scanfolder(buf.Get(),arg);
+            if(!loaded_unpacked)
+                scanfolder(buf.Get(),arg);
         }
         else
         {
             size_t len=wcslen(FindFileData.cFileName);
+            if(len<3)continue;
+
             if(_wcsicmp(FindFileData.cFileName+len-3,L".7z")==0)
             {
                 driverpack_list.push_back(Driverpack(path,FindFileData.cFileName,this));
@@ -584,11 +590,15 @@ void Collection::populate()
 
     Timers.start(time_indexes);
 
-    drp_count=scanfolder_count(driverpack_dir);
     driverpack_list.reserve(drp_count+1+300); // TODO
-
     driverpack_list.push_back(Driverpack(driverpack_dir,L"unpacked.7z",this));
     unpacked_drp=&driverpack_list.back();
+
+    if(Settings.flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
+    drp_count=scanfolder_count(driverpack_dir);
+
+    if((Settings.flags&FLAG_KEEPUNPACKINDEX)&&!loaded_unpacked)
+        manager_g->itembar_settext(SLOT_INDEXING,1,L"Unpacked",1,++drp_count,0);
 
 //{thread
     drplist_t queuedriverpack1;
@@ -615,7 +625,6 @@ void Collection::populate()
     }
 //}thread
 
-    if(Settings.flags&FLAG_KEEPUNPACKINDEX)loaded_unpacked=unpacked_drp->loadindex();
     drp_cur=1;
 
     scanfolder(driverpack_dir,&queuedriverpack);
