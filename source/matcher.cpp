@@ -469,7 +469,7 @@ void MatcherImp::sorta(size_t *v)
             }
             else
             if(ismi==ismj)
-            if((hwidmatch_i&&hwidmatch_j&&wcscmp(hwidmatch_i->getdrp_packname(),hwidmatch_j->getdrp_packname())>0)
+            if((hwidmatch_i&&hwidmatch_j&&hwidmatch_i->cmpnames(hwidmatch_j)>0)
                ||
                (!hwidmatch_i&&hwidmatch_j))
             {
@@ -918,6 +918,13 @@ int Hwidmatch::pickcat(const State *state)
 
     return 0;
 }
+int Hwidmatch::cmpnames(const Hwidmatch *match2)
+{
+    if(wcsstr(drp->getFilename(),L"unpacked.7z"))
+        return strcmp(getdrp_infpath(),match2->getdrp_infpath());
+    else
+        return wcscmp(getdrp_packname(),match2->getdrp_packname());
+}
 //}
 
 //{ Getters
@@ -929,6 +936,15 @@ const wchar_t *Hwidmatch::getdrp_packpath()const
 const wchar_t *Hwidmatch::getdrp_packname()const
 {
     return drp->getFilename();
+}
+void Hwidmatch::getdrp_packnameVirtual(WStringShort &s)const
+{
+    const wchar_t *t=drp->getFilename();
+
+    if(wcsstr(t,L"unpacked.7z"))
+        s.sprintf(L"%S",getdrp_infpath());
+    else
+        s.sprintf(L"%s",t);
 }
 int Hwidmatch::getdrp_packontorrent()const
 {

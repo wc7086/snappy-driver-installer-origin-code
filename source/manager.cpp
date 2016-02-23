@@ -710,7 +710,7 @@ void Manager::filter(int options)
             {
                 if(itembar_drp)
                 {
-                    if(!itembar_drpcur||(wcscmp(itembar_drp->hwidmatch->getdrp_packname(),itembar_drpcur->hwidmatch->getdrp_packname())!=0))
+                    if(!itembar_drpcur||(itembar_drp->hwidmatch->cmpnames(itembar_drpcur->hwidmatch)!=0))
                     {
                         itembar_drp->isactive=1;
                         itembar_drpcur=itembar_drp;
@@ -1479,9 +1479,10 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                     TextOutH(hdc,x+D_X(ITEM_TEXT_OFS_X),pos,bufw);*/
 
                     //str_status(bufw,itembar);
-                    wsprintf(bufw,L"%ws",itembar->hwidmatch->getdrp_packname());
+                    WStringShort bufw1;
+                    itembar->hwidmatch->getdrp_packnameVirtual(bufw1);
                     canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
-                    canvas.DrawTextXY(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)+5,bufw);
+                    canvas.DrawTextXY(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)+5,bufw1.Get());
                     break;
             }
             if(itembar->hwidmatch)
@@ -1547,10 +1548,13 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                     size_t lnn=len-wcslen(itembar->hwidmatch->getdrp_packpath());
 
                     canvas.SetTextColor(0);// todo: color
+                    WStringShort packname;
+                    itembar->hwidmatch->getdrp_packnameVirtual(packname);
+
                     wsprintf(bufw,L"%ws%ws%ws",
                             itembar->hwidmatch->getdrp_packpath()+len+(lnn?1:0),
                             lnn?L"\\":L"",
-                            itembar->hwidmatch->getdrp_packname());
+                            packname.Get());
                     canvas.DrawTextXY(rect.left,pos+D_X(ITEM_TEXT_DIST_Y),bufw);
                 }
             }
