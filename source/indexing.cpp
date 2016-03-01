@@ -2060,7 +2060,7 @@ void Driverpack::parsecat(wchar_t const *pathinf,wchar_t const *inffilename,cons
     }
     else
     {
-        Log.print_con("Not found singature in '%ws%ws'(%d)\n",pathinf,inffilename,len);
+        Log.print_con("Not found signature in '%ws%ws'(%d)\n",pathinf,inffilename,len);
     }
 
 }

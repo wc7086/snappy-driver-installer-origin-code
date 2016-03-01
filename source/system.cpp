@@ -94,19 +94,19 @@ bool SystemImp::nar_active;
 
 SystemImp::SystemImp()
 {
-    nar_active=true;
+    /*nar_active=true;
     narrator=CreateThread();
     narratorE=CreateEventWr();
-    narrator->start(&thread_narrator,nullptr);
+    narrator->start(&thread_narrator,nullptr);*/
 }
 
 SystemImp::~SystemImp()
 {
-    nar_active=0;
+    /*nar_active=0;
     narratorE->raise();
     narrator->join();
     delete narrator;
-    delete narratorE;
+    delete narratorE;*/
 }
 
 unsigned int __stdcall SystemImp::thread_narrator(void *)

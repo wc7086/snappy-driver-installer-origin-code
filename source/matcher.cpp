@@ -757,7 +757,7 @@ void Hwidmatch::print_tbl(const int *limits)
     Log.print_file(" %08X |",     score);
     Log.print_file(" %S |",       date.Get());
     Log.print_file(" %3d |",      decorscore);
-    Log.print_file(" %d |",       markerscore);
+    Log.print_file(" %2d |",      markerscore);
     Log.print_file(" %3X |",      status);
         getdrp_drvsection(buf);
     Log.print_file(" %-*s |",limits[0],buf);

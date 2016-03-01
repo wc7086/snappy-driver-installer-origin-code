@@ -610,7 +610,7 @@ void ClickVisiter::VisitwLogo(wLogo *a)
 {
     a->hitscan(x,y);
     if(a->isSelected&&!right)
-        System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
+        System.run_command(L"open",L"https://sdi-tool.org/",SW_SHOWNORMAL,0);
 }
 
 void ClickVisiter::VisitwTextRev(wTextRev *a)
@@ -619,7 +619,7 @@ void ClickVisiter::VisitwTextRev(wTextRev *a)
 
     a->hitscan(x,y);
     if(a->isSelected&&!right)
-        System.run_command(L"open",L"http://snappy-driver-installer.sourceforge.net",SW_SHOWNORMAL,0);
+        System.run_command(L"open",L"https://sdi-tool.org/",SW_SHOWNORMAL,0);
 }
 
 void ClickVisiter::VisitwTextSys1(wTextSys1 *a)
