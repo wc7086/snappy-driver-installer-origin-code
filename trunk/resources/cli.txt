@@ -37,7 +37,7 @@ Task-oriented
 -nostamp          Creates logs and snapshot without timestamps.
 
 ------------
-Settings.cfg
+sdi.cfg
 ------------
 -drp_dir:<dir>    Path to driverpacks.
 -index_dir:<dir>  Path to indexes.
@@ -58,8 +58,8 @@ Settings.cfg
 -showdrpnames1    Shows driverpack names on the right.
 -showdrpnames2    Shows driverpack names above.
 -oldstyle         Shows driver list using old style.
--preservecfg      Prevents updating of settings.cfg.
--cfg:<FileName>   Loads <file> instead of "settings.cfg".
+-preservecfg      Prevents updating of sdi.cfg.
+-cfg:<FileName>   Loads <file> instead of "sdi.cfg".
 
 -------
 Torrent
