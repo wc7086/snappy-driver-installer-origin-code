@@ -1435,9 +1435,9 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
 
         case SLOT_DOWNLOAD:
             if(itembar->val1>>8)
-                wsprintf(bufw,STR(itembar->val1&0xFF?STR_UPD_AVAIL3:STR_UPD_AVAIL1),itembar->val1>>8,itembar->val1&0xFF);
+                wsprintf(bufw,STR(itembar->val1&0xFF?STR_UPD_AVAIL3:STR_UPD_AVAIL1),static_cast<int>(itembar->val1>>8),static_cast<int>(itembar->val1&0xFF));
             else
-                wsprintf(bufw,STR(STR_UPD_AVAIL2),itembar->val1&0xFF);
+                wsprintf(bufw,STR(STR_UPD_AVAIL2),static_cast<int>(itembar->val1&0xFF));
 
 #ifdef USE_TORRENT
             if(!Updater->isPaused())

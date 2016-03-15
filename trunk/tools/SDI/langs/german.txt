@@ -1,13 +1,12 @@
-﻿// Translated by «Latino» and reviewed by September
-// Übersezt von «Latino» und ergänzt von September
-// Date 18.08.2015
-// Datum 18.08.2015
+﻿// Übersetzt und aktualisiert von «Latino»
+// Datum 02.03.2016
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Deutsch"
 STR_LANG_ID             = "German"
+STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x07
 STR_RTL                 = 0
 
@@ -37,6 +36,8 @@ STR_EXTRACT             = "Entpacken nach..."
 STR_EXTRACT_H           = "Die ausgewählten Treiber werden entpackt\n\nVon diesen aktuellen Treibern lässt sich eine Sicherungskopie erstellen."
 STR_DRVDIR              = "Treiberordner wählen..."
 STR_DRVDIR_H            = "Gestattet die Wahl eines anderen Ordners (z. B. auf einer CD/DVD) mit Treiberpaketen oder ugepackten Treibern, um dort nach Treibern zu suchen."
+STR_OPTIONS_BTN         = "Optionen..."
+STR_OPTIONS_BTN_H       = "Öffnet das Dialogfenster für die Einstellungen."
 
 STR_SHOW_FOUND          = "Funde in Treiberpaketen"
 STR_SHOW_FOUND_H        = "Es wurden installierbare Treiber gefunden.\n\nWir empfehlen, die Treiber aus folgenden Kategorien zu installieren: Nicht installiert, Neuer, Besser geeignet."
@@ -111,7 +112,7 @@ STR_SYSINF_MONITORS     = "Monitor(e)"
 STR_SYSINF_CM           = "cm"
 STR_SYSINF_INCH         = "in"
 STR_SYSINF_WIDE         = "Breitbildschirm"
-STR_SYSINF_MISC         = "Hinweis: Ein Klick aufs Info-Feld öffnet den Gerätemanager"
+STR_SYSINF_MISC         = "Hinweis: Ein Linksklick aufs Info-Feld öffnet den Gerätemanager"
 STR_SYSINF_TYPE         = "HW-Art"
 STR_SYSINF_LAPTOP       = "Tragbarer PC"
 STR_SYSINF_DESKTOP      = "Desktop-PC"
@@ -148,7 +149,7 @@ STR_HINT_ID             = "ID: "
 STR_HINT_INF            = "Inf-Datei: "
 STR_HINT_SECTION        = "Sektion: "
 STR_HINT_SCORE          = "Score: "
-STR_HINT_SCROLL         = "Hinweis: Seite waagerecht scrollen mit Mausrad"
+STR_HINT_SCROLL         = "Hinweis: Seite mit Mausrad waagerecht scrollen"
 
 // Context menu
 STR_CONT_INSTALL        = "Installation planen"
@@ -190,7 +191,7 @@ STR_STATUS_WORSE_OLD    = "Älterer, weniger optimaler Treiber"
 STR_STATUS_DUP          = " (Doppel)"
 
 STR_STATUS_NF_MISSING   = "Das Gerät erfordert einen Treiber, der in den Treiberpaketen fehlt"
-STR_STATUS_NF_UNKNOWN   = "Das Gerät funktioniert einwandfrei aber es gibt keinen Treiber in den Treiberpaketen"
+STR_STATUS_NF_UNKNOWN   = "Das Gerät funktioniert einwandfrei und es gibt keinen Treiber in den Treiberpaketen"
 STR_STATUS_NF_STANDARD  = "Standard-Treiber"
 
 // Virus
@@ -200,7 +201,7 @@ STR_VIRUS_AUTORUN_H     = "AUTORUN.INF-Dateien können missbraucht werden, um PC
 STR_VIRUS_RECYCLER      = "Es gibt einen RECYCLER-Ordner im Stammverzeichnis"
 STR_VIRUS_RECYCLER_H    = "Es ist ungewöhnlich für diese Datenträgerart, einen RECYCLER-Ordner zu haben. Bitte durchsuchen Sie den Ordner mit einer Anti-Viren Software.\n\nIst der Ordner virenfrei, erstellen Sie eine Datei 'not_a_virus.txt' im Ordner, um diese Warnung zu unterdrücken."
 STR_VIRUS_HIDDEN        = "Es gibt versteckte Verzeichnisse im Stammverzeichnisr"
-STR_VIRUS_HIDDEN_H      = "Schadsoftware kann versteckte Ordner erstellen, um ihre Anwesenheit zu verstecken. Bitte durchsuchen Sie die Ordner mit einer Anti-Viren Software und das Scanergebnis aufmerksam prüfen.\n\nSind die Ordner virenfrei, erstellen Sie eine Datei 'not_a_virus.txt' in jedem Ordner, um diese Warnung zu unterdrücken."
+STR_VIRUS_HIDDEN_H      = "Schadsoftware kann versteckte Ordner erstellen, um ihre Anwesenheit zu verschleiern. Bitte durchsuchen Sie die Ordner mit einer Anti-Viren Software und das Scanergebnis aufmerksam prüfen.\n\nSind die Ordner virenfrei, erstellen Sie eine Datei 'not_a_virus.txt' in jedem Ordner, um diese Warnung zu unterdrücken."
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Hier klicken, um Emulation anzuhalten)"
@@ -231,7 +232,7 @@ STR_INDEXLZMA           = "Indexe werden gepackt..."
 STR_OF                  = " von "
 
 STR_RESTOREPOINT        = "Wiederherstellungspunkt erstellen"
-STR_RESTOREPOINT_H      = "Einen Wiederherstellungspunkt wird erstellt, um das System auf einen früheren Zeitpunkt zurückzustellen, falls etwas schief geht (Strg+P).\n\nHinweis: Ein Rechtsklick auf diese Schaltfläche zeigt das Kontextmenü an."
+STR_RESTOREPOINT_H      = "Einen Wiederherstellungspunkt wird erstellt, um das System auf einen früheren Zeitpunkt zurückstellen zu können, falls etwas schief geht (Strg+P).\n\nHinweis: Ein Rechtsklick auf diese Schaltfläche zeigt das Kontextmenü an."
 STR_REST_SCHEDULE       = "Wiederherstellungspunkterstellung planen"
 STR_REST_ROLLBACK       = "Auf einen bestehenden Wiederherstellungspunkt zurücksetzen..."
 STR_REST_CREATING       = "Wiederherstellungspunkt wird erstellt..."
@@ -328,3 +329,26 @@ STR_TR_ST4              = "Abgeschlossen"
 STR_TR_ST5              = "Seeding"
 STR_TR_ST6              = "Speicherplatzzuweisung"
 STR_TR_ST7              = "Wiederaufnahmeprüfung"
+
+// Options dialog
+STR_OPTION_TITLE        = "Optionen"
+STR_OPTION_VIEW_TAB     = "Ansicht"
+STR_OPTION_UPDATES_TAB  = "Aktualisierungen"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Namen der Treiberpakete"
+STR_OPTION_HIDE_NAMES   = "Die Namen der Treiberpakete nicht anzeigen"
+STR_OPTION_SHOW_RIGHT   = "Die Namen der Treiberpakete rechts anzeigen"
+STR_OPTION_SHOW_ABOVE   = "Die Namen der Treiberpakete oben anzeigen"
+STR_OPTION_SCALLING     = "Anzeigeskalierung"
+STR_OPTION_CONSOLE      = "Eingabeaufforderungskonsole"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "Auf neue Versionen der App/Treiberpakete prüfen"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Anschluss"
+STR_OPTION_MAX_DOWNLOAD = "Max Herunterladerate in Byte/s (0:unbegrenzt)"
+STR_OPTION_MAX_UPLOAD   = "Max Heraufladerate in Byte/s (0:unbegrenzt)"
