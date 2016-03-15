@@ -293,7 +293,8 @@ void Settings_t::loginfo()
         if(virtual_os_version)Log.print_con("Virtual Windows version: %d.%d\n",virtual_os_version/10,virtual_os_version%10);
         Log.print_con("\n");
     }
-    speakmode=System.IsScreenReaderActive();
+    //speakmode=System.IsScreenReaderActive();
+    speakmode=false;
 }
 
 bool Settings_t::load(const wchar_t *filename)
