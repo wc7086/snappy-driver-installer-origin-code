@@ -54,7 +54,7 @@ STR_SHOW_NOTFOUND_H     = "Aşağıda göstərilən kateqoriyalar üçün drayve
 STR_SHOW_NF_MISSING     = "Quraşdırılmayanlar"
 STR_SHOW_NF_MISSING_H   = "Drayveri lazım olan lakin drayverpacklarda tapılmayan qurğuları göstərmək.\n\nDrayveri internetdə axtarmaq tövsiyyə olunur."
 STR_SHOW_NF_UNKNOWN     = "Naməlum"
-STR_SHOW_NF_UNKNOWN_H   = "Qeyri standart drayveri olan və drayverpackda drayveri olmayan qurğuları göstərmək.\n\nРекомендуется проинформировать сборщиков драйверпаков о необходимости добавить драйвер в драйверпак."
+STR_SHOW_NF_UNKNOWN_H   = "Qeyri standart drayveri olan və drayverpackda drayveri olmayan qurğuları göstərmək.\n\nDrayver paketlərini hazırlayanları, drayver paketlərinə drayver əlavə edilməsi zərurəti olduğu barədə məlumatlandırmaq tövsiyə edilir."
 STR_SHOW_NF_STANDARD    = "Standart olanlar"
 STR_SHOW_NF_STANDARD_H  = "Microsoft-dan olan standart drayverə malik qurğuları göstərmək.\n\nAdətən bu drayverlər yenilənməni tələb etmirlər."
 
@@ -153,11 +153,11 @@ STR_CONT_LOCATEINF      = "Quraşdırılmış drayverin inf faylı olan qovluqu 
 STR_CONT_HWID_SEARCH    = "Drayveri İnternet şəbəkədə axtarmaq"
 STR_CONT_HWID_CLIP      = "Qurğunun kodunu mübadilə buferinə kopyalamaq"
 
-// Разное
+// Müxtəlif
 STR_OPENSNAPSHOT        = "Şəkillərin faylları (*.snp)\0*.snp\0Bütün fayllar\0*.*\0\0"
 STR_EXTRACTFOLDER       = "Təyinat qovluğu seçin."
 
-// Статус устройства
+// Cihaz vəziyyəti
 STR_STATUS_NOTPRESENT   = "Qurğu yoxdur"
 STR_STATUS_DISABLED     = "Qurğu söndürülüb"
 STR_STATUS_DEVPROBLEM   = "Qurğuda problem: %d"
@@ -165,7 +165,7 @@ STR_STATUS_DRVPROBLEM   = "Drayverdə problem var"
 STR_STATUS_RUNNING      = "Drayver işə salınıb"
 STR_STATUS_STOPPED      = "Qurğu quraşdırılıb"
 
-// Статус драйвера
+// Drayver vəziyyəti
 STR_STATUS_INVALID      = "Uyğun olmayan drayver"
 STR_STATUS_MISSING      = "Qurğuya drayver tələb olunur - drayver quraşdırmaq üçün hazırdı"
 STR_STATUS_NOTSIGNED    = " (imza yoxdur)"
@@ -188,7 +188,7 @@ STR_STATUS_NF_MISSING   = "Qurğuya driver tələb olunur, lakin o driverpackda 
 STR_STATUS_NF_UNKNOWN   = "Drayver artıq quraşdırılıb, lakin buna oxşar drayver drayverpakda yoxdur"
 STR_STATUS_NF_STANDARD  = "Standart drayver artıq sistemə quraşdırılıb"
 
-// Вирус
+// Zərərverici
 STR_VIRUS               = "Proqram təminatı yerləşən informasiya daşıyıcısında çox guman virus var"
 STR_VIRUS_AUTORUN       = "Daşıyıcının kokündə AUTORUN.INF faylı var"
 STR_VIRUS_AUTORUN_H     = "Daşıyıcının kokündə AUTORUN.INF faylı var. Bu fayl çox vaxtı viruslarla istfadə olunur. Viruslara qarşı yoxlanması məsləhət görülür.\n\nƏgər siz bu fayla etibar edirsizsə və bildirişi söndürmək istəyirsizsə o zaman [NOT_A_VIRUS] seksiyasını autorun.inf yaylına əlavə edin."
@@ -197,14 +197,14 @@ STR_VIRUS_RECYCLER_H    = "Daşıyıcının kökündə RECYCLER qovluqu var. Bu 
 STR_VIRUS_HIDDEN        = "Daşıyıcının kökündə gizli qovluqlar var"
 STR_VIRUS_HIDDEN_H      = "Daşıyıcının kökündə gizli qovluqlar var. Onlar çox vaxtı viruslarla istfadə olunur və bu qovluqu antivirusla toxlamağı tövsiyyə olunur.\n\nƏgər bu qovluqlar təhlükəsizdirsə onda bildirişi hər qovluqun içində not_a_virus.txt faylı yaradaraq söndürmək olar."
 
-// Status
+// Vəziyyət
 STR_CLOSE_SNAPSHOT      = "(Özgə sistemin emulyasıyasını dayandırmaq üçün bura klik edin)"
-STR_EMPTYDRP            = "Положите драйверпаки или распакованные драйверы в следующую папку"
-STR_CLOSE_DRPEXT        = "(Кликните здесь, чтобы вернуться к драйверам по умолчанию)"
+STR_EMPTYDRP            = "Drayver paketlərini və ya ayrılmış draverləri göstərilən qovluğa yerləşdirin"
+STR_CLOSE_DRPEXT        = "(Sabit drayverlərə qayıtmaq üçün buraya basın)"
 STR_NOUPDATES           = "Yenilənmə yoxdur, sistem aktual vəziyyətdədir"
 STR_INITIALIZING        = "İnisiallaşdırma..."
 
-// Прогрессбар
+// Tərəqqi Lövhəsi
 STR_INST_EXTRACT        = "Açılma... %d%%(2-dən 1-ci etap)"
 STR_INST_INSTALL        = "Quraşdırılma... (2-dən 2-ci etap)"
 STR_INST_OK             = "Uğurla quraşdırılıb"
@@ -223,7 +223,7 @@ STR_EXTR_FAILED         = "Səhv, açılış mümkün olmadı "
 STR_INST_STOPPING       = "Quraşdırılma kəsilib"
 STR_INDEXING            = "İndeksasiya..."
 STR_INDEXLZMA           = "İndekslərin sıxılması..."
-STR_OF                  = " из "
+STR_OF                  = " / "
 
 STR_RESTOREPOINT        = "Bərpa nöqtəsini yaratmaq"
 STR_RESTOREPOINT_H      = "Bərpa nöqtələrinin yaradılmasl sizə sistemin çöxməsi halı ilə rastlaşma vaxtı onu əvvəlki vəziyyətə qaytarmaqa imkan yaradır(Ctrl+P).\n\nMƏSLƏHƏT: Sistemi bərpa etmək üçün siçanın sağ düyməsi ilə bura klik edin."
@@ -246,7 +246,7 @@ STR_SYS_DEVICEMNG       = "Qurğu dispetçeri"
 STR_SYS_DISINSTALL      = "Drayverlərin quraşdırılmasını söndürmək"
 STR_SYS_DISRESTPNT      = "Bərpa nöqtələrinin yaradılmasını kəsmək"
 
-// Обновление
+// Yenilənmə
 STR_UPD_DIALOG_TITLE    = "Yenilənmələrin yoxlanılması"
 STR_UPD_DIALOG_MSG      = "Siz istərdizmi proqramların və drayverpakların internet vasitəsi ilə avtomatik yoxlanılmasını işə salmaq?"
 STR_UPD_DIALOG_INDEX    = "Siz istərdizmi ən yeni indeksləri yükləmək, hansılar ki imkan yaradardı təyin etmək hansı drayverpackları sizə yükləmək lazım?"
@@ -287,26 +287,26 @@ STR_UPD_INDEXES         = "Yeni packların indeksləri"
 STR_UPD_UPDATEHINT1     = "Məsləhət"
 STR_UPD_UPDATEHINT2     = "Siz ilk növbədə indekslə olan prıqramı yeniləməlisiz."
 
-// Update hint
+// Yenilənməyə eyham
 STR_UPD_AVAIL1          = "İnternetdən olan yenilənmə açıqdır: SDI R%d"
-STR_UPD_AVAIL2          = "İnternetdən yenilənmələr var: %d драйверпаков"
-STR_UPD_AVAIL3          = "İnternetdən yenilənmələr var: SDI R%d и %d драйверпаков"
+STR_UPD_AVAIL2          = "İnternetdən yenilənmələr var: %d drayver paketi"
+STR_UPD_AVAIL3          = "İnternetdən yenilənmələr var: SDI R%d və %d drayver paketi"
 STR_UPD_START           = "(Yükləmək üçün bura klikləyin)"
-STR_UPD_PROGRES         = "Yüklənib %s из %s (%d%%)"
+STR_UPD_PROGRES         = "Yüklənib %s / %s (%d%%)"
 STR_UPD_MODIFY          = "(Yenilənməni seçmək üçün bura klik edin)"
 
 STR_DWN_DOWNLOADED      = "Yüklənib"
-STR_DWN_DOWNLOADED_F    = "%s из %s (%d%%)"
+STR_DWN_DOWNLOADED_F    = "%s / %s (%d%%)"
 STR_DWN_UPLOADED        = "Verilib"
 STR_DWN_ELAPSED         = "Keçib"
 STR_DWN_REMAINING       = "Qalıb"
 
-STR_DWN_STATUS          = "Status"
+STR_DWN_STATUS          = "Vəziyyət"
 STR_DWN_ERROR           = "Səhv"
 STR_DWN_DOWNLOADSPEED   = "Qəbul"
 STR_DWN_UPLOADSPEED     = "Qaytarılma"
 
-STR_DWN_SEEDS_F         = "qoşulub %d из %d"
+STR_DWN_SEEDS_F         = "qoşulub %d / %d"
 STR_DWN_SEEDS           = "Sidlər"
 STR_DWN_PEERS           = "Pirlər"
 STR_DWN_WASTED          = "İtirilib"
