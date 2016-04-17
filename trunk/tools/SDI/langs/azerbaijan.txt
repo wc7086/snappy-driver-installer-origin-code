@@ -7,7 +7,7 @@ STR_LANG_NAME           = "Azərbaycanca"
 STR_LANG_ID             = "Azerbaijani"
 STR_LANG_CODE           = 0x2C
 
-// Sol panel
+// left panel
 STR_SHOW_SYSINFO        = "Sistem barədə məlumat"
 STR_SHOW_SYSINFO_H      = ""
 
@@ -72,7 +72,7 @@ STR_OPTIONS_H           = ""
 STR_REBOOT              = "Qurtarandan sonra restart vermək"
 STR_REBOOT_H            = "Drayverlərin quraşdırılmasının sonunda kompüterə restart vermək (əgər lazımdırsa)(Ctrl+R).\n\nMƏSLƏHƏT: Bu quşu götürərək siz istənilən vaxt restart-ı təxirə sala bilərsiz."
 
-// Sistem haqqında məlumat
+// Sysinfo
 STR_SYSINF_WINDOWS      = "Windows"
 STR_SYSINF_VERSION      = "Versiya"
 STR_SYSINF_PLATFORM     = "Platforma"
@@ -98,7 +98,6 @@ STR_SYSINF_LOW          = "[aşağı]"
 STR_SYSINF_CRITICAL     = "[kritik]"
 STR_SYSINF_CHARGING     = "[Enerji yığır]"
 STR_SYSINF_NOBATTERY    = "[batareya yoxdur]"
-STR_SYSINF_UNKNOWN      = "[bilinmir]"
 STR_SYSINF_CHARGED      = "Enerji"
 STR_SYSINF_LIFETIME     = "Qalıb"
 STR_SYSINF_FULLLIFETIME = "Cəmi qalıb"
@@ -123,8 +122,9 @@ STR_ABOUT_DEV_TITLE     = "İstehsalçı: "
 STR_ABOUT_TESTERS_TITLE = "Test edənlər: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer GNU General Public License version 3 lisenziya şərtləri əsasında yayılır\n\n\n\n\nAzerbaijan translation: JumpErNumber311R\n\nSnappy Driver Installer-də bu texnologiyalar istfadə olunur :\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer drayverpak texnologiyasından istfadə edir, hansıki DriverPacks.net komandası tətbiq edir.\n\n(Saytları açmaq üçün siçanın sol düyməciyini sıxın)"
+STR_ABOUT_SIZE          = 12
 
-// Всплывающее окно (при удерживании Ctrl или пробела)
+// Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "naməlum"
 STR_HINT_ANALYSIS       = "Analiz"
 STR_HINT_SIGNATURE      = "İmza"
@@ -145,7 +145,7 @@ STR_HINT_SECTION        = "Seksiya: "
 STR_HINT_SCORE          = "Qiymət: "
 STR_HINT_SCROLL         = "MƏSLƏHƏT: Çevirmək üçün siçanın təkərindən istfadə edin"
 
-// Контекстное меню
+// Context menu
 STR_CONT_INSTALL        = "Quraşdırılmanı planlaşdırmaq"
 STR_CONT_SHOWALT        = "Alternativ drayverləri göstərmək"
 STR_CONT_OPENINF        = "Quraşdırılmış drayverin inf faylını açmaq"
@@ -153,11 +153,11 @@ STR_CONT_LOCATEINF      = "Quraşdırılmış drayverin inf faylı olan qovluqu 
 STR_CONT_HWID_SEARCH    = "Drayveri İnternet şəbəkədə axtarmaq"
 STR_CONT_HWID_CLIP      = "Qurğunun kodunu mübadilə buferinə kopyalamaq"
 
-// Müxtəlif
+// Misc
 STR_OPENSNAPSHOT        = "Şəkillərin faylları (*.snp)\0*.snp\0Bütün fayllar\0*.*\0\0"
 STR_EXTRACTFOLDER       = "Təyinat qovluğu seçin."
 
-// Cihaz vəziyyəti
+// Device status
 STR_STATUS_NOTPRESENT   = "Qurğu yoxdur"
 STR_STATUS_DISABLED     = "Qurğu söndürülüb"
 STR_STATUS_DEVPROBLEM   = "Qurğuda problem: %d"
@@ -165,7 +165,7 @@ STR_STATUS_DRVPROBLEM   = "Drayverdə problem var"
 STR_STATUS_RUNNING      = "Drayver işə salınıb"
 STR_STATUS_STOPPED      = "Qurğu quraşdırılıb"
 
-// Drayver vəziyyəti
+// Driver status
 STR_STATUS_INVALID      = "Uyğun olmayan drayver"
 STR_STATUS_MISSING      = "Qurğuya drayver tələb olunur - drayver quraşdırmaq üçün hazırdı"
 STR_STATUS_NOTSIGNED    = " (imza yoxdur)"
@@ -188,7 +188,7 @@ STR_STATUS_NF_MISSING   = "Qurğuya driver tələb olunur, lakin o driverpackda 
 STR_STATUS_NF_UNKNOWN   = "Drayver artıq quraşdırılıb, lakin buna oxşar drayver drayverpakda yoxdur"
 STR_STATUS_NF_STANDARD  = "Standart drayver artıq sistemə quraşdırılıb"
 
-// Zərərverici
+// Virus
 STR_VIRUS               = "Proqram təminatı yerləşən informasiya daşıyıcısında çox guman virus var"
 STR_VIRUS_AUTORUN       = "Daşıyıcının kokündə AUTORUN.INF faylı var"
 STR_VIRUS_AUTORUN_H     = "Daşıyıcının kokündə AUTORUN.INF faylı var. Bu fayl çox vaxtı viruslarla istfadə olunur. Viruslara qarşı yoxlanması məsləhət görülür.\n\nƏgər siz bu fayla etibar edirsizsə və bildirişi söndürmək istəyirsizsə o zaman [NOT_A_VIRUS] seksiyasını autorun.inf yaylına əlavə edin."
@@ -197,14 +197,14 @@ STR_VIRUS_RECYCLER_H    = "Daşıyıcının kökündə RECYCLER qovluqu var. Bu 
 STR_VIRUS_HIDDEN        = "Daşıyıcının kökündə gizli qovluqlar var"
 STR_VIRUS_HIDDEN_H      = "Daşıyıcının kökündə gizli qovluqlar var. Onlar çox vaxtı viruslarla istfadə olunur və bu qovluqu antivirusla toxlamağı tövsiyyə olunur.\n\nƏgər bu qovluqlar təhlükəsizdirsə onda bildirişi hər qovluqun içində not_a_virus.txt faylı yaradaraq söndürmək olar."
 
-// Vəziyyət
+// Status
 STR_CLOSE_SNAPSHOT      = "(Özgə sistemin emulyasıyasını dayandırmaq üçün bura klik edin)"
 STR_EMPTYDRP            = "Drayver paketlərini və ya ayrılmış draverləri göstərilən qovluğa yerləşdirin"
 STR_CLOSE_DRPEXT        = "(Sabit drayverlərə qayıtmaq üçün buraya basın)"
 STR_NOUPDATES           = "Yenilənmə yoxdur, sistem aktual vəziyyətdədir"
 STR_INITIALIZING        = "İnisiallaşdırma..."
 
-// Tərəqqi Lövhəsi
+// Progressbar
 STR_INST_EXTRACT        = "Açılma... %d%%(2-dən 1-ci etap)"
 STR_INST_INSTALL        = "Quraşdırılma... (2-dən 2-ci etap)"
 STR_INST_OK             = "Uğurla quraşdırılıb"
@@ -246,7 +246,7 @@ STR_SYS_DEVICEMNG       = "Qurğu dispetçeri"
 STR_SYS_DISINSTALL      = "Drayverlərin quraşdırılmasını söndürmək"
 STR_SYS_DISRESTPNT      = "Bərpa nöqtələrinin yaradılmasını kəsmək"
 
-// Yenilənmə
+// Update
 STR_UPD_DIALOG_TITLE    = "Yenilənmələrin yoxlanılması"
 STR_UPD_DIALOG_MSG      = "Siz istərdizmi proqramların və drayverpakların internet vasitəsi ilə avtomatik yoxlanılmasını işə salmaq?"
 STR_UPD_DIALOG_INDEX    = "Siz istərdizmi ən yeni indeksləri yükləmək, hansılar ki imkan yaradardı təyin etmək hansı drayverpackları sizə yükləmək lazım?"
@@ -287,7 +287,7 @@ STR_UPD_INDEXES         = "Yeni packların indeksləri"
 STR_UPD_UPDATEHINT1     = "Məsləhət"
 STR_UPD_UPDATEHINT2     = "Siz ilk növbədə indekslə olan prıqramı yeniləməlisiz."
 
-// Yenilənməyə eyham
+// Update hint
 STR_UPD_AVAIL1          = "İnternetdən olan yenilənmə açıqdır: SDI R%d"
 STR_UPD_AVAIL2          = "İnternetdən yenilənmələr var: %d drayver paketi"
 STR_UPD_AVAIL3          = "İnternetdən yenilənmələr var: SDI R%d və %d drayver paketi"

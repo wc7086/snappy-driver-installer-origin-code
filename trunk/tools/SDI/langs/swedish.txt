@@ -7,7 +7,7 @@ STR_LANG_NAME 		= "Svenska"
 STR_LANG_ID         = "Swedish"
 STR_LANG_CODE 		= 0x1D
 
-// Vänstra panelen 
+// left panel
 STR_SHOW_SYSINFO 	= "Systeminformation" 
 STR_SHOW_SYSINFO_H 	= "" 
 
@@ -98,7 +98,6 @@ STR_SYSINF_LOW 		= "[låg]"
 STR_SYSINF_CRITICAL 	= "[kritiska]" 
 STR_SYSINF_CHARGING 	= "[laddar]" 
 STR_SYSINF_NOBATTERY 	= "[inget batteri]" 
-STR_SYSINF_UNKNOWN 	= "[okänd]" 
 STR_SYSINF_CHARGED 	= "Charged" 
 STR_SYSINF_LIFETIME 	= "Lifetime" 
 STR_SYSINF_FULLLIFETIME = "FullLifeTime" 
@@ -125,7 +124,7 @@ STR_ABOUT_TESTERS_TITLE = "Provare:"
 STR_ABOUT_LICENSE 	= "Kvick Driver Installer licensieras under villkoren i GNU General Public License version 3\n\n\n\n\nSvensk översättning Star\n\nSnappy Driver Installer använder följande tekniker:\n* WebP licensieras under villkoren i BSD-licensen\n* libtorrent licensieras under villkoren i BSD-licensen\n* Backtrace licensieras under villkoren i BSD-licensen\n* 7-Zip licensieras under villkoren i GNU Library eller Lesser General Public License version 2\n\nSnappy Driver Installer drivs av DriverPacks som utvecklats av DriverPacks Team.\n\n(Klicka nu för att besöka en webbplats) "
 STR_ABOUT_SIZE 		= 12 
 
-// Popup drivrutin (medan du håller Ctrl eller mellanslag) 
+// Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN 	= "okänd" 
 STR_HINT_ANALYSIS 	= "analys" 
 STR_HINT_SIGNATURE  = "Signatur: "
@@ -146,7 +145,7 @@ STR_HINT_SECTION 	= "Avsnitt"
 STR_HINT_SCORE 		= "Betyg:" 
 STR_HINT_SCROLL 	= "TIPS: Rulla sida horisontellt med mushjulet" 
 
-// Snabbmeny 
+// Context menu
 STR_CONT_INSTALL 	= "Schedule installation" 
 STR_CONT_SHOWALT 	= "Visa alternativa drivrutiner" 
 STR_CONT_OPENINF 	= "Öppna inf-filen för den installerade drivrutinen" 
@@ -158,7 +157,7 @@ STR_CONT_HWID_CLIP 	= "Kopiera en HardwareID till Windows urklipp"
 STR_OPENSNAPSHOT 	= "Snapshot-filer (*.snp)\0*.snp\0All filer\0*.*\0\0" 
 STR_EXTRACTFOLDER 	= "Välj destinationsmappen." 
 
-// Enhetsstatus 
+// Device status
 STR_STATUS_NOTPRESENT 	= "Enheten är inte närvarande" 
 STR_STATUS_DISABLED 	= "Device är inaktiverat" 
 STR_STATUS_DEVPROBLEM 	= "Enheten har följande problem: %d" 
@@ -205,7 +204,7 @@ STR_CLOSE_DRPEXT 	= "(klicka här för att återgå till standardmappen)"
 STR_NOUPDATES 		= "Drivrutiner är uppdaterade" 
 STR_INITIALIZING 	= "Initierar ..." 
 
-// ProgressBar 
+// Progressbar
 STR_INST_EXTRACT 	= "Extraherar ...%d%% (etapp 1 av 2)" 
 STR_INST_INSTALL 	= "Installera ... (etapp 2av2)" 
 STR_INST_OK 		= "installerats" 
@@ -238,7 +237,7 @@ STR_INST_QUIT_TITLE 	= "Avbryta"
 STR_INST_QUIT_MSG 	= "Är du säker på att du vill avbryta installationen?"
 STR_HINT_STOPINST 	= "Klicka här för att avbryta installationen."
 STR_HINT_STOPEXTR 	= "Klicka här för att sluta utvinna." 
-STR_HINT_DRIVER 	= "Håll Ctrl-tangenten för att jämföra den installerade drivrutinen till förfogande en.\Nhold mellanslagstangenten för att visa information om alternativa drivrutin." 
+STR_HINT_DRIVER 	= "Håll Ctrl-tangenten för att jämföra den installerade drivrutinen till förfogande en.\nhold mellanslagstangenten för att visa information om alternativa drivrutin." 
 
 STR_SYS_WINVER 		= "Windows-version" 
 STR_SYS_32 		= "32-bit" 
@@ -288,7 +287,7 @@ STR_UPD_INDEXES 	= "Index"
 STR_UPD_UPDATEHINT1 	= "Tips" 
 STR_UPD_UPDATEHINT2 	= "Du måste uppdatera basen först för att använda denna funktion." 
 
-// Update antydan 
+// Update hint
 STR_UPD_AVAIL1		= "Uppdateringar finns: SDI R%d" 
 STR_UPD_AVAIL2 		= "Uppdateringar finns: %d driverpacks" 
 STR_UPD_AVAIL3 		= "Uppdateringar finns: SDI R%d och %d driverpacks" 
