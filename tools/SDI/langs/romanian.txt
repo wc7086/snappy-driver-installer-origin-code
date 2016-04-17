@@ -72,7 +72,7 @@ STR_OPTIONS_H           = ""
 STR_REBOOT              = "Repornire PC după instalare"
 STR_REBOOT_H            = "Repornește PC-ul(dacă este necesar) după instalare (Ctrl+R).\n\nPONT: Puteți anula repornirea PC-ului oricând debifând căsuța."
 
-// SysInfo
+// Sysinfo
 STR_SYSINF_WINDOWS      = "Windows"
 STR_SYSINF_VERSION      = "Versiune"
 STR_SYSINF_PLATFORM     = "IdPlatformă"
@@ -98,7 +98,6 @@ STR_SYSINF_LOW          = "[descărcat]"
 STR_SYSINF_CRITICAL     = "[critic]"
 STR_SYSINF_CHARGING     = "[încărcare]"
 STR_SYSINF_NOBATTERY    = "[lipsă baterie]"
-STR_SYSINF_UNKNOWN      = "[necunoscut]"
 STR_SYSINF_CHARGED      = "Încărcat"
 STR_SYSINF_LIFETIME     = "DuratăViață"
 STR_SYSINF_FULLLIFETIME = "DuratăTotalăViață"

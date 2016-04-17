@@ -99,7 +99,6 @@ STR_SYSINF_LOW          = "[gyenge]"
 STR_SYSINF_CRITICAL     = "[kritikus]"
 STR_SYSINF_CHARGING     = "[töltés alatt]"
 STR_SYSINF_NOBATTERY    = "[nincs akku.]"
-STR_SYSINF_UNKNOWN      = "[ismeretlen]"
 STR_SYSINF_CHARGED      = "Feltöltve"
 STR_SYSINF_LIFETIME     = "Élettartam"
 STR_SYSINF_FULLLIFETIME = "Örök élettartam"
@@ -197,7 +196,7 @@ STR_VIRUS_AUTORUN_H     = "AUTORUN.INF fájl található, melyet rosszindulatú 
 STR_VIRUS_RECYCLER      = "Lomtár mappa található a gyökér mappában"
 STR_VIRUS_RECYCLER_H    = "Szokatlan,ha ehhez a médiához LOMTÁR mappa társulna. Javasolt a mappa vírusellenõrzése.\n\nHa biztos benne, hogy vírusmentes, akkor hozzon létre egy: not_a_virus.txt nevû fájlt a  mappában."
 STR_VIRUS_HIDDEN        = "Rejtett mappák vannak a gyökér mappában"
-STR_VIRUS_HIDDEN_H      = "A gyökérmappa rejtett almappákat tartalmaz. Vírusok rejtett mappákat hozhatnak létre a jelenlétük elrejtéséhez. Ajánlatos a mappák vírusellenõrzése (lásd a részleteket a naplóban).\n\nHa biztos a tisztaságban, akkor hozzon létre egy megnevezett fájlt.
+STR_VIRUS_HIDDEN_H      = "A gyökérmappa rejtett almappákat tartalmaz. Vírusok rejtett mappákat hozhatnak létre a jelenlétük elrejtéséhez. Ajánlatos a mappák vírusellenõrzése (lásd a részleteket a naplóban).\n\nHa biztos a tisztaságban, akkor hozzon létre egy megnevezett fájlt"
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Klikk ide az emulálás leállításához)"

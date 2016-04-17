@@ -24,7 +24,7 @@ STR_LANG_H              = ""
 STR_THEME               = "Tēma"
 STR_THEME_H             = ""
 STR_EXPERT              = "Eksperta mode"
-STR_EXPERT_H            = "Ieslēgt eksperta modi.\n\nPadoms: Turiet nospiestu Ctrl, vai probelu virs vadītāja, lai saņemtu papildus informāciju.
+STR_EXPERT_H            = "Ieslēgt eksperta modi.\n\nPadoms: Turiet nospiestu Ctrl, vai probelu virs vadītāja, lai saņemtu papildus informāciju."
 
 STR_OPENLOGS            = "Atvērt log failu"
 STR_OPENLOGS_H          = "Atvērt mapi ar logiem un attēliem.\n\nJūs varat iesniegt šos failus, lai saņemtu palīdzību."
@@ -73,7 +73,7 @@ STR_OPTIONS_H           = ""
 STR_REBOOT              = "Pārstartēt datoru pēc uzstādīšanas"
 STR_REBOOT_H            = "Pārstartēt datoru (ja nepieciešams) pēc vadītāju uzstādīšanas (Ctrl+R).\n\nPADOMS: JŪs varat attekties no pārstartēšanas jebkurā momentā, noņemot šo marķieri."
 
-// Sistēmas informācija
+// Sysinfo
 STR_SYSINF_WINDOWS      = "Windows"
 STR_SYSINF_VERSION      = "Versija"
 STR_SYSINF_PLATFORM     = "Platforma"
@@ -99,7 +99,6 @@ STR_SYSINF_LOW          = "[zems]"
 STR_SYSINF_CRITICAL     = "[kritisks]"
 STR_SYSINF_CHARGING     = "[uzlādējas]"
 STR_SYSINF_NOBATTERY    = "[nav baterijas]"
-STR_SYSINF_UNKNOWN      = "[nezināms]"
 STR_SYSINF_CHARGED      = "Uzlāde"
 STR_SYSINF_LIFETIME     = "Atlika"
 STR_SYSINF_FULLLIFETIME = "Pavisam atlika"
@@ -125,7 +124,7 @@ STR_ABOUT_TESTERS_TITLE = "Testētāji: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer izplatās uz licences pamata GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer izmanto tehnoloģijas:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer izmanto vadītāju paku tehnoloģiju, kuru radīja DriverPacks.net.\n\n(Uzklikškiniet ar peles kreiso pogu, lai atvērtu saitus)"
 
-// Uznirstošie logi (nospiežot Ctrl vai probelu)
+// Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "nezinam"
 STR_HINT_ANALYSIS       = "Analīze"
 STR_HINT_SIGNATURE      = "Paraksts: "
@@ -146,7 +145,7 @@ STR_HINT_SECTION        = "Sekcija: "
 STR_HINT_SCORE          = "Novērtējums: "
 STR_HINT_SCROLL         = "PADOMS: Izmantojiet peles ritentiņu"
 
-// Konteksta menu
+// Context menu
 STR_CONT_INSTALL        = "Ieplānot uzstādīšanu"
 STR_CONT_SHOWALT        = "Parādīt alternatīvos vadītājus"
 STR_CONT_OPENINF        = "Atvērt uzstādīta vadītāja inf failu"
@@ -158,7 +157,7 @@ STR_CONT_HWID_CLIP      = "Nokopēt iekārtas kodu apmaiņas buferī"
 STR_OPENSNAPSHOT        = "Failu attēli (*.snp)\0*.snp\0Visi faili\0*.*\0\0"
 STR_EXTRACTFOLDER       = "Izvēlēties mērķa mapi."
 
-// Iekārtas statuss
+// Device status
 STR_STATUS_NOTPRESENT   = "Iekārta neeksistē"
 STR_STATUS_DISABLED     = "Iekārta izslēgta"
 STR_STATUS_DEVPROBLEM   = "Problēma ar iekārtu: %d"
@@ -166,7 +165,7 @@ STR_STATUS_DRVPROBLEM   = "Problēma ar vadītāju"
 STR_STATUS_RUNNING      = "Vadītājs ir palaists"
 STR_STATUS_STOPPED      = "Vadītājs ir apturēts"
 
-// Vadītāja statuss
+// Driver status
 STR_STATUS_INVALID      = "Nesavietojams vadītājs"
 STR_STATUS_MISSING      = "Vadītājs pieejams uzstādīšanai"
 STR_STATUS_NOTSIGNED    = " (nav paraksta)"
@@ -189,7 +188,7 @@ STR_STATUS_NF_MISSING   = "Nepieciešamais vadītājs nav vadītāju pakotnēs"
 STR_STATUS_NF_UNKNOWN   = "Uzstādītas vadītājs, bet tas nav vadītāju pakotnēs"
 STR_STATUS_NF_STANDARD  = "Standarta vadītājs jau ir uzstādīts sistēmā"
 
-// Vīrus
+// Virus
 STR_VIRUS               = "Informācijas nesējs, kur ir uzstādīta programma, iespējams ir inficēts ar vīrusu"
 STR_VIRUS_AUTORUN       = "Nesēja saknē ir fails AUTORUN.INF"
 STR_VIRUS_AUTORUN_H     = "Nesēja saknē ir fails AUTORUN.INF. Šo failu bieži izmanto vīrusiem. rekomendējam pārbaudīt uz vīrusiem.\n\nJa jūs uzticieties šim failam un gribiet izslēgt šo paziņojumu, papildiniet sekciju [NOT_A_VIRUS] failā autorun.inf."
@@ -198,14 +197,14 @@ STR_VIRUS_RECYCLER_H    = "Nesāja saknē ir mape RECYCLER. Šo mapi bieži izma
 STR_VIRUS_HIDDEN        = "Nesēja saknē atrodas neredzamas mapes"
 STR_VIRUS_HIDDEN_H      = "Nesēja saknē atrodas neredzamas mapes. Šīs mapes bieži izmanto vīrusiem un tapēc mēs rekomendājam pārbaudīt ar antivīrusa programmu.\n\nJa šī mape ir nekaitīga, izslēgt šo paziņojumu var izveidojot mapes iekšpusē teksta failu ar nosaukumu not_a_virus.txt."
 
-// Statuss
+// Status
 STR_CLOSE_SNAPSHOT      = "(Uzklikšķiniet šeit, lai pabeigtu sistēmas emulāciju)"
 STR_EMPTYDRP            = "Noglabājiet vadītāju pakas, vai atpakotus vadītājus nākošajā mapē"
 STR_CLOSE_DRPEXT        = "(Uzklikšķiniet šeit, lai atgrieztos pie noklusējuma vadītājiem)"
 STR_NOUPDATES           = "Vadītāji aktuālā stāvoklī"
 STR_INITIALIZING        = "Inicilizācija..."
 
-// Прогрессбар
+// Progressbar
 STR_INST_EXTRACT        = "Atpakošana... %d%% (posms 1 no 2))"
 STR_INST_INSTALL        = "Instalācija... (posms 2 no 2)"
 STR_INST_OK             = "Veiksmīgi instalēts"
@@ -246,7 +245,7 @@ STR_SYS_64              = "64-bit"
 STR_SYS_DEVICEMNG       = "Ierīču pārvaldnieks"
 STR_SYS_DISINSTALL      = "Atslēgt vadītāju uzstādīšanu. Atslēgt atjaunošanas punktu izveidi"
 
-// Atjauninājumi
+// Update
 STR_UPD_DIALOG_TITLE    = "Atjauninājumu pārbaude"
 STR_UPD_DIALOG_MSG      = "Vai jūs vēlaties ieslēgt automātisku programmas un vadītāju pakotņu atjaunināšanu caur Internetu?"
 STR_UPD_DIALOG_INDEX    = "Vai jūs vēlaties ielādēt jaunākos indeksus, lai varētu noteikt, kuras vadītāju pakotnes jums ielādēt?"
@@ -287,7 +286,7 @@ STR_UPD_INDEXES         = "Jauno paku indeksi"
 STR_UPD_UPDATEHINT1     = "Ieteikums"
 STR_UPD_UPDATEHINT2     = "Sākumā vajag atjaunot programmu ar indeksiem."
 
-// Atjaunināšana
+// Update hint
 STR_UPD_AVAIL1          = "Pieejami atjauninājumi no Interneta: SDI R%d"
 STR_UPD_AVAIL2          = "Pieejami atjauninājumi no Interneta: %d vadītāju pakotnes"
 STR_UPD_AVAIL3          = "Pieejami atjauninājumi no Interneta: SDI R%d un %d vadītāju pakotnes"
