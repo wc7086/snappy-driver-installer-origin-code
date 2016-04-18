@@ -123,7 +123,7 @@ STR_ABOUT_DEV_TITLE     = "Desarrollador: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Testers: "
 //STR_ABOUT_TESTERS_LIST
-STR_ABOUT_LICENSE       = "Snappy Driver Installer está disponible bajo los términos de la Licencia Pública General GNU versión 3\n\n\n\nTraducido por theFULL\n\nSnappy Driver Installer utiliza las siguientes tecnologías:\n* WebP disponible bajo los términos de la licencia BSD\n* libtorrent disponible bajo los términos de la licencia BSD\n* Backtrace disponible bajo los términos de la licencia BSD\n* 7-Zip este disponible bajo los términos de la Biblioteca GNU Lesser o Licencia Pública General versión 2\n\nSnappy Driver Installer utiliza DriverPacks que fueron desarrollados por el Equipo DriverPacks.\n\n(Haz clic ahora con el fin de visitar la página web)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer está disponible bajo los términos de la Licencia Pública General GNU versión 3\n\n\n\n\n\nSnappy Driver Installer utiliza las siguientes tecnologías:\n* WebP disponible bajo los términos de la licencia BSD\n* libtorrent disponible bajo los términos de la licencia BSD\n* Backtrace disponible bajo los términos de la licencia BSD\n* 7-Zip este disponible bajo los términos de la Biblioteca GNU Lesser o Licencia Pública General versión 2\n\nSnappy Driver Installer utiliza DriverPacks que fueron desarrollados por el Equipo DriverPacks.\n\n(Haz clic ahora con el fin de visitar la página web)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Desconocido"

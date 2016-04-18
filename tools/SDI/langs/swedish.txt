@@ -83,8 +83,8 @@ STR_SYSINF_SERVICEPACK  = "ServicePack"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "Product"
 STR_SYSINF_ENVIRONMENT  = "Miljö"
-STR_SYSINF_WINDIR       = "windir\inf"
-STR_SYSINF_TEMP         = "temp"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
+STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Moderkort"
 STR_SYSINF_PRODUCT      = "Produkten"
 STR_SYSINF_MODEL        = "Model"
@@ -123,7 +123,7 @@ STR_ABOUT_DEV_TITLE     = "Utvecklare:"
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Provare:"
 //STR_ABOUT_TESTERS_LIST
-STR_ABOUT_LICENSE       = "Kvick Driver Installer licensieras under villkoren i GNU General Public License version 3\n\n\n\n\nSvensk översättning Star\n\nSnappy Driver Installer använder följande tekniker:\n* WebP licensieras under villkoren i BSD-licensen\n* libtorrent licensieras under villkoren i BSD-licensen\n* Backtrace licensieras under villkoren i BSD-licensen\n* 7-Zip licensieras under villkoren i GNU Library eller Lesser General Public License version 2\n\nSnappy Driver Installer drivs av DriverPacks som utvecklats av DriverPacks Team.\n\n(Klicka nu för att besöka en webbplats) "
+STR_ABOUT_LICENSE       = "Kvick Driver Installer licensieras under villkoren i GNU General Public License version 3\n\n\n\n\n\n\nSnappy Driver Installer använder följande tekniker:\n* WebP licensieras under villkoren i BSD-licensen\n* libtorrent licensieras under villkoren i BSD-licensen\n* Backtrace licensieras under villkoren i BSD-licensen\n* 7-Zip licensieras under villkoren i GNU Library eller Lesser General Public License version 2\n\nSnappy Driver Installer drivs av DriverPacks som utvecklats av DriverPacks Team.\n\n(Klicka nu för att besöka en webbplats) "
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "okänd"

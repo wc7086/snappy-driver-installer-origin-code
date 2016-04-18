@@ -16,9 +16,9 @@ STR_SHOW_SYSINFO_H      = ""
 STR_INSTALL             = "Установить"
 STR_INSTALL_H           = "Запустить установку выбранных драйверов(Ctrl+I).\n\nСОВЕТ: Установку отдельного драйвера также можно запустить, кликнув на нем при нажатом Shift."
 STR_SELECT_ALL          = "Выделить все"
-//STR_SELECT_ALL_H        = ""
+STR_SELECT_ALL_H        = "Ctrl+A"
 STR_SELECT_NONE         = "Снять выделение"
-//STR_SELECT_NONE_H       = ""
+STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Язык (Language)"
 STR_LANG_H              = ""
@@ -35,6 +35,8 @@ STR_EXTRACT             = "Распаковать в..."
 STR_EXTRACT_H           = "Распаковать выделенные драйверы.\n\nМожно использовать для создания резервной копии драйверов. Рекомендуется предварительно обновить все драйверы, чтобы убедится, что они работают исправно, а затем включить отображение текущих версий и запустить распаковку."
 STR_DRVDIR              = "Задать источник..."
 STR_DRVDIR_H            = "Выбрать папку с драйверпаками или драйверами в распакованном виде.\n\nМожно использовать для выбора поиска драйверов на официальном диске с драйверами, идущем в комплекте с устройством."
+STR_OPTIONS_BTN         = "Опции..."
+STR_OPTIONS_BTN_H       = "Открыть диалог с настройками."
 
 STR_SHOW_FOUND          = "Нашлись в драйверпаках"
 STR_SHOW_FOUND_H        = "Драйверы нижеприведенных категорий были найдены в драйверпаках и, соответственно, могут быть установлены.\n\nРекомендуется устанавливать драйверы из категорий: неустановленные, новые версии и более подходящие."
@@ -123,6 +125,7 @@ STR_ABOUT_DEV_TITLE     = "Разработчик: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Участники проекта: "
 //STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "Перевод: "
 STR_ABOUT_LICENSE       = "Snappy Driver Installer распространяется на условиях лицензии GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer использует технологии:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer использует технологию драйверпаков, разработанную командой DriverPacks.net.\n\n(Щелкните левой кнопкой мыши, чтобы открыть сайты)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
@@ -324,3 +327,26 @@ STR_TR_ST4              = "завершено"
 STR_TR_ST5              = "раздается"
 STR_TR_ST6              = "резервируется место"
 STR_TR_ST7              = "возобновление"
+
+// Options dialog
+STR_OPTION_TITLE        = "Опции"
+STR_OPTION_VIEW_TAB     = "Вид"
+STR_OPTION_UPDATES_TAB  = "Обновления"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Названия драйверпаков"
+STR_OPTION_HIDE_NAMES   = "Не отображать"
+STR_OPTION_SHOW_RIGHT   = "Отображать справа"
+STR_OPTION_SHOW_ABOVE   = "Отображать сверху"
+STR_OPTION_SCALLING     = "Масштабирование"
+STR_OPTION_CONSOLE      = "Отображать консольное окно"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "Проверять обновления"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Торрент"
+STR_OPTION_PORT         = "Порт"
+STR_OPTION_MAX_DOWNLOAD = "Максимальная скорость загрузки в байтах/сек (0:не ограничено)"
+STR_OPTION_MAX_UPLOAD   = "Максимальная скорость отдачи в байтах/сек (0:не ограничено)"

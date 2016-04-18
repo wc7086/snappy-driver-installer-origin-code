@@ -1,4 +1,4 @@
-﻿STR_TRANSLATORS         = "Çeviren: Kabaqtepeli"
+﻿STR_TRANSLATORS         = "Kabaqtepeli"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -123,7 +123,7 @@ STR_SYSINF_64BIT        = "64 Bit"
 //STR_ABOUT_DEV_LIST
 //STR_ABOUT_TESTERS_TITLE = ""
 //STR_ABOUT_TESTERS_LIST
-STR_ABOUT_LICENSE       = "Çeviri: Kabaqtepeli\n\n\n\n\n\nProgramın internet sitesine erişmek için tıklayın"
+STR_ABOUT_LICENSE       = "\n\n\n\n\n\nProgramın internet sitesine erişmek için tıklayın"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Bilinmiyor"

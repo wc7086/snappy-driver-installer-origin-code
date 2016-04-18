@@ -23,7 +23,7 @@ STR_SELECT_NONE_H       = "Ctrl+N"
 STR_LANG                = "زبان (Language)"
 STR_LANG_H              = ""
 STR_THEME               = "تم"
-STR_THEME_H             = "برای خواناتر شدن نوشته‌ها big ها را انتخاب کنید. \n\n در صورت تمایل می‌توانید تم‌های دلخواه خودتان را بسازید."
+STR_THEME_H             = ""
 STR_EXPERT              = "حالت تخصصی"
 STR_EXPERT_H            = "حالت تخصصی را فعال می‌کند \n\nتذکر: برای اطلاعات بیشتر روی درایور کلید Ctrl یا Spacebar را فشار دهید."
 
@@ -123,7 +123,7 @@ STR_ABOUT_DEV_TITLE     = "توسعه‌دهنده: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "تسترها: "
 //STR_ABOUT_TESTERS_LIST
-STR_ABOUT_LICENSE       = "Snappy Driver Installer تحت شرایط مجوز عمومی GNU نسخه 3\n\n\n\n\nSnappy Driver Installer از این فنّاوری‌ها استفاده می‌کند:\n* WebP تحت شرایط مجوز BSD \n* libtorrent تحت شرایط مجوز BSD \n* Backtrace تحت شرایط مجوز BSD \n* 7-Zip تحت شرایط مجوز کتابخانه GNU یا مجوز عمومی کلی نسخه  2\n\nSnappy Driver Installer از بسته‌های درایور که توسط گروه DriverPacks توسعه داده می‌شود بهره می‌برد.\n\n(کلیک کنید تا سایت را مشاهده کنید)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer تحت شرایط مجوز عمومی GNU نسخه 3\n\n\n\n\n\n\nSnappy Driver Installer از این فنّاوری‌ها استفاده می‌کند:\n* WebP تحت شرایط مجوز BSD \n* libtorrent تحت شرایط مجوز BSD \n* Backtrace تحت شرایط مجوز BSD \n* 7-Zip تحت شرایط مجوز کتابخانه GNU یا مجوز عمومی کلی نسخه  2\n\nSnappy Driver Installer از بسته‌های درایور که توسط گروه DriverPacks توسعه داده می‌شود بهره می‌برد.\n\n(کلیک کنید تا سایت را مشاهده کنید)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "ناشناخته"

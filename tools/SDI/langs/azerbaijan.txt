@@ -5,7 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Azərbaycanca"
 STR_LANG_ID             = "Azerbaijani"
+STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x2C
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Sistem barədə məlumat"
@@ -14,9 +16,9 @@ STR_SHOW_SYSINFO_H      = ""
 STR_INSTALL             = "Quraşdırmaq"
 STR_INSTALL_H           = "Seçilmiş drayverlərin quraşdırılmasına başlamaq(Ctrl+I).\n\nMƏSLƏHƏT: Shift düyməsini sıxaraq ayrıca drayverin quraşdırılmasına da başlamaq olar."
 STR_SELECT_ALL          = "Hamısını qeyd etmək"
-//STR_SELECT_ALL_H        = ""
+STR_SELECT_ALL_H        = "Ctrl+A"
 STR_SELECT_NONE         = "Qeyd olunmuşları çıxart"
-//STR_SELECT_NONE_H       = ""
+STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Dil (Language)"
 STR_LANG_H              = ""
@@ -121,7 +123,7 @@ STR_ABOUT_DEV_TITLE     = "İstehsalçı: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Test edənlər: "
 //STR_ABOUT_TESTERS_LIST
-STR_ABOUT_LICENSE       = "Snappy Driver Installer GNU General Public License version 3 lisenziya şərtləri əsasında yayılır\n\n\n\n\nAzerbaijan translation: JumpErNumber311R\n\nSnappy Driver Installer-də bu texnologiyalar istfadə olunur :\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer drayverpak texnologiyasından istfadə edir, hansıki DriverPacks.net komandası tətbiq edir.\n\n(Saytları açmaq üçün siçanın sol düyməciyini sıxın)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer GNU General Public License version 3 lisenziya şərtləri əsasında yayılır\n\n\n\n\nSnappy Driver Installer-də bu texnologiyalar istfadə olunur :\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer drayverpak texnologiyasından istfadə edir, hansıki DriverPacks.net komandası tətbiq edir.\n\n(Saytları açmaq üçün siçanın sol düyməciyini sıxın)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "naməlum"
