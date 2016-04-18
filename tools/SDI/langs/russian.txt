@@ -7,6 +7,7 @@ STR_LANG_NAME           = "Русский"
 STR_LANG_ID             = "Russian"
 STR_LANG_GROUP          = 0x05 // LGRPID_CYRILLIC
 STR_LANG_CODE           = 0x19
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Информация о системе"
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "Пакет обновления"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Системные папки"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Материнская плата"
 STR_SYSINF_PRODUCT      = "Продукт"
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Разработчик: "
 STR_ABOUT_TESTERS_TITLE = "Участники проекта: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer распространяется на условиях лицензии GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer использует технологии:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer использует технологию драйверпаков, разработанную командой DriverPacks.net.\n\n(Щелкните левой кнопкой мыши, чтобы открыть сайты)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "неизвестно"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Искать в драйвер в Интернете"
 STR_CONT_HWID_CLIP      = "Скопировать код устройства в буфер обмена"
 
 // Misc
-STR_OPENSNAPSHOT        = "Файлы снимков (*.snp)\0*.snp\0Все файлы\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Файлы снимков (*.snp)/0*.snp/0Все файлы/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Выберите папку назначения."
 
 // Device status
@@ -229,7 +229,7 @@ STR_OF                  = " из "
 STR_RESTOREPOINT        = "Создать точку восстановления"
 STR_RESTOREPOINT_H      = "Создание точки восстановления позволяет в случае сбоя вернуть систему в прежнее состояние(Ctrl+P).\n\nСОВЕТ: Чтобы восстановить систему, кликните здесь правой кнопкой мыши."
 STR_REST_SCHEDULE       = "Запланировать создания точки восстановления"
-STR_REST_ROLLBACK       = "Вернуть систему к более раннему состоянию..." 
+STR_REST_ROLLBACK       = "Вернуть систему к более раннему состоянию..."
 STR_REST_CREATING       = "Создание точки восстановления..."
 STR_REST_CREATED        = "Точка восстановления создана"
 STR_REST_FAILED         = "Не удалось создать точку восстановления"

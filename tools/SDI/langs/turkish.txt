@@ -7,10 +7,11 @@ STR_LANG_NAME           = "Türkçe"
 STR_LANG_ID             = "Turkish"
 STR_LANG_GROUP          = 0x06 // LGRPID_TURKIC
 STR_LANG_CODE           = 0x1F
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Sistem Bilgisi"
-STR_SHOW_SYSINFO_H      = "Kabaqtepeli"
+STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Kur"
 STR_INSTALL_H           = "Seçilen Sürücüleri Kur.(Ctrl+I).\n\nİPUCU: Seçilen Sürücülerin Bilgisayarınıza kurulumunu başlatmak için Tıklayın."
@@ -123,7 +124,6 @@ STR_SYSINF_64BIT        = "64 Bit"
 //STR_ABOUT_TESTERS_TITLE = ""
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Çeviri: Kabaqtepeli\n\n\n\n\n\nProgramın internet sitesine erişmek için tıklayın"
-STR_ABOUT_SIZE          = 2
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Bilinmiyor"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Donanım Kimliğini İnternette Araştır"
 STR_CONT_HWID_CLIP      = "Donanım Kimliğini Panoya Kopyala"
 
 // Misc
-STR_OPENSNAPSHOT        = "Anında Fotoğraf Dosyaları (*.snp)\0*.snp\0Tüm Dosyalar\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Anında Fotoğraf Dosyaları (*.snp)/0*.snp/0Tüm Dosyalar/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Lütfen Gidilecek Dosyayı Seçin."
 
 // Device status

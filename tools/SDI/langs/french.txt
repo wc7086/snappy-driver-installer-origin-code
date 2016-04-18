@@ -5,7 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Français"
 STR_LANG_ID             = "French"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x0c
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Informations système"
@@ -19,7 +21,7 @@ STR_SELECT_NONE         = "Sélectionner aucun"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Langue (Language)"
-STR_LANG_H              = "Sélectionner la langue souhaitée"
+STR_LANG_H              = ""
 STR_THEME               = "Thème"
 STR_THEME_H             = ""
 STR_EXPERT              = "Mode Expert"
@@ -122,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Developpeur: "
 STR_ABOUT_TESTERS_TITLE = "Testeurs: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer est enregistré selon les termes de la GNU General Public License version 3\n\n\n\nTraduction française: Skywalker59\n\nSnappy Driver Installer utilise les technologies suivantes:\n* WebP est enregistré selonles termes de la license BSD \n* libtorrent est enregistré selon les termes de la license BSD\n* Backtrace est enregistré selon les termes de la license BSD\n* 7-Zip est enregistré selon les termes de la Bibliothèque GNU ou Lesser General Public License version 2\n\nSnappy Driver Installer fonctionne avec les DriverPacks développés par la Team DriverPack.\n(Cliquer pour voir un des sites Web)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "inconnu"
@@ -154,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Chercher le HardwareID sur Internet"
 STR_CONT_HWID_CLIP      = "Copier le HardwareID dans le presse papier"
 
 // Misc
-STR_OPENSNAPSHOT        = "Clichés (*.snp)\0*.snp\0Tous les fichiers\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Clichés (*.snp)/0*.snp/0Tous les fichiers/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Merci de sélectionner le dossier de destination."
 
 // Device status

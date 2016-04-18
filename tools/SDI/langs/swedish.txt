@@ -5,7 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Svenska"
 STR_LANG_ID             = "Swedish"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x1D
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Systeminformation"
@@ -122,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Utvecklare:"
 STR_ABOUT_TESTERS_TITLE = "Provare:"
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Kvick Driver Installer licensieras under villkoren i GNU General Public License version 3\n\n\n\n\nSvensk översättning Star\n\nSnappy Driver Installer använder följande tekniker:\n* WebP licensieras under villkoren i BSD-licensen\n* libtorrent licensieras under villkoren i BSD-licensen\n* Backtrace licensieras under villkoren i BSD-licensen\n* 7-Zip licensieras under villkoren i GNU Library eller Lesser General Public License version 2\n\nSnappy Driver Installer drivs av DriverPacks som utvecklats av DriverPacks Team.\n\n(Klicka nu för att besöka en webbplats) "
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "okänd"
@@ -154,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Sök på Internet efter HardwareID"
 STR_CONT_HWID_CLIP      = "Kopiera en HardwareID till Windows urklipp"
 
 // Misc
-STR_OPENSNAPSHOT        = "Snapshot-filer (*.snp)\0*.snp\0All filer\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Snapshot-filer (*.snp)/0*.snp/0All filer/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Välj destinationsmappen."
 
 // Device status

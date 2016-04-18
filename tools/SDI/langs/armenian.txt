@@ -7,6 +7,7 @@ STR_LANG_NAME           = "Հայերեն"
 STR_LANG_ID             = "Armenian"
 STR_LANG_GROUP          = 0x11 // LGRPID_ARMENIAN
 STR_LANG_CODE           = 0x2B
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Օպերացիոն համակարգ"
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "Թարմացումների փաթեթ"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "Պրոդուկտի տեսակը"
 STR_SYSINF_ENVIRONMENT  = "Հանակարգային պանակ"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Մայր հարթակ"
 STR_SYSINF_PRODUCT      = "Ապրանքանի"
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Հեղինակ: "
 STR_ABOUT_TESTERS_TITLE = "Փորձարկողներ: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer-ը տարածվում է GNU General Public License version 3 սերտիֆիկատի տարբերակով\n\n\n\nSnappy Driver Installer-ի օգտագործվող տեխնոլոգիաները:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer-ը օգտագործում է DriverPacks.net-ի խմբի կողմից մշակված դրայվերպակի տեխնոլոգիան\n\n(Սեխմեք մկնիկի ձախ ստեղնը, որպեսզի բացեք կայքը)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "անհայտ է"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Փնտրել դրայվերը համացանցում"
 STR_CONT_HWID_CLIP      = "Պատճենել սարքի կոդը փոխանցման բուֆեր"
 
 // Misc
-STR_OPENSNAPSHOT        = "Պատկերումների ֆայլերը (*.snp)\0*.snp\0Բոլոր ֆայլերը\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Պատկերումների ֆայլերը (*.snp)/0*.snp/0Բոլոր ֆայլերը/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Ընտրեք նախատեսված պանակը:"
 
 // Device status

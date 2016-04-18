@@ -85,7 +85,7 @@ STR_SYSINF_SERVICEPACK  = "Service-Pack"
 STR_SYSINF_SUITEMASK    = "Suite-Maske"
 STR_SYSINF_PRODUCTTYPE  = "Produktart"
 STR_SYSINF_ENVIRONMENT  = "Umgebung"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Hauptplatine"
 STR_SYSINF_PRODUCT      = "Produkt"
@@ -126,7 +126,6 @@ STR_ABOUT_DEV_TITLE     = "Entwickler: "
 STR_ABOUT_TESTERS_TITLE = "Tester: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer ist unter den Bedingungen der GNU General Public License Version 3 lizenziert\n\n\n\n\nSnappy Driver Installer nutzt folgende Technologien:\n* WebP ist unter den Bedingungen der BSD license lizenziert\n* libtorrent ist unter den Bedingungen der BSD license lizenziert\n* Backtrace ist unter den Bedingungen der BSD license lizenziert\n* 7-Zip ist unter den Bedingungen der GNU Library oder Lesser General Public License Version 2 lizenziert\n\nSnappy Driver Installer basiert auf vom DriverPacks-Team entwickelte DriverPacks.\n\n(Hier klicken, um die Webseite zu besuchen)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Unbekannt"
@@ -158,7 +157,7 @@ STR_CONT_HWID_SEARCH    = "Hardware-ID im Internet suchen"
 STR_CONT_HWID_CLIP      = "Hardware-ID in den Zwischenspeicher kopieren"
 
 // Misc
-STR_OPENSNAPSHOT        = "Schnappschussdateien (*.snp)\0*.snp\0All files\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Schnappschussdateien (*.snp)/0*.snp/0All files/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Bitte geben sie einen Zielordner an."
 
 // Device status

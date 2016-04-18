@@ -5,7 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Polski"
 STR_LANG_ID             = "Polish"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x15
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Informacje o systemie"
@@ -41,7 +43,7 @@ STR_SHOW_MISSING_H      = "Wyświetl sterowniki z pakietów ze sterownikami dla 
 STR_SHOW_NEWER          = "Nowsze"
 STR_SHOW_NEWER_H        = "Wyświetl sterowniki z pakietów ze sterownikami, które są nowsze od aktualnie zainstalowanych.\n\nZalecamy zainstalować te sterowniki."
 STR_SHOW_CURRENT        = "Obecne"
-STR_SHOW_CURRENT_H      = "Wyświetl sterowniki z pakietów ze sterownikami, które odpowiadają aktualnie zainstalowanym."
+STR_SHOW_CURRENT_H      = "Wyświetl sterowniki z pakietów ze sterownikami, które odpowiadają aktualnie zainstalowanym.\n\nNIE zalecamy instalacji tych sterowników, chyba że są uszkodzone."
 STR_SHOW_OLD            = "Starsze"
 STR_SHOW_OLD_H          = "Wyświetl sterowniki z pakietów ze sterownikami, które są starsze od aktualnie zainstalowanych."
 STR_SHOW_BETTER         = "Lepsze dopasowanie"
@@ -50,7 +52,7 @@ STR_SHOW_WORSE_RANK     = "Gorsze dopasowanie"
 STR_SHOW_WORSE_RANK_H   = "Wyświetl sterowniki z pakietów sterowników, które są mniej odpowiednie od aktualnie zainstalowanych."
 
 STR_SHOW_NOTFOUND       = "Nieobecne sterowniki"
-STR_SHOW_NOTFOUND_H     = "Sterowniki nie znalezione w pakietach sterowników i nie mogą zostać zainstalowane."
+STR_SHOW_NOTFOUND_H     = "Sterowniki nie znalezione w pakietach ze sterownikami i nie mogą zostać zainstalowane."
 STR_SHOW_NF_MISSING     = "Nie zainstalowane"
 STR_SHOW_NF_MISSING_H   = "Wyświetl urządzenia, które wymagają sterowników, ale nie zostały one znalezione w pakietach ze sterownikami."
 STR_SHOW_NF_UNKNOWN     = "Nieznane"
@@ -65,7 +67,7 @@ STR_SHOW_ONE_H          = "Pokaż tylko najlepsze sterowniki dla urządzenia."
 STR_SHOW_DUP            = "Pokaż duplikaty"
 STR_SHOW_DUP_H          = "Pokaż duplikaty sterowników."
 STR_SHOW_INVALID        = "Pokaż nieprawidłowe"
-STR_SHOW_INVALID_H      = "Pokaż sterowniki, które są niezgodne z bieżącym systemem."
+STR_SHOW_INVALID_H      = "Pokaż sterowniki, które są niezgodne z bieżącym systemem.\n\nNIE zalecamy instalacji tych sterowników, ponieważ są niezgodne z twoją wersją systemu Windows. "
 
 STR_OPTIONS             = "Opcje"
 STR_OPTIONS_H           = ""
@@ -81,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "ServicePack"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Środowisko"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Płyta główna"
 STR_SYSINF_PRODUCT      = "Produkt"
@@ -102,7 +104,7 @@ STR_SYSINF_CHARGED      = "Naładowana"
 STR_SYSINF_LIFETIME     = "LifeTime"
 STR_SYSINF_FULLLIFETIME = "FullLifeTime"
 STR_SYSINF_MINS         = "Minut(y)"
-STR_SYSINF_MONITORS     = "Monitory"
+STR_SYSINF_MONITORS     = "Monitor(y)"
 STR_SYSINF_CM           = "cm"
 STR_SYSINF_INCH         = "''"
 STR_SYSINF_WIDE         = "panoramiczny"
@@ -122,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Deweloper: "
 STR_ABOUT_TESTERS_TITLE = "Testerzy: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer jest licencjonowany zgodnie z warunkami GNU General Public License w wersji 3\n\n\n\nPolskie tłumaczenie: Łukasz Sumera\n\nSnappy Driver Installer korzysta z następujących technologii:\n* WebP jest rozprowadzany na zasadach licencji BSD\n* libtorrent jest rozprowadzany za zasadach licencji BSD\n* Backtrace jest rozprowadzany za zasadach licencji BSD\n* 7-Zip jest licencjonowany zgodnie z warunkami GNU Library lub Lesser General Public License w wersji 2\n\nSnappy Driver Installer jest obsługiwany przez DriverPacks, opracowany przez zespół DriverPacks.\n\n(Kliknij teraz, aby odwiedzić stronę internetową)"
-STR_ABOUT_SIZE          = 13
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "nieznany"
@@ -154,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Szukaj w internecie identyfikatora sprzętu"
 STR_CONT_HWID_CLIP      = "Kopiuj identyfikator sprzętu do schowka"
 
 // Misc
-STR_OPENSNAPSHOT        = "Pliki migawki (*.snp)\0*.snp\0Wszystkie pliki\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Pliki migawki (*.snp)/0*.snp/0Wszystkie pliki/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Wybierz folder docelowy."
 
 // Device status
@@ -254,7 +255,7 @@ STR_UPD_DIALOG_INDEX    = "Chcesz pobrać najnowsze indeksy, aby można było ok
 STR_UPD_TITLE           = "Aktualizacja"
 STR_UPD_BTN_ALL         = "Zaznacz wszystkie"
 STR_UPD_BTN_NONE        = "Odznacz wszystkie"
-STR_UPD_BTN_THISPC      = "Sprawdź tylko potrzebne dla tego komputera"
+STR_UPD_BTN_THISPC      = "Zaznacz tylko potrzebne dla tego komputera"
 STR_UPD_BTN_THISPC_H    = "Aby móc określić jakie pakiety ze sterownikami potrzebujesz, musisz najpierw pobrać indeksy."
 STR_UPD_ONLYUPDATES     = "Nie powiadamiaj o brakujących pakietach ze sterownikami"
 STR_UPD_TOTALSIZE       = "Całkowity rozmiar pobierania: %d MB"

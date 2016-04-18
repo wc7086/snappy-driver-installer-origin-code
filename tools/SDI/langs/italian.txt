@@ -5,7 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Italiana"
 STR_LANG_ID             = "Italian"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x10
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Informazioni Sistema"
@@ -81,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "ServicePack"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Variabili d'Ambiente"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Scheda Madre"
 STR_SYSINF_PRODUCT      = "Prodotto"
@@ -122,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Sviluppatore: "
 STR_ABOUT_TESTERS_TITLE = "Tester: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer è concesso in licenza sotto i termini della licenza GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer utilizza le seguenti tecnologie:\n* WebP è concesso in licenza sotto i termini della licenza BSD\n* libtorrent è concesso in licenza sotto i termini della licenza BSD\n* Backtrace è concesso in licenza sotto i termini della licenza BSD\n* 7-Zip è concesso in licenza sotto i termini della licenza GNU Library oppure Lesser General Public License version 2\n\nSnappy Driver Installer è potenziato dai DriverPack che sono stati sviluppati dal Team DriverPacks.\n\n(Clicca ora per visitare il sito web)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Sconosciuto"
@@ -154,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Cerca su Internet per HardwareID"
 STR_CONT_HWID_CLIP      = "Copia HardwareID negli appunti"
 
 // Misc
-STR_OPENSNAPSHOT        = "Snapshot file (*.snp)\0*.snp\0Tutti i file\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Snapshot file (*.snp)/0*.snp/0Tutti i file/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Selezionare la cartella di destinazione."
 
 // Device status

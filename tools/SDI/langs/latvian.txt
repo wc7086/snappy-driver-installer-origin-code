@@ -7,6 +7,7 @@ STR_LANG_NAME           = "Latviešu"
 STR_LANG_ID             = "Latvian"
 STR_LANG_GROUP          = 0x03 // LGRPID_BALTIC
 STR_LANG_CODE           = 0x26
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Sistēmas informācija"
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "Atjauninājuma pakete"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Sistēmas mape"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Mātesplate"
 STR_SYSINF_PRODUCT      = "Produkts"
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Izstrādātājs: "
 STR_ABOUT_TESTERS_TITLE = "Testētāji: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer izplatās uz licences pamata GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer izmanto tehnoloģijas:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer izmanto vadītāju paku tehnoloģiju, kuru radīja DriverPacks.net.\n\n(Uzklikškiniet ar peles kreiso pogu, lai atvērtu saitus)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "nezinam"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Meklēt vadītāju Internetā"
 STR_CONT_HWID_CLIP      = "Nokopēt iekārtas kodu apmaiņas buferī"
 
 // Dažādi
-STR_OPENSNAPSHOT        = "Failu attēli (*.snp)\0*.snp\0Visi faili\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Failu attēli (*.snp)/0*.snp/0Visi faili/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Izvēlēties mērķa mapi."
 
 // Device status
