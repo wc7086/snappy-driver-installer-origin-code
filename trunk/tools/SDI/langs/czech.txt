@@ -123,7 +123,7 @@ STR_ABOUT_DEV_TITLE     = "Vývojář: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Testeři: "
 //STR_ABOUT_TESTERS_LIST
-STR_ABOUT_LICENSE       = "Snappy Driver Installer je licencován pod GNU General Public License verze 3\n\n\n\n\nSnappy Driver Installer používá následující technologie:\n* WebP je licencováno pod BSD license\n* libtorrent licencováno pod BSD license\n* Backtrace licencováno pod BSD license\n* 7-Zip licencováno pod GNU Library nebo Lesser General Public License verze 2\n\nSnappy Driver Installer je poháněn s pomocí DriverPacks, které byly vyvinuty týmem DriverPacks.\n\n(Klikneme za účelem návštěvy webové stránky)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer je licencován pod GNU General Public License verze 3\n\n\n\n\n\n\nSnappy Driver Installer používá následující technologie:\n* WebP je licencováno pod BSD license\n* libtorrent licencováno pod BSD license\n* Backtrace licencováno pod BSD license\n* 7-Zip licencováno pod GNU Library nebo Lesser General Public License verze 2\n\nSnappy Driver Installer je poháněn s pomocí DriverPacks, které byly vyvinuty týmem DriverPacks.\n\n(Klikneme za účelem návštěvy webové stránky)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Neznámý"

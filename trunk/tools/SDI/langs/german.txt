@@ -34,7 +34,7 @@ STR_SNAPSHOT_H          = "Schnappschuss eines anderen Systems laden.\n\nSchnapp
 STR_EXTRACT             = "Entpacken nach..."
 STR_EXTRACT_H           = "Die ausgewählten Treiber werden entpackt\n\nVon diesen aktuellen Treibern lässt sich eine Sicherungskopie erstellen."
 STR_DRVDIR              = "Treiberordner wählen..."
-STR_DRVDIR_H            = "Gestattet die Wahl eines anderen Ordners (z. B. auf einer CD/DVD) mit Treiberpaketen oder ugepackten Treibern, um dort nach Treibern zu suchen."
+STR_DRVDIR_H            = "Gestattet die Wahl eines anderen Ordners (z. B. auf einer CD/DVD) mit Treiberpaketen oder ungepackten Treibern, um dort nach Treibern zu suchen."
 STR_OPTIONS_BTN         = "Optionen..."
 STR_OPTIONS_BTN_H       = "Öffnet das Dialogfenster für die Einstellungen."
 
@@ -58,7 +58,7 @@ STR_SHOW_NOTFOUND_H     = "Zeigt erforderliche Treiber an, die in den Treiberpak
 STR_SHOW_NF_MISSING     = "Nicht installiert"
 STR_SHOW_NF_MISSING_H   = "Zeigt Geräte an, die einen Treiber erfordern, aber keiner installiert ist und der Treiber fehlt in den Treiberpaketen."
 STR_SHOW_NF_UNKNOWN     = "Unbekannt"
-STR_SHOW_NF_UNKNOWN_H   = "Zeigt installierte, unbekannte Treiber an, die in den Treiberpaketen nicht vorhanden sind."
+STR_SHOW_NF_UNKNOWN_H   = "Zeigt installierte unbekannte Treiber an, die in den Treiberpaketen nicht vorhanden sind."
 STR_SHOW_NF_STANDARD    = "Standard"
 STR_SHOW_NF_STANDARD_H  = "Zeigt installierte Standard-Treiber an, die in den Treiberpaketen nicht vorhanden sind."
 
@@ -80,7 +80,7 @@ STR_REBOOT_H            = "Falls erforderlich, wird der PC nach der Treiberinsta
 STR_SYSINF_WINDOWS      = "Windows"
 STR_SYSINF_VERSION      = "Version"
 STR_SYSINF_PLATFORM     = "Plattform-ID"
-STR_SYSINF_UPDATE       = "Update"
+STR_SYSINF_UPDATE       = "Aktualisierung"
 STR_SYSINF_SERVICEPACK  = "Service-Pack"
 STR_SYSINF_SUITEMASK    = "Suite-Maske"
 STR_SYSINF_PRODUCTTYPE  = "Produktart"
@@ -125,6 +125,7 @@ STR_ABOUT_DEV_TITLE     = "Entwickler: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Tester: "
 //STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "Übersetzer:"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer ist unter den Bedingungen der GNU General Public License Version 3 lizenziert\n\n\n\n\nSnappy Driver Installer nutzt folgende Technologien:\n* WebP ist unter den Bedingungen der BSD license lizenziert\n* libtorrent ist unter den Bedingungen der BSD license lizenziert\n* Backtrace ist unter den Bedingungen der BSD license lizenziert\n* 7-Zip ist unter den Bedingungen der GNU Library oder Lesser General Public License Version 2 lizenziert\n\nSnappy Driver Installer basiert auf vom DriverPacks-Team entwickelte DriverPacks.\n\n(Hier klicken, um die Webseite zu besuchen)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
@@ -133,7 +134,7 @@ STR_HINT_ANALYSIS       = "Analyse"
 STR_HINT_SIGNATURE      = "Signatur: "
 STR_HINT_DRP            = "Treiberpaket"
 STR_HINT_DEVICE         = "Gerät"
-STR_HINT_HARDWAREID     = "Hardware ID"
+STR_HINT_HARDWAREID     = "Hardware-ID"
 STR_HINT_COMPID         = "Kompatible ID"
 STR_HINT_INSTDRV        = "Installierter Treiber"
 STR_HINT_AVAILDRV       = "Verfügbarer Treiber"

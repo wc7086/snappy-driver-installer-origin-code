@@ -154,7 +154,7 @@ STR_CONT_LOCATEINF      = "Atvērt mapi ar uzstādītā vadītāja inf failu"
 STR_CONT_HWID_SEARCH    = "Meklēt vadītāju Internetā"
 STR_CONT_HWID_CLIP      = "Nokopēt iekārtas kodu apmaiņas buferī"
 
-// Dažādi
+// Misc
 STR_OPENSNAPSHOT        = "Failu attēli (*.snp)/0*.snp/0Visi faili/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Izvēlēties mērķa mapi."
 

@@ -117,7 +117,7 @@ STR_SYSINF_CPU_ARCH     = "Bit"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
-// Σχετικά
+// About
 //STR_ABOUT_VER
 //STR_ABOUT_DEV_TITLE      = ""
 //STR_ABOUT_DEV_LIST
@@ -156,7 +156,7 @@ STR_CONT_HWID_CLIP      = "Αντιγραφή HardwareID στο πρόχειρο
 
 // Misc
 STR_OPENSNAPSHOT        = "Αρχεία εικόνων (*.snp)/0*.snp/0Ολα αρχαια/0*.*/0/0"
-STR_EXTRACTFOLDER       = "Επιλέξτε το φάκελο προορισμού  ".
+STR_EXTRACTFOLDER       = "Επιλέξτε το φάκελο προορισμού"
 
 // Device status
 STR_STATUS_NOTPRESENT   = "Η συσκευή δεν είναι παρούσα"

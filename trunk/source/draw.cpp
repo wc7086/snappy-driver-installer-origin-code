@@ -785,6 +785,7 @@ void popup_about(Canvas &canvas)
     td.nl();
     td.TextOutF(L"%s%s",STR(STR_ABOUT_DEV_TITLE),STR(STR_ABOUT_DEV_LIST));
     td.TextOutF(L"%s%s",STR(STR_ABOUT_TESTERS_TITLE),STR(STR_ABOUT_TESTERS_LIST));
+    td.TextOutF(L"%s%s",STR(STR_ABOUT_TRANS_TITLE),STR(STR_TRANSLATORS));
 
     Popup->popup_resize(D_X(POPUP_WX),rect.bottom+D_X(POPUP_OFSY));
 }
