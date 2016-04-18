@@ -5,6 +5,7 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Magyar"
 STR_LANG_ID             = "Hungarian"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x0E
 STR_RTL                 = 0
 
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Fejlesztõ: "
 STR_ABOUT_TESTERS_TITLE = "Tesztelõk: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "GNU V.3 alapján engedélyezett alkalmazás\n\n\n\n\nSnappy Driver Telepítő a következő technológiákat használja:\n\n* WebP engedélyezve a BSD licenc feltételei szerint.\n* libtorrent engedélyezve a BSD licenc feltételei szerint.\n* Backtrace engedélyezve a BSD licenc feltételei szerint.\n* 7-Zip engedélyezve a GNU Library illetve a Lesser General Public Licenc verzió 2. feltételei szerint\nSnappy Driver telepítő a DriverPacks csapat által kidolgozott Driver-csomagok használatának lehetőségével rendelkezik.\n(Klikk ide a Weblap megtekintéséhez)\n\nMagyar nyelvre fordította : LaMoLa"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Ismeretlen"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Hardver azonosító keresése az interneten"
 STR_CONT_HWID_CLIP      = "Hardver azonosító másolása a vágólapra"
 
 // Misc
-STR_OPENSNAPSHOT        = "Pillanatfelvétel fájl (*.snp)\0*.snp\0Minden fájl\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Pillanatfelvétel fájl (*.snp)/0*.snp/0Minden fájl/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Adja meg a cél mappát."
 
 // Device status

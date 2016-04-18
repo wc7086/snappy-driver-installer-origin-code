@@ -7,6 +7,7 @@ STR_LANG_NAME           = "Ελληνικά"
 STR_LANG_ID             = "Greek"
 STR_LANG_GROUP          = 0x04 // LGRPID_GREEK
 STR_LANG_CODE           = 0x08
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Σύστημα Πληροφοριών"
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "Πακέτο ενημέρωσης"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Φάκελοι συστήματος"
-STR_SYSINF_WINDIR       = "%windir%\inf "
+STR_SYSINF_WINDIR       = "%windir%\\inf "
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Μητρική"
 STR_SYSINF_PRODUCT      = "Προϊόν"
@@ -123,7 +124,6 @@ STR_SYSINF_64BIT        = "64-bit"
 //STR_ABOUT_TESTERS_TITLE  = ""
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Installer Driver είναι άδεια, υπό τους όρους της Γενικής Άδειας Δημόσιας Χρήσης GNU έκδοση 3.\n\n\n\n\nSnappy Installer Driver χρησιμοποιεί τις ακόλουθες τεχνολογίες:\n*WebP είναι άδεια, υπό τους όρους της άδειας BSD\n*libtorrent είναι άδεια, υπό τους όρους της άδειας BSD\n*Backtrace είναι άδεια, υπό τους όρους της άδειας BSD\n*7-Zip είναι άδεια, υπό τους όρους της GNU βιβλιοθήκης ή Ελάσσονα Γενική Άδεια Δημόσιας Χρήσης έκδοση 2\n\nSnappy Driver Installer τροφοδοτείται από DriverPacks που αναπτύχθηκαν από την ομάδα DriverPacks.\n\n( Κάντε κλικ εδώ για να επισκεφτείτε μια ιστοσελίδα)"
-STR_ABOUT_SIZE          = 13
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Άγνωστο"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Αναζήτηση στο Διαδίκτυο για H
 STR_CONT_HWID_CLIP      = "Αντιγραφή HardwareID στο πρόχειρο"
 
 // Misc
-STR_OPENSNAPSHOT        = "Αρχεία εικόνων (*.snp)\0*.snp\0Ολα αρχαια\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Αρχεία εικόνων (*.snp)/0*.snp/0Ολα αρχαια/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Επιλέξτε το φάκελο προορισμού  ".
 
 // Device status

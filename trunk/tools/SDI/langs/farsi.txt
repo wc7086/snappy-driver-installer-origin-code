@@ -83,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "سرویس پک"
 STR_SYSINF_SUITEMASK    = "ماسک"
 STR_SYSINF_PRODUCTTYPE  = "نوع محصول"
 STR_SYSINF_ENVIRONMENT  = "محیط"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "مادربرد"
 STR_SYSINF_PRODUCT      = "محصول"
@@ -124,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "توسعه‌دهنده: "
 STR_ABOUT_TESTERS_TITLE = "تسترها: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer تحت شرایط مجوز عمومی GNU نسخه 3\n\n\n\n\nSnappy Driver Installer از این فنّاوری‌ها استفاده می‌کند:\n* WebP تحت شرایط مجوز BSD \n* libtorrent تحت شرایط مجوز BSD \n* Backtrace تحت شرایط مجوز BSD \n* 7-Zip تحت شرایط مجوز کتابخانه GNU یا مجوز عمومی کلی نسخه  2\n\nSnappy Driver Installer از بسته‌های درایور که توسط گروه DriverPacks توسعه داده می‌شود بهره می‌برد.\n\n(کلیک کنید تا سایت را مشاهده کنید)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "ناشناخته"
@@ -156,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "جست‌وجوی شناسه سخت‌افزار در
 STR_CONT_HWID_CLIP      = "کپی کردن شناسه سخت‌افزار در کلیپ بورد"
 
 // Misc
-STR_OPENSNAPSHOT        = "Snapshot files (*.snp)\0*.snp\0All files\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Snapshot files (*.snp)/0*.snp/0All files/0*.*/0/0"
 STR_EXTRACTFOLDER       = "لطفاً پوشه مقصد را انتخاب کنید."
 
 // Device status

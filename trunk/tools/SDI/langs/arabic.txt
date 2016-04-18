@@ -85,7 +85,7 @@ STR_SYSINF_SERVICEPACK  = "ServicePack"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Environment"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Motherboard"
 STR_SYSINF_PRODUCT      = "Product"
@@ -127,7 +127,6 @@ STR_ABOUT_DEV_LIST      = "BadPointer"
 STR_ABOUT_TESTERS_TITLE = "Testers: "
 STR_ABOUT_TESTERS_LIST  = "QuarQ, SamLab, Sorc, WindR"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer is licensed under the terms of the GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer uses the following technologies:\n* WebP is licensed under the terms of the BSD license\n* libtorrent is licensed under the terms of the BSD license\n* Backtrace is licensed under the terms of the BSD license\n* 7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n\nSnappy Driver Installer is powered by DriverPacks that were developed by the DriverPacks Team.\n\n(Click now in order to visit a website)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "unknown"
@@ -158,7 +157,6 @@ STR_CONT_HWID_SEARCH    = "Search the Internet for HardwareID"
 STR_CONT_HWID_CLIP      = "Copy a HardwareID to clipboard"
 
 // Misc
-STR_OPENSNAPSHOT        = "Snapshot files (*.snp)\0*.snp\0All files\0*.*\0\0"
 STR_EXTRACTFOLDER       = "Please select the destination folder."
 
 // Device status

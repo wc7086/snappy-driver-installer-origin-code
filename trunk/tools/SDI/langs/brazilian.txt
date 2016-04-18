@@ -5,7 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Português Brazil"
 STR_LANG_ID             = "Brazilian"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x416
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Informação do sistema"
@@ -81,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "ServicePack"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "Tipo de produto"
 STR_SYSINF_ENVIRONMENT  = "Ambiente"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Placa-mãe"
 STR_SYSINF_PRODUCT      = "Produto"
@@ -122,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Desenvolvedor: "
 STR_ABOUT_TESTERS_TITLE = "Testadores: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Instalador Snappy Driver é licenciado sobre os termos da GNU General Public License version 3\n\n\n\n\nInstalador Snappy Driver Installer usa as seguintes tecnologias:\n* WebP é licenciada sobre os termos da licença BSD\n* libtorrent é licenciada sobre os termos da licença BSD\n* Backtrace é licenciada sobre os termos da licença BSD\n* 7-Zip é licenciada sobre os termos da biblioteca GNU Library ou Licença Geral Pública Lesser versão 2\n\nInstalador Snappy Driver desenvolvido pela equipe driverspack.\n\n(Clique agora para visitar o website)"
-STR_ABOUT_SIZE          = 13
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "desconhecido"
@@ -154,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Procura na Internet pelo ID de Hardware"
 STR_CONT_HWID_CLIP      = "Copia um ID de Hardware no clipboard"
 
 // Misc
-STR_OPENSNAPSHOT        = "Arquivos de instantâneo (*.snp)\0*.snp\0Todos os arquivos\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Arquivos de instantâneo (*.snp)/0*.snp/0Todos os arquivos/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Seleciona a pasta de destino."
 
 // Device status

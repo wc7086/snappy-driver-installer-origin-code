@@ -5,6 +5,7 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Čeština"
 STR_LANG_ID             = "Czech"
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x05
 STR_RTL                 = 0
 
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "ServicePack"
 STR_SYSINF_SUITEMASK    = "Hodnota SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "Typ Produktu"
 STR_SYSINF_ENVIRONMENT  = "Proměnné"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Základní deska"
 STR_SYSINF_PRODUCT      = "Produkt"
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Vývojář: "
 STR_ABOUT_TESTERS_TITLE = "Testeři: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer je licencován pod GNU General Public License verze 3\n\n\n\n\nSnappy Driver Installer používá následující technologie:\n* WebP je licencováno pod BSD license\n* libtorrent licencováno pod BSD license\n* Backtrace licencováno pod BSD license\n* 7-Zip licencováno pod GNU Library nebo Lesser General Public License verze 2\n\nSnappy Driver Installer je poháněn s pomocí DriverPacks, které byly vyvinuty týmem DriverPacks.\n\n(Klikneme za účelem návštěvy webové stránky)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Neznámý"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Vyhledat v internetu ID Hardware"
 STR_CONT_HWID_CLIP      = "Kopírovat do paměti ID Hardware"
 
 // Misc
-STR_OPENSNAPSHOT        = "Snímek souboru (*.snp)\0*.snp\0Všechny soubory\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Snímek souboru (*.snp)/0*.snp/0Všechny soubory/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Vyberte prosím cílovou složku."
 
 // Device status

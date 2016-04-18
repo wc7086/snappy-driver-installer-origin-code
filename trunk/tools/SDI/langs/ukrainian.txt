@@ -7,6 +7,7 @@ STR_LANG_NAME           = "Українська"
 STR_LANG_ID             = "Ukrainian"
 STR_LANG_GROUP          = 0x05 // LGRPID_CYRILLIC
 STR_LANG_CODE           = 0x22
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Інформація про систему"
@@ -71,7 +72,7 @@ STR_SHOW_INVALID_H      = "Відображати невідповідні др�
 STR_OPTIONS             = "Опції"
 STR_OPTIONS_H           = ""
 STR_REBOOT              = "Перезавантажити ПК"
-STR_REBOOT_H            =  "Перезавантажити ПК(якщо потрібно) після завершення установки драйверів(Ctrl+R).\n\nПОРАДА: Ви можете відмінити перезавантаження у будь який момент знявши цю галку."
+STR_REBOOT_H            = "Перезавантажити ПК(якщо потрібно) після завершення установки драйверів(Ctrl+R).\n\nПОРАДА: Ви можете відмінити перезавантаження у будь який момент знявши цю галку."
 
 // Sysinfo
 STR_SYSINF_WINDOWS      = "Windows"
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "Пакет оновлення"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Системні папки"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Материнська плата"
 STR_SYSINF_PRODUCT      = "Продукт"
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Розробник: "
 STR_ABOUT_TESTERS_TITLE = "Тестери: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer поширюється на умовах ліцензії GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer використовує технології:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer використовує технологію драйверпаків, розроблену командою DriverPacks.net.\n\n(Клікніть лівою кнопкою миші, щоб відкрити сайти)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "невідомо"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Шукати драйвер в Інтернеті"
 STR_CONT_HWID_CLIP      = "Скопіювати код пристрою в буфер обміну"
 
 // Misc
-STR_OPENSNAPSHOT        = "Файли знімків (*.snp)\0*.snp\0Всі файли\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Файли знімків (*.snp)/0*.snp/0Всі файли/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Виберіть папку призначення."
 
 // Device status

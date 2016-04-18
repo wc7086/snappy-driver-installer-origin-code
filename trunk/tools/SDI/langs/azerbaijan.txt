@@ -81,7 +81,7 @@ STR_SYSINF_SERVICEPACK  = "Yenilənmə paketi"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Sistem qovluqları"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Ana platası"
 STR_SYSINF_PRODUCT      = "Məhsul"
@@ -122,7 +122,6 @@ STR_ABOUT_DEV_TITLE     = "İstehsalçı: "
 STR_ABOUT_TESTERS_TITLE = "Test edənlər: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer GNU General Public License version 3 lisenziya şərtləri əsasında yayılır\n\n\n\n\nAzerbaijan translation: JumpErNumber311R\n\nSnappy Driver Installer-də bu texnologiyalar istfadə olunur :\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer drayverpak texnologiyasından istfadə edir, hansıki DriverPacks.net komandası tətbiq edir.\n\n(Saytları açmaq üçün siçanın sol düyməciyini sıxın)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "naməlum"
@@ -154,7 +153,7 @@ STR_CONT_HWID_SEARCH    = "Drayveri İnternet şəbəkədə axtarmaq"
 STR_CONT_HWID_CLIP      = "Qurğunun kodunu mübadilə buferinə kopyalamaq"
 
 // Misc
-STR_OPENSNAPSHOT        = "Şəkillərin faylları (*.snp)\0*.snp\0Bütün fayllar\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Şəkillərin faylları (*.snp)/0*.snp/0Bütün fayllar/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Təyinat qovluğu seçin."
 
 // Device status

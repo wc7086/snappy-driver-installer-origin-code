@@ -132,9 +132,14 @@ void VaultImp::parse()
                     wcscpy(yy,yy+1);
                     *yy=L'\n';
                 }
-                while(wcsstr(r1,L"\\0"))
+                while(wcsstr(r1,L"\\\\"))
                 {
-                    wchar_t *yy=wcsstr(r1,L"\\0");
+                    wchar_t *yy=wcsstr(r1,L"\\\\");
+                    wcscpy(yy,yy+1);
+                }
+                while(wcsstr(r1,L"/0"))
+                {
+                    wchar_t *yy=wcsstr(r1,L"/0");
                     wcscpy(yy,yy+1);
                     *yy=1;
                 }

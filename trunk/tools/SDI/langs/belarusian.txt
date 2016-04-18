@@ -7,6 +7,7 @@ STR_LANG_NAME           = "Беларуская"
 STR_LANG_ID             = "Belarusian"
 STR_LANG_GROUP          = 0x05 // LGRPID_CYRILLIC
 STR_LANG_CODE           = 0x23
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Інфармацыя пра сістэму"
@@ -82,7 +83,7 @@ STR_SYSINF_SERVICEPACK  = "Пакет абнаўлення"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
 STR_SYSINF_PRODUCTTYPE  = "ProductType"
 STR_SYSINF_ENVIRONMENT  = "Сістэмныя тэчкі"
-STR_SYSINF_WINDIR       = "%windir%\inf"
+STR_SYSINF_WINDIR       = "%windir%\\inf"
 STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Матчына плата"
 STR_SYSINF_PRODUCT      = "Прадукт"
@@ -123,7 +124,6 @@ STR_ABOUT_DEV_TITLE     = "Распрацоўнік: "
 STR_ABOUT_TESTERS_TITLE = "Тэстары: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Snappy Driver Installer распаўсюджваецца на ўмовах ліцэнзіі GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer выкарыстоўвае тэхналогіі:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer выкарыстоўвае тэхналогію драйверпакаў, распрацаваную камандай DriverPacks.net.\n\n(Пстрыкніце левай кнопкай мышы, каб адкрыць сайты)"
-STR_ABOUT_SIZE          = 12
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "невядома"
@@ -155,7 +155,7 @@ STR_CONT_HWID_SEARCH    = "Шукаць у драйвер у Інтэрнэце"
 STR_CONT_HWID_CLIP      = "Скапіяваць код прылады ў буфер абмену"
 
 // Misc
-STR_OPENSNAPSHOT        = "Файлы здымкаў (*.snp)\0*.snp\0Усе файлы\0*.*\0\0"
+STR_OPENSNAPSHOT        = "Файлы здымкаў (*.snp)/0*.snp/0Усе файлы/0*.*/0/0"
 STR_EXTRACTFOLDER       = "Абярыце тэчку прызначэння."
 
 // Device status
