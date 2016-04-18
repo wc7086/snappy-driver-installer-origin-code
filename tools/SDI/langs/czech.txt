@@ -1,4 +1,4 @@
-﻿// Translated by lenochod
+﻿STR_TRANSLATORS         = "lenochod"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

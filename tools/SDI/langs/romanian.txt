@@ -1,4 +1,4 @@
-﻿// Translated by Mihai Pasare
+﻿STR_TRANSLATORS         = "Mihai Pasare"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

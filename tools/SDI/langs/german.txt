@@ -1,5 +1,4 @@
-﻿// Übersetzt und aktualisiert von «Latino»
-// Datum 02.03.2016
+﻿STR_TRANSLATORS         = "latinissimus, Übersetzt und aktualisiert von 'Latino'"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

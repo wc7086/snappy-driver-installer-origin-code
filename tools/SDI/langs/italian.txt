@@ -1,4 +1,4 @@
-// Translated by garf02
+STR_TRANSLATORS         = "garf02"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

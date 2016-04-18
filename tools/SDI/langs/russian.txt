@@ -1,4 +1,4 @@
-﻿// Здесь можно указать авторов перевода
+﻿STR_TRANSLATORS         = "BadPointer"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

@@ -1,9 +1,9 @@
-﻿// Translated by Sergio Martins
+﻿STR_TRANSLATORS         = "Sergio Martins"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "Português Europeu"
+STR_LANG_NAME           = "Português Portugal"
 STR_LANG_ID             = "Portuguese"
 STR_LANG_CODE           = 0x816
 

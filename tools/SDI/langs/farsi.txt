@@ -1,4 +1,4 @@
-﻿// Translated by Mostafa Akbari (mstfakbari@gmail.com)
+﻿STR_TRANSLATORS         = "Mostafa Akbari"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
