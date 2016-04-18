@@ -1,4 +1,4 @@
-﻿// Translated by Tilt
+﻿STR_TRANSLATORS         = "Tilt"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

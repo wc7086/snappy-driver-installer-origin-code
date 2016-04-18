@@ -1,4 +1,4 @@
-﻿// Yeghiazaryan Karen-Egho
+﻿STR_TRANSLATORS         = "Yeghiazaryan Karen-Egho"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -116,7 +116,7 @@ STR_SYSINF_CPU_ARCH     = "Բիթային հզորթյուն"
 STR_SYSINF_32BIT        = "32-բիթ"
 STR_SYSINF_64BIT        = "64-բիթ"
 
-// Ծրագրի մասին
+// About
 //STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE     = "Հեղինակ: "
 //STR_ABOUT_DEV_LIST
@@ -229,7 +229,7 @@ STR_OF                  = " ից "
 STR_RESTOREPOINT        = "Ստեղծլ վերականգնման կետ"
 STR_RESTOREPOINT_H      = "Վերականգնման կետը հնարավորություն է տալիս խնդրի դեպքում համակարգը ետ բերել նշված կետի պայմաններով(Ctrl+P).\n\nԽՈՐՀՈՒՐԴ!Համակարգը վերականգնելու համար սեղմել կմնիկի աջ ստեղնով այստեղ:"
 STR_REST_SCHEDULE       = "Ժամանակացույց վերականգնման կետ ստեղծելու համար"
-STR_REST_ROLLBACK       = "Վերադարձնել համակարգը էլ ավելի վաղ ժամակի պայմանների..." 
+STR_REST_ROLLBACK       = "Վերադարձնել համակարգը էլ ավելի վաղ ժամակի պայմանների..."
 STR_REST_CREATING       = "Վերականգնման կետի ստեղծքում..."
 STR_REST_CREATED        = "Վերակգնման կետը ստեղծված է"
 STR_REST_FAILED         = "Վերակնգնման կետը չհաջողվեց ստեղծել"

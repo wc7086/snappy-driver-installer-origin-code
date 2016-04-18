@@ -1,4 +1,4 @@
-﻿// Translated by JumpErNumber311R
+﻿STR_TRANSLATORS         = "JumpErNumber311R"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

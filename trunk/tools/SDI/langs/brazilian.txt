@@ -1,9 +1,9 @@
-﻿// Translated by EDsOn GENuInO
+﻿STR_TRANSLATORS         = "EDsOn GENuInO"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "Português"
+STR_LANG_NAME           = "Português Brazil"
 STR_LANG_ID             = "Brazilian"
 STR_LANG_CODE           = 0x416
 

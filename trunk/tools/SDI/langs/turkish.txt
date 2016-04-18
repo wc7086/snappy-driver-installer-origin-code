@@ -1,4 +1,4 @@
-﻿// Çeviren: Kabaqtepeli
+﻿STR_TRANSLATORS         = "Çeviren: Kabaqtepeli"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -117,11 +117,11 @@ STR_SYSINF_32BIT        = "32 Bit"
 STR_SYSINF_64BIT        = "64 Bit"
 
 // About
-//STR_ABOUT_VER           = ""
+//STR_ABOUT_VER
 //STR_ABOUT_DEV_TITLE     = ""
-//STR_ABOUT_DEV_LIST      = ""
+//STR_ABOUT_DEV_LIST
 //STR_ABOUT_TESTERS_TITLE = ""
-//STR_ABOUT_TESTERS_LIST  = ""
+//STR_ABOUT_TESTERS_LIST
 STR_ABOUT_LICENSE       = "Çeviri: Kabaqtepeli\n\n\n\n\n\nProgramın internet sitesine erişmek için tıklayın"
 STR_ABOUT_SIZE          = 2
 

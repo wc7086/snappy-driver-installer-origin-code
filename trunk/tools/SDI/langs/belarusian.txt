@@ -1,4 +1,4 @@
-﻿// Translated by Hotimsk AKA WhiteEagle
+﻿STR_TRANSLATORS         = "Hotimsk AKA WhiteEagle"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
