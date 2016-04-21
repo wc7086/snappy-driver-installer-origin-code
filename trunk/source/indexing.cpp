@@ -606,7 +606,7 @@ void Collection::populate()
     int num_thr=num_cores;
     int num_thr_1=num_cores;
     #ifndef _WIN64
-    if(drp_count&&num_thr>2)num_thr=2;
+    if(drp_count&&num_thr>1)num_thr=1;
     #endif
 
     drplist_t queuedriverpack;
@@ -640,7 +640,12 @@ void Collection::populate()
 
     manager_g->itembar_setactive(SLOT_INDEXING,0);
     if(driverpack_list.size()<=1&&(Settings.flags&FLAG_DPINSTMODE)==0)
+    {
         manager_g->itembar_settext(SLOT_NODRIVERS,L"",0);
+        emptydrp=true;
+    }else
+        emptydrp=false;
+
     driverpack_list[0].genhashes();
 
 //{thread

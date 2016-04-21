@@ -98,6 +98,7 @@ enum MessagesWND
 extern int volatile installmode;
 extern int invaidate_set;
 extern int num_cores;
+extern bool emptydrp;
 extern HINSTANCE ghInst;
 extern CRITICAL_SECTION sync;
 extern Console_t *Console;

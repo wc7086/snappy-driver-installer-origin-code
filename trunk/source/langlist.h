@@ -368,6 +368,10 @@ enum
     STR_OPTION_MAX_DOWNLOAD,
     STR_OPTION_MAX_UPLOAD,
 
+// Patreon
+    STR_PATREON1,
+    STR_PATREON2,
+    STR_PATREON_H,
     STR_NM
 };
 

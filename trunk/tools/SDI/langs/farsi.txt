@@ -35,6 +35,8 @@ STR_EXTRACT             = "استخراج به ..."
 STR_EXTRACT_H           = "استخراج درایورهای انتخاب‌شده\n\nاز این می‌توانید برای ایجاد پشتیبان از درایورهای موجود استفاده کنید."
 STR_DRVDIR              = "انتخاب پوشه درایور ..."
 STR_DRVDIR_H            = "انتخاب کردن پوشه حاوی بسته‌های درایور یا درایورهای بازشده.\n\nاز این می‌توانید برای جستجوی درايورهای رو CD/DVD استفاده کنید."
+STR_OPTIONS_BTN         = "تنظیمات..."
+STR_OPTIONS_BTN_H       = "باز کردن کادر محاوره با تنظیمات."
 
 STR_SHOW_FOUND          = "درایورهای پیداشده"
 STR_SHOW_FOUND_H        = "درایورها دربسته‌های درایور پیداشده و می‌توانند نصب شوند\n\nما به شما توصیه می‌کنیم این دسته‌ها را انتخاب کنید : نصب نشده جدیدتر و همسازتر "
@@ -53,7 +55,7 @@ STR_SHOW_WORSE_RANK_H   = "نمایش درایورها از بسته‌های د
 
 STR_SHOW_NOTFOUND       = "درایورهای پیدا نشده"
 STR_SHOW_NOTFOUND_H     = "درایورهایی که در بسته‌های درایور پیدا نشده‌اند و نمی‌توانند نصب شوند."
-STR_SHOW_NF_MISSING     = "گم‌شده"
+STR_SHOW_NF_MISSING     = "نصب نشده"
 STR_SHOW_NF_MISSING_H   = "نمایش دستگاه‌هایی که احتیاج به درایور دارند اما درایور آن‌ها در بسته‌های درایور پیدا نشده است."
 STR_SHOW_NF_UNKNOWN     = "ناشناخته"
 STR_SHOW_NF_UNKNOWN_H   = "نمایش درایورهایی که در سیستم نصب‌شده‌اند اما در بسته‌های درایور پیدا نشده‌اند."
@@ -123,6 +125,7 @@ STR_ABOUT_DEV_TITLE     = "توسعه‌دهنده: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "تسترها: "
 //STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "مترجمین:"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer تحت شرایط مجوز عمومی GNU نسخه 3\n\n\n\n\n\n\nSnappy Driver Installer از این فنّاوری‌ها استفاده می‌کند:\n* WebP تحت شرایط مجوز BSD \n* libtorrent تحت شرایط مجوز BSD \n* Backtrace تحت شرایط مجوز BSD \n* 7-Zip تحت شرایط مجوز کتابخانه GNU یا مجوز عمومی کلی نسخه  2\n\nSnappy Driver Installer از بسته‌های درایور که توسط گروه DriverPacks توسعه داده می‌شود بهره می‌برد.\n\n(کلیک کنید تا سایت را مشاهده کنید)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
@@ -155,7 +158,7 @@ STR_CONT_HWID_SEARCH    = "جست‌وجوی شناسه سخت‌افزار در
 STR_CONT_HWID_CLIP      = "کپی کردن شناسه سخت‌افزار در کلیپ بورد"
 
 // Misc
-STR_OPENSNAPSHOT        = "Snapshot files (*.snp)/0*.snp/0All files/0*.*/0/0"
+STR_OPENSNAPSHOT        = "Snapshot فایل‌های (*.snp)/0*.snp/0همه فایل‌ها/0*.*/0/0"
 STR_EXTRACTFOLDER       = "لطفاً پوشه مقصد را انتخاب کنید."
 
 // Device status
@@ -192,7 +195,7 @@ STR_STATUS_NF_STANDARD  = "درایور استاندارد"
 // Virus
 STR_VIRUS               = "ممکن است فایل همراه برنامه به ویروس آلوده باشد"
 STR_VIRUS_AUTORUN       = "فایل اتوران autorun.inf در پوشه ریشه وجود دارد."
-STR_VIRUS_AUTORUN_H     = "فایل اتوران autorun.inf وجود دارد. این فایل می‌تواند توسط برنامه‌های مخرب برای آلوده کردن سیستم شما استفاده شود.\n\nاگر اطمینان دارید که آلوده نیست [NOT_A_VIRUS] را در فایل اضافه کنید."
+STR_VIRUS_AUTORUN_H     = "فایل اتوران autorun.inf وجود دارد که می‌تواند توسط برنامه‌های مخرب برای آلوده کردن سیستم شما استفاده شود.\n\nاگر اطمینان دارید که آلوده نیست [NOT_A_VIRUS] را در فایل اضافه کنید."
 STR_VIRUS_RECYCLER      = "پوشه RECYCLER در ریشه وجود دارد."
 STR_VIRUS_RECYCLER_H    = "برای این مدیا پوشه RECYCLER غیرمعمول است مطمئن شوید که حاوی ویروس نباشد.\n\nاگر مطمئن هستید که آلوده نیست فایل not_a_virus.txt را در پوشه ایجاد کنید."
 STR_VIRUS_HIDDEN        = "پوشه مخفی در ریشه وجود دارد."
@@ -258,7 +261,7 @@ STR_UPD_BTN_NONE        = "انتخاب هیچ‌کدام"
 STR_UPD_BTN_THISPC      = "فقط انتخاب موارد موردنیاز این سیستم"
 STR_UPD_BTN_THISPC_H    = "برای تشخیص درایورهای موردنیاز اول باید نمایه‌ها را دانلود کنید."
 STR_UPD_ONLYUPDATES     = "برای درایورهای گم‌شده اخطار نده"
-STR_UPD_TOTALSIZE       = "مجموع اندازه دانلود شده: %d MB"
+STR_UPD_TOTALSIZE       = "مجموع اندازه دانلود شده: %d مگابایت"
 STR_UPD_BTN_OK          = "تأیید"
 STR_UPD_BTN_CANCEL      = "لغو"
 STR_UPD_BTN_ACCEPT      = "می‌پذیرم"
@@ -293,11 +296,11 @@ STR_UPD_AVAIL1          = "به‌روزرسانی موجود است: SDI R%d"
 STR_UPD_AVAIL2          = "به‌روزرسانی موجود است: %d بسته‌های درایور"
 STR_UPD_AVAIL3          = "به‌روزرسانی موجود است SDI R%d و %d بسته‌های درایور"
 STR_UPD_START           = "(برای شروع دانلود اینجا را کلیک کنید.)"
-STR_UPD_PROGRES         = "دانلود شده %s تا از %s (%d%%)"
+STR_UPD_PROGRES         = "دانلود شده %s از %s (%d%%)"
 STR_UPD_MODIFY          = "(برای انتخاب به‌روزرسانی‌ها اینجا را کلیک کنید)"
 
 STR_DWN_DOWNLOADED      = "دانلود شده"
-STR_DWN_DOWNLOADED_F    = "%s تا از %s (%d%%)"
+STR_DWN_DOWNLOADED_F    = "%s از %s (%d%%)"
 STR_DWN_UPLOADED        = "آپلود شده"
 STR_DWN_ELAPSED         = "زمان سپری‌شده"
 STR_DWN_REMAINING       = "زمان باقی‌مانده"
@@ -307,7 +310,7 @@ STR_DWN_ERROR           = "خطا"
 STR_DWN_DOWNLOADSPEED   = "سرعت دانلود"
 STR_DWN_UPLOADSPEED     = "سرعت آپلود"
 
-STR_DWN_SEEDS_F         = "%d تا از %d وصل شده"
+STR_DWN_SEEDS_F         = "%d از %d وصل شده"
 STR_DWN_SEEDS           = "دانه‌ها"
 STR_DWN_PEERS           = "همتاها"
 STR_DWN_WASTED          = "هدررفته"
@@ -324,3 +327,26 @@ STR_TR_ST4              = "پایان‌یافته"
 STR_TR_ST5              = "کاشتن"
 STR_TR_ST6              = "فضای اختصاص‌یافته"
 STR_TR_ST7              = "بررسی خلاصه داده"
+
+// Options dialog
+STR_OPTION_TITLE        = "تنظیمات"
+STR_OPTION_VIEW_TAB     = "مشاهده"
+STR_OPTION_UPDATES_TAB  = "به‌روزرسانی‌ها"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "اسامی بسته‌های درایور"
+STR_OPTION_HIDE_NAMES   = "اسامی بسته‌های درایور را نشان نده"
+STR_OPTION_SHOW_RIGHT   = "نمایش اسامی بسته‌های درایور در سمت راست"
+STR_OPTION_SHOW_ABOVE   = "نمایش اسامی بسته‌های درایور در بالا"
+STR_OPTION_SCALLING     = "مقیاس رابط کاربری"
+STR_OPTION_CONSOLE      = "نمایش پنجره کنسول"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "بررسی برای نسخه جدیدتر از برنامه/بسته‌های درایور"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "تورنت"
+STR_OPTION_PORT         = "پورت"
+STR_OPTION_MAX_DOWNLOAD = "حداکثر سرعت دانلود به بایت/ثانیه(0:نامحدود)\n"
+STR_OPTION_MAX_UPLOAD   = "حداکثر سرعت آپلود به بایت/ثانیه(0:نامحدود)"

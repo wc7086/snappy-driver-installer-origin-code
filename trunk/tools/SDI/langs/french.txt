@@ -35,6 +35,8 @@ STR_EXTRACT             = "Extraire vers..."
 STR_EXTRACT_H           = "Extraire les pilotes sélectionnés\n\nVous pouvez créer une sauvegarde des pilotes en sélectionnant les pilotes actuels."
 STR_DRVDIR              = "Dossier des pilotes..."
 STR_DRVDIR_H            = "Choisir un autre dossier avec les packs de pilotes ou les pilotes non décompressés.\n\nVous pouvez utiliser ceci pour chercher des pilotes sur un CD/DVD de pilotes."
+STR_OPTIONS_BTN         = "Options"
+STR_OPTIONS_BTN_H       = "Ouvrir la boîte de dialogue avec les paramètres."
 
 STR_SHOW_FOUND          = "Trouvés dans les packs "
 STR_SHOW_FOUND_H        = "Des pilotes ont été trouvés dans les packs et peuvent être installés.\n\nNous vous recommandons d'installer les pilotes depuis une de ces catégories: Non installé, Plus récent, Meilleurs."
@@ -63,9 +65,9 @@ STR_SHOW_NF_STANDARD_H  = "Affiche les pilotes standards qui sont installés mai
 STR_SHOW_DISPLAY        = "Afficher"
 STR_SHOW_DISPLAY_H      = ""
 STR_SHOW_ONE            = "Afficher les meilleurs"
-STR_SHOW_ONE_H          = "Afficher les meilleurs pilotes par périphérique."
+STR_SHOW_ONE_H          = "Afficher seulement les meilleurs pilotes par périphérique.\n\nLorsque activé, seul le meilleur pilote pour le périphérique est affiché au lieu d'afficher tous les pilotes disponibles pour chaque périphérique."
 STR_SHOW_DUP            = "Afficher les doublons"
-STR_SHOW_DUP_H          = "Afficher les pilotes en doublon."
+STR_SHOW_DUP_H          = "Afficher les pilotes dupliqués.\n\nCertains pilotes sont dupliqués de multiples fois au sein des packs de pilotes pour des raisons techniques."
 STR_SHOW_INVALID        = "Afficher les invalides"
 STR_SHOW_INVALID_H      = "Afficher les pilotes qui sont incompatibles avec le système actuel.\n\nNous vous recommandons de ne PAS installer ces pilotes car ils sont incompatibles avec votre version de Windows."
 
@@ -91,9 +93,9 @@ STR_SYSINF_MODEL        = "Modèle"
 STR_SYSINF_MANUF        = "Fabricant"
 STR_SYSINF_BATTERY      = "Alimentation"
 STR_SYSINF_AC_STATUS    = "A/C"
-STR_SYSINF_OFFLINE      = "Déconnecté"
-STR_SYSINF_ONLINE       = "Alimenté"
-STR_SYSINF_UNKNOWN      = "Inconnu"
+STR_SYSINF_OFFLINE      = "déconnecté"
+STR_SYSINF_ONLINE       = "alimenté"
+STR_SYSINF_UNKNOWN      = "inconnu"
 STR_SYSINF_FLAGS        = "Charge batterie"
 STR_SYSINF_HIGH         = "[Haute]"
 STR_SYSINF_LOW          = "[Basse]"
@@ -123,12 +125,13 @@ STR_ABOUT_DEV_TITLE     = "Developpeur: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Testeurs: "
 //STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "Traducteurs:"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer est enregistré selon les termes de la GNU General Public License version 3\n\n\n\n\n\nSnappy Driver Installer utilise les technologies suivantes:\n* WebP est enregistré selonles termes de la license BSD \n* libtorrent est enregistré selon les termes de la license BSD\n* Backtrace est enregistré selon les termes de la license BSD\n* 7-Zip est enregistré selon les termes de la Bibliothèque GNU ou Lesser General Public License version 2\n\nSnappy Driver Installer fonctionne avec les DriverPacks développés par la Team DriverPack.\n(Cliquer pour voir un des sites Web)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "inconnu"
-STR_HINT_ANALYSIS       = "Analyse"
-//STR_HINT_SIGNATURE      = "" // Translate
+STR_HINT_ANALYSIS       = "ID de suivi"
+STR_HINT_SIGNATURE      = "Signature:"
 STR_HINT_DRP            = "Driverpack"
 STR_HINT_DEVICE         = "Périphérique"
 STR_HINT_HARDWAREID     = "HardwareID"
@@ -200,7 +203,7 @@ STR_VIRUS_HIDDEN_H      = "Le répertoire racine contient des répertoires cach�
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Cliquer ici pour stopper l'émulation)"
-STR_EMPTYDRP            = "Mettre les packs de pilotes ou les pilotes non décompressés dans le répertoire suivant"
+STR_EMPTYDRP            = "Télécharger les packs de pilotes ou mettre les pilotes non décompressés dans le répertoire suivant"
 STR_CLOSE_DRPEXT        = "(Cliquer ici pour revenir au répertoire par défaut)"
 STR_NOUPDATES           = "Les pilotes sont à jour"
 STR_INITIALIZING        = "Initialisation..."
@@ -234,8 +237,8 @@ STR_REST_CREATING       = "Création d'un point de restauration en cours..."
 STR_REST_CREATED        = "Point de restauration créé"
 STR_REST_FAILED         = "Echec de la création d'un point de restauration"
 
-//STR_INST_QUIT_TITLE     = "" // Translate
-//STR_INST_QUIT_MSG       = "" // Translate
+STR_INST_QUIT_TITLE     = "Annuler"
+STR_INST_QUIT_MSG       = "Êtes-vous sûr de vouloir interrompre l'installation ?"
 STR_HINT_STOPINST       = "Cliquer ici pour annuler l'installation."
 STR_HINT_STOPEXTR       = "Cliquer ici pour arrêter l'extraction."
 STR_HINT_DRIVER         = "Appuyer sur la touche CTRL pour comparer le pilote installé avec celui disponible.\nAppuyer sur la barre ESPACE pour afficher les informations sur les pilotes alternatifs."
@@ -324,3 +327,26 @@ STR_TR_ST4              = "Terminé"
 STR_TR_ST5              = "Partage en cours"
 STR_TR_ST6              = "Attribution de l'espace"
 STR_TR_ST7              = "Vérification des données"
+
+// Options dialog
+STR_OPTION_TITLE        = "Options"
+// STR_OPTION_VIEW_TAB     = "View"
+STR_OPTION_UPDATES_TAB  = "Mise à jour"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Noms des packs de pilotes"
+STR_OPTION_HIDE_NAMES   = "Ne pas afficher les noms des packs de pilotes"
+STR_OPTION_SHOW_RIGHT   = "Afficher les noms des packs de pilotes à droite"
+STR_OPTION_SHOW_ABOVE   = "Afficher les noms des packs de pilotes au dessus"
+STR_OPTION_SCALLING     = "Mise à l'échelle de l'interface"
+STR_OPTION_CONSOLE      = "Afficher la fenêtre de la console"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "Vérifier s'il existe une nouvelle version de l'application/packs de pilotes"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Port"
+STR_OPTION_MAX_DOWNLOAD = "Vitesse de téléchargement maximale en octets/sec(0: illimité)"
+STR_OPTION_MAX_UPLOAD   = "Vitesse d'émission maximale en octets/sec (0: illimité)"
