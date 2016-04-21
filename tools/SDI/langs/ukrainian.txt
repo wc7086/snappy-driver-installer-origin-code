@@ -16,9 +16,9 @@ STR_SHOW_SYSINFO_H      = ""
 STR_INSTALL             = "Встановити"
 STR_INSTALL_H           = "Запустити установку обраних драйверів(Ctrl+I).\n\nУстановку окремого драйвера також можна запустити клікнувши на ньому, утримуючи Shift."
 STR_SELECT_ALL          = "Виділити все"
-//STR_SELECT_ALL_H        = ""
+STR_SELECT_ALL_H        = "Ctrl+A"
 STR_SELECT_NONE         = "Зняти виділення"
-//STR_SELECT_NONE_H       = ""
+STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Мова (Language)"
 STR_LANG_H              = ""
@@ -324,3 +324,26 @@ STR_TR_ST4              = "завершено"
 STR_TR_ST5              = "роздається"
 STR_TR_ST6              = "резервується місце"
 STR_TR_ST7              = "відновлення"
+
+// Options dialog
+STR_OPTION_TITLE        = "Опції"
+STR_OPTION_VIEW_TAB     = "Вид"
+STR_OPTION_UPDATES_TAB  = "Оновлення"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Назви драйверпаків"
+STR_OPTION_HIDE_NAMES   = "Не відображати"
+STR_OPTION_SHOW_RIGHT   = "Відображати справа"
+STR_OPTION_SHOW_ABOVE   = "Відображати зверху"
+STR_OPTION_SCALLING     = "Масштабування"
+STR_OPTION_CONSOLE      = "Відображати консольне вікно"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "Перевіряти оновлення"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Торент"
+STR_OPTION_PORT         = "Порт"
+STR_OPTION_MAX_DOWNLOAD = "Максимальна швидкість завантаження у байтах/сек (0 :не обмежена)"
+STR_OPTION_MAX_UPLOAD   = "Максимальна швидкість віддачі у байтах/сек (0 :не обмежена)"

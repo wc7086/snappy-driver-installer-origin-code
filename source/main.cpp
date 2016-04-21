@@ -55,6 +55,7 @@ CRITICAL_SECTION sync;
 int manager_active=0;
 int bundle_display=1;
 int bundle_shadow=0;
+bool emptydrp;
 
 // Windows name
 const wchar_t *getWindowsName(int a)
@@ -1549,6 +1550,11 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                 #endif
                 break;
             }
+            if(Popup->floating_itembar==SLOT_PATREON)
+            {
+                System.run_command(L"open",L"https://www.patreon.com/sdi_tool",SW_SHOWNORMAL,0);
+                break;
+            }
 
             if(Popup->floating_itembar>0&&(i==1||i==0||i==3))
             {
@@ -1620,6 +1626,8 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                     Popup->drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
                     Popup->drawpopup(0,FLOATING_DOWNLOAD,x,y,hField);
+                else if(itembar_i==SLOT_PATREON)
+                    Popup->drawpopup(STR_PATREON_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
                     Popup->drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
