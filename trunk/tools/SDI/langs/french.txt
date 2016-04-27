@@ -28,11 +28,11 @@ STR_EXPERT              = "Mode Expert"
 STR_EXPERT_H            = "Choisir le mode Expert.\n\nASTUCE: Appuyer sur la touche Ctrl ou la barre espace en survolant un pilote avec la souris pour obtenir des informations supplémentaires à son sujet."
 
 STR_OPENLOGS            = "Ouvrir les logs"
-STR_OPENLOGS_H          = "Ouvrir le dossier des logs et des clichés.\n\nVous pouvez envoyer ces fichiers pour obtenir une assistance."
+STR_OPENLOGS_H          = "Ouvrir le dossier des logs et des clichés.\n\nVous pouvez envoyer les fichiers logs au développeur en ouvrant https://sdi-tool.org et en allant à la page du support.\n\nLes clichés peuvent être utilisés pour aider à distance les utilisateurs à choisir les pilotes appropriés."
 STR_SNAPSHOT            = "Charger un cliché..."
 STR_SNAPSHOT_H          = "Charger un cliché sur un autre système.\n\nLes clichés sont créés automatiquement dans le dossier des logs.Ils contiennent des informations sur les périphériques, les pilotes, la version de Windows, la batterie et l'écran.\n\nLes clichés ne contiennent pas d'informations sur les packs de pilotes sur le système distant.\n\nPar conséquent charger un cliché permet l'émulation sur le sysème distant mais les pilotes sont cherchés dans les packs de pilotes du système d'origine."
 STR_EXTRACT             = "Extraire vers..."
-STR_EXTRACT_H           = "Extraire les pilotes sélectionnés\n\nVous pouvez créer une sauvegarde des pilotes en sélectionnant les pilotes actuels."
+STR_EXTRACT_H           = "Extraire les pilotes sélectionnés\n\nVous pouvez l'utiliser pour créer une sauvegarde des pilotes. Assurez-vous que les pilotes récemment installés fonctionnent correctement, cochez la case 'Afficher les pilotes actuels' et cliquez sur 'Extraire vers ... '"
 STR_DRVDIR              = "Dossier des pilotes..."
 STR_DRVDIR_H            = "Choisir un autre dossier avec les packs de pilotes ou les pilotes non décompressés.\n\nVous pouvez utiliser ceci pour chercher des pilotes sur un CD/DVD de pilotes."
 STR_OPTIONS_BTN         = "Options"
@@ -56,11 +56,11 @@ STR_SHOW_WORSE_RANK_H   = "Affiche les pilotes des packs qui offrent une plus ma
 STR_SHOW_NOTFOUND       = "Absents des packs"
 STR_SHOW_NOTFOUND_H     = "Pilotes non trouvés dans les packs et ne pouvant être installés."
 STR_SHOW_NF_MISSING     = "Non installés"
-STR_SHOW_NF_MISSING_H   = "Affiche les périphériques qui nécessitent un pilote mais qui n'a pas été trouvé dans les packs."
+STR_SHOW_NF_MISSING_H   = "Affiche les périphériques qui nécessitent un pilote mais qui n'a pas été trouvé dans les packs.\n\nVous pouvez essayer de rechercher ces pilotes sur Internet ou sur un DVD. Pour copier l'ID du matériel, faites un clic droit sur le périphérique.\n\nNous vous conseillons de nous informer sur les pilotes manquants afin qu'ils puissent être ajoutés aux packs."
 STR_SHOW_NF_UNKNOWN     = "Inconnus"
-STR_SHOW_NF_UNKNOWN_H   = "Affiche les pilotes inconnus qui sont installés mais non trouvés dans les packs."
+STR_SHOW_NF_UNKNOWN_H   = "Affiche les pilotes inconnus qui sont installés mais non trouvés dans les packs.\n\nNous vous conseillons de nous informer sur les pilotes manquants afin qu'ils puissent être ajoutés aux packs."
 STR_SHOW_NF_STANDARD    = "Standards"
-STR_SHOW_NF_STANDARD_H  = "Affiche les pilotes standards qui sont installés mais non trouvés dans les packs."
+STR_SHOW_NF_STANDARD_H  = "Affiche les pilotes standards qui sont installés mais non trouvés dans les packs.\n\nCes pilotes sont généralement installées avec Windows et ne nécessitent pas de mises à jour."
 
 STR_SHOW_DISPLAY        = "Afficher"
 STR_SHOW_DISPLAY_H      = ""
@@ -330,7 +330,7 @@ STR_TR_ST7              = "Vérification des données"
 
 // Options dialog
 STR_OPTION_TITLE        = "Options"
-// STR_OPTION_VIEW_TAB     = "View"
+STR_OPTION_VIEW_TAB     = "Afficher"
 STR_OPTION_UPDATES_TAB  = "Mise à jour"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL

@@ -709,7 +709,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     manager_g->itembar_settext(SLOT_DOWNLOAD,ret?1:0,nullptr,ret,0,0);
 
     bool showpatreon=ret?1:0;
-    if((manager_g->getlocale()&0xFF)==0x19)showpatreon=false;
+    //if((manager_g->getlocale()&0xFF)==0x19)showpatreon=false;
     if((manager_g->getlocale()&0xFF)==0x22)showpatreon=false;
     if((manager_g->getlocale()&0xFF)==0x23)showpatreon=false;
     //if(StrStrIW(STR(STR_LANG_ID),L"English")==nullptr)showpatreon=false;
