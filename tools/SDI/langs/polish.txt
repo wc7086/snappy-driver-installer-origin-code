@@ -174,7 +174,7 @@ STR_STATUS_INVALID      = "Niezgodny sterownik"
 STR_STATUS_MISSING      = "Dostępny sterownik (jeszcze nie zainstalowany)"
 STR_STATUS_NOTSIGNED    = " (nie podpisany)"
 
-STR_STATUS_BETTER_NEW   = "Dostępny jest zaktualizowany sterownik,który jest również bardziej odpowiedni"
+STR_STATUS_BETTER_NEW   = "Dostępny jest zaktualizowany sterownik, który jest również bardziej odpowiedni"
 STR_STATUS_SAME_NEW     = "Dostępny jest zaktualizowany sterownik"
 STR_STATUS_WORSE_NEW    = "Dostępny jest mniej odpowiedni sterownik, jednakże jest nowszy"
 

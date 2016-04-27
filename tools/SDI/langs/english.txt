@@ -354,4 +354,4 @@ STR_OPTION_MAX_UPLOAD   = "Max upload speed in bytes/s(0:unlimited)"
 // Patreon
 STR_PATREON1             = "SDI is developed by volunteers on their spare time. If you like this software, please support us on Patreon."
 STR_PATREON2             = "(Click here to open the Patreon page)"
-STR_PATREON_H            = "In order to keep our product available for free to our users while providing regular updates, we need to raise enough funding from donations to compensate our operating expenses and the time of major contributors."
+STR_PATREON_H            = ""

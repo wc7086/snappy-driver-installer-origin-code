@@ -113,7 +113,7 @@ DRVLIST_OUTLINE_ROUND    = 0
 
 // Driver items
 DRVITEM_WX               = -20
-DRVITEM_WY               = 37
+//DRVITEM_WY               = 37
 DRVITEM_OFSX             = 15
 DRVITEM_OFSY             = 10
 DRVITEM_DIST_Y0          = 36
