@@ -28,7 +28,7 @@ STR_EXPERT              = "Mode Expert"
 STR_EXPERT_H            = "Choisir le mode Expert.\n\nASTUCE: Appuyer sur la touche Ctrl ou la barre espace en survolant un pilote avec la souris pour obtenir des informations supplémentaires à son sujet."
 
 STR_OPENLOGS            = "Ouvrir les logs"
-STR_OPENLOGS_H          = "Ouvrir le dossier des logs et des clichés.\n\nVous pouvez envoyer les fichiers logs au développeur en ouvrant https://sdi-tool.org et en allant à la page du support.\n\nLes clichés peuvent être utilisés pour aider à distance les utilisateurs à choisir les pilotes appropriés."
+STR_OPENLOGS_H          = "Ouvrir le dossier des logs et des clichés.\n\nVous pouvez envoyer les fichiers logs au développeur en ouvrant www.sdi-tool.org et en allant à la page du support.\n\nLes clichés peuvent être utilisés pour aider à distance les utilisateurs à choisir les pilotes appropriés."
 STR_SNAPSHOT            = "Charger un cliché..."
 STR_SNAPSHOT_H          = "Charger un cliché sur un autre système.\n\nLes clichés sont créés automatiquement dans le dossier des logs.Ils contiennent des informations sur les périphériques, les pilotes, la version de Windows, la batterie et l'écran.\n\nLes clichés ne contiennent pas d'informations sur les packs de pilotes sur le système distant.\n\nPar conséquent charger un cliché permet l'émulation sur le sysème distant mais les pilotes sont cherchés dans les packs de pilotes du système d'origine."
 STR_EXTRACT             = "Extraire vers..."

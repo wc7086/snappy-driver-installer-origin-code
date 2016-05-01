@@ -169,7 +169,7 @@ STR_STATUS_RUNNING      = "正常に動作中"
 STR_STATUS_STOPPED      = "デバイスは現在停止中です"
 
 // Driver status
-STR_STATUS_INVALID      = "互換性がないドライバー
+STR_STATUS_INVALID      = "互換性がないドライバ"
 STR_STATUS_MISSING      = "利用可能なドライバー (未インストール)"
 STR_STATUS_NOTSIGNED    = " (署名なし)"
 

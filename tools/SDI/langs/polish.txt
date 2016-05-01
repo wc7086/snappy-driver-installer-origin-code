@@ -54,7 +54,7 @@ STR_SHOW_WORSE_RANK     = "Gorsze dopasowanie"
 STR_SHOW_WORSE_RANK_H   = "Wyświetl sterowniki z pakietów sterowników, które są mniej odpowiednie od aktualnie zainstalowanych.\n\nNIE zalecamy instalacji tych sterowników, chyba że masz dobry powód do tego. "
 
 STR_SHOW_NOTFOUND       = "Brakujące sterowniki"
-STR_SHOW_NOTFOUND_H     = "Sterowniki nie znalezione w pakietach ze sterownikami i nie mogą zostać zainstalowane."
+STR_SHOW_NOTFOUND_H     = "Sterowniki nie zostały znalezione w pakietach ze sterownikami i nie mogą zostać zainstalowane."
 STR_SHOW_NF_MISSING     = "Nie zainstalowane"
 STR_SHOW_NF_MISSING_H   = "Wyświetl urządzenia, które wymagają sterowników, ale nie zostały one znalezione w pakietach ze sterownikami.\n\nMożesz spróbować poszukać tych sterowników w Internecie lub na DVD. W celu skopiowaniu identyfikatora sprzętu, kliknij prawym przyciskiem myszy na urządzeniu.\n\nZalecamy powiadomienie nas o brakujących sterownikach, abyśmy mogli je dodać do pakietów ze sterownikami."
 STR_SHOW_NF_UNKNOWN     = "Nieznane"

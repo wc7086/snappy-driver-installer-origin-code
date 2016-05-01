@@ -72,7 +72,7 @@ STR_SHOW_INVALID_H      = "Zobrazí nekompatibilní ovladače se stávajícím s
 STR_OPTIONS             = "Možnosti"
 STR_OPTIONS_H           = ""
 STR_REBOOT              = "Restartovat PC po instalaci"
-STR_REBOOT_H            = "Restartuje PC(pokud je vyžadováno) po instalaci(Ctrl+R).\n\nTIP: kdykoliv můžeme restart zrušit odznačením zaškrtávacího pole."
+STR_REBOOT_H            = "Restartuje PC (pokud je vyžadováno) po instalaci (Ctrl+R).\n\nTIP: kdykoliv můžeme restart zrušit odznačením zaškrtávacího pole."
 
 // Sysinfo
 STR_SYSINF_WINDOWS      = "Windows"
@@ -228,7 +228,7 @@ STR_INDEXLZMA           = "Zabaluji indexace..."
 STR_OF                  = " z "
 
 STR_RESTOREPOINT        = "Vytvořit bod obnovení"
-STR_RESTOREPOINT_H      = "Vytvoří bod obnovení s cílem, aby bylo možné vrátit systém do dřívějšího stavu pro případ, že se něco pokazí (Ctrl+P) \ n \ nTIP: Pravým tlačítkem myši klikneme na toto tlačítko pro otevření místní nabídky."
+STR_RESTOREPOINT_H      = "Vytvoří bod obnovení s cílem, aby bylo možné vrátit systém do dřívějšího stavu pro případ, že se něco pokazí (Ctrl+P)\n\nTIP: Pravým tlačítkem myši klikneme na toto tlačítko pro otevření místní nabídky."
 STR_REST_SCHEDULE       = "Vytvořit bod obnovení"
 STR_REST_ROLLBACK       = "Vrátit zpět ke stávajícímu bodu obnovení ..."
 STR_REST_CREATING       = "Vytvářím bod obnovy..."
