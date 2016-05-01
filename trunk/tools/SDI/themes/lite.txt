@@ -1,0 +1,214 @@
+THEME_NAME              = "Lite"
+
+// Main window
+MAINWND_WX               = 1024
+MAINWND_WY               = 730
+MAINWND_MINX             = 480
+MAINWND_MINY             = 369
+MAINWND_INSIDE_COLOR     = 0xDD9100
+MAINWND_OUTLINE_ROUND    = 0
+
+// Popup
+POPUP_FONT_SIZE          = 11
+POPUP_WX                 = 450
+POPUP_WY                 = 13
+POPUP_INSIDE_COLOR       = 0xFFFCF6
+
+// Popup, driver comparsion
+POPUP_HWID_COLOR         = 0xFF9090
+POPUP_CMP_BETTER_COLOR   = 0x00A000
+POPUP_CMP_INVALID_COLOR  = 0x0000FF
+
+// Popup, driver list
+POPUP_LST_BETTER_COLOR   = 0x00A000
+POPUP_LST_WORSE_COLOR    = 0x0000FF
+POPUP_LST_INVALID_COLOR  = 0xC3C3C3
+POPUP_LST_SELECTED_COLOR = 0xFFFFFF
+
+// Progress bar (active)
+PROGR_INSIDE_COLOR       = 0x71DA2A
+PROGR_OUTLINE_COLOR      = 0x777777
+PROGR_OUTLINE_ROUND      = 0
+PROGR_OUTLINE_WIDTH      = 0
+
+// Checkbox (selected via the keyboard)
+KBHLT_INSIDE_COLOR       = 0x009999
+
+// Panel, generic
+PANEL_OFSX               = 14
+PANEL_OFSY               = 10
+PANEL_WX                 = 188
+PANEL_WY                 = 21
+PANEL_INSIDE_COLOR       = MAINWND_INSIDE_COLOR
+PANEL_OUTLINE_COLOR      = MAINWND_INSIDE_COLOR
+PANEL_OUTLINE_ROUND      = 5
+
+// Panel, sysinfo
+PANEL1_OFSY              = 14
+PANEL1_WY                = 0
+
+// Panel, install
+PANEL2_OFSX              = 0
+PANEL2_OFSY              = 0
+PANEL2_WX                = -1
+PANEL2_WY                = 30
+PANEL2_INSIDE_COLOR      = 0xFF000000
+PANEL2_OUTLINE_WIDTH     = 0
+PANEL2_BITMAP_FILENAME   = ""
+
+// Panel, lang_theme
+PANEL3_OFSY              = 128
+
+// Panel, actions
+PANEL4_OFSX              = PANEL_OFSX
+PANEL4_OFSY              = 240
+PANEL4_WX                = PANEL_WX
+PANEL4_WY                = 21
+PANEL4_OUTLINE_WIDTH     = 0
+
+// Panel, filters (found)
+PANEL5_OFSY              = 340
+PANEL5_WY                = 22
+
+// Panel, filters (not found)
+PANEL6_OFSY              = 500
+
+// Panel, filters (special)
+PANEL7_OFSY              = 600
+
+// Panel, revision
+PANEL8_OFSX              = 14
+
+// Panel, install button
+PANEL9_OFSX              = 15
+PANEL9_OFSY              = 17
+PANEL9_WX                = 186
+PANEL9_WY                = 47
+PANEL9_OUTLINE_WIDTH     = 0
+
+// Panel, selectall button
+PANEL10_WY               = 26
+PANEL10_OFSY             = 65
+
+// Panel, selectnone button
+PANEL11_WY               = PANEL10_WY
+PANEL11_OFSY             = 92
+
+// Items on left panel
+PNLITEM_WY               = 22
+
+// Checkboxes on left panel
+CHKBOX_TEXT_OFSX         = 20
+CHKBOX_TEXT_COLOR        = 0xFFFFFF
+CHKBOX_TEXT_COLOR_H      = 0xFFEA00
+CHKBOX_SIZE              = 18
+BUTTON_BITMAP_CHECKED    = "lite\checked-metallic.webp"
+BUTTON_BITMAP_CHECKED_H  = "lite\checked-metallic.webp"
+BUTTON_BITMAP_UNCHECKED  = "lite\unchecked-metallic.webp"
+BUTTON_BITMAP_UNCHECKED_H= "lite\unchecked-metallic.webp"
+
+// Buttons on left panel
+BUTTON_INSIDE_COLOR      = MAINWND_INSIDE_COLOR
+BUTTON_OUTLINE_COLOR     = 0xFFFFFF
+BUTTON_OUTLINE_ROUND     = 0
+BUTTON_INSIDE_COLOR_H    = 0xFFAF17
+
+// Driver list
+DRVLIST_OFSX             = 217
+DRVLIST_OFSY             = 1
+DRVLIST_INSIDE_COLOR     = 0xFFFFFF
+DRVLIST_OUTLINE_ROUND    = 0
+DRVLIST_OUTLINE_WIDTH    = 1
+DRVLIST_OUTLINE_COLOR    = 0xFFFFFF
+
+// Driver items
+DRVITEM_WX               = -20
+DRVITEM_WY               = 37
+DRVITEM_OFSX             = 15
+DRVITEM_OFSY             = 10
+DRVITEM_DIST_Y0          = 36
+DRVITEM_DIST_Y2          = 10
+
+// Driver item content
+ITEM_CHECKBOX_SIZE       = 23
+ITEM_EXPAND_UP           = "lite\downup.webp"
+ITEM_EXPAND_UP_H         = "lite\downup.webp"
+ITEM_EXPAND_DOWN         = "lite\downup.webp"
+ITEM_EXPAND_DOWN_H       = "lite\downup.webp"
+
+// Driver item (generic style)
+DRVITEM_INSIDE_COLOR     = 0xFFFFFF
+DRVITEM_OUTLINE_COLOR    = 0xAAAAAA
+DRVITEM_OUTLINE_ROUND    = 0
+DRVITEM_INSIDE_COLOR_H   = 0xFFF9EE
+DRVITEM_OUTLINE_COLOR_H  = 0x959595
+
+// BETTER_NEW
+DRVITEM_INSIDE_COLOR_BN     = 0xFFFFFF
+DRVITEM_TEXT2_COLOR_BN      = 0xCC8500
+
+// SAME_NEW
+DRVITEM_INSIDE_COLOR_SN     = DRVITEM_INSIDE_COLOR_BN
+DRVITEM_TEXT2_COLOR_SN      = DRVITEM_TEXT2_COLOR_BN
+
+// BETTER_CUR
+DRVITEM_INSIDE_COLOR_BC     = DRVITEM_INSIDE_COLOR_BN
+DRVITEM_TEXT2_COLOR_BC      = DRVITEM_TEXT2_COLOR_BN
+
+// BETTER_OLD
+DRVITEM_INSIDE_COLOR_BO     = DRVITEM_INSIDE_COLOR_BN
+DRVITEM_TEXT2_COLOR_BO      = DRVITEM_TEXT2_COLOR_BN
+
+// MISSING
+DRVITEM_INSIDE_COLOR_MS     = 0xE1FECE
+DRVITEM_TEXT2_COLOR_MS      = 0x3A9000
+
+// NOT-FOUND,INSTELLED_UNKNOWN
+DRVITEM_INSIDE_COLOR_NU     = 0x99FFFF
+
+// NOT-FOUND,INSTALLED_STANDARD
+DRVITEM_INSIDE_COLOR_NS     = 0xEEEEEE
+
+// Driver installed
+DRVITEM_INSIDE_COLOR_D1     = PROGR_INSIDE_COLOR
+DRVITEM_INSIDE_COLOR_D1_H   = 0x91E658
+DRVITEM_OUTLINE_WIDTH_D1    = 0
+DRVITEM_OUTLINE_WIDTH_D1_H  = 0
+
+// Driver installing
+DRVITEM_INSIDE_COLOR_D0     = DRVITEM_INSIDE_COLOR_MS
+DRVITEM_OUTLINE_COLOR_D0    = DRVITEM_INSIDE_COLOR_MS
+DRVITEM_INSIDE_COLOR_D0_H   = DRVITEM_INSIDE_COLOR_MS
+DRVITEM_OUTLINE_COLOR_D0_H  = DRVITEM_INSIDE_COLOR_MS
+
+// Driver installed (reboot required)
+DRVITEM_INSIDE_COLOR_D2     = 0x32BEEC
+DRVITEM_INSIDE_COLOR_D2_H   = 0x56C8EE
+DRVITEM_OUTLINE_WIDTH_D2    = 0
+DRVITEM_OUTLINE_WIDTH_D2_H  = 0
+
+// Driver installation error
+DRVITEM_INSIDE_COLOR_DE     = 0x0041C5
+DRVITEM_INSIDE_COLOR_DE_H   = 0x0048DA
+DRVITEM_OUTLINE_WIDTH_DE    = 0
+DRVITEM_OUTLINE_WIDTH_DE_H  = 0
+
+// No updates
+DRVITEM_INSIDE_COLOR_IU     = BUTTON_INSIDE_COLOR
+DRVITEM_INSIDE_COLOR_IU_H   = BUTTON_INSIDE_COLOR_H
+DRVITEM_TEXT2_COLOR_IU      = 0xFFFFFF
+DRVITEM_OUTLINE_WIDTH_IU    = 1
+DRVITEM_OUTLINE_COLOR_IU    = BUTTON_INSIDE_COLOR
+DRVITEM_OUTLINE_WIDTH_IU_H  = 1
+DRVITEM_OUTLINE_COLOR_IU_H  = BUTTON_INSIDE_COLOR_H
+
+// Info (indexing,snapshot,installation)
+DRVITEM_INSIDE_COLOR_IF     = 0xB54B8C
+DRVITEM_INSIDE_COLOR_IF_H   = 0xBB5995
+DRVITEM_TEXT2_COLOR_IF      = 0xFFFFFF
+
+// Patreon
+DRVITEM_INSIDE_COLOR_PT     = 0x00FFFF
+DRVITEM_INSIDE_COLOR_PT_H   = 0x00FFE4
+DRVITEM_OUTLINE_WIDTH_PT    = 1
+DRVITEM_OUTLINE_WIDTH_PT_H  = 1

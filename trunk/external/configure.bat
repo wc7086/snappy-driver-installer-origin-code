@@ -313,6 +313,7 @@ call :ColorText %c_do% "Downloading BOOST"&echo.
 %MSYS_BIN%\wget http://sourceforge.net/projects/boost/files/boost/%BOOST_VER2%/boost_%BOOST_VER%.tar.gz/download -Oboost_%BOOST_VER%.tar.gz
 :skipdownloadboost
 if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS_BIN%\tar -xf "boost_%BOOST_VER%.tar.gz" -v)
+copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 
 rem download libtorrent
 if /I exist "libtorrent-rasterbar-%LIBTORRENT_VER%.tar.gz" (call :ColorText %c_skip% "Skipping downloading libtorrent"&echo. & goto skipdownloadlibtorrent)
