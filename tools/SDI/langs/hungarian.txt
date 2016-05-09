@@ -91,8 +91,8 @@ STR_SYSINF_MODEL        = "Modell"
 STR_SYSINF_MANUF        = "Gyártó"
 STR_SYSINF_BATTERY      = "Akkumlátor"
 STR_SYSINF_AC_STATUS    = "AC Állapot"
-STR_SYSINF_OFFLINE      = "offline"
-STR_SYSINF_ONLINE       = "online"
+STR_SYSINF_OFFLINE      = "Offline"
+STR_SYSINF_ONLINE       = "Online"
 STR_SYSINF_UNKNOWN      = "Ismeretlen"
 STR_SYSINF_FLAGS        = "Jelzések"
 STR_SYSINF_HIGH         = "[feltöltve]"
@@ -324,3 +324,29 @@ STR_TR_ST4              = "Elkészült - Letöltve"
 STR_TR_ST5              = "Feltöltés"
 STR_TR_ST6              = "Lemezterület lefoglalása"
 STR_TR_ST7              = "Adat összegzés ellenőrzése"
+// Options dialog
+STR_OPTION_TITLE        = "Beállítások"
+STR_OPTION_VIEW_TAB     = "Nézet"
+STR_OPTION_UPDATES_TAB  = "Frissítések"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Driverpack nevei"
+STR_OPTION_HIDE_NAMES   = "Ne jelenjenjenek meg a driverpack nevek"
+STR_OPTION_SHOW_RIGHT   = "Mutassa a driverpack neveket a jobb oldalon"
+STR_OPTION_SHOW_ABOVE   = "Mutassa a driverpack neveket felül"
+STR_OPTION_SCALLING     = "Interfész méretezés"
+STR_OPTION_CONSOLE      = "Konzol ablak megjelenítése"
+
+// Update tab
+STR_OPTION_CHECKUPDATES = "Űj verzió/driverpack ellenőrzése"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Port"
+STR_OPTION_MAX_DOWNLOAD = "Max.letöltési sebesség byte-ban/s(0:korlátlan)"
+STR_OPTION_MAX_UPLOAD   = "Max.feltöltési sebesség byte-ban/s(0:korlátlan)"
+  // Patreon
+STR_PATREON1             = "SDI-t önkéntesek fejlesztik a szabadidejükben. Ha elnyerte tetszését a szoftver, akkor támogassa a Patreon-on keresztűl."
+STR_PATREON2             = "(Klikk ide a Patreon oldal megnyitásához)"
+STR_PATREON_H            = ""
