@@ -17,6 +17,8 @@ rem Versions
 set BOOST_VER=1_60_0
 set BOOST_VER2=1.60.0
 set BOOST_VER3=1_60
+rem set LIBTORRENT_VER2=1.1.0
+rem set LIBTORRENT_VER=1_1
 set LIBTORRENT_VER2=1.0.8
 set LIBTORRENT_VER=1_0_8
 set LIBWEBP_VER=0.5.0
@@ -115,7 +117,7 @@ goto mainmenu
 :buildboost
 rem Install BOOST (32-bit)
 if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (call :ColorText %c_skip% "Skipping installing BOOST32"&echo. & goto skipinstallboost32)
-copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
+call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
 bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH% define=BOOST_USE_WINAPI_VERSION=0x0501
@@ -299,7 +301,7 @@ call :ColorText %c_do% "Downloading make"&echo.
 rem update toolchain
 call :ColorText %c_do% "Updating toolchain"&echo.
 %MSYS_BIN%\pacman.exe -Syu --noconfirm
-copy %GCC64_PATH%\bin\libwinpthread-1.dll %GCC64_PATH%\libexec\gcc\x86_64-w64-mingw32\%GCC_VERSION%
+call :copyecho %GCC64_PATH%\bin\libwinpthread-1.dll %GCC64_PATH%\libexec\gcc\x86_64-w64-mingw32\%GCC_VERSION%
 
 rem download WebP
 if /I exist "%LIBTORRENT_PATH%\..\webp\mingw\msys\1.0\home\libwebp-%LIBWEBP_VER%.tar.gz" (call :ColorText %c_skip% "Skipping downloading WebP"&echo. & goto skipdownloadwebp)
@@ -313,7 +315,7 @@ call :ColorText %c_do% "Downloading BOOST"&echo.
 %MSYS_BIN%\wget http://sourceforge.net/projects/boost/files/boost/%BOOST_VER2%/boost_%BOOST_VER%.tar.gz/download -Oboost_%BOOST_VER%.tar.gz
 :skipdownloadboost
 if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS_BIN%\tar -xf "boost_%BOOST_VER%.tar.gz" -v)
-copy "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
+call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 
 rem download libtorrent
 if /I exist "libtorrent-rasterbar-%LIBTORRENT_VER%.tar.gz" (call :ColorText %c_skip% "Skipping downloading libtorrent"&echo. & goto skipdownloadlibtorrent)
@@ -338,10 +340,14 @@ echo %GCC64_PATH% /mingw64>> %MSYS_PATH%\etc\fstab
 pushd %MSYS_PATH%
 rem if "%TOOLSET%"=="msvc" del %MSYS_PATH%\etc\fstab 2>nul
 call makewebp.bat %MSYS_BIN% /mingw32%GCC_PREFIX1% /mingw64%GCC64_PREFIX1%
-copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\release-static\x64\lib\libwebp.lib %LIBDIR%\Release_x64\libwebp.lib /Y
-copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\debug-static\x64\lib\libwebp_debug.lib %LIBDIR%\Debug_x64\libwebp.lib /Y
-copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\release-static\x32\lib\libwebp.lib %LIBDIR%\Release_Win32\libwebp.lib /Y
-copy %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\debug-static\x32\lib\libwebp_debug.lib %LIBDIR%\Debug_Win32\libwebp.lib /Y
+
+if %TOOLSET%==gcc goto skiplibs
+call :copyecho %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\release-static\x64\lib\libwebp.lib %LIBDIR%\Release_x64\libwebp.lib /Y
+call :copyecho %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\debug-static\x64\lib\libwebp_debug.lib %LIBDIR%\Debug_x64\libwebp.lib /Y
+call :copyecho %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\release-static\x32\lib\libwebp.lib %LIBDIR%\Release_Win32\libwebp.lib /Y
+call :copyecho %MSYS_PATH%\home\libwebp-%LIBWEBP_VER%\output\debug-static\x32\lib\libwebp_debug.lib %LIBDIR%\Debug_Win32\libwebp.lib /Y
+:skiplibs
+
 popd
 if /I "%menu%"=="W" (echo. & call :ColorText %c_done% "DONE"&echo. & echo. & pause&goto mainmenu)
 :skipprepwebp
@@ -383,20 +389,23 @@ call :ColorText %c_skip% "Skipping building libtorrent[32-bit]"&echo.
 goto skipbuildlibtorrent
 :buildtorrent32
 call :ColorText %c_do% "Building libtorrent32"&echo.
-copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
+call :copyecho "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 pushd "%LIBTORRENT_PATH%\examples"
 
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% myrelease exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% mydebug exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% rls exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% dbg exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
 
-copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib /Y
-copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a /Y
-copy ..\bin\msvc-%MSVC_VERSION%\myrls\libtorrent.lib %LIBDIR%\Release_Win32 /Y
-copy ..\bin\msvc-%MSVC_VERSION%\mydbg\libtorrent.lib %LIBDIR%\Debug_Win32 /Y
+call :copyecho ..\bin\gcc-mngw-%GCC_VERSION%\rls\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib /Y
+call :copyecho ..\bin\gcc-mngw-%GCC_VERSION%\dbg\libtorrent.a %GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a /Y
+call :copyecho %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\rls\libboost_system-mgw%GCC_VERSION2%-mt-s-%BOOST_VER3%.a %LIBBOOST32% /Y
 
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls\libboost_system-mgw%GCC_VERSION2%-mt-s-%BOOST_VER3%.a %LIBBOOST32% /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls\libboost_system-vc120-mt-s-%BOOST_VER3%.lib %LIBDIR%\Release_Win32\libboost_system.lib /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg\libboost_system-vc120-mt-sg%BOOST_VER3%.lib %LIBDIR%\Debug_Win32\libboost_system.lib /Y
+if %TOOLSET%==gcc goto skiplibtor32
+call :copyecho ..\bin\msvc-%MSVC_VERSION%\myrls\libtorrent.lib %LIBDIR%\Release_Win32 /Y
+call :copyecho ..\bin\msvc-%MSVC_VERSION%\mydbg\libtorrent.lib %LIBDIR%\Debug_Win32 /Y
+call :copyecho %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls\libboost_system-vc120-mt-s-%BOOST_VER3%.lib %LIBDIR%\Release_Win32\libboost_system.lib /Y
+call :copyecho %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg\libboost_system-vc120-mt-sg%BOOST_VER3%.lib %LIBDIR%\Debug_Win32\libboost_system.lib /Y
+:skiplibtor32
+
 popd
 :skipbuildlibtorrent
 
@@ -407,21 +416,24 @@ call :ColorText %c_skip% "Skipping building libtorrent[64-bit]"&echo.
 goto skipbuildlibtorrent64
 :buildtorrent64
 call :ColorText %c_do% "Building libtorrent64"&echo.
-copy "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
+call :copyecho "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 pushd "%LIBTORRENT_PATH%\examples"
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% myrelease64 exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
-bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% mydebug64 exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% rls64 exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% address-model=64 toolset=%TOOLSET% dbg64 exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
 
-copy ..\bin\gcc-mngw-%GCC_VERSION%\myrls\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib /Y
-copy ..\bin\gcc-mngw-%GCC_VERSION%\mydbg\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
-copy ..\bin\msvc-%MSVC_VERSION%\myrls\adrs-mdl-64\libtorrent.lib %LIBDIR%\Release_x64 /Y
-copy ..\bin\msvc-%MSVC_VERSION%\mydbg\adrs-mdl-64\libtorrent.lib %LIBDIR%\Debug_x64 /Y
+call :copyecho ..\bin\gcc-mngw-%GCC_VERSION%\rls64\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib /Y
+call :copyecho ..\bin\gcc-mngw-%GCC_VERSION%\dbg64\adrs-mdl-64\libtorrent.a %GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a /Y
+call :copyecho %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\rls64%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-%BOOST_VER3%.a %LIBBOOST64% /Y
 
-copy %BOOST_ROOT%\bin.v2\libs\system\build\gcc-mngw-%GCC_VERSION%\myrls%ADR64%\libboost_system-mgw%GCC_VERSION2%-mt-s-%BOOST_VER3%.a %LIBBOOST64% /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls%ADR64%\libboost_system-vc120-mt-s-%BOOST_VER3%.lib %LIBDIR%\Release_x64\libboost_system.lib /Y
-copy %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg%ADR64%\libboost_system-vc120-mt-sg-%BOOST_VER3%.lib %LIBDIR%\Debug_x64\libboost_system.lib /Y
+if %TOOLSET%==gcc goto skiplibtor64
+call :copyecho ..\bin\msvc-%MSVC_VERSION%\myrls\adrs-mdl-64\libtorrent.lib %LIBDIR%\Release_x64 /Y
+call :copyecho ..\bin\msvc-%MSVC_VERSION%\mydbg\adrs-mdl-64\libtorrent.lib %LIBDIR%\Debug_x64 /Y
+call :copyecho %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\myrls%ADR64%\libboost_system-vc120-mt-s-%BOOST_VER3%.lib %LIBDIR%\Release_x64\libboost_system.lib /Y
+call :copyecho %BOOST_ROOT%\bin.v2\libs\system\build\msvc-%MSVC_VERSION%\mydbg%ADR64%\libboost_system-vc120-mt-sg-%BOOST_VER3%.lib %LIBDIR%\Debug_x64\libboost_system.lib /Y
+:skiplibtor64
+
 set path=%oldpath%
 popd
 :skipbuildlibtorrent64
@@ -441,4 +453,11 @@ echo off
 <nul set /p ".=%DEL%" > "%~2"
 findstr /v /a:%1 /R "^$" "%~2" nul
 del "%~2" > nul 2>&1
+goto :eof
+
+:copyecho
+@echo off
+echo Copying %1 %2 %3 %4 %5 %6 %7 %8 %9
+copy %1 %2 %3 %4 %5 %6 %7 %8 %9
+if errorlevel 1 call :ColorText  %c_fail% "Copy failed"&echo.&echo.
 goto :eof

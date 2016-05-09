@@ -1699,6 +1699,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             rect.bottom=floating_y;
 
             canvasPopup->SetFont(Popup->hFontP);
+            if(floating_itembar==SLOT_PATREON)break;
             canvasPopup->CalcBoundingBox(STR(floating_itembar),reinterpret_cast<RECT_WR *>(&rect));
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);

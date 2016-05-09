@@ -79,10 +79,12 @@ private:
     std::queue<Data> the_queue;
     mutable boost::mutex the_mutex;
     HANDLE notification;
+    int num;
 
 public:
     concurrent_queue()
     {
+        num=0;
         notification=CreateEvent(nullptr,0,0,nullptr);
     }
 
@@ -93,8 +95,16 @@ public:
 
     void push(Data const& data)
     {
+        #ifndef _WIN64
+        while(num>4000)
+        {
+            Log.print_con("The queue is full. Waiting...\n");
+            Sleep(100);
+        }
+        #endif
         boost::mutex::scoped_lock lock(the_mutex);
         the_queue.push(data);
+        num++;
         lock.unlock();
         SetEvent(notification);
     }
@@ -110,6 +120,7 @@ public:
             lock.lock();
         }
         popped_value=the_queue.front();
+        num--;
         the_queue.pop();
     }
 };
