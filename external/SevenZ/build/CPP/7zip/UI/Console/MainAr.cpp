@@ -62,7 +62,7 @@ int Extract7z(const WCHAR *str)
 
   NConsoleClose::CCtrlHandlerSetter ctrlHandlerSetter;
   int res = 0;
-
+  
   try
   {
 	res = Main2(str);

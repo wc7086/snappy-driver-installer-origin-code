@@ -1062,7 +1062,7 @@ void CArcCmdLineParser::Parse2(CArcCmdLineOptions &options)
   const UStringVector &nonSwitchStrings = parser.NonSwitchStrings;
   unsigned numNonSwitchStrings = nonSwitchStrings.Size();
   if (numNonSwitchStrings < kMinNonSwitchWords)
-    throw CArcCmdLineException("The command must be spcified");
+    throw CArcCmdLineException("The command must be specified");
 
   if (!ParseArchiveCommand(nonSwitchStrings[kCommandIndex], options.Command))
     throw CArcCmdLineException("Unsupported command:", nonSwitchStrings[kCommandIndex]);
@@ -1245,7 +1245,7 @@ void CArcCmdLineParser::Parse2(CArcCmdLineOptions &options)
               )
             )
            )
-        throw CArcCmdLineException(kSameTerminalError);
+          throw CArcCmdLineException(kSameTerminalError);
       }
       
       if (parser[NKey::kOutputDir].ThereIs)
@@ -1324,7 +1324,7 @@ void CArcCmdLineParser::Parse2(CArcCmdLineOptions &options)
     if (updateOptions.StdOutMode)
     {
       if (options.IsStdOutTerminal)
-      throw CArcCmdLineException(kTerminalOutError);
+        throw CArcCmdLineException(kTerminalOutError);
       
       if (options.Number_for_Percents == k_OutStream_stdout
           || options.Number_for_Out == k_OutStream_stdout

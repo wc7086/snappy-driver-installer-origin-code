@@ -55,7 +55,7 @@ HRESULT CUpdateCallbackConsole::OpenResult(
   {
     const CArc &arc = arcLink.Arcs[level];
     const CArcErrorInfo &er = arc.ErrorInfo;
-
+    
     UInt32 errorFlags = er.GetErrorFlags();
 
     if (errorFlags != 0 || !er.ErrorMessage.IsEmpty())
@@ -66,26 +66,26 @@ HRESULT CUpdateCallbackConsole::OpenResult(
         if (level != 0)
           *_se << arc.Path << endl;
       }
-
+      
       if (errorFlags != 0)
       {
         if (_se)
           PrintErrorFlags(*_se, "ERRORS:", errorFlags);
       }
-
+      
       if (!er.ErrorMessage.IsEmpty())
       {
         if (_se)
           *_se << "ERRORS:" << endl << er.ErrorMessage << endl;
       }
-
+      
       if (_se)
       {
         *_se << endl;
         _se->Flush();
       }
     }
-
+    
     UInt32 warningFlags = er.GetWarningFlags();
 
     if (warningFlags != 0 || !er.WarningMessage.IsEmpty())
@@ -96,19 +96,19 @@ HRESULT CUpdateCallbackConsole::OpenResult(
         if (level != 0)
           *_so << arc.Path << endl;
       }
-
+      
       if (warningFlags != 0)
       {
         if (_so)
           PrintErrorFlags(*_so, "WARNINGS:", warningFlags);
       }
-
+      
       if (!er.WarningMessage.IsEmpty())
       {
         if (_so)
           *_so << "WARNINGS:" << endl << er.WarningMessage << endl;
       }
-
+      
       if (_so)
       {
         *_so << endl;
@@ -117,7 +117,7 @@ HRESULT CUpdateCallbackConsole::OpenResult(
       }
     }
 
-
+  
     if (er.ErrorFormatIndex >= 0)
     {
       if (_so)
@@ -177,7 +177,7 @@ HRESULT CUpdateCallbackConsole::ScanProgress(const CDirItemsStat &st, const FStr
 void CCallbackConsoleBase::CommonError(const FString &path, DWORD systemError, bool isWarning)
 {
   ClosePercents2();
-
+  
   if (_se)
   {
     if (_so)
@@ -329,13 +329,13 @@ HRESULT CUpdateCallbackConsole::DeletingAfterArchiving(const FString &path, bool
   if (LogLevel > 0 && _so)
   {
     ClosePercents_for_so();
-
+      
     if (!DeleteMessageWasShown)
     {
       if (_so)
         *_so << endl << ": Removing files after including to archive" << endl;
     }
-
+   
     {
       {
         _tempA = "Removing";
@@ -443,13 +443,13 @@ HRESULT CUpdateCallbackConsole::SetRatioInfo(const UInt64 * /* inSize */, const 
 HRESULT CCallbackConsoleBase::PrintProgress(const wchar_t *name, const char *command, bool showInLog)
 {
   MT_LOCK
-
+  
   bool show2 = (showInLog && _so);
 
   if (show2)
   {
     ClosePercents_for_so();
-
+    
     _tempA = command;
     if (name)
       _tempA.Add_Space();
@@ -479,7 +479,7 @@ HRESULT CCallbackConsoleBase::PrintProgress(const wchar_t *name, const char *com
     }
     _percent.Print();
   }
-
+  
   return CheckBreak2();
 }
 
@@ -487,12 +487,12 @@ HRESULT CUpdateCallbackConsole::GetStream(const wchar_t *name, bool /* isDir */,
 {
   if (StdOutMode)
     return S_OK;
-
+  
   if (!name || name[0] == 0)
     name = kEmptyFileAlias;
 
   unsigned requiredLevel = 1;
-
+  
   const char *s;
   if (mode == NUpdateNotifyOp::kAdd ||
       mode == NUpdateNotifyOp::kUpdate)
@@ -512,7 +512,7 @@ HRESULT CUpdateCallbackConsole::GetStream(const wchar_t *name, bool /* isDir */,
     else
       s = "Reading";
   }
-
+  
   return PrintProgress(name, s, LogLevel >= requiredLevel);
 }
 
@@ -542,7 +542,7 @@ HRESULT CUpdateCallbackConsole::ReportExtractResult(Int32 opRes, Int32 isEncrypt
   if (opRes != NArchive::NExtract::NOperationResult::kOK)
   {
     ClosePercents2();
-
+    
     if (_se)
     {
       if (_so)
@@ -565,9 +565,9 @@ HRESULT CUpdateCallbackConsole::ReportUpdateOpeartion(UInt32 op, const wchar_t *
 
   char temp[16];
   const char *s;
-
+  
   unsigned requiredLevel = 1;
-
+  
   switch (op)
   {
     case NUpdateNotifyOp::kAdd:       s = "+"; break;
@@ -615,9 +615,9 @@ HRESULT CUpdateCallbackConsole::CryptoGetTextPassword2(Int32 *passwordIsDefined,
 
   *passwordIsDefined = false;
   return S_OK;
-
+  
   #else
-
+  
   if (!PasswordIsDefined)
   {
     if (AskPassword)
@@ -628,7 +628,7 @@ HRESULT CUpdateCallbackConsole::CryptoGetTextPassword2(Int32 *passwordIsDefined,
   }
   *passwordIsDefined = BoolToInt(PasswordIsDefined);
   return StringToBstr(Password, password);
-
+  
   #endif
 
   COM_TRY_END
@@ -637,15 +637,15 @@ HRESULT CUpdateCallbackConsole::CryptoGetTextPassword2(Int32 *passwordIsDefined,
 HRESULT CUpdateCallbackConsole::CryptoGetTextPassword(BSTR *password)
 {
   COM_TRY_BEGIN
-
+  
   *password = NULL;
 
   #ifdef _NO_CRYPTO
 
   return E_NOTIMPL;
-
+  
   #else
-
+  
   if (!PasswordIsDefined)
   {
     {
@@ -654,7 +654,7 @@ HRESULT CUpdateCallbackConsole::CryptoGetTextPassword(BSTR *password)
     }
   }
   return StringToBstr(Password, password);
-
+  
   #endif
   COM_TRY_END
 }
@@ -663,7 +663,7 @@ HRESULT CUpdateCallbackConsole::ShowDeleteFile(const wchar_t *name, bool /* isDi
 {
   if (StdOutMode)
     return S_OK;
-
+  
   if (LogLevel > 7)
   {
     if (!name || name[0] == 0)
