@@ -218,7 +218,7 @@ STR_INST_FAILED         = "Failed to install, error "
 STR_INST_INSTALLING     = "Installing... "
 STR_INST_COMPLITED      = "Installation completed"
 STR_INST_COMPLITED_RB   = "Installation completed (system restart required)"
-STR_INST_CLOSE          = "(Click here to close hide installed drivers)"
+STR_INST_CLOSE          = "(Click here to hide installed drivers)"
 
 STR_EXTR_EXTRACTING     = "Extracting... "
 STR_EXTR_OK             = "Successfully extracted"

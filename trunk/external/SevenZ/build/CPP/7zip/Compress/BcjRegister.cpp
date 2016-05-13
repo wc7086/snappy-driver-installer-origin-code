@@ -6,8 +6,13 @@
 
 #include "BcjCoder.h"
 
+namespace NCompress {
+namespace NBcj {
+
 REGISTER_FILTER_E(BCJ,
-    CBcjCoder(false),
-    CBcjCoder(true),
+    CCoder(false),
+    CCoder(true),
     0x3030103, "BCJ")
+
+}}
 void registerBCJ(){}
