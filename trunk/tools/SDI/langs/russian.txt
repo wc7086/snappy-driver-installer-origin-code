@@ -332,24 +332,47 @@ STR_TR_ST7              = "возобновление"
 STR_OPTION_TITLE        = "Опции"
 STR_OPTION_VIEW_TAB     = "Вид"
 STR_OPTION_UPDATES_TAB  = "Обновления"
+STR_OPTION_PATH_TAB     = "Пути"
+STR_OPTION_ADVANCED_TAB = "Прочее"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
 // View tab
 STR_OPTION_DRPNAMES     = "Названия драйверпаков"
-STR_OPTION_HIDE_NAMES   = "Не отображать"
-STR_OPTION_SHOW_RIGHT   = "Отображать справа"
-STR_OPTION_SHOW_ABOVE   = "Отображать сверху"
-STR_OPTION_SCALLING     = "Масштабирование"
-STR_OPTION_CONSOLE      = "Отображать консольное окно"
+STR_OPTION_HIDE_NAMES   = "Не отображать названия драйверпаков"
+STR_OPTION_SHOW_RIGHT   = "Отображать названия драйверпаков справа"
+STR_OPTION_SHOW_ABOVE   = "Отображать названия драйверпаков сверху"
+STR_OPTION_SCALLING     = "Размер интерфейса"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Мелкий"
+STR_OPTION_SCALLING_BIG = "Крупный"
+STR_OPTION_SCALLING_RST = "Сброс"
+STR_OPTION_HINT         = "Всплывающая подсказка"
+STR_OPTION_HINT_LABEL   = "Задержка перед появлением в мс"
 
 // Update tab
 STR_OPTION_CHECKUPDATES = "Проверять обновления"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Торрент"
 STR_OPTION_PORT         = "Порт"
-STR_OPTION_MAX_DOWNLOAD = "Максимальная скорость загрузки в байтах/сек (0:не ограничено)"
-STR_OPTION_MAX_UPLOAD   = "Максимальная скорость отдачи в байтах/сек (0:не ограничено)"
+STR_OPTION_MAX_CON      = "Максимальное количество соединений (0 - не ограничено)"
+STR_OPTION_MAX_DOWNLOAD = "Максимальная скорость загрузки в КБ/сек (0 - не ограничено)"
+STR_OPTION_MAX_UPLOAD   = "Максимальная скорость отдачи в КБ/сек (0 - не ограничено)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Драйверы"
+STR_OPTION_DIR_INDEXES  = "Индексы"
+STR_OPTION_DIR_INDEXESH = "Индексы в виде текста"
+STR_OPTION_DIR_DATA     = "Переводы и темы"
+STR_OPTION_DIR_LOGS     = "Логи"
+
+// Advanced tab
+STR_OPTION_CMD          = "Команды"
+STR_OPTION_CMD_LABEL    = "Здесь вы можете задать команды, которые будут выполняться через CMD после выполнения указанных операций."
+STR_OPTION_CMD_FINISH   = "После установки (перезагрузка не требуется)"
+STR_OPTION_CMD_FINISHRB = "После установки (требуется перезагрузка)"
+STR_OPTION_CMD_FINISHDN = "После закачки драйверпаков"
+STR_OPTION_CONSOLE      = "Отображать консольное окно"
 
 // Patreon
 STR_PATREON1             = "Вы можете поддержать развитие программы через систему Patreon"

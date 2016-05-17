@@ -70,11 +70,11 @@ PANEL4_OUTLINE_WIDTH     = 0
 PANEL4_INSIDE_COLOR      = 0x000000
 
 // Panel, filters (found)
-PANEL5_OFSY              = 441
+PANEL5_OFSY              = 461
 PANEL5_WY                = 22
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 616
+PANEL6_OFSY              = 636
 
 // Panel, filters (special)
 PANEL7_OFSY              = 721
@@ -168,7 +168,7 @@ DRVITEM_WX               = -20
 //DRVITEM_WY               = 37
 DRVITEM_OFSX             = 15
 DRVITEM_OFSY             = 10
-DRVITEM_DIST_Y0          = 36
+DRVITEM_DIST_Y0          = 39
 DRVITEM_DIST_Y2          = 10
 
 // Driver item content

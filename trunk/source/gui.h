@@ -116,6 +116,12 @@ public:
     void LeftClick(bool=false);
 };
 
+class DrvOptionsCommand:public Command
+{
+public:
+    void LeftClick(bool=false);
+};
+
 class InstallCommand:public Command
 {
 public:

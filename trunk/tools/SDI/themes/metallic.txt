@@ -203,7 +203,7 @@ PANEL4_BITMAP_FILL_H     = PANEL_BITMAP_FILL_H
 
 // Panel, filters (found)
 PANEL5_OFSX              = PANEL_OFSX
-PANEL5_OFSY              = 389
+PANEL5_OFSY              = 409
 PANEL5_WX                = PANEL_WX
 PANEL5_WY                = PANEL_WY
 PANEL5_INSIDE_COLOR      = PANEL_INSIDE_COLOR
@@ -223,7 +223,7 @@ PANEL5_BITMAP_FILL_H     = PANEL_BITMAP_FILL_H
 
 // Panel, filters (not found)
 PANEL6_OFSX              = PANEL_OFSX
-PANEL6_OFSY              = 552
+PANEL6_OFSY              = 572
 PANEL6_WX                = PANEL_WX
 PANEL6_WY                = PANEL_WY
 PANEL6_INSIDE_COLOR      = PANEL_INSIDE_COLOR
@@ -246,6 +246,7 @@ PANEL7_OFSX              = PANEL_OFSX
 PANEL7_OFSY              = 652
 PANEL7_WX                = PANEL_WX
 PANEL7_WY                = PANEL_WY
+PANEL7_WY                = 0
 PANEL7_INSIDE_COLOR      = PANEL_INSIDE_COLOR
 PANEL7_OUTLINE_COLOR     = PANEL_OUTLINE_COLOR
 PANEL7_OUTLINE_WIDTH     = PANEL_OUTLINE_WIDTH

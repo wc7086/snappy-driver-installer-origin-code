@@ -561,6 +561,276 @@ void MainWindow_t::theme_refresh()
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
 }
 
+struct TData
+{
+    HWND pages[4];
+    HWND tab;
+} data;
+
+BOOL CALLBACK DialogPage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    UNREFERENCED_PARAMETER(hwnd);
+    UNREFERENCED_PARAMETER(wp);
+    UNREFERENCED_PARAMETER(lp);
+
+    switch(msg)
+    {
+        case WM_COMMAND:
+            switch(wp)
+            {
+                case IDD_P1_ZOOMR:
+                    SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETPOS,1,-256);
+                default:
+                    break;
+            }
+
+        case WM_HSCROLL:
+            {
+                int n=-SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_GETPOS,0,0);
+                if(n!=Settings.scale)
+                {
+                    Settings.savedscale=Settings.scale=n;
+                    PostMessage(MainWindow.hMain,WM_UPDATETHEME,0,0);
+                }
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    return FALSE;
+}
+
+void OnSelChange()
+{
+    int sel=TabCtrl_GetCurSel(data.tab);
+    ShowWindow(data.pages[0],(sel==0)?SW_SHOW:SW_HIDE);
+    ShowWindow(data.pages[1],(sel==1)?SW_SHOW:SW_HIDE);
+    ShowWindow(data.pages[2],(sel==2)?SW_SHOW:SW_HIDE);
+    ShowWindow(data.pages[3],(sel==3)?SW_SHOW:SW_HIDE);
+}
+
+BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
+{
+    wchar_t num[32];
+
+    switch (msg)
+    {
+        case WM_INITDIALOG:
+            data.pages[0]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page1),hwnd,(DLGPROC)DialogPage);
+            data.pages[1]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page2),hwnd,(DLGPROC)DialogPage);
+            data.pages[2]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page3),hwnd,(DLGPROC)DialogPage);
+            data.pages[3]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page4),hwnd,(DLGPROC)DialogPage);
+
+            data.tab=GetDlgItem(hwnd,IDC_TAB1);
+            if(data.tab)
+            {
+                TCITEM tci;
+                tci.mask = TCIF_TEXT;
+                tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_VIEW_TAB));
+                TabCtrl_InsertItem(data.tab, 0, &tci);
+                tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_UPDATES_TAB));
+                TabCtrl_InsertItem(data.tab, 1, &tci);
+                tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_PATH_TAB));
+                TabCtrl_InsertItem(data.tab, 2, &tci);
+                tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_ADVANCED_TAB));
+                TabCtrl_InsertItem(data.tab, 3, &tci);
+
+                RECT rc;
+                GetWindowRect(data.tab,&rc);
+                POINT offset;
+                offset.x=0;
+                offset.y=0;
+                ScreenToClient(hwnd,&offset);
+                OffsetRect(&rc,offset.x,offset.y);
+
+                rc.top+=30;
+                rc.left+=3;
+                rc.right-=3;
+                rc.bottom-=3;
+                SetWindowPos(data.pages[0],nullptr,rc.left,rc.top,rc.right-rc.left,rc.bottom-rc.top,SWP_HIDEWINDOW);
+                SetWindowPos(data.pages[1],nullptr,rc.left,rc.top,rc.right-rc.left,rc.bottom-rc.top,SWP_HIDEWINDOW);
+                SetWindowPos(data.pages[2],nullptr,rc.left,rc.top,rc.right-rc.left,rc.bottom-rc.top,SWP_HIDEWINDOW);
+                SetWindowPos(data.pages[3],nullptr,rc.left,rc.top,rc.right-rc.left,rc.bottom-rc.top,SWP_HIDEWINDOW);
+
+                // Strings
+                SetWindowText(hwnd,STR(STR_OPTION_TITLE));
+
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_DRV),STR(STR_OPTION_DRPNAMES));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_DRV1),STR(STR_OPTION_HIDE_NAMES));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_DRV2),STR(STR_OPTION_SHOW_RIGHT));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_DRV3),STR(STR_OPTION_SHOW_ABOVE));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOMG),STR(STR_OPTION_SCALLING));
+
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOML),STR(STR_OPTION_SCALLING_H));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOMS),STR(STR_OPTION_SCALLING_SML));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOMB),STR(STR_OPTION_SCALLING_BIG));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOMR),STR(STR_OPTION_SCALLING_RST));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_HINTG),STR(STR_OPTION_HINT));
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_HINTL),STR(STR_OPTION_HINT_LABEL));
+
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_TOR),STR(STR_OPTION_TORRENT));
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_PORT),STR(STR_OPTION_PORT));
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_CON),STR(STR_OPTION_MAX_CON));
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_DOWN),STR(STR_OPTION_MAX_DOWNLOAD));
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UP),STR(STR_OPTION_MAX_UPLOAD));
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPD),STR(STR_OPTION_CHECKUPDATES));
+                SetWindowText(GetDlgItem(data.pages[1],IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
+
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR1),STR(STR_OPTION_DIR_DRIVERS));
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR2),STR(STR_OPTION_DIR_INDEXES));
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR3),STR(STR_OPTION_DIR_INDEXESH));
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR4),STR(STR_OPTION_DIR_DATA));
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR5),STR(STR_OPTION_DIR_LOGS));
+
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMDG),STR(STR_OPTION_CMD));
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMDL),STR(STR_OPTION_CMD_LABEL));
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD1),STR(STR_OPTION_CMD_FINISH));
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD2),STR(STR_OPTION_CMD_FINISHRB));
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD3),STR(STR_OPTION_CMD_FINISHDN));
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CONSL),STR(STR_OPTION_CONSOLE));
+
+                // Set data
+                WStringShort str;
+
+                int r;
+                switch(Settings.flags&(FLAG_SHOWDRPNAMES1|FLAG_SHOWDRPNAMES2))
+                {
+                    case FLAG_SHOWDRPNAMES1:r=IDD_P1_DRV2;break;
+                    case FLAG_SHOWDRPNAMES2:r=IDD_P1_DRV3;break;
+//                    case 0:r=2;break;
+                    default:r=IDD_P1_DRV1;break;
+                }
+                SendMessage(GetDlgItem(data.pages[0],r),BM_SETCHECK,BST_CHECKED,0);
+                SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETRANGE,1,MAKELONG(-350,-150));
+//                SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETRANGE,1,MAKELONG(150,350));
+                SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETPOS,1,-Settings.scale);
+                str.sprintf(L"%d",Settings.hintdelay);
+                SetWindowText(GetDlgItem(data.pages[0],IDD_P1_HINTE),str.Get());
+
+                str.sprintf(L"%d",Updater->torrentport);
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_PORTE),str.Get());
+                str.sprintf(L"%d",Updater->connections);
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_CONE),str.Get());
+                str.sprintf(L"%d",Updater->downlimit);
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_DOWNE),str.Get());
+                str.sprintf(L"%d",Updater->uplimit);
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPE),str.Get());
+                if(!(Settings.flags&FLAG_CHECKUPDATES))SendMessage(GetDlgItem(data.pages[1],IDD_P2_UPD),BM_SETCHECK,BST_CHECKED,0);
+                if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(GetDlgItem(data.pages[1],IDONLYUPDATE),BM_SETCHECK,BST_CHECKED,0);
+
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR1E),Settings.drp_dir);
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR2E),Settings.index_dir);
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR3E),Settings.output_dir);
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR4E),Settings.data_dir);
+                SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR5E),Settings.logO_dir);
+
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD1E),Settings.finish);
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD2E),Settings.finish_rb);
+                SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD3E),Settings.finish_upd);
+                if(Settings.flags&FLAG_SHOWCONSOLE)SendMessage(GetDlgItem(data.pages[3],IDD_P4_CONSL),BM_SETCHECK,BST_CHECKED,0);
+
+                OnSelChange();
+            }
+            break;
+
+        case WM_NOTIFY:
+            switch(((LPNMHDR)lp)->code)
+            {
+                case TCN_SELCHANGE:
+                    OnSelChange();
+                    break;
+
+                default:
+                    break;
+            }
+            break;
+
+        case WM_HSCROLL:
+            Log.print_con("asd");
+            break;
+
+        case WM_COMMAND:
+            switch(wp)
+            {
+                case IDOK:
+                    {
+                        int n=-SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_GETPOS,0,0);
+                        if(n!=Settings.scale)
+                        {
+                            Settings.savedscale=Settings.scale=n;
+                            PostMessage(MainWindow.hMain,WM_UPDATETHEME,0,0);
+                        }
+                    }
+                    Settings.flags&=~(FLAG_SHOWDRPNAMES1|FLAG_SHOWDRPNAMES2);
+                    if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV2),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES1;
+                    if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV3),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES2;
+                    manager_g->filter(Settings.filters);
+                    manager_g->setpos();
+                    MainWindow.redrawfield();
+
+                    GetWindowText(GetDlgItem(data.pages[0],IDD_P1_HINTE),num,32);
+                    Settings.hintdelay=_wtoi_my(num);
+
+                    GetWindowText(GetDlgItem(data.pages[1],IDD_P2_PORTE),num,32);
+                    Updater->torrentport=_wtoi_my(num);
+                    GetWindowText(GetDlgItem(data.pages[1],IDD_P2_CONE),num,32);
+                    Updater->connections=_wtoi_my(num);
+                    GetWindowText(GetDlgItem(data.pages[1],IDD_P2_DOWNE),num,32);
+                    Updater->downlimit=_wtoi_my(num);
+                    GetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPE),num,32);
+                    Updater->uplimit=_wtoi_my(num);
+                    Updater->SetLimits();
+
+                    if(!SendMessage(GetDlgItem(data.pages[1],IDD_P2_UPD),BM_GETCHECK,0,0))
+                        Settings.flags|=FLAG_CHECKUPDATES;
+                    else
+                        Settings.flags&=~FLAG_CHECKUPDATES;
+
+                    if(SendMessage(GetDlgItem(data.pages[1],IDONLYUPDATE),BM_GETCHECK,0,0))
+                        Settings.flags|=FLAG_ONLYUPDATES;
+                    else
+                        Settings.flags&=~FLAG_ONLYUPDATES;
+
+                    GetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR1E),Settings.drp_dir,BUFLEN);
+                    GetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR2E),Settings.index_dir,BUFLEN);
+                    GetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR3E),Settings.output_dir,BUFLEN);
+                    GetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR4E),Settings.data_dir,BUFLEN);
+                    GetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR5E),Settings.logO_dir,BUFLEN);
+
+                    GetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD1E),Settings.finish,BUFLEN);
+                    GetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD2E),Settings.finish_rb,BUFLEN);
+                    GetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD3E),Settings.finish_upd,BUFLEN);
+
+                    if(SendMessage(GetDlgItem(data.pages[3],IDD_P4_CONSL),BM_GETCHECK,0,0))
+                    {
+                        Settings.flags|=FLAG_SHOWCONSOLE;
+                        Console->Show();
+                    }
+                    else
+                    {
+                        Settings.flags&=~FLAG_SHOWCONSOLE;
+                        Console->Hide();
+                    }
+
+                    EndDialog(hwnd,wp);
+                    break;
+
+                case IDCANCEL:
+                    EndDialog(hwnd,wp);
+                    break;
+
+                default:
+                    break;
+            }
+        default:
+            break;
+    }
+
+    return FALSE;
+}
+
 void MainWindow_t::snapshot()
 {
     if(System.ChooseFile(Settings.state_file,STR(STR_OPENSNAPSHOT),L"snp"))
@@ -1431,6 +1701,11 @@ void ExtractCommand::LeftClick(bool)
 void DrvDirCommand::LeftClick(bool)
 {
     MainWindow.selectDrpDir();
+}
+
+void DrvOptionsCommand::LeftClick(bool)
+{
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG3),MainWindow.hMain,(DLGPROC)DialogProc1);
 }
 
 void InstallCommand::LeftClick(bool)

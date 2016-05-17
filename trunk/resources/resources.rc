@@ -40,6 +40,7 @@ IDR_CLI_HELP    RESFILE     "CLI.txt"
 #define LISTY SIZEY-53
 #define POSY1 SIZEY-42
 #define POSY2 SIZEY-22
+#define BTW 18
 
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "drv.exe.manifest"
 
@@ -110,7 +111,9 @@ BEGIN
             0x40A, 1200, // Spanish
             0x40C, 1200, // French
             0x40E, 1200, // Hungarian
+            0x410, 1200, // Italian
             0x411, 1200, // Japanese
+            0x413, 1200, // Dutch
             0x415, 1200, // Polish
             0x416, 1200, // Portuguese
             0x418, 1200, // Romanian
@@ -124,4 +127,97 @@ BEGIN
             0x42B, 1200, // Armenian
             0x82C, 1200  // Azerbaijani
     END
+END
+
+#define OFSX 10
+#define OFSY 20
+#define EDITX 180
+#define EDITX2 120
+#define EDITW 50
+#define EDITW2 110
+#define EDITW3 210
+#define LABELW 220
+#define GROUPW 236
+#define OFSYL 16
+
+IDD_DIALOG3 DIALOGEX 0, 0, 263, 261
+STYLE DS_CENTER|DS_MODALFRAME|WS_CAPTION|WS_VISIBLE|WS_SYSMENU
+FONT 8,"MS Shell Dlg"
+CAPTION "Options"
+BEGIN
+    CONTROL         "", IDC_TAB1, WC_TABCONTROL, 0, 5, 5, 250, 220
+    DEFPUSHBUTTON   "OK",     IDOK,     110+42, POSY2-10, 50, 14,BS_DEFPUSHBUTTON
+    PUSHBUTTON      "Cancel", IDCANCEL, 163+42, POSY2-10, 50, 14
+END
+
+IDD_Page1 DIALOGEX 0,0,0,0
+STYLE DS_SETFONT|WS_CHILD
+FONT 8,"MS Shell Dlg"
+BEGIN
+    GROUPBOX        "Driverpack names", IDD_P1_DRV, 5, 5, GROUPW, 5+BTW*3+14, 0
+    AUTORADIOBUTTON "Do not show driverpack names", IDD_P1_DRV1, 5+OFSX, OFSY+BTW*0, LABELW, 14, 0
+    AUTORADIOBUTTON "Show driverpack names on the right", IDD_P1_DRV2, 5+OFSX, OFSY+BTW*1, LABELW, 14, 0
+    AUTORADIOBUTTON "Show driverpack names above", IDD_P1_DRV3, 5+OFSX, OFSY+BTW*2, LABELW, 14, 0
+
+    GROUPBOX        "Interface scaling", IDD_P1_ZOOMG, 5, 80+5, GROUPW, 63, 0
+    LTEXT           "You can also zoom via Ctrl+mouse wheel", IDD_P1_ZOOML, 5+OFSX, 95+5, LABELW, 14, SS_LEFT
+    CONTROL         "", IDD_P1_ZOOMI, TRACKBAR_CLASS, WS_TABSTOP | TBS_BOTH | TBS_NOTICKS, 10, 95+12+5+3, 225, 15
+    LTEXT           "Small", IDD_P1_ZOOMS, 5+OFSX, 114+15+3, LABELW, 14, SS_LEFT
+    RTEXT           "Big", IDD_P1_ZOOMB, 130, 114+15+3, 100, 14, SS_RIGHT
+    PUSHBUTTON      "Reset", IDD_P1_ZOOMR, 130+50, 114+15-30-3, 100-50, 14
+
+    GROUPBOX        "Hint", IDD_P1_HINTG, 5, 137+18, GROUPW, 35, 0
+    LTEXT           "Popup window delay (in ms)", IDD_P1_HINTL, 5+OFSX, 154+18-2, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P1_HINTE, EDITX, 154+18-5, EDITW, 14, ES_AUTOHSCROLL
+END
+
+IDD_Page2 DIALOGEX 0,0,0,0
+STYLE DS_SETFONT|WS_CHILD
+FONT 8,"MS Shell Dlg"
+BEGIN
+    GROUPBOX        "Torrent", IDD_P2_TOR, 5, 5, GROUPW, 91+70-4, 0
+    LTEXT           "Port", IDD_P2_PORT, 5+OFSX, OFSY+BTW*0, LABELW, 14, SS_LEFT
+    LTEXT           "Max connections (0 - unlimited)", IDD_P2_CON, 5+OFSX, OFSY+BTW*2, LABELW, 14, SS_LEFT
+    LTEXT           "Max download speed in KB/s (0 - unlimited)", IDD_P2_DOWN, 5+OFSX, OFSY+BTW*4, LABELW, 14, SS_LEFT
+    LTEXT           "Max upload speed in KB/s (0 - unlimited)", IDD_P2_UP, 5+OFSX, OFSY+BTW*6, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P2_PORTE, 5+OFSX, OFSYL+BTW*1-4, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_CONE, 5+OFSX, OFSYL+BTW*3-4, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_DOWNE, 5+OFSX, OFSYL+BTW*5-4, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_UPE, 5+OFSX, OFSYL+BTW*7-4, EDITW, 14, ES_AUTOHSCROLL
+
+    CHECKBOX        "Do not check for updates", IDD_P2_UPD,5, 103+70-8,150,14,BS_AUTOCHECKBOX
+    CHECKBOX        "Do not notify about missing driverpacks", IDONLYUPDATE,5, 103+14+70-8,150,14,BS_AUTOCHECKBOX
+END
+
+IDD_Page3 DIALOGEX 0,0,0,0
+STYLE DS_SETFONT|WS_CHILD
+FONT 8,"MS Shell Dlg"
+BEGIN
+    GROUPBOX        "", 0, 5, 5, GROUPW, 110, 0
+    LTEXT           "Drivers", IDD_P3_DIR1, 5+OFSX, OFSY+BTW*0, LABELW, 14, SS_LEFT
+    LTEXT           "Indexes", IDD_P3_DIR2, 5+OFSX, OFSY+BTW*1, LABELW, 14, SS_LEFT
+    LTEXT           "Indexes (human-readble)", IDD_P3_DIR3, 5+OFSX, OFSY+BTW*2, LABELW, 14, SS_LEFT
+    LTEXT           "Data", IDD_P3_DIR4, 5+OFSX, OFSY+BTW*3, LABELW, 14, SS_LEFT
+    LTEXT           "Logs", IDD_P3_DIR5, 5+OFSX, OFSY+BTW*4, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P3_DIR1E, EDITX2, OFSYL+BTW*0, EDITW2, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P3_DIR2E, EDITX2, OFSYL+BTW*1, EDITW2, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P3_DIR3E, EDITX2, OFSYL+BTW*2, EDITW2, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P3_DIR4E, EDITX2, OFSYL+BTW*3, EDITW2, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P3_DIR5E, EDITX2, OFSYL+BTW*4, EDITW2, 14, ES_AUTOHSCROLL
+END
+
+IDD_Page4 DIALOGEX 0,0,0,0
+STYLE DS_SETFONT|WS_CHILD
+FONT 8,"MS Shell Dlg"
+BEGIN
+    GROUPBOX        "Commands", IDD_P4_CMDG, 5, 5, GROUPW, 110+47, 0
+    LTEXT           "You can define commands that will be excecuted after specifed action is complited", IDD_P4_CMDL, 5+OFSX, 19+5, 200, 14*3, SS_LEFT
+    LTEXT           "After installation", IDD_P4_CMD1, 5+OFSX, OFSY+BTW*2, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P4_CMD1E, 5+OFSX, OFSYL+BTW*3-4, EDITW3, 14, ES_AUTOHSCROLL
+    LTEXT           "After installation(reboot)", IDD_P4_CMD2, 5+OFSX, OFSY+BTW*4, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P4_CMD2E, 5+OFSX, OFSYL+BTW*5-4, EDITW3, 14, ES_AUTOHSCROLL
+    LTEXT           "After downloading", IDD_P4_CMD3, 5+OFSX, OFSY+BTW*6, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P4_CMD3E, 5+OFSX, OFSYL+BTW*7-4, EDITW3, 14, ES_AUTOHSCROLL
+
+    CHECKBOX        "Show console window", IDD_P4_CONSL,5, 103+64,150,14,BS_AUTOCHECKBOX
 END
