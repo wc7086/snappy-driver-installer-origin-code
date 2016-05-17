@@ -48,6 +48,7 @@ public:
 
     virtual int  Populate(int flags)=0;
     virtual void SetFilePriority(const wchar_t *name,int pri)=0;
+    virtual void SetLimits()=0;
     virtual void OpenDialog()=0;
 };
 Updater_t *CreateUpdater();

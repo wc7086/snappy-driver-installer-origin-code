@@ -620,6 +620,7 @@ void Manager::filter(int options)
     int cnt[NUM_STATUS+1];
     int ontorrent;
     int o1=options&FILTER_SHOW_ONE;
+    o1=1;
 
 	if(items_list.size()<=RES_SLOTS)return;
 	itembar=&items_list[RES_SLOTS];
@@ -1572,6 +1573,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             else
             {
                 // Device desc
+                pos+=D_X(ITEM_TEXT_OFS_Y);
                 if(itembar->devicematch)
                 {
                     wsprintf(bufw,L"%ws",matcher->getState()->textas.getw(itembar->devicematch->device->Devicedesc));
@@ -1610,8 +1612,9 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             // Expand icon
             if(groupsize(itembar->index)>1&&itembar->first&1)
             {
-                int xo=x+wx-D_X(ITEM_ICON_SIZE)*32/22;
-                canvas.DrawImage(*vTheme->GetIcon((itembar->isactive&2?0:2)+(zone==2?1:0)),xo,pos,xo+D_X(ITEM_ICON_SIZE)*32/25,pos+D_X(ITEM_ICON_SIZE)*32/25,0,Image::HSTR|Image::VSTR);
+                int xo=x+wx-D_X(ITEM_ICON_SIZE)*39/32;
+                pos+=D_X(ITEM_ICON_SIZE)*4/32;
+                canvas.DrawImage(*vTheme->GetIcon((itembar->isactive&2?0:2)+(zone==2?1:0)),xo,pos,xo+D_X(ITEM_ICON_SIZE),pos+D_X(ITEM_ICON_SIZE),0,Image::HSTR|Image::VSTR);
             }
             break;
 

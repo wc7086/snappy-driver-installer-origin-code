@@ -43,10 +43,10 @@ PANEL3_OFSY              = 135
 PANEL4_OFSY              = 255
 
 // Panel, filters (found)
-PANEL5_OFSY              = 354
+PANEL5_OFSY              = 374
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 517
+PANEL6_OFSY              = 537
 
 // Panel, filters (special)
 PANEL7_OFSY              = 617

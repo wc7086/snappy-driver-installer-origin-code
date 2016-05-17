@@ -79,12 +79,12 @@ public:
         wPanels->Add(r);
 
         // Actions
-        p=new wPanel{4,BOX_PANEL4,KB_ACTIONS,true};
+        p=new wPanel{5,BOX_PANEL4,KB_ACTIONS,true};
         p->Add(new wButton  {STR_OPENLOGS,          new OpenLogsCommand});
         p->Add(new wButton  {STR_SNAPSHOT,          new SnapshotCommand});
         p->Add(new wButton  {STR_EXTRACT,           new ExtractCommand});
         p->Add(new wButton  {STR_DRVDIR,            new DrvDirCommand});
-        //p->Add(new wButton  {STR_OPTIONS_BTN,       new DrvDirCommand});
+        p->Add(new wButton  {STR_OPTIONS_BTN,       new DrvOptionsCommand});
         wPanels->Add(p);
 
         // Filters (found)

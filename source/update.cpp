@@ -143,6 +143,7 @@ public:
 
     int  Populate(int flags);
     void SetFilePriority(const wchar_t *name,int pri);
+    void SetLimits();
     void OpenDialog();
 };
 Updater_t *CreateUpdater(){return new UpdaterImp;}
@@ -1027,9 +1028,7 @@ void UpdaterImp::downloadTorrent()
 
     // Pause and set speed limits
     hSession->pause();
-    hTorrent.set_download_limit(downlimit*1024);
-    hTorrent.set_upload_limit(uplimit*1024);
-    if(connections)hTorrent.set_max_connections(connections);
+    SetLimits();
     hTorrent.resume();
 
     // Download torrent
@@ -1223,6 +1222,14 @@ bool UpdaterImp::isUpdateCompleted(){return finishedupdating;}
 
 int  UpdaterImp::Populate(int flags){return UpdateDialog.populate(flags,!flags);}
 void UpdaterImp::SetFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
+void UpdaterImp::SetLimits()
+{
+    if(!hSession)return;
+
+    hTorrent.set_download_limit(downlimit*1024);
+    hTorrent.set_upload_limit(uplimit*1024);
+    if(connections)hTorrent.set_max_connections(connections);
+}
 void UpdaterImp::OpenDialog(){UpdateDialog.openDialog();}
 //}
 #else
