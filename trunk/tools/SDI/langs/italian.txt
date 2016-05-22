@@ -3,14 +3,14 @@ STR_TRANSLATORS         = "garf02"
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "Italiana"
+STR_LANG_NAME           = "Italiano"
 STR_LANG_ID             = "Italian"
 STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
 STR_LANG_CODE           = 0x10
 STR_RTL                 = 0
 
 // left panel
-STR_SHOW_SYSINFO        = "Informazioni Sistema"
+STR_SHOW_SYSINFO        = "Informazioni del Sistema"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Installa"
@@ -88,7 +88,7 @@ STR_SYSINF_TEMP         = "%temp%"
 STR_SYSINF_MOTHERBOARD  = "Scheda Madre"
 STR_SYSINF_PRODUCT      = "Prodotto"
 STR_SYSINF_MODEL        = "Modello"
-STR_SYSINF_MANUF        = "Fabbricante"
+STR_SYSINF_MANUF        = "Produttore"
 STR_SYSINF_BATTERY      = "Alimentazione"
 STR_SYSINF_AC_STATUS    = "A/C"
 STR_SYSINF_OFFLINE      = "Disconneso"
@@ -99,7 +99,7 @@ STR_SYSINF_HIGH         = "[alta]"
 STR_SYSINF_LOW          = "[bassa]"
 STR_SYSINF_CRITICAL     = "[critica]"
 STR_SYSINF_CHARGING     = "[in carica]"
-STR_SYSINF_NOBATTERY    = "[no batteria]"
+STR_SYSINF_NOBATTERY    = "[non presente]"
 STR_SYSINF_CHARGED      = "Carica"
 STR_SYSINF_LIFETIME     = "LifeTime"
 STR_SYSINF_FULLLIFETIME = "FullLifeTime"
@@ -123,6 +123,7 @@ STR_ABOUT_DEV_TITLE     = "Sviluppatore: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Tester: "
 //STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "Traduttori:"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer è concesso in licenza sotto i termini della licenza GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer utilizza le seguenti tecnologie:\n* WebP è concesso in licenza sotto i termini della licenza BSD\n* libtorrent è concesso in licenza sotto i termini della licenza BSD\n* Backtrace è concesso in licenza sotto i termini della licenza BSD\n* 7-Zip è concesso in licenza sotto i termini della licenza GNU Library oppure Lesser General Public License version 2\n\nSnappy Driver Installer è potenziato dai DriverPack che sono stati sviluppati dal Team DriverPacks.\n\n(Clicca ora per visitare il sito web)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
@@ -136,7 +137,7 @@ STR_HINT_COMPID         = "CompatibleID"
 STR_HINT_INSTDRV        = "Driver installato"
 STR_HINT_AVAILDRV       = "Driver disponibile"
 STR_HINT_AVAILDRVS      = "Driver disponibili"
-STR_HINT_MANUF          = "Manuf: "
+STR_HINT_MANUF          = "Produttore:"
 STR_HINT_PROVIDER       = "Provider: "
 STR_HINT_DATE           = "Data: "
 STR_HINT_VERSION        = "Versione: "
@@ -215,7 +216,7 @@ STR_INST_FAILED         = "Impossibile installare, errore "
 STR_INST_INSTALLING     = "Installazione... "
 STR_INST_COMPLITED      = "Installazione completata"
 STR_INST_COMPLITED_RB   = "Installazione completata (è richiesto il riavvio del sistema)"
-STR_INST_CLOSE          = "(Clicca qui per chiudere i driver nascosti installati)"
+STR_INST_CLOSE          = "(Clicca qui per nascondere i driver installati)"
 
 STR_EXTR_EXTRACTING     = "Estrazione... "
 STR_EXTR_OK             = "Estratto con successo"

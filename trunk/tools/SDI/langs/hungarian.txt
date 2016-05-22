@@ -347,6 +347,6 @@ STR_OPTION_PORT         = "Port"
 STR_OPTION_MAX_DOWNLOAD = "Max.letöltési sebesség byte-ban/s(0:korlátlan)"
 STR_OPTION_MAX_UPLOAD   = "Max.feltöltési sebesség byte-ban/s(0:korlátlan)"
   // Patreon
-STR_PATREON1             = "SDI-t önkéntesek fejlesztik a szabadidejükben. Ha elnyerte tetszését a szoftver, akkor támogassa a Patreon-on keresztűl."
+//STR_PATREON1             = "SDI-t önkéntesek fejlesztik a szabadidejükben. Ha elnyerte tetszését a szoftver, akkor támogassa a Patreon-on keresztűl."
 STR_PATREON2             = "(Klikk ide a Patreon oldal megnyitásához)"
 STR_PATREON_H            = ""

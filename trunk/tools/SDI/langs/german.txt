@@ -22,20 +22,20 @@ STR_SELECT_NONE_H       = "Strg+N"
 
 STR_LANG                = "Sprache (Language)"
 STR_LANG_H              = ""
-STR_THEME               = "Erscheinungsbild"
+STR_THEME               = "Benutzeroberfläche"
 STR_THEME_H             = ""
 STR_EXPERT              = "Expertenmodus"
 STR_EXPERT_H            = "Expertenmodus aktivieren.\n\nHinweis: Es werden detaillierte Treiberinformationen angezeigt wenn die Strg-Taste oder die Leertaste gedrückt wird während der Mauszeiger über einen Treibereintrag liegt."
 
 STR_OPENLOGS            = "Protokolle öffnen"
-STR_OPENLOGS_H          = "Öffnen des Ordners mit den Protokolldateien und Schnappschüssen.\n\nProtokolldateien können auf der Unterstützungsseite von www.sdi-tool.org eingereicht werden, um Hilfe anzufordern.\n\nSchnappschüsse dienen dazu, die richtigen Treiber für ein anderes System auszuwählen."
+STR_OPENLOGS_H          = "Öffnen des Ordners mit Protokolldateien und Schnappschüssen\n\nProtokolldateien können auf der Unterstützungsseite von www.sdi-tool.org zur Fehleranalyse eingereicht werden.\n\nSchnappschüsse dienen dazu, die richtigen Treiber für ein anderes System auszuwählen.\n\n"
 STR_SNAPSHOT            = "Schnappschuss laden..."
 STR_SNAPSHOT_H          = "Schnappschuss eines anderen Systems laden.\n\nSchnappschüsse werden automatisch im Protokollordner erstellt und beinhalten Details über Geräte, Treiber, Windows-Version, Akku und Monitoren.\n\nSchnappschüsse enthalten keine Informationen über allfällige Treiberpakete auf dem anderen System.\n\nEin geladener Schnappschuss emuliert also den Zustand eines anderen Systems, während die Treiber auf lokalen Treiberpaketen gesucht werden."
 STR_EXTRACT             = "Entpacken nach..."
 STR_EXTRACT_H           = "Entpacken ausgewählter Treiber.\n\nNach der Prüfung, dass die zuletzt installierten Treiber richtig funktionieren, können diese in einen beliebigen Ordner gesichert werden, indem 'Aktuelle Treiber' aktiviert und danach die Schaltfläche 'Entpacken nach...' betätigt wird."
 STR_DRVDIR              = "Treiberordner wählen..."
 STR_DRVDIR_H            = "Gestattet die Wahl eines anderen Ordners (z. B. auf einer CD/DVD) mit Treiberpaketen oder ungepackten Treibern, um dort nach Treibern zu suchen."
-STR_OPTIONS_BTN         = "Optionen..."
+STR_OPTIONS_BTN         = "Einstellungen..."
 STR_OPTIONS_BTN_H       = "Öffnet das Dialogfenster für die Einstellungen."
 
 STR_SHOW_FOUND          = "Gefundene Treiber"
@@ -71,7 +71,7 @@ STR_SHOW_DUP_H          = "Doppelte Treiber anzeigen.\n\nAus technischen Gründe
 STR_SHOW_INVALID        = "Ungültige anzeigen"
 STR_SHOW_INVALID_H      = "Zeigt die mit dem aktuellen System inkompatiblen Treiber an.\n\nWeil diese Treiber mit der Windows-Version inkompatibel sind, sollten sie NICHT installiert werden."
 
-STR_OPTIONS             = "Optionen"
+STR_OPTIONS             = "Einstellungen"
 STR_OPTIONS_H           = ""
 STR_REBOOT              = "PC neustarten"
 STR_REBOOT_H            = "Falls erforderlich, wird der PC nach der Treiberinstallation neu gestartet (Strg+R).\n\nHinweis: Der Neustart kann jederzeit durch Entfernen des Hakens unterbunden werden."
@@ -159,7 +159,7 @@ STR_CONT_HWID_CLIP      = "Hardware-ID in den Zwischenspeicher kopieren"
 
 // Misc
 STR_OPENSNAPSHOT        = "Schnappschussdateien (*.snp)/0*.snp/0All files/0*.*/0/0"
-STR_EXTRACTFOLDER       = "Bitte geben sie einen Zielordner an."
+STR_EXTRACTFOLDER       = "Bitte Zielordner angeben."
 
 // Device status
 STR_STATUS_NOTPRESENT   = "Das Gerät ist nicht vorhanden"
@@ -259,7 +259,7 @@ STR_UPD_TITLE           = "Aktualisierung"
 STR_UPD_BTN_ALL         = "Alle auswählen"
 STR_UPD_BTN_NONE        = "Alle abwählen"
 STR_UPD_BTN_THISPC      = "Nur Treiber für diesen PC auswählen"
-STR_UPD_BTN_THISPC_H    = "Für die Bestimmung der erforderlichen Treiberpakete, müssen die Idexe vorab heruntergeladen werden."
+STR_UPD_BTN_THISPC_H    = "Zum Bestimmen der erforderlichen Treiberpakete, müssen die Indexe vorab heruntergeladen werden."
 STR_UPD_ONLYUPDATES     = "Fehlende Treiberpakete nicht melden"
 STR_UPD_TOTALSIZE       = "Gesamte Herunterladegröße: %d MB"
 STR_UPD_BTN_OK          = "OK"
@@ -332,6 +332,8 @@ STR_TR_ST7              = "Wiederaufnahmeprüfung"
 STR_OPTION_TITLE        = "Optionen"
 STR_OPTION_VIEW_TAB     = "Ansicht"
 STR_OPTION_UPDATES_TAB  = "Aktualisierungen"
+STR_OPTION_PATH_TAB     = "Pfade"
+STR_OPTION_ADVANCED_TAB = "Erweitert"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "Die Namen der Treiberpakete nicht anzeigen"
 STR_OPTION_SHOW_RIGHT   = "Die Namen der Treiberpakete rechts anzeigen"
 STR_OPTION_SHOW_ABOVE   = "Die Namen der Treiberpakete oben anzeigen"
 STR_OPTION_SCALLING     = "Anzeigeskalierung"
-STR_OPTION_CONSOLE      = "Eingabeaufforderungskonsole"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Klein"
+STR_OPTION_SCALLING_BIG = "Groß"
+STR_OPTION_SCALLING_RST = "Zurücksetzen"
+STR_OPTION_HINT         = "Hinweis"
+STR_OPTION_HINT_LABEL   = "Verzögerung in Millisekunden"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Auf neue Versionen der App/Treiberpakete prüfen"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Nicht prüfen auf neue Versionen"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Anschluss"
-STR_OPTION_MAX_DOWNLOAD = "Max. Herunterladerate in Byte/s (0:unbegrenzt)"
-STR_OPTION_MAX_UPLOAD   = "Max. Heraufladerate in Byte/s (0:unbegrenzt)"
+STR_OPTION_MAX_CON      = "Max. Verbindungen (0 - unbegrenzt)"
+STR_OPTION_MAX_DOWNLOAD = "Max. Herunterladerate in KB/s (0:unbegrenzt)"
+STR_OPTION_MAX_UPLOAD   = "Max. Hochladerate in KB/s (0:unbegrenzt)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Treiber"
+STR_OPTION_DIR_INDEXES  = "Indexe"
+STR_OPTION_DIR_INDEXESH = "Indexe (menschenlesbar)"
+STR_OPTION_DIR_DATA     = "Oberflächenthemen, Sprachdateien"
+STR_OPTION_DIR_LOGS     = "Protokolldateien"
+
+// Advanced tab
+STR_OPTION_CMD          = "Konsolebefehle"
+STR_OPTION_CMD_LABEL    = "Es können Konsolebefehle definiert werden, die nach Abschluß bestimmter Operationen ausgeführt werden."
+STR_OPTION_CMD_FINISH   = "Nach der Installation"
+STR_OPTION_CMD_FINISHRB = "Nach der Installation (System-Neustart erforderlich)"
+STR_OPTION_CMD_FINISHDN = "Nach dem Herunterladen"
+STR_OPTION_CONSOLE      = "Eingabeaufforderungskonsole"
+
+// Patreon
+STR_PATREON1             = "SDI wird von Freiwilligen in ihrer Freizeit entwickelt. Bitte unterstützen Sie uns in Patreon."
+STR_PATREON2             = "(Hier klicken, um die Patreon Webseite zu besuchen)"
+STR_PATREON_H            = ""

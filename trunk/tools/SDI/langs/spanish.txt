@@ -28,7 +28,7 @@ STR_EXPERT              = "Modo Experto"
 STR_EXPERT_H            = "Activar Modo Experto.\n\nSUGERENCIA: Pulsar Ctrl o Espacio sobre un controlador para obtener información adicional."
 
 STR_OPENLOGS            = "Abrir registros"
-STR_OPENLOGS_H          = "Abre la carpeta que contiene los registros e instantáneas.\n\nPuedes suministrarnos los archivos de registros al desarrollador en www.sdi-tool.org y yendo a la página de soporte.\n\nLas imágenes instantáneas pueden ser utilizadas para ayudar en forma remota a los usuarios a elegir controladores correctos."
+STR_OPENLOGS_H          = "Abre la carpeta que contiene los registros e instantáneas.\n\nSe puede enviar archivos de registros al desarrollador en la página www.sdi-tool.org y yendo a la página de soporte.\n\nLas imágenes instantáneas pueden ser utilizadas para ayudar en forma remota a los usuarios a elegir controladores correctos."
 STR_SNAPSHOT            = "Cargar instantánea..."
 STR_SNAPSHOT_H          = "Carga una instantánea de otro sistema.\n\nLas imágenes instantáneas se crean automáticamente en la carpeta de registro. Contienen información sobre los dispositivos, los controladores, la versión de Windows, la batería y los monitores.\n\nLas imágenes instantáneas no contienen información sobre DriverPacks en el sistema remoto.\n\nPor lo tanto, la carga de una imagen instantánea permite la emulación del sistema remoto pero los controladores están siendo buscados en DriverPacks locales."
 STR_EXTRACT             = "Extraer en..."
@@ -332,6 +332,8 @@ STR_TR_ST7              = "comprobando reanudar datos"
 STR_OPTION_TITLE        = "Opciones"
 STR_OPTION_VIEW_TAB     = "Vista"
 STR_OPTION_UPDATES_TAB  = "Actualizaciones"
+STR_OPTION_PATH_TAB     = "Rutas"
+STR_OPTION_ADVANCED_TAB = "Avanzado"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "No mostrar nombres de los DriverPacks"
 STR_OPTION_SHOW_RIGHT   = "Muestra nombre de DriverPacks a la derecha"
 STR_OPTION_SHOW_ABOVE   = "Muestra nombre de DriverPacks arriba"
 STR_OPTION_SCALLING     = "Escala de la interfase"
-STR_OPTION_CONSOLE      = "Muestra ventana de la consola"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Pequeño"
+STR_OPTION_SCALLING_BIG = "Grande"
+STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Sugerencia"
+STR_OPTION_HINT_LABEL   = "Retraso en milisegundos"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Verifica por nueva versión de la aplicación y DriverPacks"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "No verifica por nueva versión de la aplicación y DriverPacks"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Puerto"
-STR_OPTION_MAX_DOWNLOAD = "Velocidad máxima de descarga en bytes/s (0:ilimitado)"
-STR_OPTION_MAX_UPLOAD   = "Velocidad máxima de subida en bytes/s (0:ilimitado)"
+STR_OPTION_MAX_CON      = "Conexiones máximas (0: ilimitado)"
+STR_OPTION_MAX_DOWNLOAD = "Velocidad máxima de descarga en KB/s (0: ilimitado)"
+STR_OPTION_MAX_UPLOAD   = "Velocidad máxima de subida en KB/s (0: ilimitado)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Controladores"
+STR_OPTION_DIR_INDEXES  = "Índices"
+STR_OPTION_DIR_INDEXESH = "Índices (leíble a simple vista)"
+STR_OPTION_DIR_DATA     = "Temas y traducciones"
+STR_OPTION_DIR_LOGS     = "Archivos de registro"
+
+// Advanced tab
+STR_OPTION_CMD          = "Comandos"
+STR_OPTION_CMD_LABEL    = "Se pueden crear comandos para ser ejecutados vía CMD luego de que las operaciones especificadas se completen."
+STR_OPTION_CMD_FINISH   = "Luego de la instalación"
+STR_OPTION_CMD_FINISHRB = "Luego de la intalación (requiere reinicio)"
+STR_OPTION_CMD_FINISHDN = "Luego de descargar"
+STR_OPTION_CONSOLE      = "Muestra ventana de la consola"
+
+// Patreon
+STR_PATREON1             = "SDI es desarrollado por voluntarios en su tiempo libre. Por favor apóyenos en Patreon si lo desea."
+STR_PATREON2             = "(Clic aquí para abrir la página de Patreon)"
+STR_PATREON_H            = ""
