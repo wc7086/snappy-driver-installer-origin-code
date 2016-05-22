@@ -350,8 +350,8 @@ STR_OPTION_SCALLING_RST = "Сброс"
 STR_OPTION_HINT         = "Всплывающая подсказка"
 STR_OPTION_HINT_LABEL   = "Задержка перед появлением в мс"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Проверять обновления"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Не проверять обновления"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Торрент"
 STR_OPTION_PORT         = "Порт"

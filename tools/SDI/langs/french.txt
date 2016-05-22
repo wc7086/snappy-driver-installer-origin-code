@@ -332,6 +332,8 @@ STR_TR_ST7              = "Vérification des données"
 STR_OPTION_TITLE        = "Options"
 STR_OPTION_VIEW_TAB     = "Afficher"
 STR_OPTION_UPDATES_TAB  = "Mise à jour"
+STR_OPTION_PATH_TAB     = "Chemins"
+STR_OPTION_ADVANCED_TAB = "Avancé"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "Ne pas afficher les noms des packs de pilotes"
 STR_OPTION_SHOW_RIGHT   = "Afficher les noms des packs de pilotes à droite"
 STR_OPTION_SHOW_ABOVE   = "Afficher les noms des packs de pilotes au dessus"
 STR_OPTION_SCALLING     = "Mise à l'échelle de l'interface"
-STR_OPTION_CONSOLE      = "Afficher la fenêtre de la console"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Petit"
+STR_OPTION_SCALLING_BIG = "Grand"
+STR_OPTION_SCALLING_RST = "Réinitialiser"
+STR_OPTION_HINT         = "Astuce"
+STR_OPTION_HINT_LABEL   = "Délai en millisecondes"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Vérifier s'il existe une nouvelle version de l'application/packs de pilotes"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Ne pas vérifier s'il existe une nouvelle version de l'application/ des packs de pilotes"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Port"
-STR_OPTION_MAX_DOWNLOAD = "Vitesse de téléchargement maximale en octets/sec(0: illimité)"
-STR_OPTION_MAX_UPLOAD   = "Vitesse d'émission maximale en octets/sec (0: illimité)"
+STR_OPTION_MAX_CON      = "Connexions max (0 - illimité)"
+STR_OPTION_MAX_DOWNLOAD = "Vitesse de téléchargement maximale en Ko/s (0 - illimité)"
+STR_OPTION_MAX_UPLOAD   = "Vitesse d'émission maximale en Ko/s (0 - illimité)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Pilotes"
+STR_OPTION_DIR_INDEXES  = "Index"
+STR_OPTION_DIR_INDEXESH = "Indexs (lisible par l'homme)"
+STR_OPTION_DIR_DATA     = "Thèmes et traductions"
+STR_OPTION_DIR_LOGS     = "Fichiers log"
+
+// Advanced tab
+STR_OPTION_CMD          = "Commandes"
+STR_OPTION_CMD_LABEL    = "Vous pouvez définir des commandes qui seront exécutées via CMD après que les opérations spécifiées soient terminées."
+STR_OPTION_CMD_FINISH   = "Après installation"
+STR_OPTION_CMD_FINISHRB = "Après installation (redémarrage nécessaire)"
+STR_OPTION_CMD_FINISHDN = "Après le téléchargement"
+STR_OPTION_CONSOLE      = "Afficher la fenêtre de la console"
+
+// Patreon
+//STR_PATREON1             = "SDI est développé par des volontaires sur leur temps libre. Si vous aimez ce logiciel, merci de nous soutenir sur Patreon."
+STR_PATREON2             = "(Cliquez ici pour ouvrir la page Patreon)"
+STR_PATREON_H            = ""

@@ -28,7 +28,7 @@ STR_EXPERT              = "Expert mode"
 STR_EXPERT_H            = "Inschakelen Expert Mode.\n\nHINT: Houd de Ctrl- of spatiebalk knop over een stuurprogramma voor extra informatie over het stuurprogramma."
 
 STR_OPENLOGS            = "Open logs"
-STR_OPENLOGS_H          = "Open de map met Logboeken en snapshots.\n\nDien logboekbestanden in naar de ontwikkelaar van Open www.sdi-tool.org en ga naar de support pagina.\n\nSnapshots kunnen worden gebruikt om op afstand gebruikers de juiste stuurprogramma's helpen te kiezen."
+STR_OPENLOGS_H          = "Open de map met logboeken en snapshots.\n\nU kunt logbestanden voorleggen aan de ontwikkelaar door naar www.sdi-tool.org te gaan en dan naar de steun page.\n\nSnapshots kan worden gebruikt om op afstand gebruikers te helpen plukken juiste stuurprogramma's."
 STR_SNAPSHOT            = "Laad snapshot..."
 STR_SNAPSHOT_H          = "Laad momentopname van een andere system system.\n\nSnapshots worden automatisch gemaakt in de map log. Ze bevatten informatie over apparaten, stuurprogramma's, Windows-versie, batterij en monitors.\n\nMomentopnamen bevatten geen informatie over driverpacks op de externe system.\n\ndus, emulatie van het externe systeem laden van de momentopname staat maar bestuurders zijn onderzocht in lokale driverpacks."
 STR_EXTRACT             = "Uitpakken naar..."
@@ -218,7 +218,7 @@ STR_INST_FAILED         = "Kan niet installeren, fout"
 STR_INST_INSTALLING     = "Installeren..."
 STR_INST_COMPLITED      = "Installatie voltooid"
 STR_INST_COMPLITED_RB   = "Installatie voltooid (systeem opnieuw opstarten vereist)"
-STR_INST_CLOSE          = "(Klik hier om te sluiten verbergen geïnstalleerd stuurprogramma's)"
+STR_INST_CLOSE          = "(Klik hier om de geïnstalleerde stuurprogramma te verbergen)"
 
 STR_EXTR_EXTRACTING     = "Uitpakken..."
 STR_EXTR_OK             = "Met succes uitgepakt"
@@ -332,6 +332,8 @@ STR_TR_ST7              = "controleren hervatten data"
 STR_OPTION_TITLE        = "Opties"
 STR_OPTION_VIEW_TAB     = "Weergave"
 STR_OPTION_UPDATES_TAB  = "Updates"
+STR_OPTION_PATH_TAB     = "Paden"
+STR_OPTION_ADVANCED_TAB = "Vergevorderd"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "Driverpack namen niet weergeven"
 STR_OPTION_SHOW_RIGHT   = "Toon driverpack namen recgts"
 STR_OPTION_SHOW_ABOVE   = "Toon driverpack bovenstaande namen"
 STR_OPTION_SCALLING     = "Interface schalen"
-STR_OPTION_CONSOLE      = "Toon consolevenster"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Klein"
+STR_OPTION_SCALLING_BIG = "Groot"
+STR_OPTION_SCALLING_RST = "Resetten"
+STR_OPTION_HINT         = "Hint"
+STR_OPTION_HINT_LABEL   = "Vertraging in milliseconden"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Controleren op nieuwe versie van de app/driverpacks"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Niet controleren op nieuwe versie van de app/DriverPacks"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Poort"
-STR_OPTION_MAX_DOWNLOAD = "Max downloadsnelheid in bytes/s(0:ongelimiteerd)"
-STR_OPTION_MAX_UPLOAD   = "Max uploadsnelheid in bytes/s(0:ongelimiteerd)"
+STR_OPTION_MAX_CON      = "Max connecties (0 - onbeperkt)"
+STR_OPTION_MAX_DOWNLOAD = "Max downloadsnelheid in KB/s (0 - onbeperkt)"
+STR_OPTION_MAX_UPLOAD   = "Max upload snelheid in KB/s (0 - onbeperkt)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Stuurprogramma's"
+STR_OPTION_DIR_INDEXES  = "Indexen"
+STR_OPTION_DIR_INDEXESH = "Indexen (voor mensen leesbare)"
+STR_OPTION_DIR_DATA     = "Thema's en vertalingen"
+STR_OPTION_DIR_LOGS     = "Log bestanden"
+
+// Advanced tab
+STR_OPTION_CMD          = "Commando's"
+STR_OPTION_CMD_LABEL    = "U kunt opdrachten definiëren die via CMD zullen worden uitgevoerd na bepaalde handelingen zijn voltooid ."
+STR_OPTION_CMD_FINISH   = "Na installatie"
+STR_OPTION_CMD_FINISHRB = "Na installatie (je moet rebooten) "
+STR_OPTION_CMD_FINISHDN = "Na downloaden"
+STR_OPTION_CONSOLE      = "Toon consolevenster"
+
+// Patreon
+STR_PATREON1             = "SDI is ontwikkeld door vrijwilligers in hun vrije tijd. Gelieve ons te steunen op Patreon."
+STR_PATREON2             = "(Klik hier om de Patreon pagina te openen)"
+STR_PATREON_H            = ""

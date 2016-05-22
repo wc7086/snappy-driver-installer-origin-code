@@ -28,7 +28,7 @@ STR_EXPERT              = "Για προχωρημένους"
 STR_EXPERT_H            = "Ενεργοποίηση λειτουργίας για προχωρημένους.\n\nΣυμβουλή: κρατήστε πατημένο το πλήκτρο CTRL ή το Spacebar πλήκτρο πάνω από έναν οδηγό για να λάβετε επιπλέον πληροφορίες σχετικά με τον οδηγό."
 
 STR_OPENLOGS            = "Αρχεία καταγραφής"
-STR_OPENLOGS_H          = "Ανοίξτε το φάκελο που περιέχει τα αρχεία καταγραφής και στιγμιότυπο.\n\nΜπορείτε να υποβάλετε τα αρχεία αυτά για να λάβετε βοήθεια, ανοίγοντας www.sdi-tool.org στη σελίδα υποστήριξης.\n\nΤα στιγμιότυπα μπορούν να βοηθήσουν στους χρήστες να επιλέξουν τα σωστά προγράμματα οδήγησης.\n"
+STR_OPENLOGS_H          = "Ανοίξτε το φάκελο που περιέχει τα αρχεία καταγραφής και στιγμιότυπο.\nΜπορείτε να υποβάλετε τα αρχεία αυτά για να λάβετε βοήθεια, ανοίγοντας www.sdi-tool.org στη σελίδα υποστήριξης.\nΤα στιγμιότυπα μπορούν να βοηθήσουν στους χρήστες να επιλέξουν τα σωστά προγράμματα οδήγησης. "
 STR_SNAPSHOT            = "Φόρτωση στιγμιότυπου"
 STR_SNAPSHOT_H          = "Φόρτωση στιγμιότυπου του άλλου συστήματος .\n\nΤα στιγμιότυπα δημιουργούνται αυτόματα στο φάκελο καταγραφής. Περιέχουν πληροφορίες σχετικά με τις συσκευές, οδηγούς, έκδοση Windows, μπαταρία και οθόνες.\n\nΤα στιγμιότυπα δεν περιέχουν πληροφορίες σχετικά με τα προγράμματα οδήγησης, τα οποία βρέθηκαν σε Driverpacks κάποιου άλλου συστήματος. \n\nΕπομένως, φόρτωση στιγμιότυπου επιτρέπει την εξομοίωση του απομακρυσμένου συστήματος, αλλά οι οδηγοί θα ερευνούνται στο τοπικό Driverpacks."
 STR_EXTRACT             = "Αποσυμπίεση σε..."
@@ -218,7 +218,7 @@ STR_INST_FAILED         = "Δεν απεγινε εγκατασταση,σφάλ
 STR_INST_INSTALLING     = "Εγκατάσταση ..."
 STR_INST_COMPLITED      = "Η εγκατάσταση ολοκληρώθηκε"
 STR_INST_COMPLITED_RB   = "Η εγκατάσταση ολοκληρώθηκε (απαιτεί επανεκκίνηση του συστήματος)"
-STR_INST_CLOSE          = "(Κάντε κλικ εδώ, για να αποκρύψετε εγκατεστημένα προγράμματα οδήγησης)"
+STR_INST_CLOSE          = "(Κάντε κλικ εδώ για να κρύψει τα εγκατεστημένα προγράμματα οδήγησης)"
 
 STR_EXTR_EXTRACTING     = "Aποσυμπιεση..."
 STR_EXTR_OK             = "Επιτυχής αποσυμπιεση"
@@ -332,6 +332,8 @@ STR_TR_ST7              = "Επανάληψη"
 STR_OPTION_TITLE        = "Επιλογές"
 STR_OPTION_VIEW_TAB     = "Προβολή"
 STR_OPTION_UPDATES_TAB  = "Ενημερώσεις"
+STR_OPTION_PATH_TAB     = "Διαδρομές"
+STR_OPTION_ADVANCED_TAB = "Αλλο"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "Να μην εμφανίζονται τα ονόμα�
 STR_OPTION_SHOW_RIGHT   = "Εμφάνιση DriverPack ονόματα δεξιά"
 STR_OPTION_SHOW_ABOVE   = "Εμφάνιση επανω"
 STR_OPTION_SCALLING     = "Κλίμακα"
-STR_OPTION_CONSOLE      = "Εμφάνιση παραθύρου κονσόλας"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Μικρό"
+STR_OPTION_SCALLING_BIG = "Μεγάλος "
+STR_OPTION_SCALLING_RST = "Επαναφορά"
+STR_OPTION_HINT         = "Συμβουλή"
+STR_OPTION_HINT_LABEL   = "Καθυστέρηση σε χιλιοστά του δευτερολέπτου"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Έλεγχος για νέα έκδοση του DriverPacks "
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Να μην γίνεται έλεγχος για νέα έκδοση"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Θήρα"
-STR_OPTION_MAX_DOWNLOAD = "Μέγιστη ταχύτητα λήψης σε bytes/s (0: απεριόριστο)"
-STR_OPTION_MAX_UPLOAD   = "Μέγιστη ταχύτητα αποστολής σε bytes / s (0: απεριόριστο)"
+STR_OPTION_MAX_CON      = "Max συνδέσεις (0 - απεριόριστο) "
+STR_OPTION_MAX_DOWNLOAD = "Μέγιστη ταχύτητα λήψης σε KB /s (0 - απεριόριστο)"
+STR_OPTION_MAX_UPLOAD   = "Μέγιστη ταχύτητα αποστολής σε KB/s (0 - απεριόριστο)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Οι οδηγοί "
+STR_OPTION_DIR_INDEXES  = "Δείκτες των νέων πακέτων"
+STR_OPTION_DIR_INDEXESH = "Δείκτες ως κείμενο "
+STR_OPTION_DIR_DATA     = "Θέματα και μεταφράσεις "
+STR_OPTION_DIR_LOGS     = "Αρχεία καταγραφής"
+
+// Advanced tab
+STR_OPTION_CMD          = "Εντολές"
+STR_OPTION_CMD_LABEL    = "Εδώ μπορείτε να καθορίσετε τις εντολές που πρέπει να εκτελεστούν μέσω της CMD μετά την εκτέλεση αυτών των εργασιών."
+STR_OPTION_CMD_FINISH   = "Μετά την εγκατάσταση "
+STR_OPTION_CMD_FINISHRB = "Μετά την εγκατάσταση (απαιτείται επανεκκίνηση) "
+STR_OPTION_CMD_FINISHDN = "Μετά τη λήψη "
+STR_OPTION_CONSOLE      = "Εμφάνιση παραθύρου κονσόλας"
+
+// Patreon
+STR_PATREON1             = "Αν σας αρέσει αυτό το λογισμικό,παρακαλούμε να μασ υποστηρίξετε στο συστημα Patreon."
+STR_PATREON2             = "(Κάντε κλικ εδώ για να ανοίξετε τη σελίδα Patreon)"
+STR_PATREON_H            = ""
