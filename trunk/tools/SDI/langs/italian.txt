@@ -311,7 +311,7 @@ STR_DWN_UPLOADSPEED     = "Velocità upload"
 STR_DWN_SEEDS_F         = "%d di %d connessi"
 STR_DWN_SEEDS           = "Seeds"
 STR_DWN_PEERS           = "Peers"
-STR_DWN_WASTED          = "Wasted"
+STR_DWN_WASTED          = "Sprecati"
 STR_DWN_WASTED_F        = "%s (%s in hashfails)"
 
 STR_DWN_ERRSES          = "Impossibile avviare la sessione di aggiornamento"
@@ -325,3 +325,54 @@ STR_TR_ST4              = "terminato"
 STR_TR_ST5              = "seeding"
 STR_TR_ST6              = "spazio occupato"
 STR_TR_ST7              = "controllo dati recupero"
+
+// Options dialog
+STR_OPTION_TITLE        = "Opzioni"
+// STR_OPTION_VIEW_TAB     = "View"
+STR_OPTION_UPDATES_TAB  = "Aggiornamenti"
+STR_OPTION_PATH_TAB     = "Percorsi"
+STR_OPTION_ADVANCED_TAB = "Avanzate"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+// STR_OPTION_DRPNAMES     = "Driverpack names"
+// STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
+// STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
+// STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
+// STR_OPTION_SCALLING     = "Interface scaling"
+STR_OPTION_SCALLING_H   = ""
+// STR_OPTION_SCALLING_SML = "Small"
+// STR_OPTION_SCALLING_BIG = "Big"
+// STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Suggerimento"
+// STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
+
+// Updates tab
+// STR_OPTION_CHECKUPDATES = "Do not check for new version of app/driverpacks"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Porta"
+// STR_OPTION_MAX_CON      = "Max connections (0 - unlimited)"
+// STR_OPTION_MAX_DOWNLOAD = "Max download speed in KB/s (0 - unlimited)"
+// STR_OPTION_MAX_UPLOAD   = "Max upload speed in KB/s (0 - unlimited)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Drivers"
+STR_OPTION_DIR_INDEXES  = "Indici"
+STR_OPTION_DIR_INDEXESH = "Indici (leggibili)"
+// STR_OPTION_DIR_DATA     = "Themes and translations"
+// STR_OPTION_DIR_LOGS     = "Log files"
+
+// Advanced tab
+// STR_OPTION_CMD          = "Commands"
+// STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
+// STR_OPTION_CMD_FINISH   = "After installation"
+// STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
+STR_OPTION_CMD_FINISHDN = "Dopo lo scaricamento"
+// STR_OPTION_CONSOLE      = "Show console window"
+
+// Patreon
+STR_PATREON1             = "SDI e sviluppato da volontari nel loro tempo libero. Se ti piace questo programma, supportaci su Patreon."
+STR_PATREON2             = "(Clicca qui per aprire la pagina di Patreon)"
+STR_PATREON_H            = ""

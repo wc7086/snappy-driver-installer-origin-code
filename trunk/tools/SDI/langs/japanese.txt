@@ -375,8 +375,6 @@ STR_OPTION_CMD_FINISHDN = "ダウンロード後"
 STR_OPTION_CONSOLE      = "コンソール ウィンドウを表示"
 
 // Patreon
-//STR_PATREON1             = "SDI の開発は有志のボランティアが自分の空き時間を利用して行っています。このツールを気に入ってもらえたら Patreon で私達をサポートしてください。"
-// STR_PATREON1 needs to be shorter, so it doesn't get cut off when current theme is Grass.
-
+STR_PATREON1             = "このツールを気に入ってもらえたら Patreon で私達をサポートしてください。"
 STR_PATREON2             = "(ここをクリックで Patreon ページを開く)"
 STR_PATREON_H            = ""
