@@ -123,7 +123,7 @@ STR_SYSINF_64BIT        = "64-bit"
 //STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE     = "Developpeur: "
 //STR_ABOUT_DEV_LIST
-STR_ABOUT_TESTERS_TITLE = "Testeurs: "
+STR_ABOUT_TESTERS_TITLE = "Contributeurs : "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_TRANS_TITLE   = "Traducteurs:"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer est enregistré selon les termes de la GNU General Public License version 3\n\n\n\n\n\nSnappy Driver Installer utilise les technologies suivantes:\n* WebP est enregistré selonles termes de la license BSD \n* libtorrent est enregistré selon les termes de la license BSD\n* Backtrace est enregistré selon les termes de la license BSD\n* 7-Zip est enregistré selon les termes de la Bibliothèque GNU ou Lesser General Public License version 2\n\nSnappy Driver Installer fonctionne avec les DriverPacks développés par la Team DriverPack.\n(Cliquer pour voir un des sites Web)"

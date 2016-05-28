@@ -340,8 +340,8 @@ STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 // View tab
 STR_OPTION_DRPNAMES     = "Nombres de los DriverPacks"
 STR_OPTION_HIDE_NAMES   = "No mostrar nombres de los DriverPacks"
-STR_OPTION_SHOW_RIGHT   = "Muestra nombre de DriverPacks a la derecha"
-STR_OPTION_SHOW_ABOVE   = "Muestra nombre de DriverPacks arriba"
+STR_OPTION_SHOW_RIGHT   = "Mostrar nombre de DriverPacks a la derecha"
+STR_OPTION_SHOW_ABOVE   = "Mostrar nombre de DriverPacks arriba"
 STR_OPTION_SCALLING     = "Escala de la interfase"
 STR_OPTION_SCALLING_H   = ""
 STR_OPTION_SCALLING_SML = "Pequeño"
@@ -351,7 +351,7 @@ STR_OPTION_HINT         = "Sugerencia"
 STR_OPTION_HINT_LABEL   = "Retraso en milisegundos"
 
 // Updates tab
-STR_OPTION_CHECKUPDATES = "No verifica por nueva versión de la aplicación y DriverPacks"
+STR_OPTION_CHECKUPDATES = "No verificar por nueva versión de la aplicación y DriverPacks"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Puerto"
@@ -372,7 +372,7 @@ STR_OPTION_CMD_LABEL    = "Se pueden crear comandos para ser ejecutados vía CMD
 STR_OPTION_CMD_FINISH   = "Luego de la instalación"
 STR_OPTION_CMD_FINISHRB = "Luego de la intalación (requiere reinicio)"
 STR_OPTION_CMD_FINISHDN = "Luego de descargar"
-STR_OPTION_CONSOLE      = "Muestra ventana de la consola"
+STR_OPTION_CONSOLE      = "Mostrar ventana de la consola"
 
 // Patreon
 STR_PATREON1             = "SDI es desarrollado por voluntarios en su tiempo libre. Por favor apóyenos en Patreon si lo desea."
