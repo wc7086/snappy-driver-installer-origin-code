@@ -174,6 +174,9 @@ int itembar_t::box_status()
         case SLOT_PATREON:
             return BOX_PATREON;
 
+        case SLOT_TRANSLATION:
+            return BOX_TRANSLATION;
+
         case SLOT_RESTORE_POINT:
             switch(install_status)
             {
@@ -1443,6 +1446,18 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,STR(STR_PATREON1));
             canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),STR(STR_PATREON2));
+            break;
+
+        case SLOT_TRANSLATION:
+            pos+=D_X(ITEM_TEXT_OFS_Y);
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,itembar->val1==1?
+                L"You can also contribute to the project by translating SDI into your native language on Transifex."
+                :
+                L"You can also contribute to the project by suggesting a better translation on Transifex."
+                );
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),L"(Click here to open the Transifex page)");
             break;
 
         case SLOT_DOWNLOAD:

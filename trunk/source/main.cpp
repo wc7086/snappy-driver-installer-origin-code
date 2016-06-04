@@ -1834,6 +1834,12 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                 break;
             }
 
+            if(Popup->floating_itembar==SLOT_TRANSLATION)
+            {
+                System.run_command(L"open",L"https://www.transifex.com/snappy-driver-installer/snappy-driver-installer",SW_SHOWNORMAL,0);
+                break;
+            }
+
             if(Popup->floating_itembar>0&&(i==1||i==0||i==3))
             {
                 manager_g->toggle(Popup->floating_itembar);

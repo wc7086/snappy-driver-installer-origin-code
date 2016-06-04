@@ -10,7 +10,7 @@ STR_LANG_CODE           = 0x10
 STR_RTL                 = 0
 
 // left panel
-STR_SHOW_SYSINFO        = "Informazioni del Sistema"
+STR_SHOW_SYSINFO        = "Informazioni sul Sistema"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Installa"
@@ -24,7 +24,7 @@ STR_LANG                = "Lingua (Language)"
 STR_LANG_H              = ""
 STR_THEME               = "Tema"
 STR_THEME_H             = ""
-STR_EXPERT              = "Modo Esperto"
+STR_EXPERT              = "Modalita esperto"
 STR_EXPERT_H            = "Attiva Modalità Esperto.\n\nSUGGERIMENTO: Tenere premuto il tasto Ctrl o la barra spaziatrice su un driver per avere informazioni extra."
 
 STR_OPENLOGS            = "Apri log"
@@ -35,6 +35,7 @@ STR_EXTRACT             = "Estrai in..."
 STR_EXTRACT_H           = "Estrae i driver selezionati\n\nPuoi utilizzarlo per creare il backup dei drive attualmente selezionati."
 STR_DRVDIR              = "Seleziona dir driver..."
 STR_DRVDIR_H            = "Seleziona un'altra cartella con i driverpack o driver decompressi.\n\nPuoi utilizzarlo per cercare i driver su CD/DVD."
+STR_OPTIONS_BTN         = "Opzioni..."
 
 STR_SHOW_FOUND          = "Trovati nei driverpack"
 STR_SHOW_FOUND_H        = "I driver sono trovati nei driverpack e possono essere installati.\n\nVi consigliamo di installare i driver delle seguenti categorie: non installato, nuovi, miglior corrispondenza."
@@ -91,7 +92,7 @@ STR_SYSINF_MODEL        = "Modello"
 STR_SYSINF_MANUF        = "Produttore"
 STR_SYSINF_BATTERY      = "Alimentazione"
 STR_SYSINF_AC_STATUS    = "A/C"
-STR_SYSINF_OFFLINE      = "Disconneso"
+STR_SYSINF_OFFLINE      = "disconnesso"
 STR_SYSINF_ONLINE       = "Collegato"
 STR_SYSINF_UNKNOWN      = "Sconosciuto"
 STR_SYSINF_FLAGS        = "Batteria"
@@ -201,7 +202,7 @@ STR_VIRUS_HIDDEN_H      = "La cartella principale contiene cartelle nascoste. I 
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Clicca qui per fermare l'emulazione)"
-STR_EMPTYDRP            = "Inserire i driverpack o i driver decompressi nella seguente cartella"
+STR_EMPTYDRP            = "Collegarsi alla rete Internet per scaricare i driverpacks oppure mettere i drivers nella seguente cartella"
 STR_CLOSE_DRPEXT        = "(Clicca qui per ritornare alla cartella predefinita)"
 STR_NOUPDATES           = "I driver sono aggiornati"
 STR_INITIALIZING        = "Inizializzazione..."
@@ -328,7 +329,7 @@ STR_TR_ST7              = "controllo dati recupero"
 
 // Options dialog
 STR_OPTION_TITLE        = "Opzioni"
-// STR_OPTION_VIEW_TAB     = "View"
+STR_OPTION_VIEW_TAB     = "Visualizza"
 STR_OPTION_UPDATES_TAB  = "Aggiornamenti"
 STR_OPTION_PATH_TAB     = "Percorsi"
 STR_OPTION_ADVANCED_TAB = "Avanzate"
@@ -337,16 +338,16 @@ STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
 // View tab
 // STR_OPTION_DRPNAMES     = "Driverpack names"
-// STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
-// STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
-// STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
+STR_OPTION_HIDE_NAMES   = "Non mostrare i nomi dei driverpack"
+STR_OPTION_SHOW_RIGHT   = "Mostra il nome dei driverpack alla destra"
+STR_OPTION_SHOW_ABOVE   = "Mostra il nome dei driverpack sopra"
 // STR_OPTION_SCALLING     = "Interface scaling"
 STR_OPTION_SCALLING_H   = ""
-// STR_OPTION_SCALLING_SML = "Small"
-// STR_OPTION_SCALLING_BIG = "Big"
-// STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_SCALLING_SML = "Piccolo"
+STR_OPTION_SCALLING_BIG = "Grande"
+STR_OPTION_SCALLING_RST = "Reset"
 STR_OPTION_HINT         = "Suggerimento"
-// STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
+STR_OPTION_HINT_LABEL   = "Ritardo in millisecondi"
 
 // Updates tab
 // STR_OPTION_CHECKUPDATES = "Do not check for new version of app/driverpacks"
@@ -365,10 +366,10 @@ STR_OPTION_DIR_INDEXESH = "Indici (leggibili)"
 // STR_OPTION_DIR_LOGS     = "Log files"
 
 // Advanced tab
-// STR_OPTION_CMD          = "Commands"
+STR_OPTION_CMD          = "Comandi"
 // STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
-// STR_OPTION_CMD_FINISH   = "After installation"
-// STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
+STR_OPTION_CMD_FINISH   = "Dopo l'installazione"
+STR_OPTION_CMD_FINISHRB = "Dopo l'installazione (e necessario riavviare)"
 STR_OPTION_CMD_FINISHDN = "Dopo lo scaricamento"
 // STR_OPTION_CONSOLE      = "Show console window"
 

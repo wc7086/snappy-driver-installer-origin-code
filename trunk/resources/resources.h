@@ -30,6 +30,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDR_CLI_HELP  210
 #define IDR_LOGO      211
 #define IDR_PATREON   212
+#define IDR_TRANS     213
 
 // Dialogs
 #define IDD_DIALOG1   301

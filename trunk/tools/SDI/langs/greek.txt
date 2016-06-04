@@ -293,7 +293,7 @@ STR_UPD_UPDATEHINT2     = "Πρέπει πρώτα να αναβαθμίσετε
 
 // Update hint
 STR_UPD_AVAIL1          = "Υπάρχουν διαθέσιμες ενημερώσεις στο Διαδίκτυο: SDI R%d"
-STR_UPD_AVAIL2          = "Υπάρχουν διαθέσιμες ενημερώσεις στο Διαδίκτυο:%d Driverpacks"
+STR_UPD_AVAIL2          = "Υπάρχουν διαθέσιμες ενημερώσεις στο διαδίκτυο:%d Driverpacks"
 STR_UPD_AVAIL3          = "Υπάρχουν διαθέσιμες ενημερώσεις στο Διαδίκτυο: SDI R%d και %d Driverpacks"
 STR_UPD_START           = "(Κάντε κλικ εδώ για να ξεκινήσετε τη λήψη)"
 STR_UPD_PROGRES         = "Ανέβηκε %s από %s (%d%%)"
@@ -332,7 +332,7 @@ STR_TR_ST7              = "Επανάληψη"
 STR_OPTION_TITLE        = "Επιλογές"
 STR_OPTION_VIEW_TAB     = "Προβολή"
 STR_OPTION_UPDATES_TAB  = "Ενημερώσεις"
-STR_OPTION_PATH_TAB     = "Διαδρομές"
+STR_OPTION_PATH_TAB     = "Διεύθυνση"
 STR_OPTION_ADVANCED_TAB = "Αλλο"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
@@ -340,11 +340,11 @@ STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 // View tab
 STR_OPTION_DRPNAMES     = "Ονόματα οδηγών"
 STR_OPTION_HIDE_NAMES   = "Να μην εμφανίζονται τα ονόματα οδηγών"
-STR_OPTION_SHOW_RIGHT   = "Εμφάνιση ονόματα οδηγών δεξιά"
+STR_OPTION_SHOW_RIGHT   = "Να εμφανίζονται τα ονόματα οδηγών δεξιά"
 STR_OPTION_SHOW_ABOVE   = "Εμφάνιση επανω"
-STR_OPTION_SCALLING     = "Κλίμακα"
+STR_OPTION_SCALLING     = "Μέγεθος παραθύρου"
 STR_OPTION_SCALLING_H   = ""
-STR_OPTION_SCALLING_SML = "Μικρό"
+STR_OPTION_SCALLING_SML = "Μικρός "
 STR_OPTION_SCALLING_BIG = "Μεγάλος "
 STR_OPTION_SCALLING_RST = "Επαναφορά"
 STR_OPTION_HINT         = "Συμβουλή"
