@@ -47,14 +47,15 @@ enum SLOTS
     SLOT_VIRUS_HIDDEN  = 3,
     SLOT_NODRIVERS     = 4,
     SLOT_PATREON       = 5,
-    SLOT_DOWNLOAD      = 6,
-    SLOT_NOUPDATES     = 7,
-    SLOT_DPRDIR        = 8,
-    SLOT_SNAPSHOT      = 9,
-    SLOT_INDEXING      =10,
-    SLOT_EXTRACTING    =11,
-    SLOT_RESTORE_POINT =12,
-    RES_SLOTS          =13,
+    SLOT_TRANSLATION   = 6,
+    SLOT_DOWNLOAD      = 7,
+    SLOT_NOUPDATES     = 8,
+    SLOT_DPRDIR        = 9,
+    SLOT_SNAPSHOT      =10,
+    SLOT_INDEXING      =11,
+    SLOT_EXTRACTING    =12,
+    SLOT_RESTORE_POINT =13,
+    RES_SLOTS          =14,
 };
 
 #define NUM_STATUS 6
