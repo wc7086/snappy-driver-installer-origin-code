@@ -30,14 +30,15 @@ STR_EXPERT_H            = "Attiva Modalità Esperto.\n\nSUGGERIMENTO: Tenere prem
 STR_OPENLOGS            = "Apri log"
 STR_OPENLOGS_H          = "Apre la cartella contenente i file log e snapshot.\n\nE' possibile inviare questi file per ricevere assistenza."
 STR_SNAPSHOT            = "Carica snapshot..."
-STR_SNAPSHOT_H          = "Carica snapshot di un altro sistemam.\n\nSnapshot vengono creati automaticamente nella cartella log. Essi contengono informazioni sulle periferiche, driver, versione di Windows, batteria e schermi.\n\nGli Snapshot non contengono informazioni sui driverpack dei sistemi remoti.\n\nQuindi, il caricamento di snapshot permette l'emulazione del sistema remoto, ma i driver sono da ricercare nei DriverPack locali."
+STR_SNAPSHOT_H          = "Carica snapshot di un altro sistema.\n\nLe Snapshot vengono create automaticamente nella cartella log. Esse contengono informazioni sulle periferiche, driver, versione di Windows, batteria e schermi.\n\nLe Snapshot non contengono informazioni sui driverpack dei sistemi remoti.\n\nQuindi, il caricamento di snapshot permette l'emulazione del sistema remoto, ma i driver sono da ricercare nei DriverPack locali."
 STR_EXTRACT             = "Estrai in..."
 STR_EXTRACT_H           = "Estrae i driver selezionati\n\nPuoi utilizzarlo per creare il backup dei drive attualmente selezionati."
 STR_DRVDIR              = "Seleziona dir driver..."
 STR_DRVDIR_H            = "Seleziona un'altra cartella con i driverpack o driver decompressi.\n\nPuoi utilizzarlo per cercare i driver su CD/DVD."
 STR_OPTIONS_BTN         = "Opzioni..."
+STR_OPTIONS_BTN_H       = "Apri una finestra con le impostazioni."
 
-STR_SHOW_FOUND          = "Trovati nei driverpack"
+STR_SHOW_FOUND          = "Trovato nei driverpack"
 STR_SHOW_FOUND_H        = "I driver sono trovati nei driverpack e possono essere installati.\n\nVi consigliamo di installare i driver delle seguenti categorie: non installato, nuovi, miglior corrispondenza."
 STR_SHOW_MISSING        = "Non installato"
 STR_SHOW_MISSING_H      = "Visualizza i driver contenuti nei driverpack per le periferiche che richiedono questi driver.\n\nVi consigliamo di installare questi driver."
@@ -122,7 +123,7 @@ STR_SYSINF_64BIT        = "64-bit"
 //STR_ABOUT_VER
 STR_ABOUT_DEV_TITLE     = "Sviluppatore: "
 //STR_ABOUT_DEV_LIST
-STR_ABOUT_TESTERS_TITLE = "Tester: "
+STR_ABOUT_TESTERS_TITLE = "Collaboratori: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_TRANS_TITLE   = "Traduttori:"
 STR_ABOUT_LICENSE       = "Snappy Driver Installer è concesso in licenza sotto i termini della licenza GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer utilizza le seguenti tecnologie:\n* WebP è concesso in licenza sotto i termini della licenza BSD\n* libtorrent è concesso in licenza sotto i termini della licenza BSD\n* Backtrace è concesso in licenza sotto i termini della licenza BSD\n* 7-Zip è concesso in licenza sotto i termini della licenza GNU Library oppure Lesser General Public License version 2\n\nSnappy Driver Installer è potenziato dai DriverPack che sono stati sviluppati dal Team DriverPacks.\n\n(Clicca ora per visitare il sito web)"
@@ -337,7 +338,7 @@ STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
 // View tab
-// STR_OPTION_DRPNAMES     = "Driverpack names"
+STR_OPTION_DRPNAMES     = "Nomi dei driverpack"
 STR_OPTION_HIDE_NAMES   = "Non mostrare i nomi dei driverpack"
 STR_OPTION_SHOW_RIGHT   = "Mostra il nome dei driverpack alla destra"
 STR_OPTION_SHOW_ABOVE   = "Mostra il nome dei driverpack sopra"

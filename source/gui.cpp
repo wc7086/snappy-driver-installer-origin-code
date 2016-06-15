@@ -339,7 +339,7 @@ void wCheckbox::draw(Canvas &canvas)
         canvas.DrawWidget(x1,y1,x1+wx,y1+wy-4,BOX_KBHLT);
         //isSelected=false;
     }
-    canvas.DrawCheckbox(mirw(x1,0,wx-D_X(CHKBOX_SIZE)-2),y1,D_X(CHKBOX_SIZE)-2,D_X(CHKBOX_SIZE)-2,checked,isSelected);
+    canvas.DrawCheckbox(mirw(x1,0,wx-D_X(CHKBOX_SIZE)-2),y1,D_X(CHKBOX_SIZE)-2,D_X(CHKBOX_SIZE)-2,checked,isSelected,0);
     canvas.SetTextColor(D_C(isSelected?CHKBOX_TEXT_COLOR_H:CHKBOX_TEXT_COLOR));
     canvas.DrawTextXY(mirw(x1,D_X(CHKBOX_TEXT_OFSX),wx),y1,STR(str_id));
 }

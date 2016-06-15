@@ -96,7 +96,7 @@ public:
     void push(Data const& data)
     {
         #ifndef _WIN64
-        while(num>500)
+        while(num>250)
         {
             Log.print_con("The queue is full. Waiting...\n");
             Sleep(100);

@@ -567,7 +567,7 @@ struct TData
     HWND tab;
 } data;
 
-BOOL CALLBACK DialogPage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+static BOOL CALLBACK DialogPage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     UNREFERENCED_PARAMETER(hwnd);
     UNREFERENCED_PARAMETER(wp);
@@ -602,7 +602,7 @@ BOOL CALLBACK DialogPage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-void OnSelChange()
+static void OnSelChange()
 {
     int sel=TabCtrl_GetCurSel(data.tab);
     ShowWindow(data.pages[0],(sel==0)?SW_SHOW:SW_HIDE);
@@ -611,7 +611,7 @@ void OnSelChange()
     ShowWindow(data.pages[3],(sel==3)?SW_SHOW:SW_HIDE);
 }
 
-BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
+static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
 {
     wchar_t num[32];
 

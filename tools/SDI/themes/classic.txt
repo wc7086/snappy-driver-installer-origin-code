@@ -36,10 +36,10 @@ BUTTON_OUTLINE_ROUND_H   = 0
 DRVLIST_OUTLINE_ROUND    = 0
 
 // Driver item content
-ITEM_EXPAND_UP           = "classic\upn.webp"
-ITEM_EXPAND_UP_H         = "classic\uph.webp"
-ITEM_EXPAND_DOWN         = "classic\dnn.webp"
-ITEM_EXPAND_DOWN_H       = "classic\dnh.webp"
+//ITEM_EXPAND_UP           = "classic\upn.webp"
+//ITEM_EXPAND_UP_H         = "classic\uph.webp"
+//ITEM_EXPAND_DOWN         = "classic\dnn.webp"
+//ITEM_EXPAND_DOWN_H       = "classic\dnh.webp"
 
 // Driver item (generic style)
 DRVITEM_INSIDE_COLOR     = 0xBBBBBB

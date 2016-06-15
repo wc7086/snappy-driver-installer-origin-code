@@ -141,7 +141,7 @@ public:
     void DrawWidget(int x1,int y1,int x2,int y2,int i);
     void DrawImage(Image &image,int x1,int y1,int wx,int wy,int flags1,int flags2);
     void DrawLine(int x1,int y1,int x2,int y2);
-    void DrawCheckbox(int x,int y,int wx,int wy,int checked,int active);
+    void DrawCheckbox(int x,int y,int wx,int wy,int checked,int active,int type);
     void DrawConnection(int x,int pos,int ofsy,int curpos);
     void DrawIcon(int x1,int y1,const char *guid_driverpack,const Device *device);
 

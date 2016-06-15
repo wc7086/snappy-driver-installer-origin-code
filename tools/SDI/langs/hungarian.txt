@@ -324,6 +324,7 @@ STR_TR_ST4              = "Elkészült - Letöltve"
 STR_TR_ST5              = "Feltöltés"
 STR_TR_ST6              = "Lemezterület lefoglalása"
 STR_TR_ST7              = "Adat összegzés ellenőrzése"
+
 // Options dialog
 STR_OPTION_TITLE        = "Beállítások"
 STR_OPTION_VIEW_TAB     = "Nézet"

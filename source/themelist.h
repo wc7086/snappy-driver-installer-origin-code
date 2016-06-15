@@ -25,7 +25,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define SYSINFO_COL2 (D_X(FONT_SIZE)*30)
 #define SYSINFO_COL3 (D_X(FONT_SIZE)*40)
 
-#define ICON_NUM             8
+#define ICON_NUM             12
 
 enum
 {
@@ -574,6 +574,10 @@ enum
     ITEM_CHECKBOX_OFS_X,
     ITEM_CHECKBOX_OFS_Y,
     ITEM_CHECKBOX_SIZE,
+    ITEM_BITMAP_CHECKED,
+    ITEM_BITMAP_CHECKED_H,
+    ITEM_BITMAP_UNCHECKED,
+    ITEM_BITMAP_UNCHECKED_H,
     ITEM_ICON_OFS_X,
     ITEM_ICON_OFS_Y,
     ITEM_ICON_SIZE,

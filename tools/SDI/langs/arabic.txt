@@ -1,4 +1,4 @@
-﻿// Translated by MotasemBT
+﻿STR_TRANSLATORS         = "مؤشر سيء"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -13,38 +13,38 @@ STR_RTL                 = 1
 STR_SHOW_SYSINFO        = "معلومات الجهاز"
 STR_SHOW_SYSINFO_H      = ""
 
-STR_INSTALL             = "تنصيب"
-STR_INSTALL_H           = "تنصيب التعريفات المختاره(Ctrl+I).\n\nHINT: اظغط على رز shift ومن ثم اظغط على زر الماوس لتحميل التعريف فورا."
+STR_INSTALL             = "تثبيت"
+STR_INSTALL_H           = "تثبيت التعريفات المختاره(Ctrl+I).\n\nتلميح: اظغط على رز Shift ومن ثم اظغط على زر الماوس لتحميل التعريف فورا."
 STR_SELECT_ALL          = "اختيار الكل"
 STR_SELECT_ALL_H        = "Ctrl+A"
-STR_SELECT_NONE         = "ازاله التحديد"
+STR_SELECT_NONE         = "لا تختار شيء"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "اللغة"
 STR_LANG_H              = ""
 STR_THEME               = "المظهر"
 STR_THEME_H             = ""
-STR_EXPERT              = "خيارات متقدمه"
-STR_EXPERT_H            = "لتمكين الحيارات المتقدمة.\n\nHINT: اظغط على Ctrl ومن ثم تمرير الفاره للمزيد من المعلومات حول التعريف."
+STR_EXPERT              = "وضع الخبير"
+STR_EXPERT_H            = "تفعيل وضع الخبير.\n\nتلميح: اضغط على الزر Ctrl أو زر Spacebar على التعريف للحصول على معلومات إضافية حول هذا التعريف."
 
 STR_OPENLOGS            = "فتح ملفات السجل"
-STR_OPENLOGS_H          = "فتح مجلد السجلات و ملفات المساعده.\n\nيحتوي المجلد على ملفات المسعده , يمكنك ارسالها لاي شخص اخر."
-STR_SNAPSHOT            = "اظف ملف مساعده..."
-STR_SNAPSHOT_H          = "ملفات المساعده تتون تلقائيا عند بدئ البرنامج ويتم تخزينها في مجلد log . وتحتوي على معلومات الجهاز , والتعريفات
-, نسخه الوندوز, البطاريه ومقاييس الحراره والقرص الصلب.\n\nملفات المساعده لا تحتوي على التعريفات من الجهاز الاخر 
-.\n\nلذلك, ادخال ملفات المساعده يمكنك من مساعده اي جهاز اخر بشرط وجود ملف المساعده وبذلك يمكن استخراج التعريفات من التعريفات الخاصه بك ."
+STR_OPENLOGS_H          = "افتح المجلد الذي يحتوي على السجلات واللقطات.\n\nيمكنك إرسال ملفات السجل الي المطور من خلال فتح www.sdi-tool.org والذهاب الى صفحة الدعم.\n\nالقطات يمكن استخدامها عن بعد لمساعدة المستخدمين في اختيار التعريف الصحيحة."
+STR_SNAPSHOT            = "تحميل اللقطة..."
+STR_SNAPSHOT_H          = "تحميل لقطة من نظام آخر.\n\nيتم إنشاء اللقطات تلقائياً في مجلد السجل. وهي تتضمن معلومات حول الأجهزة و التعريفات و إصدار نظام التشغيل Windows و البطارية و الشاشات.\n\nاللقطات لا تحتوي على معلومات حول حزمة التعريفات في النظام البعيد.\n\nولذلك، تحميل اللقطة يسمح بمحاكاة النظام البعيد ولكن يتم البحث عن التعريفات في حزمة التعريفات المحلية."
 STR_EXTRACT             = "استخراج الى..."
-STR_EXTRACT_H           = "استخراج التعريفات المحدده\n\nيمكنك استخدامها لاستخراج نسخه احتياطيه من التعريفات المحدده."
+STR_EXTRACT_H           = "إستخراج التعريفات المختارة\n\n\nيمكنك استخدامه لإنشاء نسخ احتياطية من التعريفات. تأكد من أن التعريفات المثبتة حديثا تعمل بشكل صحيح، أضغط علي خانة 'إظهار التعريفات الحالية' وانقر فوق 'إستخراج إلى...'"
 STR_DRVDIR              = "اختيار مجلد التعريفات..."
 STR_DRVDIR_H            = "اختر مجلد اخر او قم بفك ضغط التعريفات.\n\nتستخدم هذه الخاصيه في حال وجود التعريقات على قرص صلب او في كرت الذاكرة."
+STR_OPTIONS_BTN         = "الاختيارات..."
+STR_OPTIONS_BTN_H       = "أفتح مربع الحوار باستخدام الإعدادات."
 
 STR_SHOW_FOUND          = "وجدت  في التعريفات"
-STR_SHOW_FOUND_H        = "وجدت  في التعريفات ويمكن تنصيبها.\n\nWe advise you to install drivers from the following categories: not installed, newer, better match."
+STR_SHOW_FOUND_H        = "تم العثور على تعريفات في حزمة التعريفات ويمكن تثبيتهم.\n\nننصح بتثبيت التعريفات من الفئات التالية: غير مثبت، أحدث، أفضل تطابق."
 STR_SHOW_MISSING        = "غير مثبت"
 STR_SHOW_MISSING_H      = "اظهر التعريفات من مجلد التعريفات للقطع التي تحتاج تنصيب.\n\nننصح بتثبيت هذه التعريفات."
 STR_SHOW_NEWER          = "اجدد"
 STR_SHOW_NEWER_H        = "اظهر التعريفات من مجلد التعريفات التي هيه اجدد من المنصبه على الجهاز حاليا.\n\nننصح بتثبيت هذه التعريفات."
-STR_SHOW_CURRENT        = "الحاليه"
+STR_SHOW_CURRENT        = "الحالية"
 STR_SHOW_CURRENT_H      = "اظهر التعريفات من مجلد التعريفات التي تشابه التعريفات المنصبه على الجهاز.\n\nلا ننصح بتنصيب هذه التعريفات الا في حال الاحتياج لها."
 STR_SHOW_OLD            = "اقدم"
 STR_SHOW_OLD_H          = "اظهر التعريفات من مجلد التعريفات التي هيها اقدم  من المنصبه على الجهاز حاليا.\n\nلا ننصح بتنصيب هذه التعريفات الا في حال وجود مشاكل مع التعريفات الجديده."
@@ -55,177 +55,179 @@ STR_SHOW_WORSE_RANK_H   = "اظهر التعريفات من مجلد التعر�
 
 STR_SHOW_NOTFOUND       = "مفقود من مجلد التعريفات"
 STR_SHOW_NOTFOUND_H     = "التعريفات مفقوده من مجلد التعريفات ولا يمكن تنصيبها."
-STR_SHOW_NF_MISSING     = "غير منصب"
-STR_SHOW_NF_MISSING_H   = "اظهار القطع التي تحتاج الى تعريف وهيه غير موجوده بمجلد التعريفات."
+STR_SHOW_NF_MISSING     = "غير مثبت"
+STR_SHOW_NF_MISSING_H   = "إظهار الأجهزة التي تتطلب تعريفات ولكن لما يتم العثور علي تعريفهم في حزمة التعريفات.\n\nيمكنك محاولة البحث عن هذه التعريفات من على الإنترنت أو من على أقراص الفيديو الرقمية. من أجل نسخ الـ HardwareID، يمكنك النقر بزر الماوس الأيمن على الجهاز.\n\n\nنحن ننصح لاعلامنا عن التعريفات الناقصة، بحيث يمكن إضافتهم إلى حزمة التعريفات."
 STR_SHOW_NF_UNKNOWN     = "غير معروف"
-STR_SHOW_NF_UNKNOWN_H   = "اظهر التعريفات الغير معروفه ومنصبه على النظام ومفقوده من مجلد التعريفات."
+STR_SHOW_NF_UNKNOWN_H   = "إظهار التعريفات الغير معروفة الذي مثبت في النظام و لكن لم يتم العثور عليهم في حزمة التعريفات.\n\nنحن ننصح لاعلامنا أنك لديك بعض التعريفات التي يمكن أضافتهم الي حزمة التعريفات."
 STR_SHOW_NF_STANDARD    = "الحاليه"
-STR_SHOW_NF_STANDARD_H  = "اظهر التعريفات الحاله المنصبه على النظام ومفقوده من مجلد التعريفات."
+STR_SHOW_NF_STANDARD_H  = "إظهار التعريفات الحالية المثبت في النظام و لكن لم يتم العثور عليهم في حزمة التعريفات.\n\nهذه التعريفات عادة ما تأتي مع نظام التشغيل Windows ولا تتطلب تحديثات."
 
-STR_SHOW_DISPLAY        = "اظهر"
+STR_SHOW_DISPLAY        = "اظهار"
 STR_SHOW_DISPLAY_H      = ""
-STR_SHOW_ONE            = "الافضل فقط"
-STR_SHOW_ONE_H          = "اظهر الافضل فقط لكل قطعه."
-STR_SHOW_DUP            = "اظهر المتشابهه"
-STR_SHOW_DUP_H          = "اظهر التعريفات المتشابهه."
-STR_SHOW_INVALID        = "اظهرالتعريفات الخاطئه"
-STR_SHOW_INVALID_H      = "اظهر التعريفات الغير متطابقه مع النظام.\n\nننصح بعدم تنصيب هذه التعريفات لانها لا تتطابق مع النظام الحالي."
+STR_SHOW_ONE            = "إظهار الافضل فقط"
+STR_SHOW_ONE_H          = "إظهار فقط أفضل التعريفات لكل جهاز.\n\nعند الاختيار, يتم إظهار فقط أفضل تعريف متطابق لكل جهاز بدلاً من أظهار جميع التعريفات المتاحة لكل جهاز."
+STR_SHOW_DUP            = "إظهار المكررة"
+STR_SHOW_DUP_H          = "إظهار التعريفات المكررة.\n\nيتم تكرار بعض التعريفات عدة مرات داخل حزمة التعريفات لأسباب فنية."
+STR_SHOW_INVALID        = "إظهار التعريفات الخاطئه"
+STR_SHOW_INVALID_H      = "إظهار التعريفات الغير متوافقة مع نظام التشغيل الحالي.\n\nننصح بعدم تثبيت هذه التعريفات لانها غير متوافقة مع نظام التشغيل   Windows الحالي."
 
-STR_OPTIONS             = "خيارات"
+STR_OPTIONS             = "الخيارات"
 STR_OPTIONS_H           = ""
 STR_REBOOT              = "اعد تشغيل الجهاز بعد التنصيب"
 STR_REBOOT_H            = "اعد التشغيل(if required) بعد التصنيب(Ctrl+R).\n\nHINT: يمكنك الغاء هذه الخاصيه بازاله التحديد."
 
 // Sysinfo
-STR_SYSINF_WINDOWS      = "Windows"
-STR_SYSINF_VERSION      = "Version"
+STR_SYSINF_WINDOWS      = "نظام التشغيل Windows"
+STR_SYSINF_VERSION      = "الإصدار"
 STR_SYSINF_PLATFORM     = "PlatformId"
-STR_SYSINF_UPDATE       = "Update"
-STR_SYSINF_SERVICEPACK  = "ServicePack"
+STR_SYSINF_UPDATE       = "تحديث"
+STR_SYSINF_SERVICEPACK  = "تحديثات النضام"
 STR_SYSINF_SUITEMASK    = "SuiteMask"
-STR_SYSINF_PRODUCTTYPE  = "ProductType"
-STR_SYSINF_ENVIRONMENT  = "Environment"
+STR_SYSINF_PRODUCTTYPE  = "نوع المنتج"
+STR_SYSINF_ENVIRONMENT  = "البيئة"
 STR_SYSINF_WINDIR       = "%windir%\\inf"
-STR_SYSINF_TEMP         = "%temp%"
-STR_SYSINF_MOTHERBOARD  = "Motherboard"
-STR_SYSINF_PRODUCT      = "Product"
-STR_SYSINF_MODEL        = "Model"
-STR_SYSINF_MANUF        = "Manufacturer"
-STR_SYSINF_BATTERY      = "Power"
+STR_SYSINF_TEMP         = "المجلد الافتراضي"
+STR_SYSINF_MOTHERBOARD  = "اللوحه الام"
+STR_SYSINF_PRODUCT      = "المنتج"
+STR_SYSINF_MODEL        = "الموديل"
+STR_SYSINF_MANUF        = "المصنع"
+STR_SYSINF_BATTERY      = "الطاقة"
 STR_SYSINF_AC_STATUS    = "A/C"
-STR_SYSINF_OFFLINE      = "Disconnected"
-STR_SYSINF_ONLINE       = "Circuited"
-STR_SYSINF_UNKNOWN      = "Unknown"
-STR_SYSINF_FLAGS        = "Battery"
-STR_SYSINF_HIGH         = "[high]"
-STR_SYSINF_LOW          = "[low]"
-STR_SYSINF_CRITICAL     = "[critical]"
-STR_SYSINF_CHARGING     = "[charging]"
-STR_SYSINF_NOBATTERY    = "[no battery]"
-STR_SYSINF_UNKNOWN      = "[unknown]"
-STR_SYSINF_CHARGED      = "Charged"
-STR_SYSINF_LIFETIME     = "LifeTime"
-STR_SYSINF_FULLLIFETIME = "FullLifeTime"
-STR_SYSINF_MINS         = "Minutes"
-STR_SYSINF_MONITORS     = "Monitor(s)"
-STR_SYSINF_CM           = "cm"
-STR_SYSINF_INCH         = "in"
-STR_SYSINF_WIDE         = "widescreen"
-STR_SYSINF_MISC         = "HINT: Click on the panel in order to open Device Manager"
-STR_SYSINF_TYPE         = "Type"
-STR_SYSINF_LAPTOP       = "laptop"
-STR_SYSINF_DESKTOP      = "desktop"
-STR_SYSINF_LOCALE       = "Locale"
-STR_SYSINF_CPU_ARCH     = "CPU_Arch"
-STR_SYSINF_32BIT        = "32-bit"
-STR_SYSINF_64BIT        = "64-bit"
+STR_SYSINF_OFFLINE      = "غير متصل"
+STR_SYSINF_ONLINE       = "دارة"
+STR_SYSINF_UNKNOWN      = "غير معروف"
+STR_SYSINF_FLAGS        = "البطاريه"
+STR_SYSINF_HIGH         = "[عالية]"
+STR_SYSINF_LOW          = "[منخفضة]"
+STR_SYSINF_CRITICAL     = "[حرجة]"
+STR_SYSINF_CHARGING     = "[يشحن]"
+STR_SYSINF_NOBATTERY    = "[لا توجد بطارية]"
+STR_SYSINF_CHARGED      = "مشحون"
+STR_SYSINF_LIFETIME     = "مدى الحياة"
+STR_SYSINF_FULLLIFETIME = "مدى الحياة بالكامل"
+STR_SYSINF_MINS         = "دقائق"
+STR_SYSINF_MONITORS     = "يرصد"
+STR_SYSINF_CM           = "سنتيمتر"
+STR_SYSINF_INCH         = "في"
+STR_SYSINF_WIDE         = "شاشة عريضة"
+STR_SYSINF_MISC         = "تلميح: انقر على لوحة من أجل فتح إدارة الأجهزة"
+STR_SYSINF_TYPE         = "النوع"
+STR_SYSINF_LAPTOP       = "لاب توب"
+STR_SYSINF_DESKTOP      = "جهاز مكتبي"
+STR_SYSINF_LOCALE       = "لغة"
+STR_SYSINF_CPU_ARCH     = "بنية وحدة المعالجة المركزية"
+STR_SYSINF_32BIT        = "32-بت"
+STR_SYSINF_64BIT        = "64-بت"
 
 // About
-STR_ABOUT_VER           = "v0.2"
-STR_ABOUT_DEV_TITLE     = "Developer: "
-STR_ABOUT_DEV_LIST      = "BadPointer"
-STR_ABOUT_TESTERS_TITLE = "Testers: "
-STR_ABOUT_TESTERS_LIST  = "QuarQ, SamLab, Sorc, WindR"
-STR_ABOUT_LICENSE       = "Snappy Driver Installer is licensed under the terms of the GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer uses the following technologies:\n* WebP is licensed under the terms of the BSD license\n* libtorrent is licensed under the terms of the BSD license\n* Backtrace is licensed under the terms of the BSD license\n* 7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n\nSnappy Driver Installer is powered by DriverPacks that were developed by the DriverPacks Team.\n\n(Click now in order to visit a website)"
+//STR_ABOUT_VER
+STR_ABOUT_DEV_TITLE     = "المطور"
+//STR_ABOUT_DEV_LIST
+STR_ABOUT_TESTERS_TITLE = "المتطوعون"
+//STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "المترجمين:"
+STR_ABOUT_LICENSE       = ""_QQ_"Snappy Driver Installer"_QQ_" مرخص بموجب شروط رخصة GNU General Public License version 3\n\n\n\n\n"_QQ_"Snappy Driver Installer"_QQ_" يستخدم التقنيات التالية:\n* WebP مرخص بموجب شروط BSD\n* libtorrent مرخص بموجب شروط BSD\n* Backtrace مرخص بموجب شروط BSD\n* 7-Zip مرخص بموجب شروط الرخصة العمومية GNU Library أو Lesser General Public License version 2\n\n"_QQ_"Snappy Driver Installer"_QQ_" مدعوم بواسطة حزمة التعريفات الذي تم تطويره من قبل الفريق DriverPacks.\n\n(انقر الآن لزيارة الموقع من على شبكة الانترنت)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
-STR_HINT_UNKNOWN        = "unknown"
-STR_HINT_ANALYSIS       = "Analysis"
-STR_HINT_DRP            = "Driverpack"
-STR_HINT_DEVICE         = "Device"
+STR_HINT_UNKNOWN        = "غير معروف"
+STR_HINT_ANALYSIS       = "TrackingID"
+STR_HINT_SIGNATURE      = "التوقيع:"
+STR_HINT_DRP            = "حزمة التعريف"
+STR_HINT_DEVICE         = "الجهاز"
 STR_HINT_HARDWAREID     = "HardwareID"
 STR_HINT_COMPID         = "CompatibleID"
-STR_HINT_INSTDRV        = "Installed driver"
-STR_HINT_AVAILDRV       = "Available driver"
-STR_HINT_AVAILDRVS      = "Available drivers"
-STR_HINT_MANUF          = "Manuf: "
-STR_HINT_PROVIDER       = "Provider: "
-STR_HINT_DATE           = "Date: "
-STR_HINT_VERSION        = "Version: "
-STR_HINT_ID             = "ID: "
-STR_HINT_INF            = "Inf file: "
-STR_HINT_SECTION        = "Section: "
-STR_HINT_SCORE          = "Score: "
-STR_HINT_SCROLL         = "HINT: Scroll page horizontally with mouse wheel"
+STR_HINT_INSTDRV        = "التعريفات المثبتة"
+STR_HINT_AVAILDRV       = "التعريف المتاح"
+STR_HINT_AVAILDRVS      = "التعريفات المتاحة"
+STR_HINT_MANUF          = "الشركة المصنعة:"
+STR_HINT_PROVIDER       = "المزود:"
+STR_HINT_DATE           = "التاريخ:"
+STR_HINT_VERSION        = "الإصدار:"
+STR_HINT_ID             = "ID:"
+STR_HINT_INF            = "ملف Inf:"
+STR_HINT_SECTION        = "القسم:"
+STR_HINT_SCORE          = "الدرجة:"
+STR_HINT_SCROLL         = "تلميح: حرك الصفحة أفقياً بأستخدام عجلة الفأر."
 
 // Context menu
-STR_CONT_INSTALL        = "Schedule installation"
-STR_CONT_SHOWALT        = "Show alternative drivers"
-STR_CONT_OPENINF        = "Open the inf file of the installed driver"
-STR_CONT_LOCATEINF      = "Locate the inf file of the installed driver"
-STR_CONT_HWID_SEARCH    = "Search the Internet for HardwareID"
-STR_CONT_HWID_CLIP      = "Copy a HardwareID to clipboard"
+STR_CONT_INSTALL        = "الجدول الزمني للتثبيت"
+STR_CONT_SHOWALT        = "اضهار تعريفات اخرى "
+STR_CONT_OPENINF        = "أفتح ملف الـinf للتعريف المثبت"
+STR_CONT_LOCATEINF      = "حدد موقع ملف الـinf للتعريف المثبت"
+STR_CONT_HWID_SEARCH    = "ابحث بالانترنت عن طريق رقم القطعه"
+STR_CONT_HWID_CLIP      = "انسخ  رقم القطعه"
 
 // Misc
-STR_EXTRACTFOLDER       = "Please select the destination folder."
+STR_OPENSNAPSHOT        = "ملفات اللقطات (*.snp)/0*.snp/0All files/0*.*/0/0"
+STR_EXTRACTFOLDER       = "يرجى اختيار المجلد للحفظ"
 
 // Device status
-STR_STATUS_NOTPRESENT   = "Device is not present"
-STR_STATUS_DISABLED     = "Device is disabled"
-STR_STATUS_DEVPROBLEM   = "The device has the following problem: %d"
-STR_STATUS_DRVPROBLEM   = "The driver reported a problem with the device"
-STR_STATUS_RUNNING      = "Driver is running"
-STR_STATUS_STOPPED      = "Device is currently stopped"
+STR_STATUS_NOTPRESENT   = "الجهاز غير موجود"
+STR_STATUS_DISABLED     = "الجهاز معطل"
+STR_STATUS_DEVPROBLEM   = "الجهاز لديه المشكلة التالية: %d"
+STR_STATUS_DRVPROBLEM   = "التعريف أبلغ عن وجود مشكلة بالجهاز"
+STR_STATUS_RUNNING      = "التعريف يعمل حاليا"
+STR_STATUS_STOPPED      = "الجهاز حاليا متوقف"
 
 // Driver status
-STR_STATUS_INVALID      = "Incompatible driver"
-STR_STATUS_MISSING      = "Driver available (driver not installed yet)"
-STR_STATUS_NOTSIGNED    = " (not signed)"
+STR_STATUS_INVALID      = "تعريف غير متوافق"
+STR_STATUS_MISSING      = "التعريف متاح (التعريف غير مثبت بعد)"
+STR_STATUS_NOTSIGNED    = " (غير موثق)"
 
-STR_STATUS_BETTER_NEW   = "Updated driver available which is also more optimal"
-STR_STATUS_SAME_NEW     = "Updated driver available"
-STR_STATUS_WORSE_NEW    = "Less than optimal driver available, however it's more recent"
+STR_STATUS_BETTER_NEW   = "تحديث القطعه يتعريف افضل"
+STR_STATUS_SAME_NEW     = "يوجد تحديث للقطعه"
+STR_STATUS_WORSE_NEW    = "التعريف المتاح أقل من المستوي الأمثل, ولكنها الاحدث"
 
-STR_STATUS_BETTER_CUR   = "More optimal driver available"
-STR_STATUS_SAME_CUR     = "Already installed"
-STR_STATUS_WORSE_CUR    = "Less than optimal driver"
+STR_STATUS_BETTER_CUR   = "التعريف المتاح أفضل من المستوي الأمثل"
+STR_STATUS_SAME_CUR     = "مثبت بالفعل"
+STR_STATUS_WORSE_CUR    = "أقل من تعريف المستوي الأمثل"
 
-STR_STATUS_BETTER_OLD   = "More optimal driver available, though it's older"
-STR_STATUS_SAME_OLD     = "Old driver"
-STR_STATUS_WORSE_OLD    = "Old driver and also less than optimal"
+STR_STATUS_BETTER_OLD   = "التعريف المتاح أفضل من المستوي الأمثل, على الرغم من انها أقدم"
+STR_STATUS_SAME_OLD     = "تعريف قديم"
+STR_STATUS_WORSE_OLD    = "تعريف قديم و ايضاً أقل من المستوي الأمثل"
 
-STR_STATUS_DUP          = " (duplicate)"
+STR_STATUS_DUP          = " (مكرر)"
 
-STR_STATUS_NF_MISSING   = "Device require a driver but it wasn't found in driverpacks"
-STR_STATUS_NF_UNKNOWN   = "Device is working properly but no driver is found in driverpacks"
-STR_STATUS_NF_STANDARD  = "Standard driver"
+STR_STATUS_NF_MISSING   = "الجهاز يتطلب تعريف ولكن لم يتم العثور عليها في حزمة التعريفات"
+STR_STATUS_NF_UNKNOWN   = "الجهاز يعمل بشكل صحيح ولكن لم يتم العثور على التعريف في حزمة التعريفات"
+STR_STATUS_NF_STANDARD  = "التعريف الافتراضي"
 
 // Virus
-STR_VIRUS               = "The media with the application may be compromised by a virus"
-STR_VIRUS_AUTORUN       = "There is AUTORUN.INF in the root folder"
-STR_VIRUS_AUTORUN_H     = "There is AUTORUN.INF file which can be used by malicious software to infect your PC. It's advised to check it viruses or inspect the file to make sure it can be trusted.\n\nIf you're sure it's clean, add [NOT_A_VIRUS] inside to hide this warning."
-STR_VIRUS_RECYCLER      = "There is RECYCLER folder in the root folder"
-STR_VIRUS_RECYCLER_H    = "It's unusual for this media to have a RECYCLER folder. It's advised to check the folder for viruses.\n\nIf you're sure it's clean, create a file named not_a_virus.txt inside the folder."
-STR_VIRUS_HIDDEN        = "There are hidden folders in the root folder"
-STR_VIRUS_HIDDEN_H      = "The root folder contains hidden folders. Viruses can make hidden folders to hide their presence. It's advised to check the folders(see log for details) for viruses.\n\nIf you're sure it's clean, create a file named not_a_virus.txt inside each folder."
+STR_VIRUS               = "ملف الميديا مع التطبيق قد يكون تأثر بفيروس"
+STR_VIRUS_AUTORUN       = "يوجد ملف AUTORUN.INF في جذور المجلد"
+STR_VIRUS_AUTORUN_H     = "هناك ملف Autorun.inf والتي يمكن استخدامها من قبل البرامج الضارة لإصابة الكمبيوتر الخاص بك. ينصح ان تفحصه من الفيروسات أو مراجعة الملف للتأكد من أنه موثوق به.\n\nإذا كنت على يقين من انها نظيفة، اضف [NOT_A_VIRUS] داخل لإخفاء هذا التحذير."
+STR_VIRUS_RECYCLER      = "هناك مجلد RECYCLER في جذر المجلد"
+STR_VIRUS_RECYCLER_H    = "أنه من غير المعتاد لهذه الوسائط أن يوجد فيه مجلد RECYCLER. ينصح أن تفحص المجلد من الفيروسات.\n\nإذا كنت على يقين من انها نظيفة، قم بإنشاء ملف يسمى not_a_virus.txt داخل المجلد."
+STR_VIRUS_HIDDEN        = "هناك مجلدات مخفية في جذر المجلد"
+STR_VIRUS_HIDDEN_H      = "يحتوي جذر المجلد علي مجلدات مخفية. يمكن للفيروسات جعل المجلدات مخفية لإخفاء وجودهم. ينصح لفحص هذه المجلدات (انظر لملف log للحصول على تفاصيل) بخصوص الفيروسات.\n\nإذا كنت على يقين من انها نظيفة، قم بإنشاء ملف يسمى not_a_virus.txt داخل كل مجلد."
 
 // Status
-STR_CLOSE_SNAPSHOT      = "(Click here to stop emulation)"
-STR_EMPTYDRP            = "Put driverpacks or unpacked drivers in the following folder"
-STR_CLOSE_DRPEXT        = "(Click here to return to the default folder)"
-STR_NOUPDATES           = "Drivers are up to date"
-STR_INITIALIZING        = "Initializing..."
+STR_CLOSE_SNAPSHOT      = "(انقر هنا لوقف المحاكاة)"
+STR_EMPTYDRP            = "أتصل بالإنترنت لتحميل حزمة التعريفات أو ضع التعريفات مفككة في المجلد التالي"
+STR_CLOSE_DRPEXT        = "(انقر هنا للعودة إلى المجلد الافتراضي)"
+STR_NOUPDATES           = "التعريفات محدثة"
+STR_INITIALIZING        = "يتم التهيئة..."
 
 // Progressbar
-STR_INST_EXTRACT        = "Extracting... %d%% (stage 1 of 2)"
-STR_INST_INSTALL        = "Installing... (stage 2 of 2)"
-STR_INST_OK             = "Successfully installed"
-STR_INST_REBOOT         = "Successfully installed (system restart required)"
-STR_INST_FAILED         = "Failed to install, error "
+STR_INST_EXTRACT        = "إستخراج... %d%% (المرحلة 1 عن 2)"
+STR_INST_INSTALL        = "يتم التثبيت... (المرحلة 2 من 2)"
+STR_INST_OK             = "تم التثبيت بنجاح"
+STR_INST_REBOOT         = "تم التثبيت بنجاح (النظام يتطلب إعادة تشغيل)"
+STR_INST_FAILED         = "فضل التثبيت, خطأ"
 
-STR_INST_INSTALLING     = "Installing... "
-STR_INST_COMPLITED      = "Installation completed"
-STR_INST_COMPLITED_RB   = "Installation completed (system restart required)"
-STR_INST_CLOSE          = "(Click here to close hide installed drivers)"
+STR_INST_INSTALLING     = "يتم التثبيت"
+STR_INST_COMPLITED      = "أكتمل التثبيت"
+STR_INST_COMPLITED_RB   = "اكتمل التثبيت (إعادة تشغيل النظام مطلوبة)"
+STR_INST_CLOSE          = "(انقر هنا لإخفاء التعريفات المثبتة)"
 
-STR_EXTR_EXTRACTING     = "Extracting... "
-STR_EXTR_OK             = "Successfully extracted"
-STR_EXTR_FAILED         = "Failed to extract, error "
+STR_EXTR_EXTRACTING     = "إستخراج..."
+STR_EXTR_OK             = "أستخرج بنجاح"
+STR_EXTR_FAILED         = "فشل الاستخراج، خطأ"
 
-STR_INST_STOPPING       = "Installation stopped"
-STR_INDEXING            = "Indexing..."
-STR_INDEXLZMA           = "Compressing indexes..."
-STR_OF                  = " of "
+STR_INST_STOPPING       = "توقف التثبيت"
+STR_INDEXING            = "الفهرسة.."
+STR_INDEXLZMA           = "يتم ضغط الفهارس"
+STR_OF                  = "من"
 
 STR_RESTOREPOINT        = "انشء نطقه العوده"
 STR_RESTOREPOINT_H      = "تستخدم هذه الخاصيخ لانشاء نقطه عوده في حال فشل تنصيب التعريف وعدم عمل النظام(Ctrl+P).\n\nHINT: قم  بالضغط على زر الفاره اليمين للخيارات."
@@ -235,91 +237,144 @@ STR_REST_CREATING       = "يتم عمل نقطه العوده..."
 STR_REST_CREATED        = "تم عمل نقطه العوده"
 STR_REST_FAILED         = "فشل في تمكين نقطه العوده"
 
+STR_INST_QUIT_TITLE     = "يتم الالغاء"
+STR_INST_QUIT_MSG       = "هل أنت متأكد من أنك تريد مقاطعة التثبيت؟"
 STR_HINT_STOPINST       = "اظغط هنا لايقاف تنصيب التعريفات."
 STR_HINT_STOPEXTR       = "اظغط هنا لايقاف استخراج التعريفات."
 STR_HINT_DRIVER         = "اظغط على كنترول لمقارنه التعريف بالتعريف المنصب حاليا على النظام.\nاظغط على زر المساحه للمزيد من المعلومات حول التعريف."
 
-STR_SYS_WINVER          = "Windows version"
+STR_SYS_WINVER          = "إصدار نظام التشغيل Windows"
 STR_SYS_32              = "32-bit"
 STR_SYS_64              = "64-bit"
-STR_SYS_DEVICEMNG       = "Device manager"
-STR_SYS_DISINSTALL      = "Disable instalation"
-STR_SYS_DISRESTPNT      = "Disable restore points"
+STR_SYS_DEVICEMNG       = "إدارة الأجهزة"
+STR_SYS_DISINSTALL      = "تعطيل التثبيت"
+STR_SYS_DISRESTPNT      = "عطل نقاط الاستعادة"
 
 // Update
-STR_UPD_DIALOG_TITLE    = "Update checking"
-STR_UPD_DIALOG_MSG      = "Would you like to enable automatic checking online for new versions of driverpacks and the application?"
-STR_UPD_DIALOG_INDEX    = "Would you like to download latest indexes in order to make it possible to determine which driverpacks you need to download?"
+STR_UPD_DIALOG_TITLE    = "يتم التحقيق من التثبيت"
+STR_UPD_DIALOG_MSG      = "هل ترغب في تفعيل الفحص التلقائي على الانترنت للبحث عن الإصدارات الجديدة من حزمة التعريفات والتطبيق؟"
+STR_UPD_DIALOG_INDEX    = "هل ترغب في تحميل أحدث الفهارس لكي نتمكن من تحديد حزمة التعريفات التي يحتاج إلى التحميل؟"
 
-STR_UPD_TITLE           = "Update"
-STR_UPD_BTN_ALL         = "Check All"
-STR_UPD_BTN_NONE        = "Uncheck All"
-STR_UPD_BTN_THISPC      = "Check only needed for this PC"
-STR_UPD_BTN_THISPC_H    = "In order to able to determine which driverpacks you need, you have to download indexes first."
-STR_UPD_ONLYUPDATES     = "Do not notify about missing driverpacks"
-STR_UPD_TOTALSIZE       = "Total download size: %d MB"
-STR_UPD_BTN_OK          = "OK"
-STR_UPD_BTN_CANCEL      = "Cancel"
-STR_UPD_BTN_ACCEPT      = "Accept"
-STR_UPD_COL_NAME        = "Driverpack"
-STR_UPD_COL_SIZE        = "Size"
+STR_UPD_TITLE           = "تحديث"
+STR_UPD_BTN_ALL         = "أختيار الكل"
+STR_UPD_BTN_NONE        = "إلغاء أختيار الكل"
+STR_UPD_BTN_THISPC      = "أختار فقط الذي يحتاجه هذا الحاسب الشخصي"
+STR_UPD_BTN_THISPC_H    = "من أجل تحديد أي حزمة تعريفات التي تحتاج إليها، يجب عليك تحميل الفهارس أولا."
+STR_UPD_ONLYUPDATES     = "لا تبلغ عن حزمة التعريفات الناقصة"
+STR_UPD_TOTALSIZE       = "إجمالي حجم التحميل: %d MB"
+STR_UPD_BTN_OK          = "حسنا"
+STR_UPD_BTN_CANCEL      = "إلغاء"
+STR_UPD_BTN_ACCEPT      = "موافق"
+STR_UPD_COL_NAME        = "حزمة التعريفات"
+STR_UPD_COL_SIZE        = "الحجم"
 STR_UPD_COL_PER         = "%"
-STR_UPD_COL_NEW         = "New"
-STR_UPD_COL_CUR         = "Current"
-STR_UPD_COL_THISPC      = "For this PC?"
-STR_UPD_WEBSTATUS       = " (Internet)"
-STR_UPD_YES             = "Yes"
-STR_UPD_NO              = "No"
-STR_UPD_UNKNOWN         = "Unknown"
-STR_UPD_MISSING         = "Missing"
+STR_UPD_COL_NEW         = "جديد"
+STR_UPD_COL_CUR         = "الحالية"
+STR_UPD_COL_THISPC      = "لهذا الحاسوب الشخصي ؟"
+STR_UPD_WEBSTATUS       = " (الانترنت)"
+STR_UPD_YES             = "نعم"
+STR_UPD_NO              = "لا"
+STR_UPD_UNKNOWN         = "غير معروف"
+STR_UPD_MISSING         = "مفقود"
 STR_UPD_BYTES           = "bytes"
 STR_UPD_KB              = "KB"
 STR_UPD_MB              = "MB"
 STR_UPD_GB              = "GB"
 STR_UPD_SEC             = "/s"
-STR_UPD_TSEC            = "secs"
-STR_UPD_TMIN            = "mins"
-STR_UPD_THOUR           = "hours"
-STR_UPD_TDAY            = "days"
-STR_UPD_BASEFILES       = "Application+indexes"
-STR_UPD_APP             = "Application"
-STR_UPD_INDEXES         = "Indexes"
-STR_UPD_UPDATEHINT1     = "Hint"
-STR_UPD_UPDATEHINT2     = "You must update base first in order to use this feature."
+STR_UPD_TSEC            = "ثانية"
+STR_UPD_TMIN            = "دقيقة"
+STR_UPD_THOUR           = "ساعات"
+STR_UPD_TDAY            = "أيام"
+STR_UPD_BASEFILES       = "التطبيق + الفهارس"
+STR_UPD_APP             = "التطبيق"
+STR_UPD_INDEXES         = "الفهارس"
+STR_UPD_UPDATEHINT1     = "تلميح"
+STR_UPD_UPDATEHINT2     = "يجب عليك تحديث القاعدة أولاً حتي تتمكن من استخدام هذه الميزة."
 
 // Update hint
-STR_UPD_AVAIL1          = "Updates are available: SDI R%d"
-STR_UPD_AVAIL2          = "Updates are available: %d driverpacks"
-STR_UPD_AVAIL3          = "Updates are available: SDI R%d and %d driverpacks"
-STR_UPD_START           = "(Click here to start the download)"
-STR_UPD_PROGRES         = "Downloaded %s out of %s (%d%%)"
-STR_UPD_MODIFY          = "(Click here to select updates)"
+STR_UPD_AVAIL1          = "التحديثات متوفرة: SDI R%d"
+STR_UPD_AVAIL2          = "التحديثات متوفرة: %d driverpacks"
+STR_UPD_AVAIL3          = "التحديثات متوفرة: SDI R%d and %d driverpacks"
+STR_UPD_START           = "(انقر هنا لبدء التحميل)"
+STR_UPD_PROGRES         = "تم التحميل %s من %s (%d%%)"
+STR_UPD_MODIFY          = "(انقر هنا لتحديد التحديثات)"
 
-STR_DWN_DOWNLOADED      = "Downloaded"
-STR_DWN_DOWNLOADED_F    = "%s out of %s (%d%%)"
-STR_DWN_UPLOADED        = "Uploaded"
-STR_DWN_ELAPSED         = "Time elapsed"
-STR_DWN_REMAINING       = "Time remaining"
+STR_DWN_DOWNLOADED      = "تم التحميل"
+STR_DWN_DOWNLOADED_F    = "%s من %s (%d%%)"
+STR_DWN_UPLOADED        = "تم الرفع"
+STR_DWN_ELAPSED         = "الوقت المنقضي"
+STR_DWN_REMAINING       = "الوقت المتبقي"
 
-STR_DWN_STATUS          = "Status"
-STR_DWN_ERROR           = "Error"
-STR_DWN_DOWNLOADSPEED   = "Download speed"
-STR_DWN_UPLOADSPEED     = "Upload speed"
+STR_DWN_STATUS          = "الحالة"
+STR_DWN_ERROR           = "خطأ"
+STR_DWN_DOWNLOADSPEED   = "سرعة التحميل"
+STR_DWN_UPLOADSPEED     = "سرعة الرفع"
 
-STR_DWN_SEEDS_F         = "%d out of %d connected"
-STR_DWN_SEEDS           = "Seeds"
-STR_DWN_PEERS           = "Peers"
-STR_DWN_WASTED          = "Wasted"
-STR_DWN_WASTED_F        = "%s (%s in hashfails)"
+STR_DWN_SEEDS_F         = "%d من %d متصلة"
+STR_DWN_SEEDS           = "البذور"
+STR_DWN_PEERS           = "النظائر"
+STR_DWN_WASTED          = "ضائع"
+STR_DWN_WASTED_F        = "%s (%s في فشل التجزئة)"
 
-STR_DWN_ERRSES          = "Failed to start update session"
-STR_DWN_ERRTOR          = "Failed to start torrent"
+STR_DWN_ERRSES          = "فشل في بدء تشغيل دورة التحديث"
+STR_DWN_ERRTOR          = "فشل بدء التورينت"
 
-STR_TR_ST0              = "queued for checking"
-STR_TR_ST1              = "checking files"
-STR_TR_ST2              = "downloading metadata"
-STR_TR_ST3              = "downloading files"
-STR_TR_ST4              = "finished"
-STR_TR_ST5              = "seeding"
-STR_TR_ST6              = "allocating space"
-STR_TR_ST7              = "checking resume data"
+STR_TR_ST0              = "في قائمة الانتظار للتحقق"
+STR_TR_ST1              = "التحقق من الملفات"
+STR_TR_ST2              = "يتم تحميل metadata"
+STR_TR_ST3              = "يتم تحميل الملفات"
+STR_TR_ST4              = "تم الانتهاء"
+STR_TR_ST5              = "عملية رفع البذور"
+STR_TR_ST6              = "تخصيص مساحة"
+STR_TR_ST7              = "التحقق من تكملة البيانات"
+
+// Options dialog
+STR_OPTION_TITLE        = "خيارات"
+STR_OPTION_VIEW_TAB     = "عرض"
+STR_OPTION_UPDATES_TAB  = "التحديثات"
+STR_OPTION_PATH_TAB     = "المسارات"
+STR_OPTION_ADVANCED_TAB = "متقدم"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "أسم حزمة التعريفات"
+STR_OPTION_HIDE_NAMES   = "لا تظهر أسماء حزمة التعريفات"
+STR_OPTION_SHOW_RIGHT   = "إظهر أسماء حزمة التعريفات على اليمين"
+STR_OPTION_SHOW_ABOVE   = "إظهر أسماء حزمة التعريفات فوق"
+STR_OPTION_SCALLING     = "قياس الواجهة"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "صغير"
+STR_OPTION_SCALLING_BIG = "كبير"
+STR_OPTION_SCALLING_RST = "إعادة تعيين"
+STR_OPTION_HINT         = "تلميح"
+STR_OPTION_HINT_LABEL   = "التأخير بالمللي ثانية"
+
+// Updates tab
+STR_OPTION_CHECKUPDATES = "لا تحقق من وجود إصدار جديدة من التطبيق او حزمة التعريفات"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "تورنت"
+STR_OPTION_PORT         = "المنفذ"
+STR_OPTION_MAX_CON      = "أقصي عدد الاتصال (0 - غير محدود)"
+STR_OPTION_MAX_DOWNLOAD = "أقصى سرعة التحميل في الكيلو بايت / ثانية (0 - غير محدود)"
+STR_OPTION_MAX_UPLOAD   = "أقصى سرعة الرفع في الكيلو بايت / ثانية (0 - غير محدود)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "التعريفات"
+STR_OPTION_DIR_INDEXES  = "الفهارس"
+STR_OPTION_DIR_INDEXESH = "الفهارس (قابل للقراءة-للبشر)"
+STR_OPTION_DIR_DATA     = "المظاهر و الترجمة"
+STR_OPTION_DIR_LOGS     = "ملفات السجل"
+
+// Advanced tab
+STR_OPTION_CMD          = "الأوامر"
+STR_OPTION_CMD_LABEL    = "يمكنك تحديد الأوامر التي سيتم تنفيذها عبر CMD بعد الانتهاء من العمليات المحددة."
+STR_OPTION_CMD_FINISH   = "بعد التثبيت"
+STR_OPTION_CMD_FINISHRB = "بعد التثبيت (تحتاج الي إعادة التشغيل)"
+STR_OPTION_CMD_FINISHDN = "بعد التحميل"
+STR_OPTION_CONSOLE      = "إظهار نافذة وحدة التحكم"
+
+// Patreon
+STR_PATREON1             = "تم تطوير SDI من قبل متطوعين في أوقات فراغهم. إذا أعجبك هذا البرنامج, يرجي تقديم الدعم لنا علي Patreon."
+STR_PATREON2             = "(أضغط هنا لفتح صفحة الـPatreon)"
+STR_PATREON_H            = ""

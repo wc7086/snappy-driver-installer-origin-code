@@ -671,10 +671,10 @@ void CanvasImp::DrawWidget(int x1,int y1,int x2,int y2,int id)
     DrawImage(*vTheme->GetImage(id),x1,y1,x2,y2,D_1(i+5),D_1(i+6));
 }
 
-void CanvasImp::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active)
+void CanvasImp::DrawCheckbox(int x1,int y1,int wx,int wy,int checked,int active,int type)
 {
     RECT rect;
-    int i=4+(active?1:0)+(checked?2:0);
+    int i=4+(active?1:0)+(checked?2:0)+(type?4:0);
 
     rect.left=x1;
     rect.top=y1;

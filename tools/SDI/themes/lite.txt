@@ -1,12 +1,18 @@
+//Modified 12.06.2016
 THEME_NAME              = "Lite"
 
+
 // Main window
-MAINWND_WX               = 1024
-MAINWND_WY               = 730
+MAINWND_WX               = 1070
+MAINWND_WY               = 690
 MAINWND_MINX             = 480
 MAINWND_MINY             = 369
 MAINWND_INSIDE_COLOR     = 0xDD9100
 MAINWND_OUTLINE_ROUND    = 0
+
+// Font
+FONT_NAME                = "Verdana"
+FONT_SIZE                = 13
 
 // Popup
 POPUP_FONT_SIZE          = 11
@@ -44,8 +50,16 @@ PANEL_OUTLINE_COLOR      = MAINWND_INSIDE_COLOR
 PANEL_OUTLINE_ROUND      = 5
 
 // Panel, sysinfo
-PANEL1_OFSY              = 14
-PANEL1_WY                = 0
+//PANEL1_INSIDE_COLOR      = 0xFFAF17
+PANEL1_INSIDE_COLOR      = 0xC68C1E
+PANEL1_OFSX              = 4
+//PANEL1_OFSY              = 607
+PANEL1_OFSY              = 4
+//PANEL1_WY                = 20
+PANEL1_WX                = 0
+PANEL1_OUTLINE_WIDTH     = 1
+PANEL1_OUTLINE_COLOR     = 0xFFFFFF
+PANEL1_OUTLINE_ROUND     = 0
 
 // Panel, install
 PANEL2_OFSX              = 0
@@ -57,21 +71,21 @@ PANEL2_OUTLINE_WIDTH     = 0
 PANEL2_BITMAP_FILENAME   = ""
 
 // Panel, lang_theme
-PANEL3_OFSY              = 128
+PANEL3_OFSY              = 125
 
 // Panel, actions
-PANEL4_OFSX              = PANEL_OFSX
-PANEL4_OFSY              = 240
-PANEL4_WX                = PANEL_WX
+PANEL4_OFSX              = PANEL9_OFSX
+PANEL4_OFSY              = 242
+PANEL4_WX                = PANEL9_WX
 PANEL4_WY                = 21
 PANEL4_OUTLINE_WIDTH     = 0
 
 // Panel, filters (found)
-PANEL5_OFSY              = 360
+PANEL5_OFSY              = 365
 PANEL5_WY                = 22
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 520
+PANEL6_OFSY              = 530
 
 // Panel, filters (special)
 PANEL7_OFSY              = 600
@@ -80,32 +94,37 @@ PANEL7_OFSY              = 600
 PANEL8_OFSX              = 14
 
 // Panel, install button
-PANEL9_OFSX              = 15
-PANEL9_OFSY              = 17
-PANEL9_WX                = 186
+PANEL9_OFSX              = 12
+PANEL9_OFSY              = 13
+PANEL9_WX                = 192
 PANEL9_WY                = 47
 PANEL9_OUTLINE_WIDTH     = 0
 
 // Panel, selectall button
 PANEL10_WY               = 26
-PANEL10_OFSY             = 65
+PANEL10_OFSY             = 61
 
 // Panel, selectnone button
 PANEL11_WY               = PANEL10_WY
-PANEL11_OFSY             = 92
+PANEL11_OFSY             = 88
 
 // Items on left panel
 PNLITEM_WY               = 22
 
 // Checkboxes on left panel
-CHKBOX_TEXT_OFSX         = 20
-CHKBOX_TEXT_COLOR        = 0xFFFFFF
-CHKBOX_TEXT_COLOR_H      = 0xFFEA00
-CHKBOX_SIZE              = 18
-BUTTON_BITMAP_CHECKED    = "lite\checked-metallic.webp"
-BUTTON_BITMAP_CHECKED_H  = "lite\checked-metallic.webp"
-BUTTON_BITMAP_UNCHECKED  = "lite\unchecked-metallic.webp"
-BUTTON_BITMAP_UNCHECKED_H= "lite\unchecked-metallic.webp"
+CHKBOX_TEXT_OFSX            = 20
+CHKBOX_TEXT_COLOR           = 0xFFFFFF
+CHKBOX_TEXT_COLOR_H         = 0xFFEA00
+CHKBOX_SIZE                 = 18
+ITEM_CHECKBOX_SIZE          = 25
+BUTTON_BITMAP_CHECKED       = "lite\c16.webp"
+BUTTON_BITMAP_CHECKED_H     = "lite\c16.webp"
+BUTTON_BITMAP_UNCHECKED     = "lite\unc16.webp"
+BUTTON_BITMAP_UNCHECKED_H   = "lite\unc16.webp"
+ITEM_BITMAP_CHECKED         = "lite\c23.webp"
+ITEM_BITMAP_CHECKED_H       = "lite\c23.webp"
+ITEM_BITMAP_UNCHECKED       = "lite\unc23.webp"
+ITEM_BITMAP_UNCHECKED_H     = "lite\unc23.webp"
 
 // Buttons on left panel
 BUTTON_INSIDE_COLOR      = MAINWND_INSIDE_COLOR
@@ -123,9 +142,8 @@ DRVLIST_OUTLINE_COLOR    = 0xFFFFFF
 
 // Driver items
 DRVITEM_WX               = -20
-//DRVITEM_WY               = 37
 DRVITEM_OFSX             = 15
-DRVITEM_OFSY             = 10
+DRVITEM_OFSY             = 15
 DRVITEM_DIST_Y0          = 36
 DRVITEM_DIST_Y2          = 10
 
@@ -138,13 +156,15 @@ ITEM_EXPAND_DOWN_H       = "lite\downup.webp"
 
 // Driver item (generic style)
 DRVITEM_INSIDE_COLOR     = 0xFFFFFF
-DRVITEM_OUTLINE_COLOR    = 0xAAAAAA
+DRVITEM_OUTLINE_COLOR    = 0xC4C4C4
 DRVITEM_OUTLINE_ROUND    = 0
-DRVITEM_INSIDE_COLOR_H   = 0xFFF9EE
-DRVITEM_OUTLINE_COLOR_H  = 0x959595
+//DRVITEM_INSIDE_COLOR_H   = 0xFFFDF8
+DRVITEM_INSIDE_COLOR_H   = 0xfff7e9
+DRVITEM_OUTLINE_COLOR_H  = 0xC4C4C4
 
 // BETTER_NEW
 DRVITEM_INSIDE_COLOR_BN     = 0xFFFFFF
+DRVITEM_INSIDE_COLOR_BN_H     = 0xFFF9EF
 DRVITEM_TEXT2_COLOR_BN      = 0xCC8500
 
 // SAME_NEW
@@ -161,6 +181,7 @@ DRVITEM_TEXT2_COLOR_BO      = DRVITEM_TEXT2_COLOR_BN
 
 // MISSING
 DRVITEM_INSIDE_COLOR_MS     = 0xE1FECE
+DRVITEM_INSIDE_COLOR_MS_H   = 0xEBFFDE
 DRVITEM_TEXT2_COLOR_MS      = 0x3A9000
 
 // NOT-FOUND,INSTELLED_UNKNOWN
@@ -182,14 +203,14 @@ DRVITEM_INSIDE_COLOR_D0_H   = DRVITEM_INSIDE_COLOR_MS
 DRVITEM_OUTLINE_COLOR_D0_H  = DRVITEM_INSIDE_COLOR_MS
 
 // Driver installed (reboot required)
-DRVITEM_INSIDE_COLOR_D2     = 0x32BEEC
-DRVITEM_INSIDE_COLOR_D2_H   = 0x56C8EE
+DRVITEM_INSIDE_COLOR_D2_H   = 0x55CDFF
+DRVITEM_INSIDE_COLOR_D2     = 0x2AC0FF
 DRVITEM_OUTLINE_WIDTH_D2    = 0
 DRVITEM_OUTLINE_WIDTH_D2_H  = 0
 
 // Driver installation error
-DRVITEM_INSIDE_COLOR_DE     = 0x0041C5
-DRVITEM_INSIDE_COLOR_DE_H   = 0x0048DA
+DRVITEM_INSIDE_COLOR_DE     = 0x0033D9
+DRVITEM_INSIDE_COLOR_DE_H   = 0x1748E9
 DRVITEM_OUTLINE_WIDTH_DE    = 0
 DRVITEM_OUTLINE_WIDTH_DE_H  = 0
 
@@ -206,9 +227,15 @@ DRVITEM_OUTLINE_COLOR_IU_H  = BUTTON_INSIDE_COLOR_H
 DRVITEM_INSIDE_COLOR_IF     = 0xB54B8C
 DRVITEM_INSIDE_COLOR_IF_H   = 0xBB5995
 DRVITEM_TEXT2_COLOR_IF      = 0xFFFFFF
+DRVITEM_OUTLINE_COLOR_IF    = 0xB54B8C
+DRVITEM_OUTLINE_COLOR_IF_H  = 0xBB5995
 
 // Patreon
-DRVITEM_INSIDE_COLOR_PT     = 0x00FFFF
-DRVITEM_INSIDE_COLOR_PT_H   = 0x00FFE4
+DRVITEM_INSIDE_COLOR_PT     = 0x484848
+DRVITEM_INSIDE_COLOR_PT_H   = 0x555555
 DRVITEM_OUTLINE_WIDTH_PT    = 1
 DRVITEM_OUTLINE_WIDTH_PT_H  = 1
+DRVITEM_OUTLINE_COLOR_PT    = DRVITEM_INSIDE_COLOR_PT
+DRVITEM_OUTLINE_COLOR_PT_H  = DRVITEM_INSIDE_COLOR_PT_H
+DRVITEM_TEXT1_COLOR_PT      = 0xFFFFFF
+DRVITEM_TEXT2_COLOR_PT      = 0xFFFFFF
