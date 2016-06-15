@@ -65,9 +65,9 @@ STR_SHOW_NF_STANDARD_H  = "Zobrazí standardní ovladače, které jsou nainstalo
 STR_SHOW_DISPLAY        = "Obrazovka"
 STR_SHOW_DISPLAY_H      = ""
 STR_SHOW_ONE            = "Zobrazit pouze nejlepší"
-STR_SHOW_ONE_H          = "Zobrazí pouze nejlepší ovladač pro dané zařízení."
+STR_SHOW_ONE_H          = "Zobrazí pouze nejlepší ovladače pro zařízení.\n\nPokud povolíte, jen nejlepší shodné ovladače pro zařízení se zobrazí jako protiklad k zobrazení všech dostupných ovladačů pro každé zařízení."
 STR_SHOW_DUP            = "Zobrazit stejné"
-STR_SHOW_DUP_H          = "Zobrazí stejné ovladače."
+STR_SHOW_DUP_H          = "Zobrazí shodné ovladače.\n\nNěkteré ovladače jsou z technických důvodů uvnitř balíčku ovladačů obsaženy vícekrát."
 STR_SHOW_INVALID        = "Zobrazit neplatné"
 STR_SHOW_INVALID_H      = "Zobrazí nekompatibilní ovladače se stávajícím systémem.\n\nTyto ovladače vám NEdoporučujeme nainstalovat, protože jsou nekompatibilní s Vaší verzí Windows."
 
@@ -130,7 +130,7 @@ STR_ABOUT_LICENSE       = "Snappy Driver Installer je licencován pod GNU Genera
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Neznámý"
-STR_HINT_ANALYSIS       = "Analýza"
+STR_HINT_ANALYSIS       = "TrackingID"
 STR_HINT_SIGNATURE      = "Podpis: "
 STR_HINT_DRP            = "Balíček ovladače"
 STR_HINT_DEVICE         = "Zařízení"

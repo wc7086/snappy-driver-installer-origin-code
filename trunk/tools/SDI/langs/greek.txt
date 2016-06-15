@@ -293,7 +293,7 @@ STR_UPD_UPDATEHINT2     = "Πρέπει πρώτα να αναβαθμίσετε
 
 // Update hint
 STR_UPD_AVAIL1          = "Υπάρχουν διαθέσιμες ενημερώσεις στο Διαδίκτυο: SDI R%d"
-STR_UPD_AVAIL2          = "Υπάρχουν διαθέσιμες ενημερώσεις στο διαδίκτυο:%d Driverpacks"
+STR_UPD_AVAIL2          = "Υπάρχουν διαθέσιμες ενημερώσεις στο Διαδίκτυο: %d Driverpacks"
 STR_UPD_AVAIL3          = "Υπάρχουν διαθέσιμες ενημερώσεις στο Διαδίκτυο: SDI R%d και %d Driverpacks"
 STR_UPD_START           = "(Κάντε κλικ εδώ για να ξεκινήσετε τη λήψη)"
 STR_UPD_PROGRES         = "Ανέβηκε %s από %s (%d%%)"

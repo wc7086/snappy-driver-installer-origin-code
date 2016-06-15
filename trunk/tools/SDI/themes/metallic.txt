@@ -443,6 +443,11 @@ DRVITEM_DIST_Y2          = 0
 ITEM_CHECKBOX_OFS_X      = 5
 ITEM_CHECKBOX_OFS_Y      = 7
 ITEM_CHECKBOX_SIZE       = 25
+ITEM_BITMAP_CHECKED      = "metallic\checked.webp"
+ITEM_BITMAP_CHECKED_H    = "metallic\checked.webp"
+ITEM_BITMAP_UNCHECKED    = "metallic\unchecked.webp"
+ITEM_BITMAP_UNCHECKED_H  = "metallic\unchecked.webp"
+
 ITEM_ICON_OFS_X          = 31
 ITEM_ICON_OFS_Y          = 2
 ITEM_ICON_SIZE           = 28

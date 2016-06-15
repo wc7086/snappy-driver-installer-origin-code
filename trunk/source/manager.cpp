@@ -1377,7 +1377,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
         case SLOT_RESTORE_POINT:
             canvas.DrawCheckbox(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_CHECKBOX_OFS_Y),
                          D_X(ITEM_CHECKBOX_SIZE),D_X(ITEM_CHECKBOX_SIZE),
-                         itembar->checked,zone>=0);
+                         itembar->checked,zone>=0,1);
 
             wcscpy(bufw,STR(itembar->install_status));
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)/2,bufw);
@@ -1517,7 +1517,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                 // Checkbox
                 canvas.DrawCheckbox(x+D_X(ITEM_CHECKBOX_OFS_X),pos+D_X(ITEM_CHECKBOX_OFS_Y),
                          D_X(ITEM_CHECKBOX_SIZE),D_X(ITEM_CHECKBOX_SIZE),
-                         itembar->checked,zone>=0);
+                         itembar->checked,zone>=0,1);
 
                 // Available driver desc
                 pos+=D_X(ITEM_TEXT_OFS_Y);
