@@ -375,6 +375,6 @@ STR_OPTION_CMD_FINISHDN = "Nach dem Herunterladen"
 STR_OPTION_CONSOLE      = "Eingabeaufforderungskonsole"
 
 // Patreon
-STR_PATREON1             = "SDI wird von Freiwilligen in ihrer Freizeit entwickelt. Bitte unterstützen Sie uns in Patreon."
+STR_PATREON1             = "SDI wird von Freiwilligen in ihrer Freizeit entwickelt. Bitte unterstützen Sie uns auf Patreon."
 STR_PATREON2             = "(Hier klicken, um die Patreon Webseite zu besuchen)"
 STR_PATREON_H            = ""

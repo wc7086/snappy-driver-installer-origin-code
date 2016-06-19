@@ -93,8 +93,8 @@ STR_SYSINF_MODEL        = "مدل"
 STR_SYSINF_MANUF        = "سازنده"
 STR_SYSINF_BATTERY      = "نیرو"
 STR_SYSINF_AC_STATUS    = "A/C"
-STR_SYSINF_OFFLINE      = "قطع‌شده"
-STR_SYSINF_ONLINE       = "متصل شده"
+STR_SYSINF_OFFLINE      = "قطع شده"
+STR_SYSINF_ONLINE       = "اتصال"
 STR_SYSINF_UNKNOWN      = "ناشناخته"
 STR_SYSINF_FLAGS        = "باطری"
 STR_SYSINF_HIGH         = "[بالا]"
@@ -139,7 +139,7 @@ STR_HINT_COMPID         = "شناسه سازگار"
 STR_HINT_INSTDRV        = "درایور نصب‌شده"
 STR_HINT_AVAILDRV       = "درایور موجود"
 STR_HINT_AVAILDRVS      = "درایورهای موجود"
-STR_HINT_MANUF          = "سازنده: "
+STR_HINT_MANUF          = "سازنده"
 STR_HINT_PROVIDER       = "ارائه‌دهنده: "
 STR_HINT_DATE           = "تاریخ: "
 STR_HINT_VERSION        = "نسخه: "
@@ -218,7 +218,7 @@ STR_INST_FAILED         = "نصب شکست خورد  خطا "
 STR_INST_INSTALLING     = "در حال نصب ... "
 STR_INST_COMPLITED      = "نصب کامل شد"
 STR_INST_COMPLITED_RB   = "نصب کامل شد (سیستم باید راه‌اندازی مجدد شود)"
-STR_INST_CLOSE          = "(اینجا را کلیک کنید تا درایورهای نصب‌شده مخفی شوند)"
+STR_INST_CLOSE          = "(برای مخفی کردن درایور های نصب شده اینجا را کلیک کنید)"
 
 STR_EXTR_EXTRACTING     = "استخراج... "
 STR_EXTR_OK             = "با موفقیت استخراج شد"
@@ -332,6 +332,8 @@ STR_TR_ST7              = "بررسی خلاصه داده"
 STR_OPTION_TITLE        = "تنظیمات"
 STR_OPTION_VIEW_TAB     = "مشاهده"
 STR_OPTION_UPDATES_TAB  = "به‌روزرسانی‌ها"
+STR_OPTION_PATH_TAB     = "مسیرها"
+STR_OPTION_ADVANCED_TAB = "پیشرفته"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "اسامی بسته‌های درایور را نشا
 STR_OPTION_SHOW_RIGHT   = "نمایش اسامی بسته‌های درایور در سمت راست"
 STR_OPTION_SHOW_ABOVE   = "نمایش اسامی بسته‌های درایور در بالا"
 STR_OPTION_SCALLING     = "مقیاس رابط کاربری"
-STR_OPTION_CONSOLE      = "نمایش پنجره کنسول"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "کوچک"
+STR_OPTION_SCALLING_BIG = "بزرگ"
+STR_OPTION_SCALLING_RST = "بازگرداندن"
+STR_OPTION_HINT         = "تذکر"
+STR_OPTION_HINT_LABEL   = "تاخیر به میلی ثانیه"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "بررسی برای نسخه جدیدتر از برنامه/بسته‌های درایور"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "نسخه جدید برنامه و بسته های درایور را چک نکن"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "تورنت"
 STR_OPTION_PORT         = "پورت"
-STR_OPTION_MAX_DOWNLOAD = "حداکثر سرعت دانلود به بایت/ثانیه(0:نامحدود)\n"
-STR_OPTION_MAX_UPLOAD   = "حداکثر سرعت آپلود به بایت/ثانیه(0:نامحدود)"
+STR_OPTION_MAX_CON      = "حداکثر اتصالات(0-نامحدود) "
+STR_OPTION_MAX_DOWNLOAD = "حداکثر سرعت دانلود به کیلوبایت/ثانیه(0:نامحدود)"
+STR_OPTION_MAX_UPLOAD   = "حداکثر سرعت آپلود به کیلوبایت/ثانیه(0:نامحدود)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "درایور ها"
+STR_OPTION_DIR_INDEXES  = "نمایه‌ها"
+STR_OPTION_DIR_INDEXESH = "فهرست ها(قابل خواندن توسط انسان)"
+STR_OPTION_DIR_DATA     = "تم ها و ترجمه ها"
+STR_OPTION_DIR_LOGS     = "فایل های گزارش"
+
+// Advanced tab
+STR_OPTION_CMD          = "دستورات"
+
+STR_OPTION_CMD_FINISH   = "پس از نصب"
+STR_OPTION_CMD_FINISHRB = "پس از نصب(نیاز به راه اندازی مجدد)"
+STR_OPTION_CMD_FINISHDN = "پس از دانلود"
+STR_OPTION_CONSOLE      = "نمایش پنجره کنسول"
+
+// Patreon
+STR_PATREON1             = "sdi توسط داوطلبان توسعه داده میشود، برای حمایت از توسعه دهندگان از پتریان استفاده کنید "
+STR_PATREON2             = "(برای باز کردن صفحه Patroen اینجا را کلیک کنید.)"
+STR_PATREON_H            = ""

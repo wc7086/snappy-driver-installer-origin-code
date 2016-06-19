@@ -126,7 +126,7 @@ STR_ABOUT_DEV_TITLE     = "Προγραμματιστής: "
 STR_ABOUT_TESTERS_TITLE = "Μέλη: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_TRANS_TITLE   = "Μεταφραστές: "
-STR_ABOUT_LICENSE       = "Snappy Installer Driver έχει λάβει άδεια σύμφωνα με τους όρους της έκδοσης Γενικής Άδειας Δημόσιας Χρήσης GNU έκδοση 3.\n\n\n\nSnappy Installer Driver χρησιμοποιεί τις ακόλουθες τεχνολογίες:\n*WebP είναι άδεια, υπό τους όρους της άδειας BSD\n*libtorrent είναι άδεια, υπό τους όρους της άδειας BSD\n*Backtrace είναι άδεια, υπό τους όρους της άδειας BSD\n*7-Zip  έχει άδεια, υπό τους όρους της GNU βιβλιοθήκης ή Ελάσσονα Γενική Άδεια Δημόσιας Χρήσης έκδοση 2\n\nSnappy Driver Installer τροφοδοτείται από DriverPacks που αναπτύχθηκαν από την ομάδα DriverPacks.net.\n\n( Κάντε κλικ εδώ για να επισκεφτείτε ιστοσελίδα) "
+STR_ABOUT_LICENSE       = "Snappy Installer Driver έχει λάβει άδεια σύμφωνα με τους όρους της έκδοσης Γενικής Άδειας Δημόσιας Χρήσης GNU έκδοση 3.\n\n\n\n\nSnappy Installer Driver χρησιμοποιεί τις ακόλουθες τεχνολογίες:\n*WebP είναι άδεια, υπό τους όρους της άδειας BSD\n*libtorrent είναι άδεια, υπό τους όρους της άδειας BSD\n*Backtrace είναι άδεια, υπό τους όρους της άδειας BSD\n*7-Zip  έχει άδεια, υπό τους όρους της GNU βιβλιοθήκης ή Ελάσσονα Γενική Άδεια Δημόσιας Χρήσης έκδοση 2\n\nSnappy Driver Installer τροφοδοτείται από DriverPacks που αναπτύχθηκαν από την ομάδα DriverPacks.net.\n\n( Κάντε κλικ εδώ για να επισκεφτείτε ιστοσελίδα) "
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "Άγνωστο"

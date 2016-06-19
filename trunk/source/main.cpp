@@ -1250,7 +1250,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             hLang->Clear();
             vLang->EnumFiles(hLang,L"langs",manager_g->getState()->getLocale());
             f=vLang->AutoPick();
-            if(f==0)f=hLang->GetNumItems()-1;
+            if(f<0)f=hLang->GetNumItems()-1;
             vLang->SwitchData((int)f);
             hLang->SetCurSel(f);
             //SendMessage(hLang,CB_SETCURSEL,f,0);
