@@ -1,4 +1,4 @@
-﻿STR_TRANSLATORS         = "Skywalker59, Sokarz"
+﻿STR_TRANSLATORS         = "BadPointer, Skywalker59, Sokarz, Arzach4"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -34,8 +34,8 @@ STR_SNAPSHOT_H          = "Charger un cliché sur un autre système.\n\nLes clic
 STR_EXTRACT             = "Extraire vers..."
 STR_EXTRACT_H           = "Extraire les pilotes sélectionnés\n\nVous pouvez l'utiliser pour créer une sauvegarde des pilotes. Assurez-vous que les pilotes récemment installés fonctionnent correctement, cochez la case 'Afficher les pilotes actuels' et cliquez sur 'Extraire vers ... '"
 STR_DRVDIR              = "Dossier des pilotes..."
-STR_DRVDIR_H            = "Choisir un autre dossier avec les packs de pilotes ou les pilotes non décompressés.\n\nVous pouvez utiliser ceci pour chercher des pilotes sur un CD/DVD de pilotes."
-STR_OPTIONS_BTN         = "Options"
+STR_DRVDIR_H            = "Choisir un autre dossier avec les packs de pilotes ou les pilotes décompressés.\n\nVous pouvez utiliser ceci pour chercher des pilotes sur un CD/DVD de pilotes."
+STR_OPTIONS_BTN         = "Options..."
 STR_OPTIONS_BTN_H       = "Ouvrir la boîte de dialogue avec les paramètres."
 
 STR_SHOW_FOUND          = "Trouvés dans les packs "
@@ -64,7 +64,7 @@ STR_SHOW_NF_STANDARD_H  = "Affiche les pilotes standards qui sont installés mai
 
 STR_SHOW_DISPLAY        = "Afficher"
 STR_SHOW_DISPLAY_H      = ""
-STR_SHOW_ONE            = "Afficher les meilleurs"
+STR_SHOW_ONE            = "Afficher seulement les meilleurs"
 STR_SHOW_ONE_H          = "Afficher seulement les meilleurs pilotes par périphérique.\n\nLorsque activé, seul le meilleur pilote pour le périphérique est affiché au lieu d'afficher tous les pilotes disponibles pour chaque périphérique."
 STR_SHOW_DUP            = "Afficher les doublons"
 STR_SHOW_DUP_H          = "Afficher les pilotes dupliqués.\n\nCertains pilotes sont dupliqués de multiples fois au sein des packs de pilotes pour des raisons techniques."
@@ -74,7 +74,7 @@ STR_SHOW_INVALID_H      = "Afficher les pilotes qui sont incompatibles avec le s
 STR_OPTIONS             = "Options"
 STR_OPTIONS_H           = ""
 STR_REBOOT              = "Redémarrer le PC après installation"
-STR_REBOOT_H            = "Redémarrer le PC(si exigé) après installation(Ctrl+R).\n\nASTUCE: Vous pouvez annuler le redémarrage à n'importe quel moment en décochant la case."
+STR_REBOOT_H            = "Redémarrer le PC(si nécessaire) après installation(Ctrl+R).\n\nASTUCE: Vous pouvez annuler le redémarrage à n'importe quel moment en décochant la case."
 
 // Sysinfo
 STR_SYSINF_WINDOWS      = "Windows"
@@ -126,7 +126,7 @@ STR_ABOUT_DEV_TITLE     = "Developpeur: "
 STR_ABOUT_TESTERS_TITLE = "Contributeurs : "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_TRANS_TITLE   = "Traducteurs:"
-STR_ABOUT_LICENSE       = "Snappy Driver Installer est enregistré selon les termes de la GNU General Public License version 3\n\n\n\n\n\nSnappy Driver Installer utilise les technologies suivantes:\n* WebP est enregistré selonles termes de la license BSD \n* libtorrent est enregistré selon les termes de la license BSD\n* Backtrace est enregistré selon les termes de la license BSD\n* 7-Zip est enregistré selon les termes de la Bibliothèque GNU ou Lesser General Public License version 2\n\nSnappy Driver Installer fonctionne avec les DriverPacks développés par la Team DriverPack.\n(Cliquer pour voir un des sites Web)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer est enregistré selon les termes de la GNU General Public License version 3\n\n\n\n\n\nSnappy Driver Installer utilise les technologies suivantes:\n* WebP est enregistré selonles termes de la license BSD \n* libtorrent est enregistré selon les termes de la license BSD\n* Backtrace est enregistré selon les termes de la license BSD\n* 7-Zip est enregistré selon les termes de la Bibliothèque GNU ou Lesser General Public License version 2\n\nSnappy Driver Installer fonctionne avec les DriverPacks développés par la Team DriverPack.\n\n(Cliquer pour voir un des sites Web)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "inconnu"
@@ -203,14 +203,14 @@ STR_VIRUS_HIDDEN_H      = "Le répertoire racine contient des répertoires cach�
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Cliquer ici pour stopper l'émulation)"
-STR_EMPTYDRP            = "Télécharger les packs de pilotes ou mettre les pilotes non décompressés dans le répertoire suivant"
+STR_EMPTYDRP            = "Télécharger les packs de pilotes ou mettre les pilotes décompressés dans le répertoire suivant"
 STR_CLOSE_DRPEXT        = "(Cliquer ici pour revenir au répertoire par défaut)"
 STR_NOUPDATES           = "Les pilotes sont à jour"
 STR_INITIALIZING        = "Initialisation..."
 
 // Progressbar
-STR_INST_EXTRACT        = "Extraction en cours... %d%% (stage 1 de 2)"
-STR_INST_INSTALL        = "Installation en cours... (étape 2 de 2)"
+STR_INST_EXTRACT        = "Extraction en cours... %d%% (étape 1 sur 2)"
+STR_INST_INSTALL        = "Installation en cours... (étape 2 sur 2)"
 STR_INST_OK             = "Installé avec succès"
 STR_INST_REBOOT         = "Installé avec succès (Redémarrage système nécessaire)"
 STR_INST_FAILED         = "Echec de l'installation, Erreur "
@@ -258,12 +258,12 @@ STR_UPD_DIALOG_INDEX    = "Voulez vous télécharger les derniers indexs pour d�
 STR_UPD_TITLE           = "Mettre à jour"
 STR_UPD_BTN_ALL         = "Cocher tout"
 STR_UPD_BTN_NONE        = "Décocher tout"
-STR_UPD_BTN_THISPC      = "Cocher seulement ceux pour ce PC"
+STR_UPD_BTN_THISPC      = "Cocher seulement ceux nécessaires pour ce PC"
 STR_UPD_BTN_THISPC_H    = "Pour définir quels packs sont nécessaire vous devez d'abord télécharger les indexs."
 STR_UPD_ONLYUPDATES     = "Ne pas signaler les packs manquants"
-STR_UPD_TOTALSIZE       = "Taille totale du téléchargement: %d MB"
+STR_UPD_TOTALSIZE       = "Taille totale du téléchargement: %d Mo"
 STR_UPD_BTN_OK          = "OK"
-STR_UPD_BTN_CANCEL      = "Abandonner"
+STR_UPD_BTN_CANCEL      = "Annuler"
 STR_UPD_BTN_ACCEPT      = "Accepter"
 STR_UPD_COL_NAME        = "Driverpack"
 STR_UPD_COL_SIZE        = "Taille"
@@ -331,7 +331,7 @@ STR_TR_ST7              = "Vérification des données"
 // Options dialog
 STR_OPTION_TITLE        = "Options"
 STR_OPTION_VIEW_TAB     = "Afficher"
-STR_OPTION_UPDATES_TAB  = "Mise à jour"
+STR_OPTION_UPDATES_TAB  = "Mises à jour"
 STR_OPTION_PATH_TAB     = "Chemins"
 STR_OPTION_ADVANCED_TAB = "Avancé"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
@@ -351,7 +351,7 @@ STR_OPTION_HINT         = "Astuce"
 STR_OPTION_HINT_LABEL   = "Délai en millisecondes"
 
 // Updates tab
-STR_OPTION_CHECKUPDATES = "Ne pas vérifier s'il existe une nouvelle version de l'application/ des packs de pilotes"
+STR_OPTION_CHECKUPDATES = "Ne pas vérifier s'il existe une nouvelle version de l'application/des packs de pilotes"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Port"
@@ -362,7 +362,7 @@ STR_OPTION_MAX_UPLOAD   = "Vitesse d'émission maximale en Ko/s (0 - illimité)"
 // Paths tab
 STR_OPTION_DIR_DRIVERS  = "Pilotes"
 STR_OPTION_DIR_INDEXES  = "Index"
-STR_OPTION_DIR_INDEXESH = "Indexs (lisible par l'homme)"
+STR_OPTION_DIR_INDEXESH = "Indexs (lisible en clair)"
 STR_OPTION_DIR_DATA     = "Thèmes et traductions"
 STR_OPTION_DIR_LOGS     = "Fichiers log"
 
@@ -375,6 +375,6 @@ STR_OPTION_CMD_FINISHDN = "Après le téléchargement"
 STR_OPTION_CONSOLE      = "Afficher la fenêtre de la console"
 
 // Patreon
-//STR_PATREON1             = "SDI est développé par des volontaires sur leur temps libre. Si vous aimez ce logiciel, merci de nous soutenir sur Patreon."
+STR_PATREON1             = "SDI est développé par des volontaires sur leur temps libre. Si vous aimez SDI, soutenez nous sur Patreon."
 STR_PATREON2             = "(Cliquez ici pour ouvrir la page Patreon)"
 STR_PATREON_H            = ""

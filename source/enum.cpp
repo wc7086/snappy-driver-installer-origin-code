@@ -721,7 +721,7 @@ void State::popup_sysinfo(Canvas &canvas)
     td.TextOutBold(STR(STR_SYSINF_WINDOWS));
     td.ret_ofs(10);
 
-    td.TextOutSF(STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber);
+    td.TextOutSF(STR(STR_SYSINF_VERSION),L"%s (%d.%d.%d)%s",get_winverstr(),platform.dwMajorVersion,platform.dwMinorVersion,platform.dwBuildNumber,rtl?L"\u200E":L"");
     td.TextOutSF(STR(STR_SYSINF_UPDATE),L"%s",platform.szCSDVersion);
     td.TextOutSF(STR(STR_SYSINF_CPU_ARCH),L"%s",architecture?STR(STR_SYSINF_64BIT):STR(STR_SYSINF_32BIT));
     td.TextOutSF(STR(STR_SYSINF_LOCALE),L"%X",locale);
@@ -741,8 +741,8 @@ void State::popup_sysinfo(Canvas &canvas)
     td.ret();
     td.TextOutBold(STR(STR_SYSINF_MOTHERBOARD));
     td.ret_ofs(10);
-    td.TextOutSF(STR(STR_SYSINF_PRODUCT),L"%s",getProduct());
-    td.TextOutSF(STR(STR_SYSINF_MODEL),L"%s",getModel());
+    td.TextOutSF(STR(STR_SYSINF_PRODUCT),L"%s%s",getProduct(),rtl?L"\u200E":L"");
+    td.TextOutSF(STR(STR_SYSINF_MODEL),L"%s%s",getModel(),rtl?L"\u200E":L"");
     td.TextOutSF(STR(STR_SYSINF_MANUF),L"%s",getManuf());
     td.TextOutSF(STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
 

@@ -126,7 +126,7 @@ STR_ABOUT_DEV_TITLE     = "Ontwikkelaar: "
 STR_ABOUT_TESTERS_TITLE = "Medewerkers: "
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_TRANS_TITLE   = "Vertalers: "
-STR_ABOUT_LICENSE       = "Snappy Driver Installer is gelicentieerd onder de GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer gebruikt de volgende technologieën:\n * WebP is gelicentieerd onder de termen van de BSD licentie\n * libtorrent is gelicentieerd onder de termen van de BSD licentie\n * Backtrace is gelicentieerd onder de termen van de BSD licentie\n * 7-Zip is gelicentieerd onder de termen van de GNU Library of Lesser General Public License version 2\n\n Snappy Driver Installer powered by DriverPacks die ontwikkeld werden door de DriverPacks Team.\n\n (Klik hier om een website te bezoeken)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer is gelicentieerd onder de GNU General Public License version 3\n\n\n\n\n\nSnappy Driver Installer gebruikt de volgende technologieën:\n * WebP is gelicentieerd onder de termen van de BSD licentie\n * libtorrent is gelicentieerd onder de termen van de BSD licentie\n * Backtrace is gelicentieerd onder de termen van de BSD licentie\n * 7-Zip is gelicentieerd onder de termen van de GNU Library of Lesser General Public License version 2\n\n Snappy Driver Installer powered by DriverPacks die ontwikkeld werden door de DriverPacks Team.\n\n (Klik hier om een website te bezoeken)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "onbekend"

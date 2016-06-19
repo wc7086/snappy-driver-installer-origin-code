@@ -1,10 +1,11 @@
 //Modified 12.06.2016
+//e39
 THEME_NAME              = "Lite"
 
 
 // Main window
 MAINWND_WX               = 1070
-MAINWND_WY               = 690
+MAINWND_WY               = 685
 MAINWND_MINX             = 480
 MAINWND_MINY             = 369
 MAINWND_INSIDE_COLOR     = 0xDD9100
@@ -50,16 +51,7 @@ PANEL_OUTLINE_COLOR      = MAINWND_INSIDE_COLOR
 PANEL_OUTLINE_ROUND      = 5
 
 // Panel, sysinfo
-//PANEL1_INSIDE_COLOR      = 0xFFAF17
-PANEL1_INSIDE_COLOR      = 0xC68C1E
-PANEL1_OFSX              = 4
-//PANEL1_OFSY              = 607
-PANEL1_OFSY              = 4
-//PANEL1_WY                = 20
 PANEL1_WX                = 0
-PANEL1_OUTLINE_WIDTH     = 1
-PANEL1_OUTLINE_COLOR     = 0xFFFFFF
-PANEL1_OUTLINE_ROUND     = 0
 
 // Panel, install
 PANEL2_OFSX              = 0
@@ -77,7 +69,7 @@ PANEL3_OFSY              = 125
 PANEL4_OFSX              = PANEL9_OFSX
 PANEL4_OFSY              = 242
 PANEL4_WX                = PANEL9_WX
-PANEL4_WY                = 21
+PANEL4_WY                = 22
 PANEL4_OUTLINE_WIDTH     = 0
 
 // Panel, filters (found)
@@ -158,7 +150,6 @@ ITEM_EXPAND_DOWN_H       = "lite\downup.webp"
 DRVITEM_INSIDE_COLOR     = 0xFFFFFF
 DRVITEM_OUTLINE_COLOR    = 0xC4C4C4
 DRVITEM_OUTLINE_ROUND    = 0
-//DRVITEM_INSIDE_COLOR_H   = 0xFFFDF8
 DRVITEM_INSIDE_COLOR_H   = 0xfff7e9
 DRVITEM_OUTLINE_COLOR_H  = 0xC4C4C4
 

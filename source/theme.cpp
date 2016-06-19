@@ -316,7 +316,7 @@ VaultLang::VaultLang(entry_t *entryv,size_t numv,int resv,int elem_id_,const wch
 
 int VaultLang::AutoPick()
 {
-    int f=0;
+    int f=-1;
     int j=MainWindow.hLang->GetNumItems();
     for(int i=0;i<j;i++)
         if(StrStrIW(lang_ids[i],Settings.curlang))

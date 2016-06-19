@@ -1430,7 +1430,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_NODRIVERS:
-            itembar->drawbutton(canvas,x,pos,STR(STR_EMPTYDRP),matcher->getCol()->getDriverpack_dir());
+            itembar->drawbutton(canvas,x-D_X(ITEM_TEXT_OFS_X)+D_X(ITEM_CHECKBOX_OFS_X),pos,STR(STR_EMPTYDRP),matcher->getCol()->getDriverpack_dir());
             break;
 
         case SLOT_NOUPDATES:

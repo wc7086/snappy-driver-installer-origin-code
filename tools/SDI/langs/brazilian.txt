@@ -35,6 +35,8 @@ STR_EXTRACT             = "Extrair em..."
 STR_EXTRACT_H           = "Extrair drivers selecionados\n\nVocê pode usar isso para criar backup dos drivers selecionando os drivers atuais."
 STR_DRVDIR              = "Escolha a pasta de drivers..."
 STR_DRVDIR_H            = "Escolha outra pasta com o pacote de drivers ou drivers descompactados.\n\nVocê pode usar isso para procurar drivers em um CD/DVD de drivers."
+STR_OPTIONS_BTN         = "Opções ..."
+STR_OPTIONS_BTN_H       = "Abrir a caixa de diálogo com configurações."
 
 STR_SHOW_FOUND          = "Encontrado no pacote de drivers"
 STR_SHOW_FOUND_H        = "Drivers foram encontrados no pacote de drivers e podem ser instalados.\n\nRecomendamos a instalar drivers a partir das seguintes categorias: não instalado, mais novo, melhor escolha."
@@ -91,8 +93,8 @@ STR_SYSINF_MODEL        = "Modelo"
 STR_SYSINF_MANUF        = "Fabricante"
 STR_SYSINF_BATTERY      = "Bateria"
 STR_SYSINF_AC_STATUS    = "A/C"
-STR_SYSINF_OFFLINE      = "Desconectado"
-STR_SYSINF_ONLINE       = "Ligado"
+STR_SYSINF_OFFLINE      = "desconectado"
+STR_SYSINF_ONLINE       = "circuito"
 STR_SYSINF_UNKNOWN      = "desconhecido"
 STR_SYSINF_FLAGS        = "Bateria"
 STR_SYSINF_HIGH         = "[alto]"
@@ -113,7 +115,7 @@ STR_SYSINF_TYPE         = "Tipo"
 STR_SYSINF_LAPTOP       = "laptop"
 STR_SYSINF_DESKTOP      = "desktop"
 STR_SYSINF_LOCALE       = "Local"
-STR_SYSINF_CPU_ARCH     = "CPU_Arch"
+STR_SYSINF_CPU_ARCH     = "Arquitetura de CPU"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
@@ -123,11 +125,12 @@ STR_ABOUT_DEV_TITLE     = "Desenvolvedor: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Testadores: "
 //STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TRANS_TITLE   = "Tradutores:"
 STR_ABOUT_LICENSE       = "Instalador Snappy Driver é licenciado sobre os termos da GNU General Public License version 3\n\n\n\n\nInstalador Snappy Driver Installer usa as seguintes tecnologias:\n* WebP é licenciada sobre os termos da licença BSD\n* libtorrent é licenciada sobre os termos da licença BSD\n* Backtrace é licenciada sobre os termos da licença BSD\n* 7-Zip é licenciada sobre os termos da biblioteca GNU Library ou Licença Geral Pública Lesser versão 2\n\nInstalador Snappy Driver desenvolvido pela equipe driverspack.\n\n(Clique agora para visitar o website)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "desconhecido"
-STR_HINT_ANALYSIS       = "Análise"
+STR_HINT_ANALYSIS       = "rastreamento de ID"
 STR_HINT_SIGNATURE      = "Assinatura:"
 STR_HINT_DRP            = "Driverpack"
 STR_HINT_DEVICE         = "dispositivo"
@@ -200,7 +203,7 @@ STR_VIRUS_HIDDEN_H      = "A pasta raiz contêm pastas escondidas. Vírus podem 
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Clique aqui para parar a emulação)"
-STR_EMPTYDRP            = "Coloque o pacote de drivers ou drivers descompactados na seguinte pasta"
+STR_EMPTYDRP            = "Conectar-se à Internet para baixar pacotes de drivers ou colocar os drivers descompactados na seguinte pasta"
 STR_CLOSE_DRPEXT        = "(Clique aqui para retornar á pasta padrão)"
 STR_NOUPDATES           = "Drivers estão atualizados"
 STR_INITIALIZING        = "Inicializando..."
@@ -324,3 +327,53 @@ STR_TR_ST4              = "Finalizado"
 STR_TR_ST5              = "seeding"
 STR_TR_ST6              = "Alocando espaço"
 STR_TR_ST7              = "Verificação de dados de resumo"
+
+// Options dialog
+STR_OPTION_TITLE        = "Opções"
+STR_OPTION_VIEW_TAB     = "Visão"
+STR_OPTION_UPDATES_TAB  = "Atualizações"
+STR_OPTION_PATH_TAB     = "Caminhos"
+STR_OPTION_ADVANCED_TAB = "Avançado"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Nomes do DriverPack"
+STR_OPTION_HIDE_NAMES   = "Não mostrar os nomes do DriverPack"
+STR_OPTION_SHOW_RIGHT   = "Mostrar nomes do DriverPack à direita"
+STR_OPTION_SHOW_ABOVE   = "Mostrar nomes do DriverPack acima"
+STR_OPTION_SCALLING     = "dimensionamento de interface"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Pequeno"
+STR_OPTION_SCALLING_BIG = "Grande"
+STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Dica"
+STR_OPTION_HINT_LABEL   = "Delay em milissegundos"
+
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Não verificar se há nova versão do app / driverpacks"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Porta"
+STR_OPTION_MAX_CON      = "Conexões Máximas (0 - ilimitado)"
+STR_OPTION_MAX_DOWNLOAD = "Velocidade Máxima de download em KB/s (0 - ilimitado)"
+STR_OPTION_MAX_UPLOAD   = "elocidade Máxima de upload em KB/s (0 - ilimitado)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Drivers"
+STR_OPTION_DIR_INDEXES  = "Índices"
+STR_OPTION_DIR_INDEXESH = "Índices (legível)"
+STR_OPTION_DIR_DATA     = "Temas e traduções"
+STR_OPTION_DIR_LOGS     = "Arquivos de registro"
+
+// Advanced tab
+STR_OPTION_CMD          = "Comandos"
+STR_OPTION_CMD_LABEL    = "Você pode definir os comandos que serão executados através do CMD depois das operações referidas estiverem concluídas."
+STR_OPTION_CMD_FINISH   = "Após a instalação"
+STR_OPTION_CMD_FINISHRB = "Após a instalação (precisa reiniciar)"
+STR_OPTION_CMD_FINISHDN = "Depois de baixar"
+STR_OPTION_CONSOLE      = "Mostrar janela do console"
+
+// Patreon
+STR_PATREON2             = " (Clique aqui para abrir a página Patreon)"
+STR_PATREON_H            = ""
