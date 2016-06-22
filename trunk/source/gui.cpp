@@ -705,6 +705,19 @@ void textdata_t::TextOutF(int col1,const wchar_t *format,...)
     va_end(args);
 }
 
+void textdata_t::TextOutF_RTL(int col1,int wx,const wchar_t *format,...)
+{
+    WStringShort buffer;
+    va_list args;
+    va_start(args,format);
+    buffer.vsprintf(format,args);
+
+    int ss=pcanvas->GetTextExtent(buffer.Get());
+    TextOut_CM(x-ss+wx-30,y,buffer.Get(),col1,&maxsz,1);
+    y+=wy;
+    va_end(args);
+}
+
 void textdata_t::TextOutF(const wchar_t *format,...)
 {
     WStringShort buffer;

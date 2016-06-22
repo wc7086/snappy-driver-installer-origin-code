@@ -449,7 +449,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
             if(!_wcsicmp(i_hwid,p))pp|=1;
             if(!_wcsicmp(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
+            if(rtl)
+                td.TextOutF_RTL(pp?D_C(POPUP_HWID_COLOR):c0,bolder,L"%s",p);
+            else
+                td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=wcslen(p)+1;
         }
     }
@@ -465,7 +468,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
             if(!_wcsicmp(i_hwid,p))pp|=1;
             if(!_wcsicmp(a_hwid,p))pp|=2;
             if(!cm_hwid&&(pp==1||pp==2))cm_hwid=pp;
-            td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
+            if(rtl)
+                td.TextOutF_RTL(pp?D_C(POPUP_HWID_COLOR):c0,bolder,L"%s",p);
+            else
+                td.TextOutF(pp?D_C(POPUP_HWID_COLOR):c0,L"%s",p);
             p+=wcslen(p)+1;
         }
     }
@@ -499,8 +505,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt->get(cur_driver->ProviderName));
         td.TextOutF(cm_date ==1?cb:c0,L"%s%s",STR(STR_HINT_DATE),date.Get());
         td.TextOutF(cm_ver  ==1?cb:c0,L"%s%s",STR(STR_HINT_VERSION),vers.Get());
-        td.TextOutF(cm_hwid ==1?cb:c0,L"%s%s",STR(STR_HINT_ID),i_hwid);
-        td.TextOutF(               c0,L"%s%s",STR(STR_HINT_INF),txt->get(cur_driver->InfPath));
+        td.TextOutF(cm_hwid ==1?cb:c0,L"%s%s%s",STR(STR_HINT_ID),rtl?L"\u200F":L"",i_hwid);
+        td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_INF),rtl?L"\u200F":L"",txt->get(cur_driver->InfPath));
         td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),txt->get(cur_driver->InfSection),txt->get(cur_driver->InfSectionExt));
         td.TextOutF(cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
     }
@@ -525,8 +531,8 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(               c0,L"%s%S",STR(STR_HINT_PROVIDER),hwidmatch_f->getdrp_drvmanufacturer());
         td.TextOutF(cm_date ==2?cb:c0,L"%s%s",STR(STR_HINT_DATE),date.Get());
         td.TextOutF(cm_ver  ==2?cb:c0,L"%s%s",STR(STR_HINT_VERSION),vers.Get());
-        td.TextOutF(cm_hwid ==2?cb:c0,L"%s%S",STR(STR_HINT_ID),hwidmatch_f->getdrp_drvHWID());
-        td.TextOutF(               c0,L"%s%S%S",STR(STR_HINT_INF),hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
+        td.TextOutF(cm_hwid ==2?cb:c0,L"%s%s%S",STR(STR_HINT_ID),rtl?L"\u200F":L"",hwidmatch_f->getdrp_drvHWID());
+        td.TextOutF(               c0,L"%s%s%S%S",STR(STR_HINT_INF),rtl?L"\u200F":L"",hwidmatch_f->getdrp_infpath(),hwidmatch_f->getdrp_infname());
         td.TextOutF(hwidmatch_f->getDecorscore()?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SECTION),bufw+500);
         td.TextOutF(cm_score==2?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),hwidmatch_f->getScore());
     }

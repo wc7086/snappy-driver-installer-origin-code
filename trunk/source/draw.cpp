@@ -847,14 +847,14 @@ void Popup_t::onHover()
     if(MainWindow.kbpanel)return;
     if(floating_type&&rtl)
     {
-        if(floating_type==FLOATING_CMPDRIVER||floating_type==FLOATING_DRIVERLST)
+        /*if(floating_type==FLOATING_CMPDRIVER||floating_type==FLOATING_DRIVERLST)
         {
             rtl=0;
             ::setMirroring(hPopup);
             rtl=1;
         }
-        else
-            ::setMirroring(hPopup);
+        else*/
+            //::setMirroring(hPopup);
     }
     InvalidateRect(hPopup,nullptr,0);
     ShowWindow(hPopup,floating_type==FLOATING_NONE?SW_HIDE:SW_SHOWNOACTIVATE);
