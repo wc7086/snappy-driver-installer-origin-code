@@ -434,6 +434,7 @@ public:
     textdata_t(Canvas &canvas,int ofsx=0);
 
     void TextOutF(int col,const wchar_t *format,...);
+    void TextOutF_RTL(int col,int wx,const wchar_t *format,...);
     void TextOutF(const wchar_t *format,...);
     void TextOutBold(const wchar_t *format,...);
     void ret();

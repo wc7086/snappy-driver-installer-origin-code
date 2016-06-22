@@ -1999,7 +1999,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
 
         case WM_PAINT:
             GetClientRect(hwnd,&rect);
-            canvasPopup->begin(&hwnd,rect.right,rect.bottom,floating_type!=FLOATING_CMPDRIVER&&floating_type!=FLOATING_DRIVERLST);
+            canvasPopup->begin(&hwnd,rect.right,rect.bottom,/*floating_type!=FLOATING_CMPDRIVER&&floating_type!=FLOATING_DRIVERLST*/1);
 
             canvasPopup->DrawWidget(0,0,rect.right,rect.bottom,BOX_POPUP);
             switch(floating_type)

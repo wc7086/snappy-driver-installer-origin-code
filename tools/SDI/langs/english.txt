@@ -247,7 +247,7 @@ STR_SYS_WINVER          = "Windows version"
 STR_SYS_32              = "32-bit"
 STR_SYS_64              = "64-bit"
 STR_SYS_DEVICEMNG       = "Device manager"
-STR_SYS_DISINSTALL      = "Disable instalation"
+STR_SYS_DISINSTALL      = "Disable installation"
 STR_SYS_DISRESTPNT      = "Disable restore points"
 
 // Update

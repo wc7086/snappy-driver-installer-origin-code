@@ -735,14 +735,14 @@ void State::popup_sysinfo(Canvas &canvas)
     td.ret();
     td.TextOutBold(STR(STR_SYSINF_ENVIRONMENT));
     td.ret_ofs(10);
-    td.TextOutSF(STR(STR_SYSINF_WINDIR),L"%s",textas.get(windir));
-    td.TextOutSF(STR(STR_SYSINF_TEMP),L"%s",textas.get(temp));
+    td.TextOutSF(STR(STR_SYSINF_WINDIR),L"%s%s",textas.get(windir),rtl?L"\u200E":L"");
+    td.TextOutSF(STR(STR_SYSINF_TEMP),L"%s%s",textas.get(temp),rtl?L"\u200E":L"");
 
     td.ret();
     td.TextOutBold(STR(STR_SYSINF_MOTHERBOARD));
     td.ret_ofs(10);
     td.TextOutSF(STR(STR_SYSINF_PRODUCT),L"%s%s",getProduct(),rtl?L"\u200E":L"");
-    td.TextOutSF(STR(STR_SYSINF_MODEL),L"%s%s",getModel(),rtl?L"\u200E":L"");
+    td.TextOutSF(STR(STR_SYSINF_MODEL),L"%s",getModel(),rtl?L"\u200E":L"");
     td.TextOutSF(STR(STR_SYSINF_MANUF),L"%s",getManuf());
     td.TextOutSF(STR(STR_SYSINF_TYPE),L"%s[%d]",isLaptop?STR(STR_SYSINF_LAPTOP):STR(STR_SYSINF_DESKTOP),ChassisType);
 
