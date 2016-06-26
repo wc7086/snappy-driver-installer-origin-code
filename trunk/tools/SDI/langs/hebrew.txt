@@ -1,4 +1,4 @@
-﻿STR_TRANSLATORS         = "BadPointer "
+﻿STR_TRANSLATORS         = "Ori Mauda"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -69,7 +69,7 @@ STR_SHOW_ONE_H          = "הצג רק את המתאמים הטובים ביות
 STR_SHOW_DUP            = "הצג כפילויות"
 STR_SHOW_DUP_H          = "הצג מתאמים כפולים.\n\nחלק מהמתאמים הם כפולים מספר פעמים בתוך ערכות המתאם עבור סיבות טכניות."
 STR_SHOW_INVALID        = "הצג 'לא תקף'"
-STR_SHOW_INVALID_H      = "הצג מתאמים אשר אינם נתמכים ע"_QQ_"י המערכת הזו.\n\nאנו ממליצים לא להתקין את המאמים הללו כיוון שהם לא נתמכים ע"_QQ_"י גרסאת המערכת שלך."
+STR_SHOW_INVALID_H      = "הצג מתאמים אשר אינם נתמכים על ידי המערכת הזו.\n\nאנו ממליצים לא להתקין את המאמים הללו כיוון שהם לא נתמכים ע"_QQ_"י גרסאת המערכת שלך."
 
 STR_OPTIONS             = "אפשרויות"
 STR_OPTIONS_H           = ""
@@ -375,6 +375,6 @@ STR_OPTION_CMD_FINISHDN = "אחרי ההורדה"
 STR_OPTION_CONSOLE      = "הצג צג מסוף"
 
 // Patreon
-//STR_PATREON1             = "SDI מפותח ע י מתנדבים בזמנן החופשי. אם אתה אוהב את התוכנה הזו, בבקשה תמוך בנו באתר Patreon."
-//STR_PATREON2             = "(לחץ כאן כדי לפתוח את דף Patreon)"
+STR_PATREON1             = "SDI מפותח על ידי מתנדבים בזמנן החופשי. אם אתה אוהב את התוכנה הזו, בבקשה תמוך בנו באתר Patreon."
+STR_PATREON2             = "(לחץ כאן כדי לפתוח את דף Patreon)"
 STR_PATREON_H            = ""
