@@ -817,9 +817,9 @@ void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
 
             mi.rcWork.right-=15;
             if(p.x+floating_x>mi.rcWork.right)p.x=mi.rcWork.right-floating_x;
-            if(p.x<5)p.x=5;
+            if(p.x<mi.rcWork.left+5)p.x=mi.rcWork.left+5;
             if(p.y+floating_y>mi.rcWork.bottom-20)p.y=p.y-floating_y-30;
-            if(p.y<5)p.y=5;
+            if(p.y<mi.rcWork.top+5)p.y=mi.rcWork.top+5;
         }
 
         MoveWindow(hPopup,p.x+10,p.y+20,floating_x,floating_y,1);
