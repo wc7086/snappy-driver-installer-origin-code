@@ -1331,7 +1331,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             {
                 WINDOWPOS *wpos=(WINDOWPOS*)lParam;
 
-                SystemParametersInfo(SPI_GETWORKAREA,0,&rect,0);
+                rect.left=GetSystemMetrics(SM_XVIRTUALSCREEN);
+                rect.top=GetSystemMetrics(SM_YVIRTUALSCREEN);
+                rect.right=GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                rect.bottom=GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
                 if(rect.right<D(MAINWND_WX)||rect.bottom<D(MAINWND_WY))
                   if(rect.right<wpos->cx||rect.bottom<wpos->cy)
                 {
