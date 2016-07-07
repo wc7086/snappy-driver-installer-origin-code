@@ -237,6 +237,10 @@ public:
     {
         ListView_SetCheckState(hListg,i,val);
     }
+    void SetItemState(int i,UINT32 state,UINT32 mask)
+    {
+        ListView_SetItemState(hListg,i,state,mask);
+    }
     void GetItemText(int i,int sub,wchar_t *buf,int sz)
     {
         ListView_GetItemText(hListg,i,sub,buf,sz);
@@ -703,6 +707,9 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 
     // Enable redrawing of the list
     ListView.EnableRedraw();
+
+    // preselect the first item in the list
+    ListView.SetItemState(0,LVIS_FOCUSED|LVIS_SELECTED,LVIS_FOCUSED|LVIS_SELECTED);
 
     if(update)return ret;
 
