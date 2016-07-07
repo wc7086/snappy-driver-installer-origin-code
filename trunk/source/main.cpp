@@ -703,6 +703,13 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                     default:r=IDD_P1_DRV1;break;
                 }
                 SendMessage(GetDlgItem(data.pages[0],r),BM_SETCHECK,BST_CHECKED,0);
+
+                // windows doesn't normally show a focus rect until it first receives
+                // keyboard input but i like to see where the keyboard focus is
+                PostMessage(hwnd, WM_UPDATEUISTATE,MAKEWPARAM(UIS_CLEAR,UISF_HIDEFOCUS),0);
+                // set the keyboard focus to the selected radio button
+                SetFocus(GetDlgItem(data.pages[0],r));
+
                 SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETRANGE,1,MAKELONG(-350,-150));
 //                SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETRANGE,1,MAKELONG(150,350));
                 SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETPOS,1,-Settings.scale);
