@@ -629,13 +629,13 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                 TCITEM tci;
                 tci.mask = TCIF_TEXT;
                 tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_VIEW_TAB));
-                TabCtrl_InsertItem(data.tab, 0, &tci);
+                if(TabCtrl_InsertItem(data.tab, 0, &tci)==-1)Log.print_err("ERROR in winMain(): failed to insert page in tab control.\n");
                 tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_UPDATES_TAB));
-                TabCtrl_InsertItem(data.tab, 1, &tci);
+                if(TabCtrl_InsertItem(data.tab, 1, &tci)==-1)Log.print_err("ERROR in winMain(): failed to insert page in tab control.\n");
                 tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_PATH_TAB));
-                TabCtrl_InsertItem(data.tab, 2, &tci);
+                if(TabCtrl_InsertItem(data.tab, 2, &tci)==-1)Log.print_err("ERROR in winMain(): failed to insert page in tab control.\n");
                 tci.pszText = const_cast<wchar_t *>(STR(STR_OPTION_ADVANCED_TAB));
-                TabCtrl_InsertItem(data.tab, 3, &tci);
+                if(TabCtrl_InsertItem(data.tab, 3, &tci)==-1)Log.print_err("ERROR in winMain(): failed to insert page in tab control.\n");
 
                 RECT rc;
                 GetWindowRect(data.tab,&rc);
