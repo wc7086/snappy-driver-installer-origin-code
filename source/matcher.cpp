@@ -625,7 +625,8 @@ int Hwidmatch::calc_altsectscore(const State *state,int curscore)
     if(!calc_notebook())return 0;
 
     if(StrStrIA(getdrp_infpath(),"intel_2nd\\"))
-        if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_1E31"))return 0;
+        if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_1E31")&&
+           !isvalid_usb30hub(state,             L"PCI\\VEN_8086&DEV_1E31"))return 0;
 
     if(StrStrIA(getdrp_infpath(),"intel_4th\\"))
         if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C31")&&
