@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "Ori Mauda"
+STR_TRANSLATORS         = "Ori Mauda"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "עברית"
 STR_LANG_ID             = "Hebrew"
-STR_LANG_GROUP          = 0x000c //LGRPID_HEBREW
-STR_LANG_CODE           = 0x0D
-STR_RTL                 = 1
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "מידע מערכת"

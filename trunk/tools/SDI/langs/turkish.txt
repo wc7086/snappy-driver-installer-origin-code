@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "X-FoRcE, Kabaqtepeli"
+STR_TRANSLATORS         = "X-FoRcE"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Türkçe"
 STR_LANG_ID             = "Turkish"
-STR_LANG_GROUP          = 0x06 // LGRPID_TURKIC
-STR_LANG_CODE           = 0x1F
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Sistem Bilgisi"
@@ -136,7 +136,7 @@ STR_HINT_DRP            = "Sürücü Paketi"
 STR_HINT_DEVICE         = "Aygıt"
 STR_HINT_HARDWAREID     = "Donanım Kimliği"
 STR_HINT_COMPID         = "Uyumlu Kimlik"
-STR_HINT_INSTDRV        = "Kurulu sürücüler"
+STR_HINT_INSTDRV        = "Kurulu sürücü"
 STR_HINT_AVAILDRV       = "Kullanılabilir Sürücü"
 STR_HINT_AVAILDRVS      = "Kullanılabilir Sürücüler"
 STR_HINT_MANUF          = "Üretici:"
@@ -146,7 +146,7 @@ STR_HINT_VERSION        = "Sürüm: "
 STR_HINT_ID             = "Kimlik: "
 STR_HINT_INF            = "Inf dosyası: "
 STR_HINT_SECTION        = "Bölüm: "
-STR_HINT_SCORE          = "Skor: "
+STR_HINT_SCORE          = "Yüklü sürücü sırası: "
 STR_HINT_SCROLL         = "İPUCU: Devamını görmek için farenizin tekerini çevirin."
 
 // Context menu
@@ -238,7 +238,7 @@ STR_REST_CREATED        = "Sistem geri yükleme noktası oluşturuldu"
 STR_REST_FAILED         = "Sistem geri yükleme noktası oluşturulamadı"
 
 STR_INST_QUIT_TITLE     = "İptal ediliyor"
-STR_INST_QUIT_MSG       = "Yüklemeyi durdurmak istediğinizden eminmisiniz?"
+STR_INST_QUIT_MSG       = "Yüklemeyi durdurmak istediğinizden emin misiniz?"
 STR_HINT_STOPINST       = "Kurulumu iptal etmek için tıklayın."
 STR_HINT_STOPEXTR       = "Çıkartmayı durdurmak için tıklayın."
 STR_HINT_DRIVER         = "<Ctrl> tuşuna basılı tutarsanız kurulu sürücünüzle yeni sürücüyü karşılaştırabilirsiniz.\n<Boşluk> tuşuna basarsanız sürücünüze alternatif olarak kullanabileceğiniz diğer sürücüleri görebilirsiniz."

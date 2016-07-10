@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "Hoangduong92"
+STR_TRANSLATORS         = "Hoangduong92"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Tiếng Việt"
 STR_LANG_ID             = "Vietnamese"
-STR_LANG_GROUP          = 0xE // LGRPID_VIETNAMESE
-STR_LANG_CODE           = 0x2A
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Thông tin hệ thống"

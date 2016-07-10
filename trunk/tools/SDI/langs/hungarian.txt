@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "LaMoLa"
+STR_TRANSLATORS         = "LaMoLa"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Magyar"
 STR_LANG_ID             = "Hungarian"
-STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
-STR_LANG_CODE           = 0x0E
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "  - Rendszerinformáció -"
@@ -35,6 +35,8 @@ STR_EXTRACT             = "Kibontás helye..."
 STR_EXTRACT_H           = "A kijelölt driverek kicsomagolása\n\nHasználhatja biztonsági mentés létrehozására a jelenlegi Driverekbõl kiválasztva."
 STR_DRVDIR              = "Driver mappa kiválasztása."
 STR_DRVDIR_H            = "Válasszon másik mappát driver-csomagoknak vagy kicsomagolatlan Drivereknek.\n\nDriverek keresésére alkalmas a driver CD/DVD is."
+; STR_OPTIONS_BTN         = "Options..."
+; STR_OPTIONS_BTN_H       = "Open dialog box with settings."
 
 STR_SHOW_FOUND          = "Választható driverek, amik:"
 STR_SHOW_FOUND_H        = "megtalálhatók a csomagban és telepíthetõk az illesztõprogramok.\n\nJavasoljuk, hogy az alábbi kategóriák alapján telepítsen Drivereket: Nincs telepítve, Újabb, Megfelelõbb."
@@ -123,6 +125,7 @@ STR_ABOUT_DEV_TITLE     = "Fejlesztõ: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Tesztelõk: "
 //STR_ABOUT_TESTERS_LIST
+; STR_ABOUT_TRANS_TITLE   = "Translators: "
 STR_ABOUT_LICENSE       = "GNU V.3 alapján engedélyezett alkalmazás\n\n\n\n\n\n\nSnappy Driver Telepítő a következő technológiákat használja:\n\n* WebP engedélyezve a BSD licenc feltételei szerint.\n* libtorrent engedélyezve a BSD licenc feltételei szerint.\n* Backtrace engedélyezve a BSD licenc feltételei szerint.\n* 7-Zip engedélyezve a GNU Library illetve a Lesser General Public Licenc verzió 2. feltételei szerint\nSnappy Driver telepítő a DriverPacks csapat által kidolgozott Driver-csomagok használatának lehetőségével rendelkezik.\n(Klikk ide a Weblap megtekintéséhez)\n\nMagyar nyelvre fordította : LaMoLa"
 
 // Popup on drivers(while holding Ctrl or spacebar)
@@ -329,6 +332,8 @@ STR_TR_ST7              = "Adat összegzés ellenőrzése"
 STR_OPTION_TITLE        = "Beállítások"
 STR_OPTION_VIEW_TAB     = "Nézet"
 STR_OPTION_UPDATES_TAB  = "Frissítések"
+; STR_OPTION_PATH_TAB     = "Paths"
+; STR_OPTION_ADVANCED_TAB = "Advanced"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -338,16 +343,38 @@ STR_OPTION_HIDE_NAMES   = "Ne jelenjenjenek meg a driverpack nevek"
 STR_OPTION_SHOW_RIGHT   = "Mutassa a driverpack neveket a jobb oldalon"
 STR_OPTION_SHOW_ABOVE   = "Mutassa a driverpack neveket felül"
 STR_OPTION_SCALLING     = "Interfész méretezés"
-STR_OPTION_CONSOLE      = "Konzol ablak megjelenítése"
+STR_OPTION_SCALLING_H   = ""
+; STR_OPTION_SCALLING_SML = "Small"
+; STR_OPTION_SCALLING_BIG = "Big"
+; STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Utalás"
+; STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
 
-// Update tab
+// Updates tab
 STR_OPTION_CHECKUPDATES = "Űj verzió/driverpack ellenőrzése"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Port"
+; STR_OPTION_MAX_CON      = "Max connections (0 - unlimited)"
 STR_OPTION_MAX_DOWNLOAD = "Max.letöltési sebesség byte-ban/s(0:korlátlan)"
 STR_OPTION_MAX_UPLOAD   = "Max.feltöltési sebesség byte-ban/s(0:korlátlan)"
-  // Patreon
-//STR_PATREON1             = "SDI-t önkéntesek fejlesztik a szabadidejükben. Ha elnyerte tetszését a szoftver, akkor támogassa a Patreon-on keresztűl."
+
+// Paths tab
+; STR_OPTION_DIR_DRIVERS  = "Drivers"
+STR_OPTION_DIR_INDEXES  = "indexek"
+; STR_OPTION_DIR_INDEXESH = "Indexes (human-readable)"
+; STR_OPTION_DIR_DATA     = "Themes and translations"
+; STR_OPTION_DIR_LOGS     = "Log files"
+
+// Advanced tab
+; STR_OPTION_CMD          = "Commands"
+; STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
+; STR_OPTION_CMD_FINISH   = "After installation"
+; STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
+; STR_OPTION_CMD_FINISHDN = "After downloading"
+STR_OPTION_CONSOLE      = "Konzol ablak megjelenítése"
+
+// Patreon
+STR_PATREON1             = "SDI-t önkéntesek fejlesztik a szabadidejükben. Ha elnyerte tetszését a szoftver, akkor támogassa a Patreon-on keresztűl."
 STR_PATREON2             = "(Klikk ide a Patreon oldal megnyitásához)"
 STR_PATREON_H            = ""
