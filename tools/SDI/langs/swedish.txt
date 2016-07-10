@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "Översatt av Star"
+STR_TRANSLATORS         = "Översatt av Star"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Svenska"
 STR_LANG_ID             = "Swedish"
-STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
-STR_LANG_CODE           = 0x1D
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Systeminformation"
@@ -25,16 +25,18 @@ STR_LANG_H              = ""
 STR_THEME               = "Theme"
 STR_THEME_H             = ""
 STR_EXPERT              = "Expertläge"
-STR_EXPERT_H            = "Aktiverar Expertläge\n\nHINT: Håll Ctrl eller Mellanslag knapp över en drivrutin för att få extra information om drivrutinen"
+; STR_EXPERT_H            = "Enable Expert Mode.\n\nHINT: Hold the Ctrl or Spacebar button over a driver to get extra information about the driver."
 
 STR_OPENLOGS            = "Öppna loggar"
-STR_OPENLOGS_H          = "Öppna mappen som innehåller loggar och snapshot.\nDu kan skicka dessa filer för att få hjälp."
+; STR_OPENLOGS_H          = "Open the folder containing logs and snapshots.\n\nYou can submit log files to the developer by opening www.sdi-tool.org and going to the support page.\n\nSnapshots can be used to remotely help users pick correct drivers."
 STR_SNAPSHOT            = "Ladda ögonblicksbild ..."
 STR_SNAPSHOT_H          = "Ladda ögonblicksbild av ett annat system.\nSnapshots skapas automatiskt i loggmappen. De innehåller information om enheter, drivrutiner, Windows-versionen, batteri och bildskärmar.\nSnapshots inte innehåller uppgifter om driverpacks på fjärrsystemet .\n\nTherefore tillåter lastning ögonblicks emulering för fjärrsystemet, men förarna som söks i lokala driverpacks. "
 STR_EXTRACT             = "Utdrag till ..."
-STR_EXTRACT_H           = "Utdrag utvalda drivers\n\nDu kan använda den för att skapa säkerhets drivrutin genom att välja aktuella drivrutiner."
+; STR_EXTRACT_H           = "Extract selected drivers\n\nYou can use it to create backup drivers. Make sure that recently installed drivers are working properly, enable the 'Show current drivers' checkbox and click 'Extract to...'"
 STR_DRVDIR              = "Välj drivrutin dir ..."
 STR_DRVDIR_H            = "Välj en annan mapp med driverpacks eller oförpackade drivrutiner.\nDu kan använda den för att söka drivrutiner på en CD med drivrutiner/DVD."
+; STR_OPTIONS_BTN         = "Options..."
+; STR_OPTIONS_BTN_H       = "Open dialog box with settings."
 
 STR_SHOW_FOUND          = "Hittade i driverpacks"
 STR_SHOW_FOUND_H        = "Drivrutiner finns i driverpacks och kan installeras\n\nVi rekommenderar att du installerar drivrutinerna från följande kategorier: Inte installerat, nyare, bättre match"
@@ -54,18 +56,18 @@ STR_SHOW_WORSE_RANK_H   = "Display drivrutiner från driverpacks som matchar vä
 STR_SHOW_NOTFOUND       = "Frånvarande i driverpacks"
 STR_SHOW_NOTFOUND_H     = "Drivrutiner finns inte driverpacks och kan inte installeras."
 STR_SHOW_NF_MISSING     = "Inte installerad"
-STR_SHOW_NF_MISSING_H   = "Display produkter, som kräver drivrutiner men ingen drivrutin hittas i driverpacks."
+; STR_SHOW_NF_MISSING_H   = "Display devices which require drivers but no driver is found in driverpacks.\n\nYou can try looking for these drivers on the Internet or on DVDs. In order to copy HardwareID, you can right click on the device.\n\nWe advise to notify us about missing drivers, so that they could be added to driverpacks."
 STR_SHOW_NF_UNKNOWN     = "Okänd"
-STR_SHOW_NF_UNKNOWN_H   = "Display okända drivrutiner som är installerade i systemet, men finns inte i driverpacks."
+; STR_SHOW_NF_UNKNOWN_H   = "Display unknown drivers which are installed in the system but are not found in driverpacks.\n\nWe advice to notify us that you have some drivers that could be added to driverpacks."
 STR_SHOW_NF_STANDARD    = "Standard"
-STR_SHOW_NF_STANDARD_H  = "Visa standarddrivrutiner som är installerade i systemet men som inte finns i driverpacks."
+; STR_SHOW_NF_STANDARD_H  = "Display standard drivers which are installed in the system but are not found in driverpacks.\n\nThese drivers usually come with Windows and don't require updates."
 
 STR_SHOW_DISPLAY        = "Display"
 STR_SHOW_DISPLAY_H      = ""
 STR_SHOW_ONE            = "Visa bara bäst"
-STR_SHOW_ONE_H          = "Visa endast bästa förarna per enhet."
+; STR_SHOW_ONE_H          = "Show only best drivers per device.\n\nWhen enabled, only the best matched driver per device is displayed as opposed to displayed all available drivers for each device."
 STR_SHOW_DUP            = "Visa dubbletter"
-STR_SHOW_DUP_H          = "Visa duplicera drivrutin."
+; STR_SHOW_DUP_H          = "Show duplicate drivers.\n\nSome drivers are duplicated multiple times inside driverpacks for technical reasons."
 STR_SHOW_INVALID        = "Visa ogiltig"
 STR_SHOW_INVALID_H      = "Visa drivrutin som är oförenliga med det nuvarande systemet.\nVi råda er att inte installera dessa drivrutiner för att de är oförenliga med din version av Windows."
 
@@ -91,9 +93,9 @@ STR_SYSINF_MODEL        = "Model"
 STR_SYSINF_MANUF        = "Tillverkare"
 STR_SYSINF_BATTERY      = "Power"
 STR_SYSINF_AC_STATUS    = "A / C"
-STR_SYSINF_OFFLINE      = "Disconnected"
-STR_SYSINF_ONLINE       = "sluten"
-STR_SYSINF_UNKNOWN      = "Okänd"
+; STR_SYSINF_OFFLINE      = "disconnected"
+; STR_SYSINF_ONLINE       = "circuited"
+STR_SYSINF_UNKNOWN      = "okänd"
 STR_SYSINF_FLAGS        = "Battery"
 STR_SYSINF_HIGH         = "[hög]"
 STR_SYSINF_LOW          = "[låg]"
@@ -113,7 +115,7 @@ STR_SYSINF_TYPE         = "Typ"
 STR_SYSINF_LAPTOP       = "laptop"
 STR_SYSINF_DESKTOP      = "desktop"
 STR_SYSINF_LOCALE       = "Locale"
-STR_SYSINF_CPU_ARCH     = "CPU_Arch"
+; STR_SYSINF_CPU_ARCH     = "CPU Architecture"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bitars"
 
@@ -123,11 +125,12 @@ STR_ABOUT_DEV_TITLE     = "Utvecklare: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Provare: "
 //STR_ABOUT_TESTERS_LIST
+; STR_ABOUT_TRANS_TITLE   = "Translators: "
 STR_ABOUT_LICENSE       = "Kvick Driver Installer licensieras under villkoren i GNU General Public License version 3\n\n\n\n\n\n\nSnappy Driver Installer använder följande tekniker:\n* WebP licensieras under villkoren i BSD-licensen\n* libtorrent licensieras under villkoren i BSD-licensen\n* Backtrace licensieras under villkoren i BSD-licensen\n* 7-Zip licensieras under villkoren i GNU Library eller Lesser General Public License version 2\n\nSnappy Driver Installer drivs av DriverPacks som utvecklats av DriverPacks Team.\n\n(Klicka nu för att besöka en webbplats) "
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "okänd"
-STR_HINT_ANALYSIS       = "analys"
+; STR_HINT_ANALYSIS       = "TrackingID"
 STR_HINT_SIGNATURE      = "Signatur: "
 STR_HINT_DRP            = "Driverpack"
 STR_HINT_DEVICE         = "Enhet"
@@ -136,7 +139,7 @@ STR_HINT_COMPID         = "CompatibleID"
 STR_HINT_INSTDRV        = "Installerad drivrutin"
 STR_HINT_AVAILDRV       = "Tillgängliga drivrutin"
 STR_HINT_AVAILDRVS      = "Tillgängliga drivrutiner"
-STR_HINT_MANUF          = "Manuf: "
+; STR_HINT_MANUF          = "Manufacturer: "
 STR_HINT_PROVIDER       = "Provider: "
 STR_HINT_DATE           = "Datum: "
 STR_HINT_VERSION        = "Version: "
@@ -200,7 +203,7 @@ STR_VIRUS_HIDDEN_H      = "Rotmappen innehåller dolda mappar. Virus kan göra d
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(klicka här för att stoppa emulering)"
-STR_EMPTYDRP            = "Sätt driverpacks eller uppackade drivrutin i följande mapp"
+; STR_EMPTYDRP            = "Connect to the Internet to download driverpacks or put unpacked drivers in the following folder"
 STR_CLOSE_DRPEXT        = "(klicka här för att återgå till standardmappen)"
 STR_NOUPDATES           = "Drivrutiner är uppdaterade"
 STR_INITIALIZING        = "Initierar ..."
@@ -215,7 +218,7 @@ STR_INST_FAILED         = "Det gick inte att installera, fel"
 STR_INST_INSTALLING     = "Installerar ..."
 STR_INST_COMPLITED      = "Installationen slutförd"
 STR_INST_COMPLITED_RB   = "Installationen slutförd (omstart av systemet krävs)"
-STR_INST_CLOSE          = "(Klicka här för att stänga dölja installerade drivrutiner)"
+; STR_INST_CLOSE          = "(Click here to hide installed drivers)"
 
 STR_EXTR_EXTRACTING     = "Extrahera ..."
 STR_EXTR_OK             = "Framgångsrikt extraherade"
@@ -324,3 +327,54 @@ STR_TR_ST4              = "färdig"
 STR_TR_ST5              = "sådd"
 STR_TR_ST6              = "fördela utrymme"
 STR_TR_ST7              = "kontroll CV uppgifter"
+
+// Options dialog
+STR_OPTION_TITLE        = "Alternativ"
+; STR_OPTION_VIEW_TAB     = "View"
+; STR_OPTION_UPDATES_TAB  = "Updates"
+; STR_OPTION_PATH_TAB     = "Paths"
+; STR_OPTION_ADVANCED_TAB = "Advanced"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+; STR_OPTION_DRPNAMES     = "Driverpack names"
+; STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
+; STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
+; STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
+; STR_OPTION_SCALLING     = "Interface scaling"
+STR_OPTION_SCALLING_H   = ""
+; STR_OPTION_SCALLING_SML = "Small"
+; STR_OPTION_SCALLING_BIG = "Big"
+; STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Tips"
+; STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
+
+// Updates tab
+; STR_OPTION_CHECKUPDATES = "Do not check for new version of app/driverpacks"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+; STR_OPTION_TORRENT      = "Torrent"
+; STR_OPTION_PORT         = "Port"
+; STR_OPTION_MAX_CON      = "Max connections (0 - unlimited)"
+; STR_OPTION_MAX_DOWNLOAD = "Max download speed in KB/s (0 - unlimited)"
+; STR_OPTION_MAX_UPLOAD   = "Max upload speed in KB/s (0 - unlimited)"
+
+// Paths tab
+; STR_OPTION_DIR_DRIVERS  = "Drivers"
+STR_OPTION_DIR_INDEXES  = "Index"
+; STR_OPTION_DIR_INDEXESH = "Indexes (human-readable)"
+; STR_OPTION_DIR_DATA     = "Themes and translations"
+; STR_OPTION_DIR_LOGS     = "Log files"
+
+// Advanced tab
+; STR_OPTION_CMD          = "Commands"
+; STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
+; STR_OPTION_CMD_FINISH   = "After installation"
+; STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
+; STR_OPTION_CMD_FINISHDN = "After downloading"
+; STR_OPTION_CONSOLE      = "Show console window"
+
+// Patreon
+; STR_PATREON1             = "SDI is developed by volunteers on their spare time. If you like this software, please support us on Patreon."
+; STR_PATREON2             = "(Click here to open the Patreon page)"
+STR_PATREON_H            = ""

@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "JumpErNumber311R"
+STR_TRANSLATORS         = "JumpErNumber311R"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Azərbaycanca"
 STR_LANG_ID             = "Azerbaijani"
-STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
-STR_LANG_CODE           = 0x2C
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Sistem barədə məlumat"
@@ -25,16 +25,18 @@ STR_LANG_H              = ""
 STR_THEME               = "Mövzu"
 STR_THEME_H             = ""
 STR_EXPERT              = "Ekspert rejimi"
-STR_EXPERT_H            = "Ekspert rejiminin qoşulması.\n\nMƏSLƏHƏT: Drayver haqqında əlavə məlumat almaq üçün onun üstündə Ctrl yaxud Space düyməsini sıxın.."
+; STR_EXPERT_H            = "Enable Expert Mode.\n\nHINT: Hold the Ctrl or Spacebar button over a driver to get extra information about the driver."
 
 STR_OPENLOGS            = "Loqları açmaq"
-STR_OPENLOGS_H          = "Şəkil və Loglar qovluqunu açmaq.\n\nBu faylları hər hansısa bir problem yaranan zaman başqa istfadəçilərdən kömək almaq üçün forumlarda yerləşdirmək tövsiyyə olunur."
+; STR_OPENLOGS_H          = "Open the folder containing logs and snapshots.\n\nYou can submit log files to the developer by opening www.sdi-tool.org and going to the support page.\n\nSnapshots can be used to remotely help users pick correct drivers."
 STR_SNAPSHOT            = "Şəkili yükləmək..."
 STR_SNAPSHOT_H          = "Özgə sistemin şəkilini yükləmək.\n\nŞəkillər avtomatik olaraq loglar olan qovluqda yaranır və özündə quraşdırılan qurğular, drayverlər, Windows-un versiyaları, akumulyator və monitor parametrləri haqqında məlumatı əks etdirir.\n\nŞəkillər özgə sistemin driverpackında tapılan drayverlər haqqında məlumatı əks etdirmir.\n\nBeləliklə şəkilin yüklənməsi özgə sistemin emulyasiyasına imkan yaradır, lakin bu zaman drayverlər lokal sistemin driverpackında axtarılır."
 STR_EXTRACT             = "Çıxartmaq..."
-STR_EXTRACT_H           = "Qeyd olunan drayverləri çıxartmaq.\n\nDrayverlərin rezerv kompyasının yaradılması üçün istifadə etmək olar. Tövsiyyə olunur bütün drayverləri öncədən yeniləmək və əmin olmaq ki hamısı höqsansız işləyir. Sonra cari versiyaların əks olunmasını açmaq və quraşdırılmanı işə salmaq."
+; STR_EXTRACT_H           = "Extract selected drivers\n\nYou can use it to create backup drivers. Make sure that recently installed drivers are working properly, enable the 'Show current drivers' checkbox and click 'Extract to...'"
 STR_DRVDIR              = "Mənbəni qeyd etmək..."
 STR_DRVDIR_H            = "Açılmış formada drayverlər və drayverpack olan qovluqu seçmək.\n\nQurğunun komplektində olan rəsmi diski drayverin axtarış mənbəsi kimi seçmək mümkündür."
+; STR_OPTIONS_BTN         = "Options..."
+; STR_OPTIONS_BTN_H       = "Open dialog box with settings."
 
 STR_SHOW_FOUND          = "Driverpackda tapıldı"
 STR_SHOW_FOUND_H        = "Aşağıda göstərilən drayver kateqoriyaları tapıldı və müvafiq olaraq quraşdırıla bilər.\n\nQuraşdırılmayay, Yeni versiya və Daha uyğun kateqoriyalardan olan drayverləri quraşdırmaq tövsiyyə olunur.."
@@ -54,18 +56,18 @@ STR_SHOW_WORSE_RANK_H   = "Drayverpackda tapılan və artıq quraşdırılan dra
 STR_SHOW_NOTFOUND       = "Drayverpacklarda yoxdur"
 STR_SHOW_NOTFOUND_H     = "Aşağıda göstərilən kateqoriyalar üçün drayverpackda münasib drayver tapılmadı, drayver quraşdırılması proqramı vasitəsilə mümkün deyil."
 STR_SHOW_NF_MISSING     = "Quraşdırılmayanlar"
-STR_SHOW_NF_MISSING_H   = "Drayveri lazım olan lakin drayverpacklarda tapılmayan qurğuları göstərmək.\n\nDrayveri internetdə axtarmaq tövsiyyə olunur."
+; STR_SHOW_NF_MISSING_H   = "Display devices which require drivers but no driver is found in driverpacks.\n\nYou can try looking for these drivers on the Internet or on DVDs. In order to copy HardwareID, you can right click on the device.\n\nWe advise to notify us about missing drivers, so that they could be added to driverpacks."
 STR_SHOW_NF_UNKNOWN     = "Naməlum"
-STR_SHOW_NF_UNKNOWN_H   = "Qeyri standart drayveri olan və drayverpackda drayveri olmayan qurğuları göstərmək.\n\nDrayver paketlərini hazırlayanları, drayver paketlərinə drayver əlavə edilməsi zərurəti olduğu barədə məlumatlandırmaq tövsiyə edilir."
+; STR_SHOW_NF_UNKNOWN_H   = "Display unknown drivers which are installed in the system but are not found in driverpacks.\n\nWe advice to notify us that you have some drivers that could be added to driverpacks."
 STR_SHOW_NF_STANDARD    = "Standart olanlar"
-STR_SHOW_NF_STANDARD_H  = "Microsoft-dan olan standart drayverə malik qurğuları göstərmək.\n\nAdətən bu drayverlər yenilənməni tələb etmirlər."
+; STR_SHOW_NF_STANDARD_H  = "Display standard drivers which are installed in the system but are not found in driverpacks.\n\nThese drivers usually come with Windows and don't require updates."
 
 STR_SHOW_DISPLAY        = "Display"
 STR_SHOW_DISPLAY_H      = ""
 STR_SHOW_ONE            = "Yalnız optimal olanlar"
-STR_SHOW_ONE_H          = "Hər bir qurğu üçün yalnız ən uyğun drayverlərin quraşdırılmasını təklif etmək.\n\nƏgər quş götürülübsə, onda drayverlərin daha uzun siyahısı əks olunur və sıralanır ən çox uyğun olanalrdan ən az uyğun olanlara."
+; STR_SHOW_ONE_H          = "Show only best drivers per device.\n\nWhen enabled, only the best matched driver per device is displayed as opposed to displayed all available drivers for each device."
 STR_SHOW_DUP            = "Dublikatlar"
-STR_SHOW_DUP_H          = "Drayverpaklarda dublyaj olmuş drayverləri göstərmək.\n\nDrayverpakda müxtəlif qovluqlarda və müxtəlif versiya əməliyyat sistemləri üçün təkrarlanan drayverlərin kopyası var. Proqram təminatı təklif edir ilk növbədə daha uyğun qovluqlarda olan drayverləri quraşdırmaq, lakin daha az ayğun olan qovluqdan da dublikatın quraşdırılması mümkündür."
+; STR_SHOW_DUP_H          = "Show duplicate drivers.\n\nSome drivers are duplicated multiple times inside driverpacks for technical reasons."
 STR_SHOW_INVALID        = "Münasib olmayan"
 STR_SHOW_INVALID_H      = "Uyğun olmayan drayverləri göstərmək.\n\nBu drayverlər Windows-un başqa versiyaları üçün nəzərdə tutulub və quraşdırılması tövsiyyə olunmur."
 
@@ -91,8 +93,8 @@ STR_SYSINF_MODEL        = "Model"
 STR_SYSINF_MANUF        = "İstehsalçı"
 STR_SYSINF_BATTERY      = "Batareya"
 STR_SYSINF_AC_STATUS    = "Şəbəkə statusu"
-STR_SYSINF_OFFLINE      = "söndürülüb"
-STR_SYSINF_ONLINE       = "qoşulub"
+; STR_SYSINF_OFFLINE      = "disconnected"
+; STR_SYSINF_ONLINE       = "circuited"
 STR_SYSINF_UNKNOWN      = "naməlum"
 STR_SYSINF_FLAGS        = "Bayraqlar"
 STR_SYSINF_HIGH         = "[yüksək]"
@@ -113,7 +115,7 @@ STR_SYSINF_TYPE         = "Kompüter növü"
 STR_SYSINF_LAPTOP       = "noutbuk"
 STR_SYSINF_DESKTOP      = "stolüstü"
 STR_SYSINF_LOCALE       = "Dil kodu"
-STR_SYSINF_CPU_ARCH     = "Bit"
+; STR_SYSINF_CPU_ARCH     = "CPU Architecture"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
@@ -123,11 +125,12 @@ STR_ABOUT_DEV_TITLE     = "İstehsalçı: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Test edənlər: "
 //STR_ABOUT_TESTERS_LIST
+; STR_ABOUT_TRANS_TITLE   = "Translators: "
 STR_ABOUT_LICENSE       = "Snappy Driver Installer GNU General Public License version 3 lisenziya şərtləri əsasında yayılır\n\n\n\n\nSnappy Driver Installer-də bu texnologiyalar istfadə olunur :\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer drayverpak texnologiyasından istfadə edir, hansıki DriverPacks.net komandası tətbiq edir.\n\n(Saytları açmaq üçün siçanın sol düyməciyini sıxın)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "naməlum"
-STR_HINT_ANALYSIS       = "Analiz"
+; STR_HINT_ANALYSIS       = "TrackingID"
 STR_HINT_SIGNATURE      = "İmza"
 STR_HINT_DRP            = "Drayverpack"
 STR_HINT_DEVICE         = "Qurğu"
@@ -136,7 +139,7 @@ STR_HINT_COMPID         = "CompatibleID"
 STR_HINT_INSTDRV        = "Quraşdırılmış drayver"
 STR_HINT_AVAILDRV       = "Drayverpackda drayver"
 STR_HINT_AVAILDRVS      = "Drayverpackda drayverlər"
-STR_HINT_MANUF          = "İstehsalçı: "
+; STR_HINT_MANUF          = "Manufacturer: "
 STR_HINT_PROVIDER       = "Provayder: "
 STR_HINT_DATE           = "Tarix: "
 STR_HINT_VERSION        = "Versiya: "
@@ -200,7 +203,7 @@ STR_VIRUS_HIDDEN_H      = "Daşıyıcının kökündə gizli qovluqlar var. Onla
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Özgə sistemin emulyasıyasını dayandırmaq üçün bura klik edin)"
-STR_EMPTYDRP            = "Drayver paketlərini və ya ayrılmış draverləri göstərilən qovluğa yerləşdirin"
+; STR_EMPTYDRP            = "Connect to the Internet to download driverpacks or put unpacked drivers in the following folder"
 STR_CLOSE_DRPEXT        = "(Sabit drayverlərə qayıtmaq üçün buraya basın)"
 STR_NOUPDATES           = "Yenilənmə yoxdur, sistem aktual vəziyyətdədir"
 STR_INITIALIZING        = "İnisiallaşdırma..."
@@ -215,7 +218,7 @@ STR_INST_FAILED         = "Səhv, quraşdırmaq mümkün olmadı"
 STR_INST_INSTALLING     = "Quraşdırma... "
 STR_INST_COMPLITED      = "Quraşdırma bitmişdir"
 STR_INST_COMPLITED_RB   = "Quraşdırma bitmişdir (sistemə restart verin)"
-STR_INST_CLOSE          = "(Quraşdırılmış drayverləri gizlətmək üçün siçanla klik edin)"
+; STR_INST_CLOSE          = "(Click here to hide installed drivers)"
 
 STR_EXTR_EXTRACTING     = "Açılış... "
 STR_EXTR_OK             = "Ağurla açıldı"
@@ -324,3 +327,54 @@ STR_TR_ST4              = "qurtarıb"
 STR_TR_ST5              = "paylanır"
 STR_TR_ST6              = "yer rezervasiya olunur"
 STR_TR_ST7              = "bərpa"
+
+// Options dialog
+STR_OPTION_TITLE        = "Opsiyalar"
+; STR_OPTION_VIEW_TAB     = "View"
+; STR_OPTION_UPDATES_TAB  = "Updates"
+; STR_OPTION_PATH_TAB     = "Paths"
+; STR_OPTION_ADVANCED_TAB = "Advanced"
+STR_OPTION_OK_BUTTON    = SSTR_UPD_BTN_OKK
+STR_OPTION_CANCEL_BUTTON= SSTR_UPD_BTN_CANCELL
+
+// View tab
+; STR_OPTION_DRPNAMES     = "Driverpack names"
+; STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
+; STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
+; STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
+; STR_OPTION_SCALLING     = "Interface scaling"
+STR_OPTION_SCALLING_H   = ""
+; STR_OPTION_SCALLING_SML = "Small"
+; STR_OPTION_SCALLING_BIG = "Big"
+; STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Məsləhət"
+; STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
+
+// Updates tab
+; STR_OPTION_CHECKUPDATES = "Do not check for new version of app/driverpacks"
+STR_OPTION_ONLYUPDATES  = SSTR_UPD_ONLYUPDATESS
+; STR_OPTION_TORRENT      = "Torrent"
+; STR_OPTION_PORT         = "Port"
+; STR_OPTION_MAX_CON      = "Max connections (0 - unlimited)"
+; STR_OPTION_MAX_DOWNLOAD = "Max download speed in KB/s (0 - unlimited)"
+; STR_OPTION_MAX_UPLOAD   = "Max upload speed in KB/s (0 - unlimited)"
+
+// Paths tab
+; STR_OPTION_DIR_DRIVERS  = "Drivers"
+STR_OPTION_DIR_INDEXES  = "Yeni packların indeksləri"
+; STR_OPTION_DIR_INDEXESH = "Indexes (human-readable)"
+; STR_OPTION_DIR_DATA     = "Themes and translations"
+; STR_OPTION_DIR_LOGS     = "Log files"
+
+// Advanced tab
+; STR_OPTION_CMD          = "Commands"
+; STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
+; STR_OPTION_CMD_FINISH   = "After installation"
+; STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
+; STR_OPTION_CMD_FINISHDN = "After downloading"
+; STR_OPTION_CONSOLE      = "Show console window"
+
+// Patreon
+; STR_PATREON1             = "SDI is developed by volunteers on their spare time. If you like this software, please support us on Patreon."
+; STR_PATREON2             = "(Click here to open the Patreon page)"
+STR_PATREON_H            = ""

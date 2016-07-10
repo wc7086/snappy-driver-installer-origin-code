@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "latinissimus"
+STR_TRANSLATORS         = "latinissimus"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Deutsch"
 STR_LANG_ID             = "German"
-STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
-STR_LANG_CODE           = 0x07
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Systeminformationen"
@@ -15,9 +15,9 @@ STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Installieren"
 STR_INSTALL_H           = "Die ausgewählten Treiber installieren (Strg+I).\n\nHinweis: Die Installation wird sofort ausgeführt, wenn die Umschalttaste (Shift) beim klicken auf einen Treiber gedrück wird."
-STR_SELECT_ALL          = "Alle auswählen"
+STR_SELECT_ALL          = "Alles anwählen"
 STR_SELECT_ALL_H        = "Strg+A"
-STR_SELECT_NONE         = "Keine auswählen"
+STR_SELECT_NONE         = "Alles abwählen"
 STR_SELECT_NONE_H       = "Strg+N"
 
 STR_LANG                = "Sprache (Language)"
@@ -194,7 +194,7 @@ STR_STATUS_NF_STANDARD  = "Standard-Treiber"
 
 // Virus
 STR_VIRUS               = "Der Datenträger mit dieser Anwendung könnte mit Schadsoftware infiziert sein"
-STR_VIRUS_AUTORUN       = "Es gibt eine AUTORUN.INF im Stammverzeichnis"
+STR_VIRUS_AUTORUN       = "Es gibt eine AUTORUN.INF-Datei im Stammverzeichnis"
 STR_VIRUS_AUTORUN_H     = "AUTORUN.INF-Dateien können missbraucht werden, um PCs mit Schadsoftware zu infizieren. Bitte überprüfen Sie die Datei mit einer Anti-Viren Software.\n\nIst die Datei virenfrei, fügen Sie [NOT_A_VIRUS] zum Dateiinhalt hinzu, um diese Warnung zu unterdrücken."
 STR_VIRUS_RECYCLER      = "Es gibt einen $RECYCLE.BIN-Ordner im Stammverzeichnis"
 STR_VIRUS_RECYCLER_H    = "Es ist ungewöhnlich für diese Datenträgerart, einen $RECYCLE.BIN-Ordner zu haben. Bitte durchsuchen Sie den Ordner mit einer Anti-Viren Software.\n\nIst der Ordner virenfrei, erstellen Sie eine Datei 'not_a_virus.txt' im Ordner, um diese Warnung zu unterdrücken."
@@ -256,9 +256,9 @@ STR_UPD_DIALOG_MSG      = "Soll die automatisierte Online-Prüfung auf neue Vers
 STR_UPD_DIALOG_INDEX    = "Sollen die neusten Indexe heruntergeladen werden, damit festgelegt werden kann, welche Treiberpakete heruntergeladen werden müssen?"
 
 STR_UPD_TITLE           = "Aktualisierung"
-STR_UPD_BTN_ALL         = "Alle auswählen"
-STR_UPD_BTN_NONE        = "Alle abwählen"
-STR_UPD_BTN_THISPC      = "Nur Treiber für diesen PC auswählen"
+STR_UPD_BTN_ALL         = "Alles anwählen"
+STR_UPD_BTN_NONE        = "Alles abwählen"
+STR_UPD_BTN_THISPC      = "Nur Treiber für diesen PC anwählen"
 STR_UPD_BTN_THISPC_H    = "Zum Bestimmen der erforderlichen Treiberpakete, müssen die Indexe vorab heruntergeladen werden."
 STR_UPD_ONLYUPDATES     = "Fehlende Treiberpakete nicht melden"
 STR_UPD_TOTALSIZE       = "Gesamte Herunterladegröße: %d MB"
@@ -293,8 +293,8 @@ STR_UPD_UPDATEHINT2     = "Die Basis muss aktualisiert werden, bevor diese Funkt
 
 // Update hint
 STR_UPD_AVAIL1          = "Aktualisierung ist verfügbar: SDI R%d"
-STR_UPD_AVAIL2          = "Aktualisierungen sind verfügbar: %d Treiberpakete"
-STR_UPD_AVAIL3          = "Aktualisierungen sind verfügbar: SDI R%d und %d Treiberpakete"
+STR_UPD_AVAIL2          = "Aktualisierungen sind verfügbar: %d Treiberpaket(e)"
+STR_UPD_AVAIL3          = "Aktualisierungen sind verfügbar: SDI R%d und %d Treiberpaket(e)"
 STR_UPD_START           = "(Hier klicken, um das Herunterladen auszulösen)"
 STR_UPD_PROGRES         = "Heruntergeladen %s von %s (%d%%)"
 STR_UPD_MODIFY          = "(Hier klicken, um Aktualisierungen auszuwählen)"

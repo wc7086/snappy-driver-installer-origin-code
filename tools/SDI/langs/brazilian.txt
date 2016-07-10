@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "EDsOn GENuInO"
+STR_TRANSLATORS         = "EDsOn GENuInO"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Português Brasileiro"
 STR_LANG_ID             = "Brazilian"
-STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
-STR_LANG_CODE           = 0x416
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Informação do sistema"
@@ -33,12 +33,12 @@ STR_SNAPSHOT            = "Carrega instantâneo..."
 STR_SNAPSHOT_H          = "Carrega instantâneos de outro sistema.\n\nInstantâneos são criados automaticamente na pasta de relatórios. Eles contêm informações sobre dispositivos, drivers, versão de Windows, bateria and monitores.\n\nInstantâneos não contêm informações sobre o pacote de drivers no sistema remoto.\n\nPortanto, o carregamento instantâneo permite a emulação do sistema remoto, mas os drivers estão sendo buscados nos pacotes de drivers locais."
 STR_EXTRACT             = "Extrair em..."
 STR_EXTRACT_H           = "Extrair drivers selecionados\nVocê pode usa-lo para criar backup dos drivers. Tenha certeza que os drivers recentemente instalados estão funcionando adequadamente, marque a caixa "_QQ_"Mostrar drivers atuais"_QQ_"  e clique em "_QQ_"Extrair em..."_QQ_""
-STR_DRVDIR              = "Escolha a pasta de drivers..."
+; STR_DRVDIR              = "Select driver dir..."
 STR_DRVDIR_H            = "Escolha outra pasta com o pacote de drivers ou drivers descompactados.\n\nVocê pode usar isso para procurar drivers em um CD/DVD de drivers."
 STR_OPTIONS_BTN         = "Opções ..."
 STR_OPTIONS_BTN_H       = "Abrir a caixa de diálogo com configurações."
 
-STR_SHOW_FOUND          = "Encontrado no pacote de drivers"
+; STR_SHOW_FOUND          = "Found in driverpacks"
 STR_SHOW_FOUND_H        = "Drivers foram encontrados no pacote de drivers e podem ser instalados.\n\nRecomendamos a instalar drivers a partir das seguintes categorias: não instalado, mais novo, melhor escolha."
 STR_SHOW_MISSING        = "Não encontrado"
 STR_SHOW_MISSING_H      = "Exibe drivers do pacote de drivers para dispositivos que exigem drivers instalados.\n\nRecomendamos instalar esses drivers."
@@ -53,7 +53,7 @@ STR_SHOW_BETTER_H       = "Exibe drivers do pacote de drivers que combinam com o
 STR_SHOW_WORSE_RANK     = "Pior escolha"
 STR_SHOW_WORSE_RANK_H   = "Exibe drivers do pacote de drivers que combinam com os piores drivers correntemente instalados.\n\nRecomendamos NÃO instalar esses drivers a menos que tenha uma boa razão para isso."
 
-STR_SHOW_NOTFOUND       = "Ausente no pacote de drivers"
+; STR_SHOW_NOTFOUND       = "Absent in driverpacks"
 STR_SHOW_NOTFOUND_H     = "Drivers não encontrados no pacote de drivers e não podem ser instalados."
 STR_SHOW_NF_MISSING     = "Não instalado"
 STR_SHOW_NF_MISSING_H   = "Exibe dispositivos que requerem drivers mas não foram encontrados no pacote de drivers.\nVocê pode tentar encontrar esses drivers na Internet ou em DVDs. Para copiar o ID do Hardware, clique com o botão direito no dispositivo.\nNós recomendamos notificarmos sobre drivers que estejam faltando, assim eles poderam ser adicionado ao pacote de drivers."

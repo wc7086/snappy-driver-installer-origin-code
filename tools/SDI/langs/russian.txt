@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "BadPointer"
+STR_TRANSLATORS         = "BadPointer"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Русский"
 STR_LANG_ID             = "Russian"
-STR_LANG_GROUP          = 0x05 // LGRPID_CYRILLIC
-STR_LANG_CODE           = 0x19
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Информация о системе"
@@ -377,4 +377,4 @@ STR_OPTION_CONSOLE      = "Отображать консольное окно"
 // Patreon
 STR_PATREON1             = "Вы можете поддержать развитие программы через систему Patreon"
 STR_PATREON2             = "(Кликните здесь, чтобы открыть страницу в браузере)"
-STR_PATREON_H            = "Регулярные обновления требуют регулярной работы. Финансово поддержите нашу инициативу через систему ежемесячных дотаций Patreon!"
+STR_PATREON_H            = ""

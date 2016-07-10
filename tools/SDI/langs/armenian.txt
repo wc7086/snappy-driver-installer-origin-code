@@ -1,13 +1,13 @@
-﻿STR_TRANSLATORS         = "Yeghiazaryan Karen-Egho"
+STR_TRANSLATORS         = "Yeghiazaryan Karen-Egho"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Հայերեն"
 STR_LANG_ID             = "Armenian"
-STR_LANG_GROUP          = 0x11 // LGRPID_ARMENIAN
-STR_LANG_CODE           = 0x2B
-STR_RTL                 = 0
+STR_LANG_GROUP          =
+STR_LANG_CODE           =
+STR_RTL                 =
 
 // left panel
 STR_SHOW_SYSINFO        = "Օպերացիոն համակարգ"
@@ -28,7 +28,7 @@ STR_EXPERT              = "Փորձագետի ռեժիմ"
 STR_EXPERT_H            = "Ակտիվացնել փորձագետի ռեժիմը\n\nՀՈՒՇՈՒՄ. Սեղմած պահելով Ctrl կամ Spacebar ստեղները, սեղմեք դրայվերի տողի վրա, լրացուցիչ տեղեկություն ստանալու համար: "
 
 STR_OPENLOGS            = "Բացել տեղեկամատյանները"
-STR_OPENLOGS_H          = "Բացել տեղեկամատյանների և պատկերների պանակը: \n\nԴուք կարող եք ներկայացնել տեղեկամատյանի ֆայլերը ծրագրի սպասարկողներին, այցելելով www.sdi-tool.org կայքում սպասարկման էջ:\n\nՊատկերները կարող են օգտագործվել, դրայվերները ճիշտ ընտրելու համար օգտվողներին հեռակա օգնելու համար:"
+STR_OPENLOGS_H          = "Բացել տեղեկամատյանների և պատկերների պանակը:\nԴուք կարող եք ներկայացնել տեղեկամատյանի ֆայլերը ծրագրի սպասարկողներին, այցելելով www.sdi-tool.org կայքում սպասարկման էջ:\nՊատկերները կարող են օգտագործվել, դրայվերները ճիշտ ընտրելու համար օգտվողներին հեռակա օգնելու համար:"
 STR_SNAPSHOT            = "Բեռնել պատկերը..."
 STR_SNAPSHOT_H          = "Բեռնել պատկերը մեկ այլ համակարգից:\n\nՊատկերները ինքնաբերաբար ստեղծվում են տեղեկամատյանների թղթապանակում և պարունակում են տեղեկություններ առկա սարքերի, տեղադրված դրայվերների, Windows-ի տարբերակի, մարտկոցը եւ մոնիտորների պարամետրերի մասին:\n\nՊատկերները չեն պարունակում այլ համակարգում հայտնաբերված դրայվերների դրայվերպակերի  տեղեկատվություն:\n\nԱյսպիսով, պատկերների բեռնումը թույլ է տալիս լիովին նմանվել այլ համակարգի, բայց այդ դեպքում դրայվերները կորոնվեն լոկալ համակարգի դրվայվերպակում:"
 STR_EXTRACT             = "Բացել դեպի..."
@@ -218,7 +218,7 @@ STR_INST_FAILED         = "Չստացվեծ տեղադրել, սխալ"
 STR_INST_INSTALLING     = "Տեղադրում... "
 STR_INST_COMPLITED      = "Տեղադրումը ավարտվեց"
 STR_INST_COMPLITED_RB   = "Տեղադրումն ավարտվեց (անհրաժեշտ է համակարգի վերաբեռնավորում)"
-STR_INST_CLOSE          = "(Սեղմեք մկնիկով,  դրայվերների տեղադրման ընթացքը թաքցնելու համար)"
+STR_INST_CLOSE          = "(Սեղմեք մկնիկով,  տեղադրված դրայվերները թաքցնելու համար)"
 
 STR_EXTR_EXTRACTING     = "Բացազատում... "
 STR_EXTR_OK             = "Հաջող բացազատվեց"
@@ -332,6 +332,8 @@ STR_TR_ST7              = "Ստուգել ամփոփ տվյալները"
 STR_OPTION_TITLE        = "Տարբերակներ"
 STR_OPTION_VIEW_TAB     = "Տեսարան"
 STR_OPTION_UPDATES_TAB  = "Թարմացումներ"
+STR_OPTION_PATH_TAB     = "Ուղիները"
+STR_OPTION_ADVANCED_TAB = "Լրացուցիչ"
 STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
 
@@ -341,12 +343,38 @@ STR_OPTION_HIDE_NAMES   = "Թաքցնել Driverpack անունները"
 STR_OPTION_SHOW_RIGHT   = "Ցուցադրել Driverpack անունը աջ մասում"
 STR_OPTION_SHOW_ABOVE   = "Ցուցադրել Driverpack անունը վերնամասում"
 STR_OPTION_SCALLING     = "Երեսարկի մասշտաբավորում"
-STR_OPTION_CONSOLE      = "Ցուցադրել կոնսոլի պատուհանը"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Փոքր"
+STR_OPTION_SCALLING_BIG = "Մեծ"
+STR_OPTION_SCALLING_RST = "Վերագործարկեք"
+STR_OPTION_HINT         = "Ակնարկ"
+STR_OPTION_HINT_LABEL   = "Տևողությունը միլլիվայրկյաններով"
 
-// Update tab
-STR_OPTION_CHECKUPDATES = "Ստուգել ծրագրերի/դրայվերների նոր տարբերակները"
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Չստուգել ծրագրերի/դրայվերների նոր տարբերակները"
 STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT      = "Torrent"
 STR_OPTION_PORT         = "Port"
-STR_OPTION_MAX_DOWNLOAD = "Բեռնման առավելագույն արագություն բայտ/վրկ (0:անսահմանափակ)"
-STR_OPTION_MAX_UPLOAD   = "Ներբեռմնան առավելագույն արագություն բայտ/վրկ (0:անսահմանափակ)"
+STR_OPTION_MAX_CON      = "Առավելագույն համակցումներ(0-անսահմանափակ)"
+STR_OPTION_MAX_DOWNLOAD = "Բեռնման առավելագույն արագություն կբայտ/վրկ (0:անսահմանափակ)"
+STR_OPTION_MAX_UPLOAD   = "Ներբեռմնան առավելագույն արագություն կբայտ/վրկ (0:անսահմանափակ)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Դրայվերներ"
+STR_OPTION_DIR_INDEXES  = "Ինդեքսներ"
+STR_OPTION_DIR_INDEXESH = "Ինդեքսները (ընթեռնելի)"
+STR_OPTION_DIR_DATA     = "Երեսարկներ և թարմգանություններ"
+STR_OPTION_DIR_LOGS     = "Տեղեկամատյանի ֆայլեր"
+
+// Advanced tab
+STR_OPTION_CMD          = "Հրամաններ"
+; STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
+STR_OPTION_CMD_FINISH   = "Տեղադրումից հետո"
+STR_OPTION_CMD_FINISHRB = "Տեղադրումից հետո(հարկավոր է վերաբեռնավորում)"
+STR_OPTION_CMD_FINISHDN = "Բեռնումից հետո"
+STR_OPTION_CONSOLE      = "Ցուցադրել կոնսոլի պատուհանը"
+
+// Patreon
+; STR_PATREON1             = "SDI is developed by volunteers on their spare time. If you like this software, please support us on Patreon."
+; STR_PATREON2             = "(Click here to open the Patreon page)"
+STR_PATREON_H            = ""
