@@ -843,6 +843,7 @@ void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
 
 void Popup_t::onHover()
 {
+    if(GetForegroundWindow()!=MainWindow.hMain)return;
     wait=false;
     if(MainWindow.kbpanel)return;
     if(floating_type&&rtl)
