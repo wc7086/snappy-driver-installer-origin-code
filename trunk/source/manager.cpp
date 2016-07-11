@@ -489,6 +489,9 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
     {
         canvas.DrawLine(bolder,0,bolder,wy);
     }
+    td.ret();
+    td.TextOutBold(L"%s",STR(STR_HINT_INSTDRV));
+    td.ret_ofs(10);
     if(cur_driver)
     {
         WStringShort date;
@@ -497,9 +500,6 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         cur_driver->version.str_date(date);
         cur_driver->version.str_version(vers);
 
-        td.ret();
-        td.TextOutBold(L"%s",STR(STR_HINT_INSTDRV));
-        td.ret_ofs(10);
         td.TextOutF(               c0,L"%s",txt->get(cur_driver->DriverDesc));
         td.TextOutF(cur_driver->isvalidcat(state)?c0:D_C(POPUP_CMP_INVALID_COLOR),L"%s%S",STR(STR_HINT_SIGNATURE),txt->get(cur_driver->cat));
         td.TextOutF(               c0,L"%s%s",STR(STR_HINT_PROVIDER),txt->get(cur_driver->ProviderName));
@@ -509,6 +509,10 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_INF),rtl?L"\u200F":L"",txt->get(cur_driver->InfPath));
         td.TextOutF(               c0,L"%s%s%s",STR(STR_HINT_SECTION),txt->get(cur_driver->InfSection),txt->get(cur_driver->InfSectionExt));
         td.TextOutF(cm_score==1?cb:c0,L"%s%08X",STR(STR_HINT_SCORE),score);
+    }
+    else
+    {
+        td.TextOutF(L"%s",STR(STR_SHOW_MISSING));
     }
 
     // Available driver (hwidmatch_f)
@@ -1938,6 +1942,10 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
         td.TextOutP(L"| %s",i_hwid);
         td.TextOutP(L"| %s",txt->getw(cur_driver->DriverDesc));
         td.y+=lne;
+    }
+    else
+    {
+        td.TextOutF(L"%s",STR(STR_SHOW_MISSING));
     }
     td.y+=lne;
     td.ret();
