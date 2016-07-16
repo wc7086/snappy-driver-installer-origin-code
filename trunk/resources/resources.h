@@ -48,6 +48,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDLIST        309
 #define IDTOTALSIZE   310
 #define IDONLYUPDATE  311
+#define IDTOTALAVAIL  313
 
 // Options
 #define IDC_TAB1      312

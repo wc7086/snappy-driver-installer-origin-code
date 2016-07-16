@@ -5,9 +5,9 @@ STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "English"
 STR_LANG_ID             = "English"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
+STR_LANG_CODE           = 0x09
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "System information"
@@ -120,11 +120,11 @@ STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
 // About
-//STR_ABOUT_VER
+STR_ABOUT_VER           = "v0.3"
 STR_ABOUT_DEV_TITLE     = "Developer: "
-//STR_ABOUT_DEV_LIST
+STR_ABOUT_DEV_LIST      = "BadPointer"
 STR_ABOUT_TESTERS_TITLE = "Contributors: "
-//STR_ABOUT_TESTERS_LIST
+STR_ABOUT_TESTERS_LIST  = "e39, QuarQ, SamLab, Sorc, volodya61, WindR"
 STR_ABOUT_TRANS_TITLE   = "Translators: "
 STR_ABOUT_LICENSE       = "Snappy Driver Installer is licensed under the terms of the GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer uses the following technologies:\n* WebP is licensed under the terms of the BSD license\n* libtorrent is licensed under the terms of the BSD license\n* Backtrace is licensed under the terms of the BSD license\n* 7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n\nSnappy Driver Installer is powered by DriverPacks that were developed by the DriverPacks Team.\n\n(Click now in order to visit a website)"
 
@@ -262,6 +262,7 @@ STR_UPD_BTN_THISPC      = "Check only needed for this PC"
 STR_UPD_BTN_THISPC_H    = "In order to be able to determine which driverpacks you need, you have to download indexes first."
 STR_UPD_ONLYUPDATES     = "Do not notify about missing driverpacks"
 STR_UPD_TOTALSIZE       = "Total download size: %d MB"
+STR_UPD_TOTALAVAIL      = "Total available space: %d MB"
 STR_UPD_BTN_OK          = "OK"
 STR_UPD_BTN_CANCEL      = "Cancel"
 STR_UPD_BTN_ACCEPT      = "Accept"
@@ -342,7 +343,7 @@ STR_OPTION_DRPNAMES     = "Driverpack names"
 STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
 STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
 STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
-STR_OPTION_SCALLING     = "Interface scaling"
+STR_OPTION_SCALLING     = "Interface scale"
 STR_OPTION_SCALLING_H   = ""
 STR_OPTION_SCALLING_SML = "Small"
 STR_OPTION_SCALLING_BIG = "Big"
