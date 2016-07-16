@@ -88,11 +88,13 @@ class UpdateDialog_t
     static int bMouseInWindow;
     static HWND hUpdate;
     int totalsize;
+    int totalavail;
 
 private:
     int  getnewver(const char *ptr);
     int  getcurver(const char *ptr);
     void calctotalsize();
+    void calcavailablespace();
     void updateTexts();
 
     void setCheckboxes();
@@ -329,6 +331,18 @@ void UpdateDialog_t::calctotalsize()
     }
 }
 
+void UpdateDialog_t::calcavailablespace()
+{
+    // calculate available space on the download drive
+    // for now this is the same as the exe path
+    ULARGE_INTEGER lpFreeBytesAvailable;
+    totalavail=0;
+    if(GetDiskFreeSpaceEx(nullptr,
+                          &lpFreeBytesAvailable,
+                          nullptr,
+                          nullptr))totalavail=lpFreeBytesAvailable.QuadPart>>20;
+}
+
 void UpdateDialog_t::updateTexts()
 {
     if(!hUpdate)return;
@@ -343,10 +357,17 @@ void UpdateDialog_t::updateTexts()
     SetWindowText(GetDlgItem(hUpdate,IDCANCEL),STR(STR_UPD_BTN_CANCEL));
     SetWindowText(GetDlgItem(hUpdate,IDACCEPT),STR(STR_UPD_BTN_ACCEPT));
 
-    // Total size
+    // Total size and available space
     WStringShort buf;
     buf.sprintf(STR(STR_UPD_TOTALSIZE),totalsize);
     SetWindowText(GetDlgItem(hUpdate,IDTOTALSIZE),buf.Get());
+    buf.sprintf(STR(STR_UPD_TOTALAVAIL),totalavail);
+    SetWindowText(GetDlgItem(hUpdate,IDTOTALAVAIL),buf.Get());
+
+    // disable buttons if not enough space
+    bool avail=UpdateDialog.totalsize<UpdateDialog.totalavail;
+    EnableWindow(GetDlgItem(hUpdate, IDOK),avail);
+    EnableWindow(GetDlgItem(hUpdate, IDACCEPT),avail);
 
     // Column headers
     LVCOLUMN lvc;
@@ -494,6 +515,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             if(((LPNMHDR)lParam)->code==LVN_ITEMCHANGED)
             {
                 UpdateDialog.calctotalsize();
+                UpdateDialog.calcavailablespace();
                 UpdateDialog.updateTexts();
                 return TRUE;
             }
@@ -561,6 +583,21 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 
                 default:
                     break;
+            }
+            break;
+
+        case WM_CTLCOLORSTATIC:
+            {
+                // if not enough space to download turn label red
+                bool avail=UpdateDialog.totalsize<UpdateDialog.totalavail;
+                if((HWND)lParam==GetDlgItem(hUpdate,IDTOTALAVAIL)&&!avail)
+                {
+                    HDC hdcStatic=(HDC)wParam;
+                    SetTextColor(hdcStatic, RGB(255,0,0));
+                    SetBkColor(hdcStatic, GetSysColor(COLOR_BTNFACE));
+                    return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+                }
+                else return TRUE;
             }
             break;
 

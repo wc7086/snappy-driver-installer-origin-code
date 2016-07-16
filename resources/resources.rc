@@ -41,6 +41,7 @@ IDR_CLI_HELP    RESFILE     "CLI.txt"
 #define LISTY SIZEY-53
 #define POSY1 SIZEY-42
 #define POSY2 SIZEY-22
+#define POSY3 SIZEY-50
 #define BTW 18
 
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "drv.exe.manifest"
@@ -73,7 +74,8 @@ CAPTION "Update"
     PUSHBUTTON      "Cancel", IDCANCEL, 163+120, POSY2, 50, 14
     PUSHBUTTON      "Accept", IDACCEPT, 216+120, POSY2, 50, 14
 
-    LTEXT           "Total download size: xx MB", IDTOTALSIZE, 230, POSY1, 150, 14
+    LTEXT           "Total download size: xx MB",   IDTOTALSIZE,  230, POSY3, 150, 14
+    LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 230, POSY1, 150, 14
 }
 
 #define VER_FILEVERSION             0,3,0,SVN_REV
