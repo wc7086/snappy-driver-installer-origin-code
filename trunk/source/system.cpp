@@ -302,6 +302,38 @@ int SystemImp::_vscwprintf_dll(const wchar_t * _Format,va_list _ArgList)
     return _vscwprintf_func?_vscwprintf_func(_Format,_ArgList):1024*4;
 }
 
+std::wstring SystemImp::AppPath()
+{
+    std::wstring path;
+    path.resize(MAX_PATH, 0);
+    auto path_size(GetModuleFileNameW(nullptr, &path.front(), MAX_PATH));
+    path.resize(path_size);
+    path=path.substr(0,path.find_last_of(L"\\/"));
+    return path;
+}
+
+int SystemImp::FindLatestExeVersion()
+{
+    int ver=SVN_REV;
+    std::wstring spec=AppPath()+L"\\SDI_R*.exe";
+    WIN32_FIND_DATA fd;
+    HANDLE hFind=::FindFirstFile(spec.c_str(), &fd);
+    if(hFind!=INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            if(!(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
+            {
+                std::wstring v=fd.cFileName;
+                int vi=_wtoi(v.substr(5,3).c_str());
+                if(vi>ver)ver=vi;
+            }
+        }while(::FindNextFile(hFind,&fd));
+        ::FindClose(hFind);
+    }
+    return ver;
+}
+
 //{ FileMonitor
 FilemonImp::FilemonImp(const wchar_t *szDirectory, int subdirs_, FileChangeCallback callback_)
 {

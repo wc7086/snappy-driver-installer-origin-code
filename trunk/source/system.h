@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <string>
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
@@ -97,6 +98,8 @@ public:
 
     void UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj);
     int _vscwprintf_dll(const wchar_t * _Format,va_list _ArgList);
+    std::wstring AppPath();
+    int FindLatestExeVersion();
 };
 extern SystemImp System;
 //}

@@ -665,8 +665,9 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     lvI.lParam    =-2;
     //newver=300;
     int row=0;
-    if(newver>SVN_REV)ret+=newver<<8;
-    if(newver>SVN_REV&&ListView.IsVisible())
+    int LatestExeVersion=System.FindLatestExeVersion();
+    if(newver>LatestExeVersion)ret+=newver<<8;
+    if(newver>LatestExeVersion&&ListView.IsVisible())
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
         if(!update)row=ListView.InsertItem(&lvI);
@@ -676,7 +677,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         ListView.SetItemTextUpdate(row,2,buf);
         wsprintf(buf,L" SDI_R%d",newver);
         ListView.SetItemTextUpdate(row,3,buf);
-        wsprintf(buf,L" SDI_R%d",SVN_REV);
+        wsprintf(buf,L" SDI_R%d",LatestExeVersion);
         ListView.SetItemTextUpdate(row,4,buf);
         ListView.SetItemTextUpdate(row,5,STR(STR_UPD_YES));
         row++;
