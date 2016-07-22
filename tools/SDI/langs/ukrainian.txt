@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "atreyu_ts, raddy, Sorc, samsobi"
+﻿STR_TRANSLATORS         = "atreyu_ts, raddy, Sorc, samsobi"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Українська"
 STR_LANG_ID             = "Ukrainian"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x05 // LGRPID_CYRILLIC
+STR_LANG_CODE           = 0x22
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Інформація про систему"

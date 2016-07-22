@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "Mostafa Akbari"
+﻿STR_TRANSLATORS         = "Mostafa Akbari"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "فارسی"
 STR_LANG_ID             = "Farsi"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x0C // LGRPID_HEBREW
+STR_LANG_CODE           = 0x29
+STR_RTL                 = 1
 
 // left panel
 STR_SHOW_SYSINFO        = "اطلاعات سيستم"

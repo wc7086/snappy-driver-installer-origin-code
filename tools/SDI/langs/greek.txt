@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "Lambik2000 & piii"
+﻿STR_TRANSLATORS         = "Lambik2000 & piii"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Ελληνικά"
 STR_LANG_ID             = "Greek"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x04 // LGRPID_GREEK
+STR_LANG_CODE           = 0x08
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Σύστημα Πληροφοριών"
@@ -342,7 +342,7 @@ STR_OPTION_DRPNAMES     = "Ονόματα οδηγών"
 STR_OPTION_HIDE_NAMES   = "Να μην εμφανίζονται τα ονόματα οδηγών"
 STR_OPTION_SHOW_RIGHT   = "Να εμφανίζονται τα ονόματα οδηγών δεξιά"
 STR_OPTION_SHOW_ABOVE   = "Εμφάνιση επανω"
-STR_OPTION_SCALLING     = "Μέγεθος παραθύρου"
+STR_OPTION_SCALLING     = "Μέγεθος επιφάνειας"
 STR_OPTION_SCALLING_H   = ""
 STR_OPTION_SCALLING_SML = "Μικρός "
 STR_OPTION_SCALLING_BIG = "Μεγάλος "

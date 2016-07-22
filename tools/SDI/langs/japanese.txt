@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "Tilt"
+﻿STR_TRANSLATORS         = "Tilt"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "日本語"
 STR_LANG_ID             = "Japanese"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x07 // LGRPID_JAPANESE
+STR_LANG_CODE           = 0x11
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "システム情報"

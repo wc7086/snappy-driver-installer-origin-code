@@ -369,7 +369,7 @@ STR_OPTION_DIR_LOGS     = "Log files"
 
 // Advanced tab
 STR_OPTION_CMD          = "Commands"
-STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
+STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are completed."
 STR_OPTION_CMD_FINISH   = "After installation"
 STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
 STR_OPTION_CMD_FINISHDN = "After downloading"
