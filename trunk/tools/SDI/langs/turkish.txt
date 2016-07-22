@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "X-FoRcE"
+﻿STR_TRANSLATORS         = "X-FoRcE, Kabaqtepeli"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Türkçe"
 STR_LANG_ID             = "Turkish"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x06 // LGRPID_TURKIC
+STR_LANG_CODE           = 0x1F
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Sistem Bilgisi"
@@ -25,7 +25,7 @@ STR_LANG_H              = ""
 STR_THEME               = "Tema"
 STR_THEME_H             = ""
 STR_EXPERT              = "Uzman modu"
-STR_EXPERT_H            = "Uzman Modunu Aç\n\nİPUCU: Sürücü üzerindeyken Ctrl veya Boşluk tuşunu basılı tutarak sürücü hakkında ilave bilgi alabilirsiniz."
+STR_EXPERT_H            = "Uzman Modunu Aç\n\nİPUCU: Sürücü üzerindeyken Ctrl veya Boşluk tuşunu basılı tutarak sürücü hakkında ek bilgi alabilirsiniz."
 
 STR_OPENLOGS            = "Günlük klasörünü aç"
 STR_OPENLOGS_H          = "Günlük ve anlık görüntü dosyalarını içeren klasörü açar.\n\nGünlük dosyalarını geliştiricilere www.sdi-tool.org sitesinde yer alan support sayfasından gönderebilirsiniz.\n\nAnlık görüntüler kullanıcıların uzaktan doğru sürücüleri alabilmelerini sağlamak için kullanılacaktır."
@@ -238,7 +238,7 @@ STR_REST_CREATED        = "Sistem geri yükleme noktası oluşturuldu"
 STR_REST_FAILED         = "Sistem geri yükleme noktası oluşturulamadı"
 
 STR_INST_QUIT_TITLE     = "İptal ediliyor"
-STR_INST_QUIT_MSG       = "Yüklemeyi durdurmak istediğinizden emin misiniz?"
+STR_INST_QUIT_MSG       = "Yüklemeyi durdurmak istediğinizden eminmisiniz?"
 STR_HINT_STOPINST       = "Kurulumu iptal etmek için tıklayın."
 STR_HINT_STOPEXTR       = "Çıkartmayı durdurmak için tıklayın."
 STR_HINT_DRIVER         = "<Ctrl> tuşuna basılı tutarsanız kurulu sürücünüzle yeni sürücüyü karşılaştırabilirsiniz.\n<Boşluk> tuşuna basarsanız sürücünüze alternatif olarak kullanabileceğiniz diğer sürücüleri görebilirsiniz."

@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "latinissimus"
+﻿STR_TRANSLATORS         = "latinissimus"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Deutsch"
 STR_LANG_ID             = "German"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
+STR_LANG_CODE           = 0x07
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Systeminformationen"
@@ -28,7 +28,7 @@ STR_EXPERT              = "Expertenmodus"
 STR_EXPERT_H            = "Expertenmodus aktivieren.\n\nHinweis: Es werden detaillierte Treiberinformationen angezeigt wenn die Strg-Taste oder die Leertaste gedrückt wird während der Mauszeiger über einen Treibereintrag liegt."
 
 STR_OPENLOGS            = "Protokolle öffnen"
-STR_OPENLOGS_H          = "Öffnen des Ordners mit Protokolldateien und Schnappschüssen\n\nProtokolldateien können auf der Unterstützungsseite von www.sdi-tool.org zur Fehleranalyse eingereicht werden.\n\nSchnappschüsse dienen dazu, die richtigen Treiber für ein anderes System auszuwählen.\n\n"
+STR_OPENLOGS_H          = "Öffnen des Ordners mit Protokolldateien und Schnappschüssen.\n\nProtokolldateien können auf der Unterstützungsseite von www.sdi-tool.org zur Fehleranalyse eingereicht werden.\n\nSchnappschüsse dienen dazu, die richtigen Treiber für ein anderes System auszuwählen.\n\n"
 STR_SNAPSHOT            = "Schnappschuss laden..."
 STR_SNAPSHOT_H          = "Schnappschuss eines anderen Systems laden.\n\nSchnappschüsse werden automatisch im Protokollordner erstellt und beinhalten Details über Geräte, Treiber, Windows-Version, Akku und Monitoren.\n\nSchnappschüsse enthalten keine Informationen über allfällige Treiberpakete auf dem anderen System.\n\nEin geladener Schnappschuss emuliert also den Zustand eines anderen Systems, während die Treiber auf lokalen Treiberpaketen gesucht werden."
 STR_EXTRACT             = "Entpacken nach..."
@@ -100,7 +100,7 @@ STR_SYSINF_FLAGS        = "Akku"
 STR_SYSINF_HIGH         = "[hoch]"
 STR_SYSINF_LOW          = "[niedrig]"
 STR_SYSINF_CRITICAL     = "[kritisch]"
-STR_SYSINF_CHARGING     = "[am Laden]"
+STR_SYSINF_CHARGING     = "[am Aufladen]"
 STR_SYSINF_NOBATTERY    = "[kein Akku]"
 STR_SYSINF_CHARGED      = "Aufgeladen"
 STR_SYSINF_LIFETIME     = "Betriebszeit"

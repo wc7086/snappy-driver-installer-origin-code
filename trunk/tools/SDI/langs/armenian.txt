@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "Yeghiazaryan Karen-Egho"
+﻿STR_TRANSLATORS         = "Yeghiazaryan Karen-Egho"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Հայերեն"
 STR_LANG_ID             = "Armenian"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x11 // LGRPID_ARMENIAN
+STR_LANG_CODE           = 0x2B
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Օպերացիոն համակարգ"
@@ -368,13 +368,10 @@ STR_OPTION_DIR_LOGS     = "Տեղեկամատյանի ֆայլեր"
 
 // Advanced tab
 STR_OPTION_CMD          = "Հրամաններ"
-; STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
 STR_OPTION_CMD_FINISH   = "Տեղադրումից հետո"
 STR_OPTION_CMD_FINISHRB = "Տեղադրումից հետո(հարկավոր է վերաբեռնավորում)"
 STR_OPTION_CMD_FINISHDN = "Բեռնումից հետո"
 STR_OPTION_CONSOLE      = "Ցուցադրել կոնսոլի պատուհանը"
 
 // Patreon
-; STR_PATREON1             = "SDI is developed by volunteers on their spare time. If you like this software, please support us on Patreon."
-; STR_PATREON2             = "(Click here to open the Patreon page)"
 STR_PATREON_H            = ""

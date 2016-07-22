@@ -624,11 +624,32 @@ int Hwidmatch::calc_altsectscore(const State *state,int curscore)
 
     if(!calc_notebook())return 0;
 
-    if(StrStrIA(getdrp_infpath(),"intel_2nd\\"))
-        if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_1E31")&&
-           !isvalid_usb30hub(state,             L"PCI\\VEN_8086&DEV_1E31"))return 0;
+    const char *intel2="intel_2nd\\";
+    const char *intel4="intel_4th\\";
+    {
+        const wchar_t *s=getdrp_packname();
+        int v=0;
+        while(*s)
+        {
+            if(*s=='_'&&s[1]>='0'&&s[1]<='9')
+            {
+                v=_wtoi_my(s+1);
+                break;
+            }
+            s++;
+        }
+        //Log.print_con("%S: %d\n",getdrp_packname(),v);
+        if(v&&v>16073)
+        {
+            intel2="intel_sdi_2nd\\";
+            intel4="intel_sdi_4th\\";
+        }
+    }
 
-    if(StrStrIA(getdrp_infpath(),"intel_4th\\"))
+    if(StrStrIA(getdrp_infpath(),intel2))
+        if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_1E31"))return 0;
+
+    if(StrStrIA(getdrp_infpath(),intel4))
         if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C31")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9C31")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_0F35")&&

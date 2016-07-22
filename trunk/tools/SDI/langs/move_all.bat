@@ -25,3 +25,4 @@ copy gui_nl.ini dutch.txt
 copy gui_vi.ini vietnamese.txt
 copy gui_bg.ini bulgarian.txt
 copy gui_he.ini hebrew.txt
+copy gui_lt.ini lithuanian.txt
