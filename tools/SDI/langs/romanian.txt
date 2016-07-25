@@ -1,13 +1,13 @@
-STR_TRANSLATORS         = "Mihai Pasare"
+﻿STR_TRANSLATORS         = "Mihai Pasare"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "Română"
 STR_LANG_ID             = "Romanian"
-STR_LANG_GROUP          =
-STR_LANG_CODE           =
-STR_RTL                 =
+STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE
+STR_LANG_CODE           = 0x18
+STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "Informații sistem"
@@ -25,18 +25,16 @@ STR_LANG_H              = ""
 STR_THEME               = "Temă"
 STR_THEME_H             = ""
 STR_EXPERT              = "Mod expert"
-; STR_EXPERT_H            = "Enable Expert Mode.\n\nHINT: Hold the Ctrl or Spacebar button over a driver to get extra information about the driver."
+STR_EXPERT_H            = "Activează modul expert.\n\nPONT: Mențineți apăsat Ctrl sau Spacebar când selectați un driver pentru informații despre acesta."
 
 STR_OPENLOGS            = "Deschide jurnale"
-; STR_OPENLOGS_H          = "Open the folder containing logs and snapshots.\n\nYou can submit log files to the developer by opening www.sdi-tool.org and going to the support page.\n\nSnapshots can be used to remotely help users pick correct drivers."
+STR_OPENLOGS_H          = "Deschide folderul ce conține jurnalelet.\n\nPuteți trimite aceste fișiere pentru a primi asistență."
 STR_SNAPSHOT            = "Încarcă imagine..."
 STR_SNAPSHOT_H          = "Încarcă imaginea altui sistem.\n\nImaginile sunt create automat in folderul cu jurnale. Ele conțin informații despre dispozitive, drivere, versiuni, etc.\n\nImaginile nu conțin informații despre pachetele de drivere ale sistemelor.\n\nDeci, încărcând o imagine simulați un sistem, dar driverii sunt căutați în pachetele locale."
 STR_EXTRACT             = "Extrage la..."
-; STR_EXTRACT_H           = "Extract selected drivers\n\nYou can use it to create backup drivers. Make sure that recently installed drivers are working properly, enable the 'Show current drivers' checkbox and click 'Extract to...'"
+STR_EXTRACT_H           = "Extrage driverii selectați\n\nSe poate folosi pentru crearea de copii de siguranță a driverelor curente."
 STR_DRVDIR              = "Selectează folderul cu drivere..."
 STR_DRVDIR_H            = "Alege alt folder ce conține pachete de drivere.\n\nSe poate folosi pentru a căuta drivere pe o unitate externă (USB/CD/DVD)."
-; STR_OPTIONS_BTN         = "Options..."
-; STR_OPTIONS_BTN_H       = "Open dialog box with settings."
 
 STR_SHOW_FOUND          = "Găsit în pachetele de drivere"
 STR_SHOW_FOUND_H        = "Driverele au fost găsite în pachete și pot fi instalate.\n\nVă recomandăm să instalați driverele din categoriile: neinstalat, mai nou, potrivire mai bună."
@@ -56,18 +54,18 @@ STR_SHOW_WORSE_RANK_H   = "Afișează driverele cu o potrivire mai rea decât ce
 STR_SHOW_NOTFOUND       = "Lipsește în pachetele de drivere"
 STR_SHOW_NOTFOUND_H     = "Driverele nu se regăsesc în pachete și nu pot fi instalate."
 STR_SHOW_NF_MISSING     = "Neinstalat"
-; STR_SHOW_NF_MISSING_H   = "Display devices which require drivers but no driver is found in driverpacks.\n\nYou can try looking for these drivers on the Internet or on DVDs. In order to copy HardwareID, you can right click on the device.\n\nWe advise to notify us about missing drivers, so that they could be added to driverpacks."
+STR_SHOW_NF_MISSING_H   = "Afișează dispozitivele ce necesită drivere, dar acestea nu se regăsesc în pachete."
 STR_SHOW_NF_UNKNOWN     = "Necunoscut"
-; STR_SHOW_NF_UNKNOWN_H   = "Display unknown drivers which are installed in the system but are not found in driverpacks.\n\nWe advice to notify us that you have some drivers that could be added to driverpacks."
+STR_SHOW_NF_UNKNOWN_H   = "Afișează driverele necunoscute ce sunt instalate, dar nu se regăsesc în pachete."
 STR_SHOW_NF_STANDARD    = "Standard"
-; STR_SHOW_NF_STANDARD_H  = "Display standard drivers which are installed in the system but are not found in driverpacks.\n\nThese drivers usually come with Windows and don't require updates."
+STR_SHOW_NF_STANDARD_H  = "Afișează driverele standard ce sunt instalate, dar nu se regăsesc în pachete."
 
 STR_SHOW_DISPLAY        = "Afișează"
 STR_SHOW_DISPLAY_H      = ""
 STR_SHOW_ONE            = "Afișează cele mai bune"
-; STR_SHOW_ONE_H          = "Show only best drivers per device.\n\nWhen enabled, only the best matched driver per device is displayed as opposed to displayed all available drivers for each device."
+STR_SHOW_ONE_H          = "Afișează doar cele mai bune drivere per dispozitiv."
 STR_SHOW_DUP            = "Afișează dubluri"
-; STR_SHOW_DUP_H          = "Show duplicate drivers.\n\nSome drivers are duplicated multiple times inside driverpacks for technical reasons."
+STR_SHOW_DUP_H          = "Afișează driverele duplicat."
 STR_SHOW_INVALID        = "Afișează invalid"
 STR_SHOW_INVALID_H      = "Afișează driverele ce nu sunt compatibile cu sistemul curent.\n\nVă recomandăm să NU instalați driverele, acestea nefiind compatibile cu sistemul dumneavoastră."
 
@@ -93,9 +91,9 @@ STR_SYSINF_MODEL        = "Model"
 STR_SYSINF_MANUF        = "Porducător"
 STR_SYSINF_BATTERY      = "Alimentare"
 STR_SYSINF_AC_STATUS    = "A/C"
-; STR_SYSINF_OFFLINE      = "disconnected"
-; STR_SYSINF_ONLINE       = "circuited"
-STR_SYSINF_UNKNOWN      = "necunoscut"
+STR_SYSINF_OFFLINE      = "Deconectat"
+STR_SYSINF_ONLINE       = "Circuit"
+STR_SYSINF_UNKNOWN      = "Necunoscut"
 STR_SYSINF_FLAGS        = "Baterie"
 STR_SYSINF_HIGH         = "[înalt]"
 STR_SYSINF_LOW          = "[descărcat]"
@@ -115,7 +113,7 @@ STR_SYSINF_TYPE         = "Tip"
 STR_SYSINF_LAPTOP       = "laptop"
 STR_SYSINF_DESKTOP      = "desktop"
 STR_SYSINF_LOCALE       = "Local"
-; STR_SYSINF_CPU_ARCH     = "CPU Architecture"
+STR_SYSINF_CPU_ARCH     = "Arhitectură CPU"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
@@ -125,12 +123,11 @@ STR_ABOUT_DEV_TITLE     = "Dezvoltator: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Testeri: "
 //STR_ABOUT_TESTERS_LIST
-; STR_ABOUT_TRANS_TITLE   = "Translators: "
 STR_ABOUT_LICENSE       = "Snappy Driver Installer is licensed under the terms of the GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer uses the following technologies:\n* WebP is licensed under the terms of the BSD license\n* libtorrent is licensed under the terms of the BSD license\n* Backtrace is licensed under the terms of the BSD license\n* 7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n\nSnappy Driver Installer is powered by DriverPacks that were developed by the DriverPacks Team.\n\n(Click now in order to visit a website)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "necunoscut"
-; STR_HINT_ANALYSIS       = "TrackingID"
+STR_HINT_ANALYSIS       = "Analiză"
 STR_HINT_SIGNATURE      = "Semnătură: "
 STR_HINT_DRP            = "Pachet drivere"
 STR_HINT_DEVICE         = "Dispozitiv"
@@ -139,7 +136,7 @@ STR_HINT_COMPID         = "CompatibleID"
 STR_HINT_INSTDRV        = "Driver instalat"
 STR_HINT_AVAILDRV       = "Driver disponibil"
 STR_HINT_AVAILDRVS      = "Drivere disponibile"
-; STR_HINT_MANUF          = "Manufacturer: "
+STR_HINT_MANUF          = "Prod: "
 STR_HINT_PROVIDER       = "Distrib: "
 STR_HINT_DATE           = "Data: "
 STR_HINT_VERSION        = "Versiune: "
@@ -203,7 +200,7 @@ STR_VIRUS_HIDDEN_H      = "Folderul rădăcină al unității conține foldere a
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(Apăsați aici pentru a opri simularea)"
-; STR_EMPTYDRP            = "Connect to the Internet to download driverpacks or put unpacked drivers in the following folder"
+STR_EMPTYDRP            = "Puneți pachete de drivere sau drivere în folderul următor"
 STR_CLOSE_DRPEXT        = "(Apăsați aici pentru a vă întoarce la folderul inițial)"
 STR_NOUPDATES           = "Driverele sunt actualizate"
 STR_INITIALIZING        = "Inițializare..."
@@ -218,7 +215,7 @@ STR_INST_FAILED         = "Instalarea a eșuat datorită unei erori "
 STR_INST_INSTALLING     = "Se instalează... "
 STR_INST_COMPLITED      = "Instalare completă"
 STR_INST_COMPLITED_RB   = "Instalare completă (este necesară o repornire a sistemului)"
-; STR_INST_CLOSE          = "(Click here to hide installed drivers)"
+STR_INST_CLOSE          = "(Apăsați aici pentru a ascunde driverele instalate)"
 
 STR_EXTR_EXTRACTING     = "Se extrage... "
 STR_EXTR_OK             = "S-a extras cu succes"
@@ -327,54 +324,3 @@ STR_TR_ST4              = "terminat"
 STR_TR_ST5              = "seeding"
 STR_TR_ST6              = "alocă spațiu"
 STR_TR_ST7              = "verifică date reluare"
-
-// Options dialog
-STR_OPTION_TITLE        = "Opțiuni"
-; STR_OPTION_VIEW_TAB     = "View"
-; STR_OPTION_UPDATES_TAB  = "Updates"
-; STR_OPTION_PATH_TAB     = "Paths"
-; STR_OPTION_ADVANCED_TAB = "Advanced"
-STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
-STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
-
-// View tab
-; STR_OPTION_DRPNAMES     = "Driverpack names"
-; STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
-; STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
-; STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
-; STR_OPTION_SCALLING     = "Interface scaling"
-STR_OPTION_SCALLING_H   = ""
-; STR_OPTION_SCALLING_SML = "Small"
-; STR_OPTION_SCALLING_BIG = "Big"
-; STR_OPTION_SCALLING_RST = "Reset"
-STR_OPTION_HINT         = "Pont"
-; STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
-
-// Updates tab
-; STR_OPTION_CHECKUPDATES = "Do not check for new version of app/driverpacks"
-STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
-; STR_OPTION_TORRENT      = "Torrent"
-; STR_OPTION_PORT         = "Port"
-; STR_OPTION_MAX_CON      = "Max connections (0 - unlimited)"
-; STR_OPTION_MAX_DOWNLOAD = "Max download speed in KB/s (0 - unlimited)"
-; STR_OPTION_MAX_UPLOAD   = "Max upload speed in KB/s (0 - unlimited)"
-
-// Paths tab
-; STR_OPTION_DIR_DRIVERS  = "Drivers"
-STR_OPTION_DIR_INDEXES  = "Indecși"
-; STR_OPTION_DIR_INDEXESH = "Indexes (human-readable)"
-; STR_OPTION_DIR_DATA     = "Themes and translations"
-; STR_OPTION_DIR_LOGS     = "Log files"
-
-// Advanced tab
-; STR_OPTION_CMD          = "Commands"
-; STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are competed."
-; STR_OPTION_CMD_FINISH   = "After installation"
-; STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
-; STR_OPTION_CMD_FINISHDN = "After downloading"
-; STR_OPTION_CONSOLE      = "Show console window"
-
-// Patreon
-; STR_PATREON1             = "SDI is developed by volunteers on their spare time. If you like this software, please support us on Patreon."
-; STR_PATREON2             = "(Click here to open the Patreon page)"
-STR_PATREON_H            = ""
