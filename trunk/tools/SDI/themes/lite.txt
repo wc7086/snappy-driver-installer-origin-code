@@ -1,4 +1,4 @@
-//Modified 12.06.2016
+//Modified 24.07.2016
 //e39
 THEME_NAME              = "Lite"
 
@@ -134,9 +134,14 @@ DRVLIST_OUTLINE_COLOR    = 0xFFFFFF
 
 // Driver items
 DRVITEM_WX               = -20
+DRVITEM_WY               = 40
 DRVITEM_OFSX             = 15
 DRVITEM_OFSY             = 15
-DRVITEM_DIST_Y0          = 36
+DRVITEM_LINE_INTEND      = 25
+DRVITEM_LINE_COLOR       = 0xA4A4A4
+DRVITEM_LINE_WIDTH       = 2
+DRVITEM_DIST_Y0          = 39
+DRVITEM_DIST_Y1          = DRVITEM_DIST_Y0
 DRVITEM_DIST_Y2          = 10
 
 // Driver item content
