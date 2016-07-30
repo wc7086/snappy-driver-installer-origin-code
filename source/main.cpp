@@ -580,6 +580,17 @@ static BOOL CALLBACK DialogPage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
             {
                 case IDD_P1_ZOOMR:
                     SendMessage(GetDlgItem(data.pages[0],IDD_P1_ZOOMI),TBM_SETPOS,1,-256);
+                    break;
+                case IDD_P1_DRV1:
+                case IDD_P1_DRV2:
+                case IDD_P1_DRV3:
+                    {
+                        Settings.flags&=~(FLAG_SHOWDRPNAMES1|FLAG_SHOWDRPNAMES2);
+                        if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV2),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES1;
+                        if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV3),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES2;
+                        manager_g->filter(Settings.filters);
+                        PostMessage(MainWindow.hMain,WM_UPDATETHEME,1,0);
+                    }
                 default:
                     break;
             }
@@ -618,6 +629,13 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
     switch (msg)
     {
         case WM_INITDIALOG:
+
+            // save current window state
+            RECT rect;
+            GetWindowRect(MainWindow.hMain,&rect);
+            Settings.wndwx=rect.right-rect.left;
+            Settings.wndwy=rect.bottom-rect.top;
+
             data.pages[0]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page1),hwnd,(DLGPROC)DialogPage);
             data.pages[1]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page2),hwnd,(DLGPROC)DialogPage);
             data.pages[2]=CreateDialog(ghInst,MAKEINTRESOURCE(IDD_Page3),hwnd,(DLGPROC)DialogPage);
@@ -1336,6 +1354,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
         case WM_WINDOWPOSCHANGING:
             {
+                Settings.autosized=false;
                 WINDOWPOS *wpos=(WINDOWPOS*)lParam;
 
                 rect.left=GetSystemMetrics(SM_XVIRTUALSCREEN);
