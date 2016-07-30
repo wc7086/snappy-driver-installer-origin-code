@@ -20,11 +20,11 @@ set xOS="x64_R"
 for /f "tokens=*" %%a in ('dir /b /od "%~dp0SDI_%xOS%*.exe"') do set "SDIEXE=%%a"
 if exist "%~dp0%SDIEXE%" (
  start "Snappy Driver Installer" /d"%~dp0" "%~dp0%SDIEXE%" %1 %2 %3 %4 %5 %6 %7 %8 %9
- exit
+ goto ex
 ) else (
  echo.
  echo  Not found 'Snappy Driver Installer'!
  echo.
  timeout 6
- exit
 )
+:ex
