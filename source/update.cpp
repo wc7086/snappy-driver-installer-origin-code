@@ -766,7 +766,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     switch(manager_g->getlocale()&0xFF)
     {
         // Not translated
-        case 0x25: // Estonian (et)
         case 0x0B: // Finnish (fi)
         case 0x37: // Georgian (ka)
         case 0x21: // Indonesian (id)
@@ -816,6 +815,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         case 0x1F: // Turkish (tr)
         case 0x22: // Ukrainian (uk)
         case 0x23: // Belarusian (be)
+        case 0x25: // Estonian (et)
         case 0x29: // Persian (fa)
         case 0x2A: // Vietnamese (vi)
             break;

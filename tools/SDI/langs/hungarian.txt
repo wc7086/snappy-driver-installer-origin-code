@@ -10,7 +10,7 @@ STR_LANG_CODE           = 0x0E
 STR_RTL                 = 0
 
 // left panel
-STR_SHOW_SYSINFO        = "  - Rendszerinformáció -"
+STR_SHOW_SYSINFO        = "- Rendszerinformáció -"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "TELEPÍTÉS"
@@ -374,7 +374,7 @@ STR_OPTION_CMD_FINISHRB = "A telepítés után (újraindítás szükséges)"
 STR_OPTION_CMD_FINISHDN = "A letöltés után"
 STR_OPTION_CONSOLE      = "Konzol megjelenítése"
 
-  // Patreon
+// Patreon
 STR_PATREON1             = "SDI lelkes önkéntesek munkáját tükrözi. Patreon-on keresztűl támogathatja a további fejlesztést."
 STR_PATREON2             = "(A Patreon megnyitásához klikkeljen ide)"
 STR_PATREON_H            = ""

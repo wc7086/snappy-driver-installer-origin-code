@@ -127,6 +127,7 @@ BEGIN
             0x41F, 1200, // Turkish
             0x422, 1200, // Ukrainian
             0x423, 1200, // Belarusian
+            0x425, 1200, // Estonian
             0x426, 1200, // Latvian
             0x427, 1200, // Lithuanian
             0x429, 1200, // Persian
