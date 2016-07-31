@@ -589,7 +589,7 @@ static BOOL CALLBACK DialogPage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
                         if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV2),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES1;
                         if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV3),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES2;
                         manager_g->filter(Settings.filters);
-                        PostMessage(MainWindow.hMain,WM_UPDATETHEME,1,0);
+                        PostMessage(MainWindow.hMain,WM_UPDATETHEME,0,0);
                     }
                 default:
                     break;
