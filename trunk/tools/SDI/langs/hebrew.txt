@@ -172,7 +172,7 @@ STR_STATUS_STOPPED      = "מצב ההתקן הנוכחי לא מופעל"
 // Driver status
 STR_STATUS_INVALID      = "מתאם לא מתואם"
 STR_STATUS_MISSING      = "מתאם זמין (המתאם לא מותקן עדיין)"
-STR_STATUS_NOTSIGNED    = "(לו חתום)"
+STR_STATUS_NOTSIGNED    = "(לא חתום)"
 
 STR_STATUS_BETTER_NEW   = "עידכון מתאם זמין אשר הוא גם יותר אופטימלי"
 STR_STATUS_SAME_NEW     = "עידכון מתאם זמין"
