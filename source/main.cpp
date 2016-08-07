@@ -622,6 +622,29 @@ static void OnSelChange()
     ShowWindow(data.pages[3],(sel==3)?SW_SHOW:SW_HIDE);
 }
 
+static BOOL CALLBACK EnumChildProcMirror(HWND hWnd, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+
+    // Make sure window is valid
+    if (hWnd && IsWindow(hWnd))
+    {
+        // exclude two specific controls
+        int id=GetDlgCtrlID(hWnd);
+        if(id==IDD_P1_ZOOMS||id==IDD_P1_ZOOMB)return TRUE;
+        // Get the class name for the control
+        wchar_t szClassName[MAXCHAR];
+        GetClassName(hWnd, szClassName, MAXCHAR);
+        // mirror the control
+        if(wcscmp(szClassName,L"Edit")==0)
+            setMirroringEdit(hWnd);
+        else
+            setMirroring(hWnd);
+    }
+
+    return TRUE;
+}
+
 static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
 {
     wchar_t num[32];
@@ -756,7 +779,21 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                 SetWindowText(GetDlgItem(data.pages[3],IDD_P4_CMD3E),Settings.finish_upd);
                 if(Settings.flags&FLAG_SHOWCONSOLE)SendMessage(GetDlgItem(data.pages[3],IDD_P4_CONSL),BM_SETCHECK,BST_CHECKED,0);
 
+                SetWindowText(GetDlgItem(hwnd,IDOK),STR(STR_UPD_BTN_OK));
+                SetWindowText(GetDlgItem(hwnd,IDCANCEL),STR(STR_UPD_BTN_CANCEL));
+
                 OnSelChange();
+
+                if (rtl)
+                {
+                    setMirroring(hwnd);
+                    // iterate all controls on the dialog
+                    EnumChildWindows(hwnd, EnumChildProcMirror, 0);
+                    // can't find a nice way to do these two so i'll just swap the text
+                    SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOMS),STR(STR_OPTION_SCALLING_BIG));
+                    SetWindowText(GetDlgItem(data.pages[0],IDD_P1_ZOOMB),STR(STR_OPTION_SCALLING_SML));
+                }
+
             }
             break;
 
@@ -1011,6 +1048,24 @@ void setMirroring(HWND hwnd)
     LONG_PTR v=GetWindowLongPtr(hwnd,GWL_EXSTYLE);
     if(rtl)v|=WS_EX_LAYOUTRTL;else v&=~WS_EX_LAYOUTRTL;
     SetWindowLongPtr(hwnd,GWL_EXSTYLE,v);
+}
+
+void setMirroringEdit(HWND hwnd)
+{
+    setMirroring(hwnd);
+
+    // reposition edit controls for right-to-left
+    if(rtl)
+    {
+        RECT p,r;
+        GetWindowRect(GetParent(hwnd),&p);
+        GetWindowRect(hwnd,&r);
+        MapWindowPoints(HWND_DESKTOP,GetParent(hwnd),(LPPOINT)&r, 2);
+        int w=r.right-r.left;
+        int h=r.bottom-r.top;
+        r.left=p.right-p.left-r.left-w;
+        MoveWindow(hwnd,r.left,r.top,w,h,TRUE);
+    }
 }
 
 void checktimer(const wchar_t *str,long long t,int uMsg)
