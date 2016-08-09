@@ -2180,6 +2180,17 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
             }
             return TRUE;
 
+        case WM_CTLCOLORSTATIC:
+            hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
+            if((HWND)lParam==hEditBox)
+            {
+                HDC hdcStatic=(HDC)wParam;
+                SetTextColor(hdcStatic, GetSysColor(COLOR_WINDOWTEXT));
+                SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+                return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+            }
+            else return TRUE;
+
         default:
             break;
     }
