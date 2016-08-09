@@ -549,10 +549,14 @@ void State::fakeOSversion()
 {
     if(Settings.virtual_arch_type==32)architecture=0;
     if(Settings.virtual_arch_type==64)architecture=1;
+    // virtual_os_version holds the index into the versions array+ID_OS_ITEMS
     if(Settings.virtual_os_version)
     {
-        platform.dwMajorVersion=Settings.virtual_os_version/10;
-        platform.dwMinorVersion=Settings.virtual_os_version%10;
+        int ver=winVersions.GetEntry(Settings.virtual_os_version-ID_OS_ITEMS);
+        bool serv=winVersions.GetEntryServer(Settings.virtual_os_version-ID_OS_ITEMS);
+        platform.dwMajorVersion=ver/10;
+        platform.dwMinorVersion=ver%10;
+        if(serv)platform.wProductType=2;
     }
 }
 
@@ -809,12 +813,18 @@ void State::contextmenu2(int x,int y)
 {
     HMENU hPopupMenu=CreatePopupMenu();
     HMENU hSub1=CreatePopupMenu();
+    // find the version array index for the current platform
     int ver=platform.dwMinorVersion+10*platform.dwMajorVersion;
+    bool serv=platform.wProductType==2||platform.wProductType==3;
+    int veridx=winVersions.GetVersionIndex(ver,serv);
 
-    for(int i=0;i<NUM_OS-1;i++)
+    // create a menu item for each entry in the version array
+    // and checkmark the current platform
+    for(int i=0;i<winVersions.Count();i++)
     {
-        InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING|(ver==getWindowsVer(i)?MF_CHECKED:0),
-                   ID_WIN_2000+i,getWindowsName(i));
+        // storing the version array index in the id of the menu item
+        InsertMenu(hSub1,i,MF_BYPOSITION|MF_STRING|(i==veridx?MF_CHECKED:0),
+                   ID_OS_ITEMS+i,winVersions.GetEntryW(i));
     }
 
     int i=0;
@@ -1107,20 +1117,11 @@ void State::init()
 
 const wchar_t *State::get_winverstr()
 {
-    int i;
+    // retrieve the version string for the current platform
     int ver=platform.dwMinorVersion;
     ver+=10*platform.dwMajorVersion;
-
-    if(ver==64)ver=100;
-    if(ver==52)
-    {
-        if(architecture)
-            ver=51;
-        else
-            return L"Windows Server 2003";
-    }
-    for(i=0;i<NUM_OS;i++)if(getWindowsVer(i)==ver)return getWindowsName(i);
-    return getWindowsName(NUM_OS-1);
+    bool serv=platform.wProductType==2||platform.wProductType==3;
+    return winVersions.GetVersion(ver,serv);
 }
 
 size_t State::opencatfile(const Driver *cur_driver)
@@ -1328,3 +1329,65 @@ int iswide(int x,int y)
     return (static_cast<double>(y)/x)>1.35?1:0;
 }
 //}
+
+// https://msdn.microsoft.com/en-au/library/windows/desktop/ms724832(v=vs.85).aspx
+const VER_STRUCT WinVersions::_versions[16]={{50, false,L"Windows 2000"},
+                                             {51, false,L"Windows XP"},
+                                             {52, false,L"Windows XP 64"},
+                                             {52, true, L"Windows Server 2003"},
+                                             {52, true, L"Windows Server 2003 R2"},
+                                             {60, false,L"Windows Vista"},
+                                             {60, true, L"Windows Server 2008"},
+                                             {61, true, L"Windows Server 2008 R2"},
+                                             {61, false,L"Windows 7"},
+                                             {62, true, L"Windows Server 2012"},
+                                             {62, false,L"Windows 8"},
+                                             {63, true, L"Windows Server 2012 R2"},
+                                             {63, false,L"Windows 8.1"},
+                                             {64, false,L"Windows 10 Tech Preview"},
+                                             {100,true, L"Windows Server 2016"},
+                                             {100,false,L"Windows 10"}};
+int WinVersions::GetEntry(int num)
+{
+    // returns a version number
+    if(num>=0&&num<Count())
+        return _versions[num].ver;
+    else
+        return -1;
+}
+const wchar_t* WinVersions::GetEntryW(int num)
+{
+    // returns a version string
+    if(num>=0&&num<Count())
+        return _versions[num].vers;
+    else
+        return UnknownOS;
+}
+bool WinVersions::GetEntryServer(int num)
+{
+    // returns true if version is server
+    if(num>=0&&num<Count())
+        return _versions[num].server;
+    else
+        return false;
+}
+int WinVersions::GetVersionIndex(int vernum,bool server)
+{
+    // find the matching entry and return it's array index
+    for(int i=0;i<Count();i++)
+        if(_versions[i].ver==vernum&&_versions[i].server==server)
+            return i;
+    return -1;
+}
+const wchar_t* WinVersions::GetVersion(int vernum,bool server)
+{
+    // find the matching entry and return it's version string
+    for(int i=0;i<Count();i++)
+        if(_versions[i].ver==vernum&&_versions[i].server==server)
+            return _versions[i].vers;
+    return UnknownOS;
+}
+int WinVersions::Count()
+{
+    return ARRAYSIZE(_versions);
+}

@@ -219,10 +219,6 @@ public:
 };
 extern MainWindow_t MainWindow;
 
-// Windows version
-#define NUM_OS 8
-const wchar_t *getWindowsName(int a);
-int getWindowsVer(int a);
 //}
 
 // Subroutes

@@ -56,31 +56,7 @@ int manager_active=0;
 int bundle_display=1;
 int bundle_shadow=0;
 bool emptydrp;
-
-// Windows name
-const wchar_t *getWindowsName(int a)
-{
-    static const wchar_t *windows_name[NUM_OS]=
-    {
-        L"Windows 2000",
-        L"Windows XP",
-        L"Windows Vista",
-        L"Windows 7",
-        L"Windows 8",
-        L"Windows 8.1",
-        L"Windows 10",
-        L"Unknown OS"
-    };
-
-    return windows_name[a];
-}
-
-int getWindowsVer(int a)
-{
-    static int windows_ver[NUM_OS]={50,51,60,61,62,63,100,0};
-
-    return windows_ver[a];
-}
+WinVersions winVersions;
 //}
 
 //{ Objects
@@ -1696,9 +1672,10 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                 default:
                     break;
             }
-            if(wp>=ID_WIN_2000&&wp<=ID_WIN_10)
+            // select a virtual OS from the menu
+            if(wp>=ID_OS_ITEMS&&wp<ID_OS_ITEMS+winVersions.Count())
             {
-                Settings.virtual_os_version=getWindowsVer(wp-ID_WIN_2000);
+                Settings.virtual_os_version=wp;
                 invalidate(INVALIDATE_SYSINFO|INVALIDATE_MANAGER);
             }
             if(wp>=ID_HWID_CLIP&&wp<=ID_HWID_WEB+100)
