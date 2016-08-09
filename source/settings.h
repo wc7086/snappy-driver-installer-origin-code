@@ -83,6 +83,7 @@ enum GUI_ID
     ID_DIS_INSTALL     =30,
     ID_DIS_RESTPNT     =31,
 
+    // not used - menu items now use ID_OS_ITEMS + index
     ID_WIN_2000        =32,
     ID_WIN_XP          =33,
     ID_WIN_VISTA       =34,
@@ -102,6 +103,7 @@ enum GUI_ID
 
     ID_HWID_CLIP      =100,
     ID_HWID_WEB       =200,
+    ID_OS_ITEMS      =1000,
 };
 
 // fileter_show
@@ -182,7 +184,7 @@ public:
     int scale;
     int wndwx,wndwy;
     int filters;
-    int virtual_os_version;
+    int virtual_os_version;  // index into the array in WinVersions
     int virtual_arch_type;
 
     bool autosized=false;

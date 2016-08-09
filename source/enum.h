@@ -189,6 +189,25 @@ class state_m_t
     char reserved1[676];
 };
 
+struct VER_STRUCT
+{
+    int ver;
+    bool server;
+    const wchar_t* vers;
+};
+class WinVersions
+{
+    static const VER_STRUCT _versions[16];
+    const wchar_t* UnknownOS=L"Unknown OS";
+public:
+    int GetEntry(int num);                             // returns entry version number
+    const wchar_t* GetEntryW(int num);                 // returns entry version string
+    bool GetEntryServer(int num);                      // returns entry server
+    int GetVersionIndex(int vernum,bool server);       // find the matching entry
+    const wchar_t* GetVersion(int vernum,bool server); // find the matching entry
+    static int Count();
+};
+
 // State
 class State
 {
@@ -236,6 +255,7 @@ public:
     const wchar_t *get_szCSDVersion()const{return platform.szCSDVersion;}
     std::vector<Device> *getDevices_list(){return &Devices_list;}
     const Driver *getCurrentDriver(const Device *dev)const{return (dev->getDriverIndex()>=0)?&Drivers_list[dev->getDriverIndex()]:nullptr;}
+    WinVersions winVersions;
 
     const wchar_t *getProduct();
     const wchar_t *getManuf();
