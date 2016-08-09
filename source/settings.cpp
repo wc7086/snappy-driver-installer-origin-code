@@ -31,6 +31,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "main.h"
+#include "enum.h"
 
 int volatile installmode=MODE_NONE;
 int invaidate_set;
@@ -100,6 +101,8 @@ bool Settings_t::argflg(const wchar_t *s,const wchar_t *cmp,int f)
 void Settings_t::parse(const wchar_t *str,size_t ind)
 {
     Log.print_con("Args:[%S]\n",str);
+    WinVersions winVersions;
+
     int argc;
     wchar_t **argv=CommandLineToArgvW(str,&argc);
     for(size_t i=ind;i<static_cast<size_t>(argc);i++)
@@ -210,8 +213,11 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
 
         if(argflg(pr,L"-a:32",           0)){ virtual_arch_type=32;continue; }
         if(argflg(pr,L"-a:64",           0)){ virtual_arch_type=64;continue; }
-        if(argint(pr,L"-v:",             &virtual_os_version))continue;
-
+        if(argint(pr,L"-v:",             &virtual_os_version))
+        {
+            virtual_os_version=winVersions.GetVersionIndex(virtual_os_version,virtual_arch_type==64)+ID_OS_ITEMS;
+            continue;
+        }
         if( StrStrIW(pr,SAVE_INSTALLED_ID_DEF))Parse_save_installed_id_swith(pr);else
         if( StrStrIW(pr,HWIDINSTALLED_DEF))    Parse_HWID_installed_swith(pr); else
         if( StrStrIW(pr,GFG_DEF))              continue;
