@@ -100,9 +100,9 @@ bool Settings_t::argflg(const wchar_t *s,const wchar_t *cmp,int f)
 
 void Settings_t::parse(const wchar_t *str,size_t ind)
 {
-    Log.print_con("Args:[%S]\n",str);
     WinVersions winVersions;
 
+    Log.print_con("Args:[%S]\n",str);
     int argc;
     wchar_t **argv=CommandLineToArgvW(str,&argc);
     for(size_t i=ind;i<static_cast<size_t>(argc);i++)
@@ -215,7 +215,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argflg(pr,L"-a:64",           0)){ virtual_arch_type=64;continue; }
         if(argint(pr,L"-v:",             &virtual_os_version))
         {
-            virtual_os_version=winVersions.GetVersionIndex(virtual_os_version,virtual_arch_type==64)+ID_OS_ITEMS;
+            virtual_os_version=winVersions.GetVersionIndex(virtual_os_version,false)+ID_OS_ITEMS;
             continue;
         }
         if( StrStrIW(pr,SAVE_INSTALLED_ID_DEF))Parse_save_installed_id_swith(pr);else
