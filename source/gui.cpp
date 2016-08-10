@@ -378,7 +378,13 @@ void wTextSys2::draw(Canvas &canvas)
     State *state=manager_g->getState();
     WStringShort buf;
 
-    buf.sprintf(L"%s (%d-bit)%s",state->get_winverstr(),state->getArchitecture()?64:32,rtl?L"\u200E":L"");
+    // not enough room for long server product names
+    int p=state->getPlatformProductType();
+    if(p==2||p==3)
+        buf.sprintf(L"%s",state->get_winverstr());
+    else
+        buf.sprintf(L"%s (%d-bit)%s",state->get_winverstr(),state->getArchitecture()?64:32,rtl?L"\u200E":L"");
+
     canvas.DrawTextXY(x1+10+SYSINFO_COL0,y1,buf.Get());
     canvas.DrawTextXY(x1+10+SYSINFO_COL1,y1,state->getProduct());
     canvas.DrawTextXY(x1+10+SYSINFO_COL2,y1,STR(STR_SYSINF_WINDIR));

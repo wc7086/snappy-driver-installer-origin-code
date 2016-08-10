@@ -556,7 +556,8 @@ void State::fakeOSversion()
         bool serv=winVersions.GetEntryServer(Settings.virtual_os_version-ID_OS_ITEMS);
         platform.dwMajorVersion=ver/10;
         platform.dwMinorVersion=ver%10;
-        if(serv)platform.wProductType=2;
+        if(serv)platform.wProductType=3;
+        else platform.wProductType=1;
     }
 }
 
@@ -588,6 +589,11 @@ const wchar_t *State::getModel()
 
     if(!*s)return textas.getw(cs_model);
     return s;
+}
+
+int State::getPlatformProductType()
+{
+    return platform.wProductType;
 }
 
 State::State():
