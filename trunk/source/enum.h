@@ -260,6 +260,7 @@ public:
     const wchar_t *getProduct();
     const wchar_t *getManuf();
     const wchar_t *getModel();
+    int getPlatformProductType();
 
     State();
     void print();
