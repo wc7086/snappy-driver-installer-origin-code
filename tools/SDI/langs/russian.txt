@@ -121,7 +121,7 @@ STR_SYSINF_64BIT        = "64-бит"
 
 // About
 //STR_ABOUT_VER
-STR_ABOUT_DEV_TITLE     = "Разработчик: "
+STR_ABOUT_DEV_TITLE     = "Разработчики: "
 //STR_ABOUT_DEV_LIST
 STR_ABOUT_TESTERS_TITLE = "Участники проекта: "
 //STR_ABOUT_TESTERS_LIST
@@ -328,6 +328,7 @@ STR_TR_ST4              = "завершено"
 STR_TR_ST5              = "раздается"
 STR_TR_ST6              = "резервируется место"
 STR_TR_ST7              = "возобновление"
+STR_TR_ST8              = "перемещение файлов"
 
 // Options dialog
 STR_OPTION_TITLE        = "Опции"

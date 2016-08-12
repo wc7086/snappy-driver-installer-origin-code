@@ -1,4 +1,4 @@
-﻿STR_TRANSLATORS         = "Latinissimus"
+﻿STR_TRANSLATORS         = "«Latinissimus»"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
