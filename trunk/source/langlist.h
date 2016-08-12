@@ -345,6 +345,7 @@ enum
     STR_TR_ST5,
     STR_TR_ST6,
     STR_TR_ST7,
+    STR_TR_ST8,
 
 // Options dialog
     STR_OPTION_TITLE,
