@@ -161,7 +161,7 @@
 			<Add option="-DWINVER=0x0500" />
 			<Add directory="../resources" />
 			<Add directory="../external/SevenZ/build/C" />
-			<Add directory="../external/boost_1_60_0" />
+			<Add directory="../external/boost_1_61_0" />
 		</Compiler>
 		<Linker>
 			<Add option="-static" />
