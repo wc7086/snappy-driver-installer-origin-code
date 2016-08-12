@@ -139,6 +139,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argflg(pr,L"-norestorepnt",   FLAG_NORESTOREPOINT))continue;
         if(argflg(pr,L"-novirusalerts",  FLAG_NOVIRUSALERTS))continue;
         if(argflg(pr,L"-preservecfg",    FLAG_PRESERVECFG))continue;
+        if(argflg(pr,L"-hidepatreon",    FLAG_HIDEPATREON))continue;
 
         if(argflg(pr,L"-showdrpnames1",  FLAG_SHOWDRPNAMES1))continue;
         if(argflg(pr,L"-showdrpnames2",  FLAG_SHOWDRPNAMES2))continue;
@@ -258,6 +259,7 @@ void Settings_t::save()
     if(flags&FLAG_SHOWCONSOLE)fwprintf(f,L"-showconsole ");
     if(flags&FLAG_NORESTOREPOINT)fwprintf(f,L"-norestorepnt ");
     if(flags&FLAG_NOVIRUSALERTS)fwprintf(f,L"-novirusalerts ");
+    if(flags&FLAG_HIDEPATREON)fwprintf(f,L"-hidepatreon ");
 
     if(flags&FLAG_SHOWDRPNAMES1)fwprintf(f,L"-showdrpnames1 ");
     if(flags&FLAG_SHOWDRPNAMES2)fwprintf(f,L"-showdrpnames2 ");
