@@ -14,9 +14,9 @@ set c_do=0D
 set c_skip=02
 
 rem Versions
-set BOOST_VER=1_60_0
-set BOOST_VER2=1.60.0
-set BOOST_VER3=1_60
+set BOOST_VER=1_61_0
+set BOOST_VER2=1.61.0
+set BOOST_VER3=1_61
 rem set LIBTORRENT_VER2=1.1.0
 rem set LIBTORRENT_VER=1_1
 set LIBTORRENT_VER2=1.0.8
@@ -37,7 +37,7 @@ set GCC64_PREFIX1=/x86_64-w64-mingw32
 set GCC64_PREFIX=\x86_64-w64-mingw32
 
 rem GCC (common)
-if %TOOLSET%==gcc set TOOLSET2=mingw
+if %TOOLSET%==gcc set TOOLSET2=gcc
 set EXTRA_OPTIONS="cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
 set LIBBOOST32="%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a"
 set LIBBOOST64="%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a"
