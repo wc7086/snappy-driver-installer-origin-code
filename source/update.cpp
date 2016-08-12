@@ -117,6 +117,7 @@ class UpdaterImp:public Updater_t
     static int downloadmangar_exitflag;
     static bool finishedupdating;
     static bool finisheddownloading;
+    static bool movingfiles;
 
     int averageSpeed=0;
     long long torrenttime=0;
@@ -185,6 +186,7 @@ int Updater_t::connections=0;
 int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
+bool UpdaterImp::movingfiles;
 Event *UpdaterImp::downloadmangar_event=nullptr;
 ThreadAbs *UpdaterImp::thandle_download=nullptr;
 //}
@@ -864,14 +866,7 @@ void UpdaterImp::updateTorrentStatus()
     }
     torrent_status& st=temp[0];
 
-    t->downloaded=st.total_wanted_done;
-    t->downloadsize=st.total_wanted;
-    t->uploaded=st.total_payload_upload;
-
     t->elapsed=13;
-    t->status_strid=STR_TR_ST0+st.state;
-    if(hSession->is_paused())t->status_strid=STR_TR_ST4;
-    finisheddownloading=st.is_finished;
 
     wcscpy(t->error,L"");
 
@@ -886,11 +881,23 @@ void UpdaterImp::updateTorrentStatus()
     t->wasted=(int)st.total_redundant_bytes;
     t->wastedhashfailes=(int)st.total_failed_bytes;
 
+    t->downloaded=st.total_wanted_done;
+    t->downloadsize=st.total_wanted;
+    t->uploaded=st.total_payload_upload;
+
     if(torrenttime)t->elapsed=System.GetTickCountWr()-torrenttime;
     if(t->downloadspeed)
     {
         averageSpeed=static_cast<int>(SMOOTHING_FACTOR*t->downloadspeed+(1-SMOOTHING_FACTOR)*averageSpeed);
         if(averageSpeed)t->remaining=(t->downloadsize-t->downloaded)/averageSpeed*1000;
+    }
+
+    t->status_strid=STR_TR_ST0+st.state;
+    if(movingfiles)t->status_strid=STR_TR_ST8;
+    else if(hSession->is_paused())
+    {
+        *t={};  // zero out the stats
+        t->status_strid=STR_TR_ST4;
     }
 
     t->sessionpaused=hSession->is_paused();
@@ -1180,6 +1187,8 @@ void UpdaterImp::resumeDownloading()
         downloadmangar_event->raise();
     }
     hSession->resume();
+    // sometimes the torrent stays paused
+    hTorrent.resume();
     finisheddownloading=0;
     finishedupdating=0;
     torrenttime=System.GetTickCountWr();
@@ -1240,7 +1249,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 holder=hSession->pop_alert();
             }
 
-            if(finisheddownloading)
+            if(TorrentStatus.status_strid==STR_TR_ST0+libtorrent::torrent_status::finished)
             {
                 Log.print_con("Torrent: finished\n");
                 hSession->pause();
@@ -1265,7 +1274,11 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 }
 
                 // Move files
+                movingfiles=1;
+                Updater1->updateTorrentStatus();
                 Updater1->moveNewFiles();
+                movingfiles=0;
+                Updater1->updateTorrentStatus();
                 hTorrent.force_recheck();
 
                 // Update list

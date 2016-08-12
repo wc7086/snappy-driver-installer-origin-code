@@ -328,6 +328,7 @@ STR_TR_ST4              = "finished"
 STR_TR_ST5              = "seeding"
 STR_TR_ST6              = "allocating space"
 STR_TR_ST7              = "checking resume data"
+STR_TR_ST8              = "moving files"
 
 // Options dialog
 STR_OPTION_TITLE        = "Options"
