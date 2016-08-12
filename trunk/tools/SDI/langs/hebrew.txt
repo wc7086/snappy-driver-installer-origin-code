@@ -73,7 +73,7 @@ STR_SHOW_INVALID_H      = "הצג מתאמים אשר אינם נתמכים על
 
 STR_OPTIONS             = "אפשרויות"
 STR_OPTIONS_H           = ""
-STR_REBOOT              = "הפעל את המחשב מחדש בסיום"
+STR_REBOOT              = "הפעל את המחשב מחדש בסיום ההתקנה"
 STR_REBOOT_H            = "הפעל את המחשב מחדש (אם נצרך) אחרי ההתקנה (Ctrl+R)\n\nעצה: אתה יכול לבטל את ההפעלה מחדש מתי שתרצה ע"_QQ_"י ניקוי סימון התיבה."
 
 // Sysinfo
@@ -109,7 +109,7 @@ STR_SYSINF_MINS         = "דקות"
 STR_SYSINF_MONITORS     = "מוניטור(ים)"
 STR_SYSINF_CM           = "cm"
 STR_SYSINF_INCH         = "בפנים"
-STR_SYSINF_WIDE         = "רוחב מסך"
+STR_SYSINF_WIDE         = "מסך רחב"
 STR_SYSINF_MISC         = "עצה: לחץ על הלוח על מנת לפתוח את מנהל ההתקנים"
 STR_SYSINF_TYPE         = "סוג"
 STR_SYSINF_LAPTOP       = "מחשב נייד"
@@ -151,7 +151,7 @@ STR_HINT_SCROLL         = "עצה: גלגל עמוד אופקית עם גלגל 
 
 // Context menu
 STR_CONT_INSTALL        = "התקנה מתוזמנת "
-STR_CONT_SHOWALT        = "הצד מתאמים חלופיים"
+STR_CONT_SHOWALT        = "הצג מתאמים חלופיים"
 STR_CONT_OPENINF        = "פתח את קובץ המידע של המתאם שהותקן"
 STR_CONT_LOCATEINF      = "אתר את קובץ המידע של המתאם שהותקן"
 STR_CONT_HWID_SEARCH    = "חפש באינטרנט עבור מזהה החומרה"
@@ -170,7 +170,7 @@ STR_STATUS_RUNNING      = "המתאם פועל"
 STR_STATUS_STOPPED      = "מצב ההתקן הנוכחי לא מופעל"
 
 // Driver status
-STR_STATUS_INVALID      = "מתאם לא מתואם"
+STR_STATUS_INVALID      = "מתאם לא מתאים"
 STR_STATUS_MISSING      = "מתאם זמין (המתאם לא מותקן עדיין)"
 STR_STATUS_NOTSIGNED    = "(לא חתום)"
 
@@ -193,7 +193,7 @@ STR_STATUS_NF_UNKNOWN   = "ההתקן עובד מצוין אבל לא נמצא �
 STR_STATUS_NF_STANDARD  = "מתאם סטנרטי"
 
 // Virus
-STR_VIRUS               = "המידה עם האפליקציה עשוי להיות נגוע ע"_QQ_"י וירוס"
+STR_VIRUS               = "המדיה המכילה את האפליקציה עלולה להיות נגועה בווירוס"
 STR_VIRUS_AUTORUN       = "ישנו קובץ AUTORUN.INF בתיקיית השורש"
 STR_VIRUS_AUTORUN_H     = "ישנו קובץ AUTORUN.INF אשר יכול לשמש תוכניות זדוניות על מנת לנגע את מחשבך. \nעצה טובה לבדוק האם ישנו וירוס או לבדוק את הקובץ על מנת לוודאות שאפשר לסמוך עליו.  אם אתה בטוח שהוא נקי, הוסף [NOT_A_VIRUS] לבפנים על מנת להסתיר את ההזהרה."
 STR_VIRUS_RECYCLER      = "ישנה תיקיית RECYCLER בתיקיית השורש"
@@ -212,12 +212,12 @@ STR_INITIALIZING        = "מאתחל...."
 STR_INST_EXTRACT        = "מחלץ... %d%% (שלב 1 מתוך 2) "
 STR_INST_INSTALL        = "מתקין..... (שלב 2 מתוך 2)"
 STR_INST_OK             = "הותקן בהצלחה"
-STR_INST_REBOOT         = "הותקן בהצלחה (נצרכת הפעלה מחדש)"
-STR_INST_FAILED         = "נכשל בהתקנה, שגיאה"
+STR_INST_REBOOT         = "ההתקנה הושלמה (נדרשת הפעלה מחדש)"
+STR_INST_FAILED         = "נכשלה ההתקנה, שגיאה"
 
 STR_INST_INSTALLING     = "מתקין..."
 STR_INST_COMPLITED      = "ההתקנה הושלמה"
-STR_INST_COMPLITED_RB   = "ההתקנה הושלמה (נצרכת הפעלה מחדש)"
+STR_INST_COMPLITED_RB   = "ההתקנה הושלמה (נדרשת הפעלה מחדש)"
 STR_INST_CLOSE          = "(לחץ כאן כדי להסתיר את המתאמים המותקנים)"
 
 STR_EXTR_EXTRACTING     = "מחלץ...."
@@ -226,7 +226,7 @@ STR_EXTR_FAILED         = "נכשל בחילוץ, שגיאה"
 
 STR_INST_STOPPING       = "ההתקנה הופסקה"
 STR_INDEXING            = "מדפדף באינדקסים...."
-STR_INDEXLZMA           = "מחלץ אינדקסים....."
+STR_INDEXLZMA           = "דוחס אינדקסים....."
 STR_OF                  = "של"
 
 STR_RESTOREPOINT        = "צור נקודת שחזור"
@@ -248,17 +248,17 @@ STR_SYS_32              = "32 סיביות"
 STR_SYS_64              = "64 סיביות"
 STR_SYS_DEVICEMNG       = "מנהל ההתקנים"
 STR_SYS_DISINSTALL      = "בטל התקנה"
-STR_SYS_DISRESTPNT      = "בטל יצירת נקודת שחזור"
+STR_SYS_DISRESTPNT      = "בטל יצירת נקודות שחזור"
 
 // Update
 STR_UPD_DIALOG_TITLE    = "בדיקת עידכון"
 STR_UPD_DIALOG_MSG      = "האם אתה מעוניין לאפשר בדיקת עידכונים מקוונת, אוטומטית, עבור גרסאות חדשות של ערכות מתאם ואפליקציות?"
-STR_UPD_DIALOG_INDEX    = "האם אתה מעוניין להוריד את אינדקסים האחרונים על מנת שנוכל לקבוע איזה ערכת מתאם אתה צריך להוריד?"
+STR_UPD_DIALOG_INDEX    = "האם אתה מעוניין להוריד את האינדקסים האחרונים על מנת שנוכל לקבוע איזה ערכת מתאם אתה צריך להוריד?"
 
 STR_UPD_TITLE           = "עידכון"
 STR_UPD_BTN_ALL         = "סמן הכל"
 STR_UPD_BTN_NONE        = "בטל סימון הכל"
-STR_UPD_BTN_THISPC      = "סמן רק את אלה הנצרכים למחשב זה"
+STR_UPD_BTN_THISPC      = "סמן רק את אלה הנדרשים למחשב זה"
 STR_UPD_BTN_THISPC_H    = "על מנת שנוכל לקבוע איזה ערכת מתאם אתה צריך, עליך להוריד אינדקסים בתחילה."
 STR_UPD_ONLYUPDATES     = "אל תידע אודות ערכות מתאם חסרות"
 STR_UPD_TOTALSIZE       = "גודל הורדה סה"_QQ_"כ: %d MB "
@@ -289,7 +289,7 @@ STR_UPD_BASEFILES       = "אפליקציות+אינדקסים"
 STR_UPD_APP             = "אפליקציות"
 STR_UPD_INDEXES         = "אינדקסים"
 STR_UPD_UPDATEHINT1     = "עצה"
-STR_UPD_UPDATEHINT2     = "עליך לעדכן את הבסיס בתחילה על מנת להשתמש בתכונה זו."
+STR_UPD_UPDATEHINT2     = "עליך להתחיל בעדכון הבסיס על מנת להשתמש בתכונה הזה"
 
 // Update hint
 STR_UPD_AVAIL1          = "עידכונים זמינים: SDI R%d "
@@ -316,7 +316,7 @@ STR_DWN_PEERS           = "Peers"
 STR_DWN_WASTED          = "לא מנוצל"
 STR_DWN_WASTED_F        = "%s (%s in hashfails)"
 
-STR_DWN_ERRSES          = "נכשל להתחיל את תהליך העידכון"
+STR_DWN_ERRSES          = "נכשל בהתחלת תהליך העידכון"
 STR_DWN_ERRTOR          = "נכשל בהפעלת הטורנט"
 
 STR_TR_ST0              = "בתור לבדיקה"
@@ -342,12 +342,12 @@ STR_OPTION_DRPNAMES     = "שמות ערכות מתאם"
 STR_OPTION_HIDE_NAMES   = "אל תציג שמות ערכות מתאם"
 STR_OPTION_SHOW_RIGHT   = "הצג שמות ערכות מתאם בצד ימין"
 STR_OPTION_SHOW_ABOVE   = "הצג שמות ערכות מתאם למעלה"
-STR_OPTION_SCALLING     = "דרוג ממשק"
+STR_OPTION_SCALLING     = "קנה מידת הממשק"
 STR_OPTION_SCALLING_H   = ""
 STR_OPTION_SCALLING_SML = "קטן"
 STR_OPTION_SCALLING_BIG = "גדול"
 STR_OPTION_SCALLING_RST = "אפס"
-STR_OPTION_HINT         = "עצה"
+STR_OPTION_HINT         = "רמז"
 STR_OPTION_HINT_LABEL   = "עיכוב באלפיות השניה"
 
 // Updates tab

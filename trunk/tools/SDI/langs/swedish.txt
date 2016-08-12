@@ -1,4 +1,4 @@
-﻿STR_TRANSLATORS         = "Star, HB"
+﻿STR_TRANSLATORS         = "Hugga Bugga, Star"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

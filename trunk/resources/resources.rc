@@ -119,6 +119,7 @@ BEGIN
             0x410, 1200, // Italian
             0x411, 1200, // Japanese
             0x413, 1200, // Dutch
+			0x414, 1200, // Norwegian
             0x415, 1200, // Polish
             0x416, 1200, // Portuguese (Brazil)
             0x418, 1200, // Romanian
