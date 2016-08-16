@@ -314,7 +314,7 @@ STR_DWN_WASTED          = "Iššvaistyta"
 STR_DWN_WASTED_F        = "%s (%s iš maišos klaidų)"
 
 STR_DWN_ERRSES          = "Nepavyko paleisti naujinimo seanso"
-STR_DWN_ERRTOR          = "Nepavyko paleisti „Torrent"_QQ_""
+STR_DWN_ERRTOR          = "Nepavyko paleisti Torrent"
 
 STR_TR_ST0              = "tikrinimo eilėje"
 STR_TR_ST1              = "failų tikrinimas"
