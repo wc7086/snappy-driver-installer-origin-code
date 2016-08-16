@@ -328,6 +328,7 @@ STR_TR_ST4              = "Abgeschlossen"
 STR_TR_ST5              = "Seeding"
 STR_TR_ST6              = "Speicherplatzzuweisung"
 STR_TR_ST7              = "Wiederaufnahmeprüfung"
+STR_TR_ST8              = "Datenübertragung"
 
 // Options dialog
 STR_OPTION_TITLE        = "Optionen"

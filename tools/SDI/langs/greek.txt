@@ -328,6 +328,7 @@ STR_TR_ST4              = "Ολοκληρωθηκε"
 STR_TR_ST5              = "Τροφοδοτείται"
 STR_TR_ST6              = "Κατανομή χώρου"
 STR_TR_ST7              = "Επανάληψη"
+STR_TR_ST8              = "μετακίνηση αρχείων"
 
 // Options dialog
 STR_OPTION_TITLE        = "Επιλογές"

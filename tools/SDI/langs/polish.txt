@@ -328,6 +328,7 @@ STR_TR_ST4              = "zakończono"
 STR_TR_ST5              = "udostępnianie"
 STR_TR_ST6              = "przydzielanie miejsca"
 STR_TR_ST7              = "sprawdzanie danych wznawiania"
+STR_TR_ST8              = "przenoszenie plików"
 
 // Options dialog
 STR_OPTION_TITLE        = "Opcje"
