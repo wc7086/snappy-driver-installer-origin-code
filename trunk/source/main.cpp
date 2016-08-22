@@ -1278,9 +1278,12 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             DragAcceptFiles(hwnd,1);
 
             // drag/drop in elevated processes
-            (*pfnChangeWindowMessageFilter)(WM_DROPFILES,1);
-            (*pfnChangeWindowMessageFilter)(WM_COPYDATA,1);
-            (*pfnChangeWindowMessageFilter)(0x0049,1);
+            if(pfnChangeWindowMessageFilter) // The function isn't available on Windows 2000 and XP
+            {
+                (*pfnChangeWindowMessageFilter)(WM_DROPFILES,1);
+                (*pfnChangeWindowMessageFilter)(WM_COPYDATA,1);
+                (*pfnChangeWindowMessageFilter)(0x0049,1);
+            }
 
             manager_g->populate();
             manager_g->filter(Settings.filters);

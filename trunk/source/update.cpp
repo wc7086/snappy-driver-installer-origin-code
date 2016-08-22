@@ -769,11 +769,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     switch(manager_g->getlocale()&0xFF)
     {
         // Not translated
-        case 0x0B: // Finnish (fi)
-        case 0x37: // Georgian (ka)
-        case 0x21: // Indonesian (id)
-        case 0x1b: // Slovak (sk)
-        case 0x1E: // Thai (th)
         default:
             manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,1,0,0);
             break;
@@ -782,32 +777,36 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         case 0x1A: // Bosnian (bs) and Croatian (hr) and Serbian (sr)
         case 0x04: // Chinese (zh)
         case 0x06: // Danish (da)
+        case 0x0B: // Finnish (fi)
+        case 0x21: // Indonesian (id)
+        case 0x37: // Georgian (ka)
         case 0x12: // Korean (ko)
+        case 0x1b: // Slovak (sk)
         case 0x24: // Slovenian (sl)
             manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,1,0,0);
             break;
 
         // Translation is out of date
         case 0x2B: // Armenian (hy)
-        case 0x2C: // Azerbaijani (az)
+        case 0x2C: // Azerbaijani (az) [no translators on Transifex]
+        case 0x05: // Czech (cs)
         case 0x27: // Lithuanian (lt)
-        case 0x18: // Romanian (ro)
-        case 0x26: // Latvian (lv)
+        case 0x10: // Italian (it)
+        case 0x18: // Romanian (ro) [no translators on Transifex]
+        case 0x26: // Latvian (lv) [no translators on Transifex]
             manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,2,0,0);
             break;
 
         // Translation is in good shape
         case 0x01: // Arabic (ar)
         case 0x02: // Bulgarian (bg)
-        case 0x05: // Czech (cs)
         case 0x09: // English (en)
         case 0x0C: // French (fr)
         case 0x07: // German (de)
         case 0x08: // Greek (el)
         case 0x0D: // Hebrew (he)
         case 0x0E: // Hungarian (hu)
-        case 0x10: // Italian (it)
-        case 0x11: // Japanese (ja)
+        case 0x11: // Japanese (ja) [no translators on Transifex]
         case 0x13: // Dutch (nl)
         case 0x14: // Norwegian (no)
         case 0x15: // Polish (pl)
