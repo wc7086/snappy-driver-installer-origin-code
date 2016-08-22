@@ -1,4 +1,4 @@
-﻿STR_TRANSLATORS         = "atreyu_ts, raddy, Sorc, samsobi"
+﻿STR_TRANSLATORS         = "atreyu_ts, raddy, samsobi, Sorc"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -262,6 +262,7 @@ STR_UPD_BTN_THISPC      = "Виділити тільки для цього ПК"
 STR_UPD_BTN_THISPC_H    = "Для того, щоб визначити які драйверпаки містять оновлення для цього ПК, потрібно спочатку завантажити індекси."
 STR_UPD_ONLYUPDATES     = "Не сповіщати про відсутні драйверпаки"
 STR_UPD_TOTALSIZE       = "Сумарний обсяг оновлень: %d МБ"
+STR_UPD_TOTALAVAIL      = "Загально доступно вільного місця: %d Mб"
 STR_UPD_BTN_OK          = "OK"
 STR_UPD_BTN_CANCEL      = "Відмінити"
 STR_UPD_BTN_ACCEPT      = "Застосувати"
@@ -327,6 +328,7 @@ STR_TR_ST4              = "завершено"
 STR_TR_ST5              = "роздається"
 STR_TR_ST6              = "резервується місце"
 STR_TR_ST7              = "відновлення"
+STR_TR_ST8              = "Переміщення файлів"
 
 // Options dialog
 STR_OPTION_TITLE        = "Опції"

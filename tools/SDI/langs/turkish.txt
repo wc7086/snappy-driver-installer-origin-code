@@ -328,6 +328,7 @@ STR_TR_ST4              = "tamamlandı"
 STR_TR_ST5              = "sunuluyor"
 STR_TR_ST6              = "boş alan ayrılıyor"
 STR_TR_ST7              = "dosya denetleniyor"
+STR_TR_ST8              = "dosyalar taşınıyor"
 
 // Options dialog
 STR_OPTION_TITLE        = "Seçenekler"

@@ -1,4 +1,5 @@
 ﻿STR_TRANSLATORS         = "Tilt"
+// Hey, Tilt. Why don't you come to https://www.transifex.com/snappy-driver-installer/snappy-driver-installer?
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""

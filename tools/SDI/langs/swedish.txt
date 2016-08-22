@@ -56,7 +56,7 @@ STR_SHOW_WORSE_RANK_H   = "Visar drivrutiner från drivrutinpaket som matchar s�
 STR_SHOW_NOTFOUND       = "Saknade i drivrutinpaket"
 STR_SHOW_NOTFOUND_H     = "Drivrutiner som inte finns i något drivrutinpaket och kan därför inte installeras."
 STR_SHOW_NF_MISSING     = "Inte installerad"
-STR_SHOW_NF_MISSING_H   = "Visar produkter, som kräver drivrutiner, men ingen drivrutin hittas i något drivrutinpaket.\n\nDu kan försöka leta efter dessa drivrutiner på Internet eller på DVD.\n\nFör att kopiera Hårdvaru-ID, kan du högerklicka på enheten.\nVi rekommenderar att meddela oss om saknade drivrutiner, så att de kan läggas till i drivrutinpaket."
+STR_SHOW_NF_MISSING_H   = "Visar produkter som kräver drivrutiner, men ingen drivrutin hittas i något drivrutinpaket.\n\nDu kan försöka leta efter dessa drivrutiner på Internet eller på DVD.\n\nFör att kopiera Hårdvaru-ID, kan du högerklicka på enheten.\nVi rekommenderar att meddela oss om saknade drivrutiner, så att de kan läggas till i drivrutinpaket."
 STR_SHOW_NF_UNKNOWN     = "Okänd"
 STR_SHOW_NF_UNKNOWN_H   = "Visar okända drivrutiner som är installerade i systemet, men inte finns i något drivrutinpaket.\n\nVi rekommenderar att du meddela oss om du har några drivrutiner som kan läggas till i drivrutinpaket."
 STR_SHOW_NF_STANDARD    = "Standard"
@@ -290,7 +290,7 @@ STR_UPD_BASEFILES       = "Program+index"
 STR_UPD_APP             = "Applikation"
 STR_UPD_INDEXES         = "Index"
 STR_UPD_UPDATEHINT1     = "Tips"
-STR_UPD_UPDATEHINT2     = "Du måste uppdatera basen först för att använda denna funktion."
+STR_UPD_UPDATEHINT2     = "Du måste uppdatera databasens index först för att använda denna funktion."
 
 // Update hint
 STR_UPD_AVAIL1          = "Uppdateringar finns: SDI R%d"
@@ -328,6 +328,7 @@ STR_TR_ST4              = "färdig"
 STR_TR_ST5              = "seeding"
 STR_TR_ST6              = "allokerar utrymme"
 STR_TR_ST7              = "kontrollerar återupptagen data"
+STR_TR_ST8              = "flyttar filer"
 
 // Options dialog
 STR_OPTION_TITLE        = "Alternativ"

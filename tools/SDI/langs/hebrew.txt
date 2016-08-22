@@ -28,11 +28,11 @@ STR_EXPERT              = "מצב מתקדם"
 STR_EXPERT_H            = "אפשר מצב מתקדם.\n\nעצה: החזק את לחצן Ctrl או Space מעל מנהל התקן כדי לקבל יותר אינפורמציה בקשר אליו."
 
 STR_OPENLOGS            = "פתח יומני רישום"
-STR_OPENLOGS_H          = "פתח את התיקייה המכילה את יומני הרישום ותפיסות תמונה.\n\nהינך יכול לשלוח למפתח יומני רישום ע"_QQ_"י פתיחת אתר www.sdi-tool.org ומעבר לדף התמיכה.\n\nתפיסות תמונה יכולות לשמש עזרה מרחוק לבחירת מנהל התקן מתאים עבור משתמשים. "
+STR_OPENLOGS_H          = "פתח את התיקייה המכילה את יומני הרישום ותפיסות תמונה.\n\nהינך יכול לשלוח למפתח יומני רישום על ידי פתיחת אתר www.sdi-tool.org ומעבר לדף התמיכה.\n\nתפיסות תמונה יכולות לשמש עזרה מרחוק לבחירת מנהל התקן מתאים עבור משתמשים. "
 STR_SNAPSHOT            = "טען תפיסת תמונה"
 STR_SNAPSHOT_H          = "טען תפיסת תמונה של מערכת אחרת.\n\nתפיסות תמונה נוצרות אוטומטית בתיקיית יומני הרישום. הם מכילות מידע בקשר להתקנים, מנהלים, גרסאות Windows, סוללה ומוניטורים.\n\nתפיסות תמונה אינם מכילות מידע בקשר לערכות מנהלי ההתקן במערכות מרוחקות.\n\nמחמת כך, טעינת תפיסת תמונה מאפשרת אימולציה של המערכת המרוחקת אבל החיפש עבור מנהלי התקן נעשה בערכות המנהלי התקן המקומיות."
 STR_EXTRACT             = "חלץ אל...."
-STR_EXTRACT_H           = "חלץ מנהלי התקן נבחרים\n\nהינך יכול להשתמש בהם ליצירת גיבוי למנהלי התקן. ודא שמנהלי התקן שהותקנו לא מזמן עובדים כהלכה, סמן את תיבת 'הצג מנהלי התקן נוכחיים' ולחץ על 'חלץ אל...."_QQ_""
+STR_EXTRACT_H           = "חלץ מנהלי התקן נבחרים\n\nהינך יכול להשתמש בהם ליצירת גיבוי למנהלי התקן. ודא שמנהלי התקן שהותקנו לא מזמן עובדים כהלכה, סמן את תיבת 'הצג מנהלי התקן נוכחיים' ולחץ על 'חלץ אל...'"
 STR_DRVDIR              = "בחר תיקיית מנהלי התקן....."
 STR_DRVDIR_H            = "בחר תיקייה אחרת עם ערכות מנהל או מנהלי התקן מחולצים. הינך יכול להשתמש בזה כדי לחפש אחר מנהלי התקן במנהל CD/DVD."
 STR_OPTIONS_BTN         = "אפשרויות"
@@ -69,12 +69,12 @@ STR_SHOW_ONE_H          = "הצג רק את המנהלי התקן הטובים �
 STR_SHOW_DUP            = "הצג כפילויות"
 STR_SHOW_DUP_H          = "הצג ממנהלי התקן כפולים.\n\nחלק מהמנהלים הם כפולים מספר פעמים בתוך ערכות המנהל עבור סיבות טכניות."
 STR_SHOW_INVALID        = "הצג 'לא תקף'"
-STR_SHOW_INVALID_H      = "הצג מנהלי התקן אשר אינם נתמכים על ידי המערכת הזו.\n\nאנו ממליצים לא להתקין את המנהלים הללו כיוון שהם לא נתמכים ע"_QQ_"י גרסאת המערכת שלך."
+STR_SHOW_INVALID_H      = "הצג מנהלי התקן אשר אינם נתמכים על ידי המערכת הזו.\n\nאנו ממליצים לא להתקין את המנהלים הללו כיוון שהם לא נתמכים על ידי גרסאת המערכת שלך."
 
 STR_OPTIONS             = "אפשרויות"
 STR_OPTIONS_H           = ""
 STR_REBOOT              = "הפעל את המחשב מחדש בסיום ההתקנה"
-STR_REBOOT_H            = "הפעל את המחשב מחדש (אם נצרך) אחרי ההתקנה (Ctrl+R)\n\nעצה: אתה יכול לבטל את ההפעלה מחדש מתי שתרצה ע"_QQ_"י ניקוי סימון התיבה."
+STR_REBOOT_H            = "הפעל את המחשב מחדש (אם נצרך) אחרי ההתקנה (Ctrl+R)\n\nעצה: אתה יכול לבטל את ההפעלה מחדש מתי שתרצה על ידי ניקוי סימון התיבה."
 
 // Sysinfo
 STR_SYSINF_WINDOWS      = "WIndows"
@@ -126,7 +126,7 @@ STR_ABOUT_DEV_TITLE     = "מפתח:"
 STR_ABOUT_TESTERS_TITLE = "תורמים:"
 //STR_ABOUT_TESTERS_LIST
 STR_ABOUT_TRANS_TITLE   = "מתרגמים:"
-STR_ABOUT_LICENSE       = "Snappy Driver Installer הוא רשום תחת ההסכמים של GNU General Public License version 3\n\n\n\n\n\n\nSnappy Driver Installer משתמש בטכנולוגיות הבאות:\n* WebP רשום תחת ההסכמים של BSD license\n* libtorrent רשום תחת ההסכמים של BSD license\n* Backtrace רשום תחת ההסכמים של BSD license\n* 7-Zip רשום תחת ההסכמים של GNU Library אוLesser General Public License \nversion 2\n\nSnappy Driver Installer מונע ע"_QQ_"י ערכות מנהל אשר פותחו על קבוצת DriverPacks.\n\n(Click now in order to visit a website)"
+STR_ABOUT_LICENSE       = "Snappy Driver Installer הוא רשום תחת ההסכמים של GNU General Public License version 3\n\n\n\n\n\n\nSnappy Driver Installer משתמש בטכנולוגיות הבאות:\n* WebP רשום תחת ההסכמים של BSD license\n* libtorrent רשום תחת ההסכמים של BSD license\n* Backtrace רשום תחת ההסכמים של BSD license\n* 7-Zip רשום תחת ההסכמים של GNU Library אוLesser General Public License \nversion 2\n\nSnappy Driver Installer מונע על ידי ערכות מנהל אשר פותחו על קבוצת DriverPacks.\n\n(Click now in order to visit a website)"
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "לא ידוע"
