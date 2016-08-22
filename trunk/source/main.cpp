@@ -57,6 +57,13 @@ int bundle_display=1;
 int bundle_shadow=0;
 bool emptydrp;
 WinVersions winVersions;
+
+// drag/drop in elevated processess
+// https://helgeklein.com/blog/2010/03/how-to-enable-drag-and-drop-for-an-elevated-mfc-application-on-vistawindows-7/
+typedef BOOL (WINAPI *PFN_CHANGEWINDOWMESSAGEFILTER)(UINT,DWORD);
+HMODULE hModuleUser32=GetModuleHandle(TEXT("user32.dll"));
+PFN_CHANGEWINDOWMESSAGEFILTER pfnChangeWindowMessageFilter=(PFN_CHANGEWINDOWMESSAGEFILTER)GetProcAddress(hModuleUser32,"ChangeWindowMessageFilter");
+
 //}
 
 //{ Objects
@@ -1269,6 +1276,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             vLang->StartMonitor();
             vTheme->StartMonitor();
             DragAcceptFiles(hwnd,1);
+
+            // drag/drop in elevated processes
+            (*pfnChangeWindowMessageFilter)(WM_DROPFILES,1);
+            (*pfnChangeWindowMessageFilter)(WM_COPYDATA,1);
+            (*pfnChangeWindowMessageFilter)(0x0049,1);
 
             manager_g->populate();
             manager_g->filter(Settings.filters);
