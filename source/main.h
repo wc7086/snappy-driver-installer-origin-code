@@ -121,7 +121,7 @@ public:
     Popup_t();
     ~Popup_t();
     void init();
-    void drawpopup(size_t itembar,int type,int x,int y,HWND hwnd);
+    void drawpopup(size_t itembar,int str_id,int type,int x,int y,HWND hwnd);
     void popup_resize(int x,int y);
     void onHover();
     void onLeave();
@@ -135,6 +135,7 @@ public:
     wFont *hFontP;
     wFont *hFontBold;
     size_t floating_itembar=0;
+    int floating_str_id=0;
 
     LRESULT PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lParam);
 };

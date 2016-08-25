@@ -790,7 +790,7 @@ void popup_about(Canvas &canvas)
     Popup->popup_resize(D_X(POPUP_WX),rect.bottom+D_X(POPUP_OFSY));
 }
 
-void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
+void Popup_t::drawpopup(size_t itembar,int str_id,int type,int x,int y,HWND hwnd)
 {
     POINT p={x,y};
     HMONITOR hMonitor;
@@ -798,12 +798,13 @@ void Popup_t::drawpopup(size_t itembar,int type,int x,int y,HWND hwnd)
     int needupdate;
 
     if((type==FLOATING_CMPDRIVER||type==FLOATING_DRIVERLST)&&itembar==0)type=FLOATING_NONE;
-    if(type==FLOATING_TOOLTIP&&(itembar<=1||!*STR(itembar)))type=FLOATING_NONE;
+    if(type==FLOATING_TOOLTIP&&(str_id<=1||!*STR(str_id)))type=FLOATING_NONE;
 
     if(rtl)p.x+=floating_x;
     ClientToScreen(hwnd,&p);
     needupdate=floating_itembar!=itembar||floating_type!=type;
     floating_itembar=itembar;
+    floating_str_id=str_id;
     floating_type=type;
 
     if(type!=FLOATING_NONE)
