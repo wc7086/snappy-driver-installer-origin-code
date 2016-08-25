@@ -435,7 +435,7 @@ void MainWindow_t::MainLoop(int nCmd)
                 {
                     if(msg.wParam==VK_CONTROL||msg.wParam==VK_SPACE)
                     {
-                        Popup->drawpopup(0,FLOATING_NONE,0,0,hField);
+                        Popup->drawpopup(0,0,FLOATING_NONE,0,0,hField);
                     }
                     if(msg.wParam==VK_CONTROL)ctrl_down=0;
                     if(msg.wParam==VK_SPACE)  space_down=0;
@@ -1974,25 +1974,25 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
 
                 manager_g->hitscan(x,y,&itembar_i,&i);
                 if((i==0||i==3)&&itembar_i>=RES_SLOTS&&(ctrl_down||space_down||Settings.expertmode))
-                    Popup->drawpopup(itembar_i,type,x,y,hField);
+                    Popup->drawpopup(itembar_i,0,type,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_AUTORUN)
-                    Popup->drawpopup(STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,STR_VIRUS_AUTORUN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_RECYCLER)
-                    Popup->drawpopup(STR_VIRUS_RECYCLER_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,STR_VIRUS_RECYCLER_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_VIRUS_HIDDEN)
-                    Popup->drawpopup(STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,STR_VIRUS_HIDDEN_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_EXTRACTING&&installmode)
-                    Popup->drawpopup((instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,(instflag&INSTALLDRIVERS)?STR_HINT_STOPINST:STR_HINT_STOPEXTR,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_RESTORE_POINT)
-                    Popup->drawpopup(STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
-                    Popup->drawpopup(0,FLOATING_DOWNLOAD,x,y,hField);
+                    Popup->drawpopup(itembar_i,0,FLOATING_DOWNLOAD,x,y,hField);
                 else if(itembar_i==SLOT_PATREON)
-                    Popup->drawpopup(STR_PATREON_H,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,STR_PATREON_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
-                    Popup->drawpopup(STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
+                    Popup->drawpopup(itembar_i,STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
-                    Popup->drawpopup(0,FLOATING_NONE,0,0,hField);
+                    Popup->drawpopup(0,0,FLOATING_NONE,0,0,hField);
 
                 if(itembar_i!=field_lasti||i!=field_lastz)redrawfield();
                 field_lasti=itembar_i;
@@ -2057,8 +2057,8 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
             rect.bottom=floating_y;
 
             canvasPopup->SetFont(Popup->hFontP);
-            if(floating_itembar==SLOT_PATREON)break;
-            canvasPopup->CalcBoundingBox(STR(floating_itembar),reinterpret_cast<RECT_WR *>(&rect));
+            if(!floating_str_id)break;
+            canvasPopup->CalcBoundingBox(STR(floating_str_id),reinterpret_cast<RECT_WR *>(&rect));
 
             AdjustWindowRectEx(&rect,WS_POPUPWINDOW|WS_VISIBLE,0,0);
             popup_resize(rect.right-rect.left+D_X(POPUP_OFSX)*2,rect.bottom-rect.top+D_X(POPUP_OFSY)*2);
@@ -2093,7 +2093,7 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
                     rect.bottom-=D_X(POPUP_OFSY);
                     canvasPopup->SetFont(Popup->hFontP);
                     canvasPopup->SetTextColor(D_C(POPUP_TEXT_COLOR));
-                    canvasPopup->DrawTextRect(STR(floating_itembar),reinterpret_cast<RECT_WR *>(&rect));
+                    if(floating_str_id)canvasPopup->DrawTextRect(STR(floating_str_id),reinterpret_cast<RECT_WR *>(&rect));
                     break;
 
                 case FLOATING_CMPDRIVER:

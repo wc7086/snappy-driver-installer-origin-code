@@ -451,7 +451,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
     switch(uMsg)
     {
         case WM_MOUSEMOVE:
-            Popup->drawpopup(STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
+            Popup->drawpopup(0,STR_UPD_BTN_THISPC_H,FLOATING_TOOLTIP,x,y,hWnd);
             ShowWindow(Popup->hPopup,SW_SHOWNOACTIVATE);
             if(!bMouseInWindow)
             {
@@ -466,7 +466,7 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
 
         case WM_MOUSELEAVE:
             bMouseInWindow=0;
-            Popup->drawpopup(0,FLOATING_NONE,0,0,hWnd);
+            Popup->drawpopup(0,0,FLOATING_NONE,0,0,hWnd);
             break;
 
         default:
