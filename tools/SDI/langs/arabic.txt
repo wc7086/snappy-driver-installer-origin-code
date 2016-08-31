@@ -130,11 +130,11 @@ STR_ABOUT_LICENSE       = "Snappy Driver Installer مرخص بموجب شروط 
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "غير معروف"
-STR_HINT_ANALYSIS       = "TrackingID"
+STR_HINT_ANALYSIS       = "رقم التتبع"
 STR_HINT_SIGNATURE      = "التوقيع:"
 STR_HINT_DRP            = "حزمة التعريف"
 STR_HINT_DEVICE         = "الجهاز"
-STR_HINT_HARDWAREID     = "HardwareID"
+STR_HINT_HARDWAREID     = "الرقم المميز للقطعه"
 STR_HINT_COMPID         = "CompatibleID"
 STR_HINT_INSTDRV        = "التعريفات المثبتة"
 STR_HINT_AVAILDRV       = "التعريف المتاح"
@@ -143,14 +143,14 @@ STR_HINT_MANUF          = "الشركة المصنعة:"
 STR_HINT_PROVIDER       = "المزود:"
 STR_HINT_DATE           = "التاريخ:"
 STR_HINT_VERSION        = "الإصدار:"
-STR_HINT_ID             = "ID:"
+STR_HINT_ID             = "الرقم"
 STR_HINT_INF            = "ملف Inf:"
 STR_HINT_SECTION        = "القسم:"
 STR_HINT_SCORE          = "الدرجة:"
-STR_HINT_SCROLL         = "تلميح: حرك الصفحة أفقياً بأستخدام عجلة الفأر."
+STR_HINT_SCROLL         = "تلميح: حرك الصفحة أفقياً بأستخدام عجلة الفاره"
 
 // Context menu
-STR_CONT_INSTALL        = "الجدول الزمني للتثبيت"
+STR_CONT_INSTALL        = "تثبيت باستخدام الجدول"
 STR_CONT_SHOWALT        = "إظهار تعريفات بديلة"
 STR_CONT_OPENINF        = "أفتح ملف الـinf للتعريف المثبت"
 STR_CONT_LOCATEINF      = "حدد موقع ملف الـinf للتعريف المثبت"
@@ -158,7 +158,7 @@ STR_CONT_HWID_SEARCH    = "ابحث بالانترنت عن طريق رقم ال
 STR_CONT_HWID_CLIP      = "انسخ  رقم القطعه"
 
 // Misc
-STR_OPENSNAPSHOT        = "ملفات اللقطات (*.snp)/0*.snp/0All files/0*.*/0/0"
+STR_OPENSNAPSHOT        = "ملفات اللقطات بامتداد  (*.snp)/0*.snp/0All files/0*.*/0/0"
 STR_EXTRACTFOLDER       = "يرجى اختيار المجلد للحفظ"
 
 // Device status
@@ -172,7 +172,7 @@ STR_STATUS_STOPPED      = "الجهاز حاليا متوقف"
 // Driver status
 STR_STATUS_INVALID      = "تعريف غير متوافق"
 STR_STATUS_MISSING      = "التعريف متاح (التعريف غير مثبت بعد)"
-STR_STATUS_NOTSIGNED    = " (غير موثق)"
+STR_STATUS_NOTSIGNED    = " (غير موثق) تعريف بديل"
 
 STR_STATUS_BETTER_NEW   = "تعريف محدث متوفر وأيضا أفضل من الأمثل"
 STR_STATUS_SAME_NEW     = "تعريف محدث متوفر"
@@ -193,8 +193,8 @@ STR_STATUS_NF_UNKNOWN   = "الجهاز يعمل بشكل صحيح ولكن لم
 STR_STATUS_NF_STANDARD  = "التعريف الافتراضي"
 
 // Virus
-STR_VIRUS               = "ملف الميديا مع التطبيق قد يكون تأثر بفيروس"
-STR_VIRUS_AUTORUN       = "يوجد ملف AUTORUN.INF في جذور المجلد"
+STR_VIRUS               = "القرص الذي يحتوي على برنامج SDI مصاب بفايروس اوتو رن يرجى فحص الجهاز"
+STR_VIRUS_AUTORUN       = "يوجد ملف AUTORUN.INF في جذور المجلد وهو من صنع فايروس ( اوتو رن )"
 STR_VIRUS_AUTORUN_H     = "هناك ملف Autorun.inf والتي يمكن استخدامها من قبل البرامج الضارة لإصابة الكمبيوتر الخاص بك. ينصح ان تفحصه من الفيروسات أو مراجعة الملف للتأكد من أنه موثوق به.\n\nإذا كنت على يقين من انها نظيفة، اضف [NOT_A_VIRUS] داخل لإخفاء هذا التحذير."
 STR_VIRUS_RECYCLER      = "هناك مجلد RECYCLER في جذر المجلد"
 STR_VIRUS_RECYCLER_H    = "أنه من غير المعتاد لهذه الوسائط أن يوجد فيه مجلد RECYCLER. ينصح أن تفحص المجلد من الفيروسات.\n\nإذا كنت على يقين من انها نظيفة، قم بإنشاء ملف يسمى not_a_virus.txt داخل المجلد."
@@ -203,9 +203,9 @@ STR_VIRUS_HIDDEN_H      = "يحتوي جذر المجلد علي مجلدات م
 
 // Status
 STR_CLOSE_SNAPSHOT      = "(انقر هنا لوقف المحاكاة)"
-STR_EMPTYDRP            = "أتصل بالإنترنت لتحميل حزمة التعريفات أو ضع التعريفات مفككة في المجلد التالي"
+STR_EMPTYDRP            = "أتصل بالإنترنت لتحميل حزمة التعريفات أو ضع حزم  التعريفات في المجلد التالي"
 STR_CLOSE_DRPEXT        = "(انقر هنا للعودة إلى المجلد الافتراضي)"
-STR_NOUPDATES           = "التعريفات محدثة"
+STR_NOUPDATES           = "التعريفات محدثة الى اخر اصدار"
 STR_INITIALIZING        = "يتم التهيئة..."
 
 // Progressbar
@@ -232,13 +232,13 @@ STR_OF                  = "من"
 STR_RESTOREPOINT        = "انشء نطقه العوده"
 STR_RESTOREPOINT_H      = "تستخدم هذه الخاصيخ لانشاء نقطه عوده في حال فشل تنصيب التعريف وعدم عمل النظام(Ctrl+P).\n\nHINT: قم  بالضغط على زر الفاره اليمين للخيارات."
 STR_REST_SCHEDULE       = "تم اظافه نطقه العوده"
-STR_REST_ROLLBACK       = "استعاده النظام من ملف نقطه العوده..."
+STR_REST_ROLLBACK       = "استعاده النظام من ملف نقطه العوده...لارجاع الويندوز الى تاريخ سابق"
 STR_REST_CREATING       = "يتم عمل نقطه العوده..."
 STR_REST_CREATED        = "تم عمل نقطه العوده"
-STR_REST_FAILED         = "فشل في تمكين نقطه العوده"
+STR_REST_FAILED         = "فشل في تمكين نقطه العوده والسبب هو تعطيل خاصيه نقطه العوده في الوندوز"
 
 STR_INST_QUIT_TITLE     = "يتم الالغاء"
-STR_INST_QUIT_MSG       = "هل أنت متأكد من أنك تريد مقاطعة التثبيت؟"
+STR_INST_QUIT_MSG       = "هل أنت متأكد من أنك تريد الغاء تثبيت التعريفات ؟"
 STR_HINT_STOPINST       = "أظغط هنا لإيقاف تثبيت التعريفات."
 STR_HINT_STOPEXTR       = "اظغط هنا لايقاف استخراج التعريفات."
 STR_HINT_DRIVER         = "أستمر في الضغط على زر Ctrl لمقارنة التعريف المتاحة بالتعريف المثبت حاليا على النظام.\nاظغط على زر Spacebar لعرض معلومات حول التعريفات البديلة."
@@ -247,8 +247,8 @@ STR_SYS_WINVER          = "إصدار نظام التشغيل Windows"
 STR_SYS_32              = "32-bit"
 STR_SYS_64              = "64-bit"
 STR_SYS_DEVICEMNG       = "إدارة الأجهزة"
-STR_SYS_DISINSTALL      = "تعطيل التثبيت"
-STR_SYS_DISRESTPNT      = "عطل نقاط الاستعادة"
+STR_SYS_DISINSTALL      = "تعطيل خاصيه النوافذ لتسهيل عمليه تثبيت التعريف "
+STR_SYS_DISRESTPNT      = "تخطي  تكوين نقطه الاستعادة"
 
 // Update
 STR_UPD_DIALOG_TITLE    = "يتم التحقيق من التثبيت"
@@ -278,12 +278,12 @@ STR_UPD_NO              = "لا"
 STR_UPD_UNKNOWN         = "غير معروف"
 STR_UPD_MISSING         = "مفقود"
 STR_UPD_BYTES           = "بايت"
-STR_UPD_KB              = "KB"
+STR_UPD_KB              = "كيلوبايت"
 STR_UPD_MB              = "ميجا بايت"
-STR_UPD_GB              = "GB"
+STR_UPD_GB              = "قيقابايت"
 STR_UPD_SEC             = "/s"
-STR_UPD_TSEC            = "ثانية"
-STR_UPD_TMIN            = "دقيقة"
+STR_UPD_TSEC            = "ثواني"
+STR_UPD_TMIN            = "دقائق"
 STR_UPD_THOUR           = "ساعات"
 STR_UPD_TDAY            = "أيام"
 STR_UPD_BASEFILES       = "التطبيق + الفهارس"
@@ -328,6 +328,7 @@ STR_TR_ST4              = "تم الانتهاء"
 STR_TR_ST5              = "يتم رفع البذور"
 STR_TR_ST6              = "يتم تخصيص مساحة"
 STR_TR_ST7              = "التحقق من تكملة البيانات"
+STR_TR_ST8              = "نقل الملفات"
 
 // Options dialog
 STR_OPTION_TITLE        = "الخيارات"

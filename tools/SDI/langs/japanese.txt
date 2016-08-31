@@ -1,5 +1,4 @@
 ﻿STR_TRANSLATORS         = "Tilt"
-// Hey, Tilt. Why don't you come to https://www.transifex.com/snappy-driver-installer/snappy-driver-installer?
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -329,6 +328,7 @@ STR_TR_ST4              = "完了済み"
 STR_TR_ST5              = "シード中"
 STR_TR_ST6              = "領域を割り当て中"
 STR_TR_ST7              = "リジュームデータを確認中"
+STR_TR_ST8              = "ファイルを移動中"
 
 // Options dialog
 STR_OPTION_TITLE        = "オプション"
