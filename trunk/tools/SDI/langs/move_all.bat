@@ -28,3 +28,5 @@ copy gui_he.ini hebrew.txt
 copy gui_lt.ini lithuanian.txt
 copy gui_et.ini estonian.txt
 copy gui_no.ini norwegian.txt
+copy gui_ka.ini georgian.txt
+copy gui_da.ini danish.txt
