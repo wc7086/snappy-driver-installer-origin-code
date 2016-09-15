@@ -778,7 +778,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         case 0x04: // Chinese (zh)
         case 0x0B: // Finnish (fi)
         case 0x21: // Indonesian (id)
-        case 0x12: // Korean (ko)
         case 0x1b: // Slovak (sk)
         case 0x24: // Slovenian (sl)
             manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,1,0,0);
@@ -787,6 +786,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         // Translation is out of date
         case 0x2B: // Armenian (hy)
         case 0x2C: // Azerbaijani (az) [no translators on Transifex]
+        case 0x12: // Korean (ko)
         case 0x05: // Czech (cs)
         case 0x27: // Lithuanian (lt)
         case 0x18: // Romanian (ro) [no translators on Transifex]

@@ -119,6 +119,7 @@ BEGIN
             0x40E, 1200, // Hungarian
             0x410, 1200, // Italian
             0x411, 1200, // Japanese
+            0x412, 1200, // Korean
             0x413, 1200, // Dutch
             0x414, 1200, // Norwegian
             0x415, 1200, // Polish
