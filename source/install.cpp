@@ -277,7 +277,8 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     if(manager_g->items_list[SLOT_RESTORE_POINT].checked)
     {
         hinstLib=LoadLibrary(L"SrClient.dll");
-        WIN5f_SRSetRestorePointW=(WINAPI5t_SRSetRestorePointW)GetProcAddress(hinstLib,"SRSetRestorePointW");
+        if(hinstLib!=NULL)
+            WIN5f_SRSetRestorePointW=(WINAPI5t_SRSetRestorePointW)GetProcAddress(hinstLib,"SRSetRestorePointW");
 
         if(hinstLib&&WIN5f_SRSetRestorePointW)
         {
