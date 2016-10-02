@@ -16,6 +16,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string>
+#include "windows.h"
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
@@ -70,8 +71,8 @@ class SystemImp
     static WStringShort str;
     static bool nar_active;
 
+    HINSTANCE hinstLib;
     WINAPI5_vscwprintf _vscwprintf_func=nullptr;
-    bool _vscwprintf_init_lazy=false;
 
 public:
     SystemImp();
