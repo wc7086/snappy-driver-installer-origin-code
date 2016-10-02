@@ -293,11 +293,10 @@ int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int w
 
 int SystemImp::_vscwprintf_dll(const wchar_t * _Format,va_list _ArgList)
 {
-    if(!_vscwprintf_init_lazy)
+    if(hinstLib==NULL)
     {
-        HINSTANCE hinstLib=LoadLibrary(L"msvcrt.dll");
-        _vscwprintf_func=(WINAPI5_vscwprintf)GetProcAddress(hinstLib,"_vscwprintf");
-        _vscwprintf_init_lazy=true;
+        hinstLib=LoadLibrary(L"msvcrt.dll");
+        if(hinstLib!=NULL)_vscwprintf_func=(WINAPI5_vscwprintf)GetProcAddress(hinstLib,"_vscwprintf");
     }
     return _vscwprintf_func?_vscwprintf_func(_Format,_ArgList):1024*4;
 }
