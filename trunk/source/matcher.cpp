@@ -298,8 +298,8 @@ int cmpunsigned(unsigned a,unsigned b)
 //{ Matcher
 class MatcherImp:public Matcher
 {
-    State *state;
-    Collection *col;
+    State *state=nullptr;
+    Collection *col=nullptr;
 
     std::vector<Devicematch> devicematch_list;
     std::vector<Hwidmatch> hwidmatch_list;
