@@ -66,12 +66,12 @@ typedef int (__cdecl *WINAPI5_vscwprintf)(const wchar_t * __restrict__ _Format,v
 //{ System
 class SystemImp
 {
-    ThreadAbs *narrator;
+    ThreadAbs *narrator=nullptr;
     static Event *narratorE;
     static WStringShort str;
     static bool nar_active;
 
-    HINSTANCE hinstLib;
+    HINSTANCE hinstLib=nullptr;
     WINAPI5_vscwprintf _vscwprintf_func=nullptr;
 
 public:
