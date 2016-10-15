@@ -14,9 +14,9 @@ set c_do=0D
 set c_skip=02
 
 rem Versions
-set BOOST_VER=1_61_0
-set BOOST_VER2=1.61.0
-set BOOST_VER3=1_61
+set BOOST_VER=1_62_0
+set BOOST_VER2=1.62.0
+set BOOST_VER3=1_62
 rem set LIBTORRENT_VER2=1.1.0
 rem set LIBTORRENT_VER=1_1
 set LIBTORRENT_VER2=1.0.8
