@@ -8,10 +8,10 @@ if $(BOOST_ROOT)
 {
     use-project /boost : $(BOOST_ROOT) ;
 }
-variant rls : release : <link>static <runtime-link>static <threading>multi <boost>source <boost-link>static <optimization>space <deprecated-functions>off <rtti>off <geoip>off <asserts>production <debug-symbols>off <iconv>off <i2p>off <ipv6>off ;
+variant rls : release : <link>static <runtime-link>static <threading>multi <boost>source <boost-link>static <optimization>space <deprecated-functions>off <rtti>on <geoip>off <asserts>production <debug-symbols>off <iconv>off <i2p>off <ipv6>off ;
 variant rls64 : release : <link>static <runtime-link>static <threading>multi <boost>source <boost-link>static <deprecated-functions>off <rtti>off <geoip>off <asserts>production <debug-symbols>off <iconv>off <i2p>off <ipv6>off ;
 
-variant dbg : debug : <link>static <runtime-link>static <threading>multi <boost>source <boost-link>static <deprecated-functions>off <rtti>off <geoip>off <asserts>on <debug-symbols>on <iconv>off <i2p>off <ipv6>off ;
+variant dbg : debug : <link>static <runtime-link>static <threading>multi <boost>source <boost-link>static <deprecated-functions>off <rtti>on <geoip>off <asserts>on <debug-symbols>on <iconv>off <i2p>off <ipv6>off ;
 variant dbg64 : debug : <link>static <runtime-link>static <threading>multi <boost>source <boost-link>static <deprecated-functions>off <rtti>off <geoip>off <asserts>on <debug-symbols>on <iconv>off <i2p>off <ipv6>off ;
 
 project client_test
