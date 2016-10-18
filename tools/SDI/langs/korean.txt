@@ -1,6 +1,4 @@
-﻿; STR_TRANSLATORS         = "Don't translate it. Put your name here."
-
-STR_EMPTY               = ""
+﻿STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
 STR_LANG_NAME           = "한글"
