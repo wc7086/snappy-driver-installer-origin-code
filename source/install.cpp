@@ -212,7 +212,6 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     STATEMGRSTATUS pSMgrStatus;
     HINSTANCE hinstLib=nullptr;
     WINAPI5t_SRSetRestorePointW WIN5f_SRSetRestorePointW;
-    int r=0;
     int failed=0,installed=0;
 
     EnterCriticalSection(&sync);
@@ -274,7 +273,9 @@ unsigned int __stdcall Manager::thread_install(void *arg)
 #endif
 
     // Restore point
-    if(manager_g->items_list[SLOT_RESTORE_POINT].checked)
+    bool restorePointSelected=manager_g->items_list[SLOT_RESTORE_POINT].checked;
+    bool restorePointSucceeded=false;
+    if(restorePointSelected)
     {
         hinstLib=LoadLibrary(L"SrClient.dll");
         if(hinstLib!=NULL)
@@ -292,19 +293,18 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             pRestorePtSpec.dwEventType=BEGIN_SYSTEM_CHANGE;
             pRestorePtSpec.dwRestorePtType=DEVICE_DRIVER_INSTALL;
             wcscpy(pRestorePtSpec.szDescription,L"Installed drivers");
-            r=1;
             LeaveCriticalSection(&sync);
             if(Settings.flags&FLAG_DISABLEINSTALL)
                 Sleep(2000);
             else
             {
-                r=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
-                Log.print_con("rt rest point{ %d(%d)\n",r,pSMgrStatus.nStatus);
+                restorePointSucceeded=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
+                Log.print_con("rt rest point{ %d(%d)\n",(int)restorePointSucceeded,pSMgrStatus.nStatus);
             }
             EnterCriticalSection(&sync);
 
             manager_g->items_list[SLOT_RESTORE_POINT].percent=1000;
-            if(r)
+            if(restorePointSucceeded)
             {
                 manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_REST_CREATED;
 
@@ -327,172 +327,181 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     totalextracttime=totalinstalltime=0;
     wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getWindir()));
     _wremove(buf);
-goaround:
-    itembar=&manager_g->items_list[0];
-    for(i=0;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
-        if(i>=RES_SLOTS&&itembar->checked&&itembar->isactive&&itembar->hwidmatch)
+
+    // if restore point was selected and failed then abort at this point
+    if(restorePointSelected&&restorePointSucceeded||(!restorePointSelected))
     {
-        int unpacked=0;
-        int limits[7];
-        Hwidmatch *hwidmatch=itembar->hwidmatch;
 
-        WStringShort str;
-        str.sprintf(L"Installing %S. %d drivers to go",hwidmatch->getdrp_drvdesc(),manager_g->countItems());
-        System.Speak(str.Get());
-
-        memset(limits,0,sizeof(limits));
-        itembar_act=i;
-        ar_proceed=0;
-        Log.print_con("Installing $%04d\n",i);
-        hwidmatch->print_hr();
-        wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
-
-        manager_g->animstart=System.GetTickCountWr();
-        MainWindow.offset_target=(itembar->curpos>>16);
-        SetTimer(MainWindow.hMain,1,1000/60,nullptr);
-
-        // Extract
-        extracttime=System.GetTickCountWr();
-        wsprintf(inf,L"%s\\%S%S",
-                unpacked?hwidmatch->getdrp_packpath():extractdir,
-                hwidmatch->getdrp_infpath(),
-                hwidmatch->getdrp_infname());
-        if(System.FileExists(inf))
+    goaround:
+        itembar=&manager_g->items_list[0];
+        for(i=0;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
+            if(i>=RES_SLOTS&&itembar->checked&&itembar->isactive&&itembar->hwidmatch)
         {
-            Log.print_con("Already unpacked(%S)\n",inf);
-            _7z_total(100);
-            _7z_setcomplited(100);
-            MainWindow.redrawfield();
-        }
-        else
-        if(wcsstr(hwidmatch->getdrp_packname(),L"unpacked.7z"))
-        {
-            Log.print_con("Unpacked '%S'\n",hwidmatch->getdrp_packpath());
-            unpacked=1;
-            _7z_total(100);
-            _7z_setcomplited(100);
-            MainWindow.redrawfield();
-        }
-        else
-        {
-            wsprintf(cmd,L"app x -y \"%s\\%s\" -o\"%s\"",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname(),
-                    extractdir);
+            int unpacked=0;
+            int limits[7];
+            Hwidmatch *hwidmatch=itembar->hwidmatch;
 
-            itembar1=itembar;
-            for(j=i;j<manager_g->items_list.size();j++,itembar1++)
-                if(itembar1->checked&&
-                   !wcscmp(hwidmatch->getdrp_packpath(),itembar1->hwidmatch->getdrp_packpath())&&
-                   !wcscmp(hwidmatch->getdrp_packname(),itembar1->hwidmatch->getdrp_packname()))
-            {
-                wsprintf(buf,L" \"%S\"",itembar1->hwidmatch->getdrp_infpath());
-                if(!wcsstr(cmd,buf))wcscat(cmd,buf);
-            }
-            Log.print_con("Extracting via '%S'\n",cmd);
-            itembar->install_status=(instflag&INSTALLDRIVERS)?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
-            MainWindow.redrawfield();
-            int tries=0;
-            do
-            {
-                if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                LeaveCriticalSection(&sync);
-                r=Extract7z(cmd);
-                EnterCriticalSection(&sync);
-                itembar=&manager_g->items_list[itembar_act];
-                if(r==2)
-                {
-                    Log.print_con("Error, checking for driverpack availability...");
-                    if(System.FileExists(hwidmatch->getdrp_packpath()))break;
-                    Log.print_con("Waiting for driverpacks to become available.");
-                    do
-                    {
-                        Log.print_con(".");
-                        Sleep(1000);
-                        tries++;
-                        if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                    }while(!System.FileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
-                    Log.print_con("OK\n");
-                }
-            }while(r&&!hwidmatch->getdrp_packontorrent());
-            if(installmode==MODE_STOPPING)
-            {
-                manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
-                itembar->install_status=STR_INST_STOPPING;
-            }
-            //if(!itembar->checked)manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
-            //itembar->percent=manager_g->items_list[SLOT_EMPTY].percent;
-            hwidmatch=itembar->hwidmatch;
-            totalextracttime+=extracttime=System.GetTickCountWr()-extracttime;
-            Log.print_con("Ret %d, %ld secs\n",r,extracttime/1000);
-            if(r&&itembar->install_status!=STR_INST_STOPPING)
-            {
-                itembar->install_status=STR_EXTR_FAILED;
-                itembar->val1=r;
-                itembar->checked=0;
-                Log.print_err("ERROR: extraction failed\n");
-            }
-        }
+            WStringShort str;
+            str.sprintf(L"Installing %S. %d drivers to go",hwidmatch->getdrp_drvdesc(),manager_g->countItems());
+            System.Speak(str.Get());
 
-        if(instflag&OPENFOLDER&&itembar->checked)
-            itembar->install_status=STR_EXTR_OK;
+            memset(limits,0,sizeof(limits));
+            itembar_act=i;
+            ar_proceed=0;
+            Log.print_con("Installing $%04d\n",i);
+            hwidmatch->print_hr();
+            wsprintf(cmd,L"%s\\%S",extractdir,hwidmatch->getdrp_infpath());
 
-        // Install driver
-        if(instflag&INSTALLDRIVERS&&itembar->checked)
-        {
-            int needrb=0,ret=1;
+            manager_g->animstart=System.GetTickCountWr();
+            MainWindow.offset_target=(itembar->curpos>>16);
+            SetTimer(MainWindow.hMain,1,1000/60,nullptr);
+
+            // Extract
+            extracttime=System.GetTickCountWr();
             wsprintf(inf,L"%s\\%S%S",
-                   unpacked?hwidmatch->getdrp_packpath():extractdir,
-                   hwidmatch->getdrp_infpath(),
-                   hwidmatch->getdrp_infname());
-            wsprintf(hwid,L"%S",hwidmatch->getdrp_drvHWID());
-            Log.print_con("Install32 '%S','%S'\n",hwid,inf);
-            itembar->install_status=STR_INST_INSTALL;
-            MainWindow.redrawfield();
-
-            installtime=System.GetTickCountWr();
-            LeaveCriticalSection(&sync);
-            if(installmode==MODE_INSTALLING)
-                driver_install(hwid,inf,&ret,&needrb);
-            else
-                ret=1;
-            EnterCriticalSection(&sync);
-            totalinstalltime+=installtime=System.GetTickCountWr()-installtime;
-            itembar=&manager_g->items_list[itembar_act];
-
-            if(ret==1)installed++;else failed++;
-            Log.print_con("Ret %d(0x%X),%s,%ld secs\n\n",ret,ret,needrb?"rb":"norb",installtime/1000);
-            if(installmode==MODE_STOPPING)
+                    unpacked?hwidmatch->getdrp_packpath():extractdir,
+                    hwidmatch->getdrp_infpath(),
+                    hwidmatch->getdrp_infname());
+            if(System.FileExists(inf))
             {
-                itembar->install_status=STR_INST_STOPPING;
-                manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
-                manager_g->selectnone();
+                Log.print_con("Already unpacked(%S)\n",inf);
+                _7z_total(100);
+                _7z_setcomplited(100);
+                MainWindow.redrawfield();
+            }
+            else
+            if(wcsstr(hwidmatch->getdrp_packname(),L"unpacked.7z"))
+            {
+                Log.print_con("Unpacked '%S'\n",hwidmatch->getdrp_packpath());
+                unpacked=1;
+                _7z_total(100);
+                _7z_setcomplited(100);
+                MainWindow.redrawfield();
             }
             else
             {
-                if(ret==1)
-                    itembar->install_status=needrb?STR_INST_REBOOT:STR_INST_OK;
+                wsprintf(cmd,L"app x -y \"%s\\%s\" -o\"%s\"",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname(),
+                        extractdir);
+
+                itembar1=itembar;
+                for(j=i;j<manager_g->items_list.size();j++,itembar1++)
+                    if(itembar1->checked&&
+                       !wcscmp(hwidmatch->getdrp_packpath(),itembar1->hwidmatch->getdrp_packpath())&&
+                       !wcscmp(hwidmatch->getdrp_packname(),itembar1->hwidmatch->getdrp_packname()))
+                {
+                    wsprintf(buf,L" \"%S\"",itembar1->hwidmatch->getdrp_infpath());
+                    if(!wcsstr(cmd,buf))wcscat(cmd,buf);
+                }
+                Log.print_con("Extracting via '%S'\n",cmd);
+                itembar->install_status=(instflag&INSTALLDRIVERS)?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
+                MainWindow.redrawfield();
+                int tries=0;
+                int r;
+                do
+                {
+                    if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
+                    LeaveCriticalSection(&sync);
+                    r=Extract7z(cmd);
+                    EnterCriticalSection(&sync);
+                    itembar=&manager_g->items_list[itembar_act];
+                    if(r==2)
+                    {
+                        Log.print_con("Error, checking for driverpack availability...");
+                        if(System.FileExists(hwidmatch->getdrp_packpath()))break;
+                        Log.print_con("Waiting for driverpacks to become available.");
+                        do
+                        {
+                            Log.print_con(".");
+                            Sleep(1000);
+                            tries++;
+                            if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
+                        }while(!System.FileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
+                        Log.print_con("OK\n");
+                    }
+                }while(r&&!hwidmatch->getdrp_packontorrent());
+                if(installmode==MODE_STOPPING)
+                {
+                    manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
+                    itembar->install_status=STR_INST_STOPPING;
+                }
+                //if(!itembar->checked)manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
+                //itembar->percent=manager_g->items_list[SLOT_EMPTY].percent;
+                hwidmatch=itembar->hwidmatch;
+                totalextracttime+=extracttime=System.GetTickCountWr()-extracttime;
+                Log.print_con("Ret %d, %ld secs\n",r,extracttime/1000);
+                if(r&&itembar->install_status!=STR_INST_STOPPING)
+                {
+                    itembar->install_status=STR_EXTR_FAILED;
+                    itembar->val1=r;
+                    itembar->checked=0;
+                    Log.print_err("ERROR: extraction failed\n");
+                }
+            }
+
+            if(instflag&OPENFOLDER&&itembar->checked)
+                itembar->install_status=STR_EXTR_OK;
+
+            // Install driver
+            if(instflag&INSTALLDRIVERS&&itembar->checked)
+            {
+                int needrb=0,ret=1;
+                wsprintf(inf,L"%s\\%S%S",
+                       unpacked?hwidmatch->getdrp_packpath():extractdir,
+                       hwidmatch->getdrp_infpath(),
+                       hwidmatch->getdrp_infname());
+                wsprintf(hwid,L"%S",hwidmatch->getdrp_drvHWID());
+                Log.print_con("Install32 '%S','%S'\n",hwid,inf);
+                itembar->install_status=STR_INST_INSTALL;
+                MainWindow.redrawfield();
+
+                installtime=System.GetTickCountWr();
+                LeaveCriticalSection(&sync);
+                if(installmode==MODE_INSTALLING)
+                    driver_install(hwid,inf,&ret,&needrb);
+                else
+                    ret=1;
+                EnterCriticalSection(&sync);
+                totalinstalltime+=installtime=System.GetTickCountWr()-installtime;
+                itembar=&manager_g->items_list[itembar_act];
+
+                if(ret==1)installed++;else failed++;
+                Log.print_con("Ret %d(0x%X),%s,%ld secs\n\n",ret,ret,needrb?"rb":"norb",installtime/1000);
+                if(installmode==MODE_STOPPING)
+                {
+                    itembar->install_status=STR_INST_STOPPING;
+                    manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
+                    manager_g->selectnone();
+                }
                 else
                 {
-                    manager_g->expand(i,EXPAND_MODE::EXPAND);
-                    itembar->install_status=STR_INST_FAILED;
-                    itembar->val1=ret;
-                    Log.print_err("ERROR: installation failed\n");
-                }
+                    if(ret==1)
+                        itembar->install_status=needrb?STR_INST_REBOOT:STR_INST_OK;
+                    else
+                    {
+                        manager_g->expand(i,EXPAND_MODE::EXPAND);
+                        itembar->install_status=STR_INST_FAILED;
+                        itembar->val1=ret;
+                        Log.print_err("ERROR: installation failed\n");
+                    }
 
-                if(needrb)needreboot=1;
+                    if(needrb)needreboot=1;
+                }
             }
+            if(!unpacked&&(Settings.flags&FLAG_DELEXTRAINFS))removeextrainfs(inf);
+            if(instflag&INSTALLDRIVERS)itembar->percent=0;
+            itembar->checked=0;
+            MainWindow.redrawmainwnd();
         }
-        if(!unpacked&&(Settings.flags&FLAG_DELEXTRAINFS))removeextrainfs(inf);
-        if(instflag&INSTALLDRIVERS)itembar->percent=0;
-        itembar->checked=0;
-        MainWindow.redrawmainwnd();
-    }
-    if(installmode==MODE_INSTALLING)
-    {
-        itembar=&manager_g->items_list[RES_SLOTS];
-        for(j=RES_SLOTS;j<manager_g->items_list.size();j++,itembar++)
-            if(itembar->checked)
-                goto goaround;
-    }
+        if(installmode==MODE_INSTALLING)
+        {
+            itembar=&manager_g->items_list[RES_SLOTS];
+            for(j=RES_SLOTS;j<manager_g->items_list.size();j++,itembar++)
+                if(itembar->checked)
+                    goto goaround;
+        }
+
+    } // if restorePointSucceeded
+
     // Instalation competed by this point
     wsprintf(buf,L"%ws\\SetupAPI.dev.log",manager_g->matcher->getState()->textas.getw(manager_g->matcher->getState()->getWindir()));
     wsprintf(cmd,L"%s\\%ssetupAPI.log",Settings.log_dir,Log.getTimestamp());
