@@ -295,7 +295,10 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             wcscpy(pRestorePtSpec.szDescription,L"Installed drivers");
             LeaveCriticalSection(&sync);
             if(Settings.flags&FLAG_DISABLEINSTALL)
+            {
                 Sleep(2000);
+                restorePointSucceeded=true;
+            }
             else
             {
                 restorePointSucceeded=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
@@ -307,7 +310,10 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             if(restorePointSucceeded)
             {
                 manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_REST_CREATED;
-
+            }else if(pSMgrStatus.nStatus==ERROR_SERVICE_DISABLED)
+            {
+                manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINTS_DISABLED;
+                Log.print_err("ERROR in thread_install: Failed to create restore point. Restore points disabled.\n");
             }else
             {
                 manager_g->items_list[SLOT_RESTORE_POINT].install_status=STR_REST_FAILED;
@@ -406,7 +412,9 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                     itembar=&manager_g->items_list[itembar_act];
                     if(r==2)
                     {
+                        Log.print_con("Error, 7Zip unknown fatal error.\n");
                         Log.print_con("Error, checking for driverpack availability...");
+                        // if the 'drivers' path exists
                         if(System.FileExists(hwidmatch->getdrp_packpath()))break;
                         Log.print_con("Waiting for driverpacks to become available.");
                         do

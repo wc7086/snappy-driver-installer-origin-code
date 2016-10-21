@@ -187,6 +187,7 @@ int itembar_t::box_status()
                     return BOX_DRVITEM_D1;
 
                 case STR_REST_FAILED:
+                case STR_RESTOREPOINTS_DISABLED:
                     return BOX_DRVITEM_DE;
 
                 default:
