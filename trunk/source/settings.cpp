@@ -295,6 +295,7 @@ void Settings_t::loginfo()
         Log.print_con("  checkupdates=%d\n",(flags&FLAG_CHECKUPDATES)?1:0);
         Log.print_con("  norestorepnt=%d\n",(flags&FLAG_NORESTOREPOINT)?1:0);
         Log.print_con("  disableinstall=%d\n",(flags&FLAG_DISABLEINSTALL)?1:0);
+        Log.print_con("  nostop=%d\n",(flags&FLAG_NOSTOP)?1:0);
         Log.print_con("\n");
 
         if(statemode==STATEMODE_EMUL)Log.print_con("Virtual system system config '%S'\n",state_file);
