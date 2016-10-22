@@ -338,16 +338,20 @@ bool SystemImp::SystemProtectionEnabled()
     // this reads the 64 bit registry from either 32-bit or 64-bit application
     // if i can't find it or read it i'll assume yes
     bool ret=true;
-    HKEY   hkey;
-    if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_READ|KEY_WOW64_64KEY,&hkey)==ERROR_SUCCESS)
+    DWORD err;
+    HKEY hkey;
+    err=RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_READ|KEY_WOW64_64KEY,&hkey);
+    if(err==ERROR_SUCCESS)
     {
         DWORD dwData;
         DWORD cbData=sizeof(DWORD);
         DWORD dwType=REG_DWORD;
-        DWORD error=RegQueryValueEx(hkey,L"RPSessionInterval",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
-        if(error==ERROR_SUCCESS)ret=dwData==1;
+        err=RegQueryValueEx(hkey,L"RPSessionInterval",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
+        if(err==ERROR_SUCCESS)ret=dwData==1;
+        else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
+        RegCloseKey(hkey);
     }
-    RegCloseKey(hkey);
+    else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegOpenKeyEx %d\n",err);
     return ret;
 }
 
@@ -356,24 +360,30 @@ int SystemImp::GetRestorePointCreationFrequency()
     // this reads the 64 bit registry from either 32-bit or 64-bit application
     // default to 'not found'
     int ret=-1;
-    HKEY   hkey;
-    if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_READ|KEY_WOW64_64KEY,&hkey)==ERROR_SUCCESS)
+    HKEY hkey;
+    DWORD err;
+    err=RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_READ|KEY_WOW64_64KEY,&hkey);
+    if(err==ERROR_SUCCESS)
     {
         DWORD dwData;
         DWORD cbData=sizeof(DWORD);
         DWORD dwType=REG_DWORD;
-        DWORD error=RegQueryValueEx(hkey,L"SystemRestorePointCreationFrequency",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
-        if(error==ERROR_SUCCESS)ret=dwData;
+        err=RegQueryValueEx(hkey,L"SystemRestorePointCreationFrequency",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
+        if(err==ERROR_SUCCESS)ret=dwData;
+        else Log.print_err("ERROR in GetRestorePointCreationFrequency(): error in RegQueryValueEx %d\n",err);
+        RegCloseKey(hkey);
     }
-    RegCloseKey(hkey);
+    else Log.print_err("ERROR in GetRestorePointCreationFrequency(): error in RegOpenKeyEx %d\n",err);
     return ret;
 }
 
 void SystemImp::SetRestorePointCreationFrequency(int freq)
 {
     // this reads the 64 bit registry from either 32-bit or 64-bit application
-    HKEY   hkey;
-    if(RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_WRITE|KEY_WOW64_64KEY,&hkey)==ERROR_SUCCESS)
+    HKEY hkey;
+    DWORD err;
+    err=RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_WRITE|KEY_WOW64_64KEY,&hkey);
+    if(err==ERROR_SUCCESS)
     {
         DWORD dwData=freq;
         DWORD cbData=sizeof(DWORD);
@@ -383,8 +393,9 @@ void SystemImp::SetRestorePointCreationFrequency(int freq)
             RegDeleteValue(hkey,L"SystemRestorePointCreationFrequency");
         else
             RegSetValueEx(hkey,L"SystemRestorePointCreationFrequency",0,dwType,(LPBYTE)&dwData,cbData);
+        RegCloseKey(hkey);
     }
-    RegCloseKey(hkey);
+    else Log.print_err("ERROR in SetRestorePointCreationFrequency(): error in RegOpenKeyEx %d\n",err);
 }
 
 //{ FileMonitor
