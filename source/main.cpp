@@ -1655,6 +1655,18 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     }
                     break;
 
+                case ID_SYSPROPS:
+                    if(Popup->floating_itembar==SLOT_RESTORE_POINT)
+                    {
+                        System.run_command(L"cmd",L"/c control system",SW_HIDE,0);
+                    }
+                    // i copied this from above, i don't really know what it's doing??
+                    else
+                    {
+                        manager_g->expand(Popup->floating_itembar,EXPAND_MODE::TOGGLE);
+                    }
+                    break;
+
                 case ID_OPENINF:
                 case ID_LOCATEINF:
                     manager_g->getINFpath(wp);

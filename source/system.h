@@ -101,6 +101,9 @@ public:
     int _vscwprintf_dll(const wchar_t * _Format,va_list _ArgList);
     std::wstring AppPath();
     int FindLatestExeVersion();
+    bool SystemProtectionEnabled();
+    int GetRestorePointCreationFrequency();
+    void SetRestorePointCreationFrequency(int freq);
 };
 extern SystemImp System;
 //}
