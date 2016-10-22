@@ -1646,8 +1646,10 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                 case ID_SHOWALT:
                     if(Popup->floating_itembar==SLOT_RESTORE_POINT)
                     {
+                        // access the 64-bit version from a 32-bit app - this works only on 64-bit windows
                         System.run_command(L"cmd",L"/c %windir%\\Sysnative\\rstrui.exe",SW_HIDE,0);
-                        System.run_command(L"cmd",L"/c %windir%\\system32\\Restore\\rstrui.exe",SW_HIDE,0);
+                        // otherwise do the normal call
+                        System.run_command(L"cmd",L"/c rstrui.exe",SW_HIDE,0);
                     }
                     else
                     {

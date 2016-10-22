@@ -54,6 +54,7 @@ sdi.cfg
 -expertmode       Enable the expert mode.
 -license          Suppress the license dialog.
 -norestorepnt     Suppress creating of restore point.
+-nostop           Don't stop if restore point fails.
 -novirusalerts    Suppress virus alerts.
 -showdrpnames1    Shows driverpack names on the right.
 -showdrpnames2    Shows driverpack names above.

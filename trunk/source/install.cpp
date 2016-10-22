@@ -341,7 +341,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     _wremove(buf);
 
     // if restore point was selected and failed then abort at this point
-    if((restorePointSelected&&restorePointSucceeded)||(!restorePointSelected))
+    if((restorePointSelected&&restorePointSucceeded)||(!restorePointSelected)||(Settings.flags&FLAG_NOSTOP))
     {
 
     goaround:

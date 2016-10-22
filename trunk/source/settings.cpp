@@ -198,6 +198,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argflg(pr,L"-autoinstall",    FLAG_AUTOINSTALL))continue;
         if(argflg(pr,L"-autoclose",      FLAG_AUTOCLOSE))continue;
         if(argflg(pr,L"-autoupdate",     FLAG_AUTOUPDATE))continue;
+        if(argflg(pr,L"-nostop",         FLAG_NOSTOP))continue;
 
         if(argstr(pr,L"-extractdir:",    extractdir)){ flags|=FLAG_EXTRACTONLY;continue; }
         if(argflg(pr,L"-keepunpackedindex",FLAG_KEEPUNPACKINDEX))continue;
