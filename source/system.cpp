@@ -358,8 +358,8 @@ bool SystemImp::SystemProtectionEnabled()
 int SystemImp::GetRestorePointCreationFrequency()
 {
     // this reads the 64 bit registry from either 32-bit or 64-bit application
-    // default to 'not found'
-    int ret=-1;
+    // -2 error opening key, -1 value not found
+    int ret=-2;
     HKEY hkey;
     DWORD err;
     err=RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_READ|KEY_WOW64_64KEY,&hkey);
@@ -370,7 +370,7 @@ int SystemImp::GetRestorePointCreationFrequency()
         DWORD dwType=REG_DWORD;
         err=RegQueryValueEx(hkey,L"SystemRestorePointCreationFrequency",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
         if(err==ERROR_SUCCESS)ret=dwData;
-        else Log.print_err("ERROR in GetRestorePointCreationFrequency(): error in RegQueryValueEx %d\n",err);
+        else ret=-1;
         RegCloseKey(hkey);
     }
     else Log.print_err("ERROR in GetRestorePointCreationFrequency(): error in RegOpenKeyEx %d\n",err);
@@ -380,6 +380,7 @@ int SystemImp::GetRestorePointCreationFrequency()
 void SystemImp::SetRestorePointCreationFrequency(int freq)
 {
     // this reads the 64 bit registry from either 32-bit or 64-bit application
+    if(freq==-2)return;
     HKEY hkey;
     DWORD err;
     err=RegOpenKeyEx(HKEY_LOCAL_MACHINE,L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore",0,KEY_WRITE|KEY_WOW64_64KEY,&hkey);
@@ -388,7 +389,7 @@ void SystemImp::SetRestorePointCreationFrequency(int freq)
         DWORD dwData=freq;
         DWORD cbData=sizeof(DWORD);
         DWORD dwType=REG_DWORD;
-        // -1 means delete the key, otherwise set the value
+        // -1 means delete the value, otherwise set the value
         if(freq==-1)
             RegDeleteValue(hkey,L"SystemRestorePointCreationFrequency");
         else
