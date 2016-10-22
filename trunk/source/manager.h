@@ -112,6 +112,7 @@ private:
     int  calc_cutoff();
     int  isbehind(int pos,int ofs,size_t j);
     int  drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff);
+    void setRestorePointStatus(bool clr);
 
 public:
     void init(Matcher *matcher);

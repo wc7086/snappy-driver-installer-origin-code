@@ -291,6 +291,7 @@ void itembar_t::contextmenu(int x,int y)
     {
         InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
         InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
+        InsertMenu(hPopupMenu,2,MF_BYPOSITION|MF_STRING,       ID_SYSPROPS, STR(STR_REST_SYSPROPS));
 
         RECT rect;
         SetForegroundWindow(MainWindow.hMain);
@@ -767,8 +768,7 @@ void Manager::filter(int options)
         STATEMODE_EMUL||i==0||(Settings.flags&FLAG_NORESTOREPOINT)?0:1;
     //set_rstpnt(0);
 
-    if(!items_list[SLOT_RESTORE_POINT].install_status)
-        items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
+    setRestorePointStatus(false);
 }
 
 void Manager::print_tbl()
@@ -939,7 +939,7 @@ void Manager::clear()
         itembar->percent=0;
     }
     items_list[SLOT_EXTRACTING].isactive=0;
-    items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
+    setRestorePointStatus(true);
     filter(Settings.filters);
     setpos();
     invalidate(INVALIDATE_DEVICES|INVALIDATE_MANAGER);
@@ -1650,6 +1650,16 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
     return 1;
 }
 
+void Manager::setRestorePointStatus(bool clr)
+{
+    if(!items_list[SLOT_RESTORE_POINT].install_status||clr)
+    {
+        if(System.SystemProtectionEnabled())
+            items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
+        else
+            items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINTS_DISABLED;
+    }
+}
 int Manager::isbehind(int pos,int ofsy,size_t j)
 {
     itembar_t *itembar;

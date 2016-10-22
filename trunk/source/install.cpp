@@ -277,6 +277,10 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     bool restorePointSucceeded=false;
     if(restorePointSelected)
     {
+        // get the current state of restore points
+        int restorePointFrequency=System.GetRestorePointCreationFrequency();
+        // set to always create a restore point
+        System.SetRestorePointCreationFrequency(0);
         hinstLib=LoadLibrary(L"SrClient.dll");
         if(hinstLib!=NULL)
             WIN5f_SRSetRestorePointW=(WINAPI5t_SRSetRestorePointW)GetProcAddress(hinstLib,"SRSetRestorePointW");
@@ -304,6 +308,8 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                 restorePointSucceeded=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
                 Log.print_con("rt rest point{ %d(%d)\n",(int)restorePointSucceeded,pSMgrStatus.nStatus);
             }
+            // return it to the state we found it in
+            System.SetRestorePointCreationFrequency(restorePointFrequency);
             EnterCriticalSection(&sync);
 
             manager_g->items_list[SLOT_RESTORE_POINT].percent=1000;
@@ -335,7 +341,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     _wremove(buf);
 
     // if restore point was selected and failed then abort at this point
-    if(restorePointSelected&&restorePointSucceeded||(!restorePointSelected))
+    if((restorePointSelected&&restorePointSucceeded)||(!restorePointSelected))
     {
 
     goaround:
