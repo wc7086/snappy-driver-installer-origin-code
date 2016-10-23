@@ -19,6 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "windows.h"
 #ifndef SYSTEM_H
 #define SYSTEM_H
+#include "enum.h"
 
 //{ Event
 class Event
@@ -101,7 +102,7 @@ public:
     int _vscwprintf_dll(const wchar_t * _Format,va_list _ArgList);
     std::wstring AppPath();
     int FindLatestExeVersion();
-    bool SystemProtectionEnabled();
+    bool SystemProtectionEnabled(State *state);
     int GetRestorePointCreationFrequency();
     void SetRestorePointCreationFrequency(int freq);
 };

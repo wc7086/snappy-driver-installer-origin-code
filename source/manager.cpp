@@ -1654,7 +1654,8 @@ void Manager::setRestorePointStatus(bool clr)
 {
     if(!items_list[SLOT_RESTORE_POINT].install_status||clr)
     {
-        if(System.SystemProtectionEnabled())
+        State *state=matcher->getState();
+        if(System.SystemProtectionEnabled(state))
             items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINT;
         else
             items_list[SLOT_RESTORE_POINT].install_status=STR_RESTOREPOINTS_DISABLED;

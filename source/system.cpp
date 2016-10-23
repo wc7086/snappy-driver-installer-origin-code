@@ -333,8 +333,14 @@ int SystemImp::FindLatestExeVersion()
     return ver;
 }
 
-bool SystemImp::SystemProtectionEnabled()
+bool SystemImp::SystemProtectionEnabled(State *state)
 {
+    // windows version
+    int vMajor, vMinor;
+    state->getWinVer(&vMajor,&vMinor);
+    // windows less than XP not supported
+    if(vMajor<5)return false;
+
     // this reads the 64 bit registry from either 32-bit or 64-bit application
     // if i can't find it or read it i'll assume yes
     bool ret=true;
@@ -346,9 +352,21 @@ bool SystemImp::SystemProtectionEnabled()
         DWORD dwData;
         DWORD cbData=sizeof(DWORD);
         DWORD dwType=REG_DWORD;
-        err=RegQueryValueEx(hkey,L"RPSessionInterval",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
-        if(err==ERROR_SUCCESS)ret=dwData==1;
-        else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
+        // windows XP
+        if(vMajor==5)
+        {
+            err=RegQueryValueEx(hkey,L"DisableSR",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
+            if(err==ERROR_SUCCESS)ret=dwData==0;
+            else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
+        }
+        // every other version
+        else
+        {
+            err=RegQueryValueEx(hkey,L"RPSessionInterval",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
+            if(err==ERROR_SUCCESS)ret=dwData==1;
+            else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
+        }
+
         RegCloseKey(hkey);
     }
     else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegOpenKeyEx %d\n",err);
