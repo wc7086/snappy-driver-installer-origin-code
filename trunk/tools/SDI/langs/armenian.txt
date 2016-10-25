@@ -262,6 +262,7 @@ STR_UPD_BTN_THISPC      = "Տարբերակել միայն նշված համակ
 STR_UPD_BTN_THISPC_H    = "Որպեսզի տարբերակեք դրայվերների փաթեթի որ դրայվերներն են անհրաժեշտ այս համակարգչի համար, առաջնահերթ հարկավոր է բեռնել ինդեքսները:"
 STR_UPD_ONLYUPDATES     = "Չտեղեկացնել բացակայող դրայվերների փաթեթի մասին"
 STR_UPD_TOTALSIZE       = "Բեռնման գումարային ծավալը. %d МБ"
+STR_UPD_TOTALAVAIL      = "Ընդամենը մնացել է %d MB"
 STR_UPD_BTN_OK          = "Օկ"
 STR_UPD_BTN_CANCEL      = "Չեղյալ"
 STR_UPD_BTN_ACCEPT      = "Ընդունել"
@@ -327,6 +328,7 @@ STR_TR_ST4              = "ավարտված է"
 STR_TR_ST5              = "տրվում է"
 STR_TR_ST6              = "Տարածքի հատկացում"
 STR_TR_ST7              = "Ստուգել ամփոփ տվյալները"
+STR_TR_ST8              = "ֆայլերի տեղափոխություն"
 
 // Options dialog
 STR_OPTION_TITLE        = "Տարբերակներ"
@@ -368,10 +370,13 @@ STR_OPTION_DIR_LOGS     = "Տեղեկամատյանի ֆայլեր"
 
 // Advanced tab
 STR_OPTION_CMD          = "Հրամաններ"
+STR_OPTION_CMD_LABEL    = "Այստեղ Դուք կարող եք տալ հրաման, որ կկատարվի CMD-ի միջոցով, անմիջապես նշված գործողությունից հետո"
 STR_OPTION_CMD_FINISH   = "Տեղադրումից հետո"
 STR_OPTION_CMD_FINISHRB = "Տեղադրումից հետո(հարկավոր է վերաբեռնավորում)"
 STR_OPTION_CMD_FINISHDN = "Բեռնումից հետո"
 STR_OPTION_CONSOLE      = "Ցուցադրել կոնսոլի պատուհանը"
 
 // Patreon
+STR_PATREON1             = "Ծրագրի զարգացման համար, կարող եք օգնել Patreon համակարգի միջոցով"
+STR_PATREON2             = "(Սեղմեք այստեղ, որպեսի էջը բացվի դիտարկիչում)"
 STR_PATREON_H            = ""
