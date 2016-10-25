@@ -176,7 +176,7 @@ STR_STATUS_NOTSIGNED    = "(inte signerad)"
 
 STR_STATUS_BETTER_NEW   = "Uppdaterad drivrutin tillgänglig som också är mer optimal"
 STR_STATUS_SAME_NEW     = "Uppdaterad drivrutin tillgänglig"
-STR_STATUS_WORSE_NEW    = "Mindre optimal drivrutin tillgänglig, det är dock nyare"
+STR_STATUS_WORSE_NEW    = "Mindre optimal drivrutin tillgänglig, den är dock nyare"
 
 STR_STATUS_BETTER_CUR   = "Mer optimal drivrutin tillgänglig"
 STR_STATUS_SAME_CUR     = "Redan installerad"

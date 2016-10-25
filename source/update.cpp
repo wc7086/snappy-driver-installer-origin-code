@@ -784,7 +784,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             break;
 
         // Translation is out of date
-        case 0x2B: // Armenian (hy)
         case 0x2C: // Azerbaijani (az) [no translators on Transifex]
         case 0x12: // Korean (ko)
         case 0x05: // Czech (cs)
@@ -796,6 +795,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 
         // Translation is in good shape
         case 0x01: // Arabic (ar)
+        case 0x2B: // Armenian (hy)
         case 0x02: // Bulgarian (bg)
         case 0x06: // Danish (da)
         case 0x09: // English (en)

@@ -14,10 +14,10 @@ STR_SHOW_SYSINFO        = "Systeminformasjon"
 STR_SHOW_SYSINFO_H      = ""
 
 STR_INSTALL             = "Installer"
-STR_INSTALL_H           = "Installer valgte drivere(Ctrl+I)\n\nHINT: Hold inne Skift tasten mens du klikker på en driver for å installere den med en gang."
+STR_INSTALL_H           = "Installer valgte drivere(Ctrl+I).\n\nHINT: For å installere dem umiddelbart, holder du «Shift»-knappen nede mens du klikker på driverne."
 STR_SELECT_ALL          = "Velg alle"
 STR_SELECT_ALL_H        = "Ctrl+A"
-STR_SELECT_NONE         = "Velg ingen"
+STR_SELECT_NONE         = "Fjern valg"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Språk (Language)"
@@ -378,5 +378,5 @@ STR_OPTION_CONSOLE      = "Vis konsollvindu"
 
 // Patreon
 STR_PATREON1             = "SDI er utviklet av frivillige på fritiden. Hvis du liker programvaren, vennligst støtt oss på Patreon."
-STR_PATREON2             = "(Klikk her for å åpne Patreon siden)"
+STR_PATREON2             = "(Klikk her for å åpne Patreon i nettleseren)"
 STR_PATREON_H            = ""
