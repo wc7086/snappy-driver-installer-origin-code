@@ -127,6 +127,7 @@ BEGIN
             0x418, 1200, // Romanian
             0x419, 1200, // Russian
             0x41D, 1200, // Swedish
+			0x41E, 1200, // Thai
             0x41F, 1200, // Turkish
             0x422, 1200, // Ukrainian
             0x423, 1200, // Belarusian
