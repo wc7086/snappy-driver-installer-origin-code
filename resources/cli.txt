@@ -50,6 +50,7 @@ sdi.cfg
 -scale:<size>     Sets scaling for GUI(normal size: 256).
 -wndwx:<num>      Sets window width.
 -wndwy:<num>      Sets window height.
+-wndsc:<num>      Sets window show command (1=show normal,2=minimized,3=maximized).
 -filters:<flags>  Sets filters.
 -expertmode       Enable the expert mode.
 -license          Suppress the license dialog.
