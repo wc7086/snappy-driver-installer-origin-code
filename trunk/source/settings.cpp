@@ -63,7 +63,7 @@ Settings_t::Settings_t()
     hintdelay=500;
     scale=256;
     savedscale=scale;
-    wndwx=0,wndwy=0;
+    wndwx=0,wndwy=0;wndsc=1;
     filters=
         (1<<ID_SHOW_MISSING)+
         (1<<ID_SHOW_NEWER)+
@@ -126,6 +126,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argint(pr,L"-scale:",         &scale))continue;
         if(argint(pr,L"-wndwx:",         &wndwx))continue;
         if(argint(pr,L"-wndwy:",         &wndwy))continue;
+        if(argint(pr,L"-wndsc:",         &wndsc))continue;
         if(argint(pr,L"-filters:",       &filters))continue;
 
         if(argint(pr,L"-port:",          &Updater->torrentport))continue;
@@ -247,12 +248,12 @@ void Settings_t::save()
     fwprintf(f,L"\"-drp_dir:%ws\"\n\"-index_dir:%ws\"\n\"-output_dir:%ws\"\n"
               L"\"-data_dir:%ws\"\n\"-log_dir:%ws\"\n\n"
               L"\"-finish_cmd:%ws\"\n\"-finishrb_cmd:%ws\"\n\"-finish_upd_cmd:%ws\"\n\n"
-              L"\"-lang:%ws\"\n\"-theme:%ws\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-scale:%d\n-filters:%d\n\n"
+              L"\"-lang:%ws\"\n\"-theme:%ws\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-wndsc:%d\n-scale:%d\n-filters:%d\n\n"
               L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
-            STR(STR_LANG_ID),curtheme,hintdelay,wndwx,wndwy,autosized?savedscale:scale,filters,
+            STR(STR_LANG_ID),curtheme,hintdelay,wndwx,wndwy,wndsc,autosized?savedscale:scale,filters,
             Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections);
 
     if(license)fwprintf(f,L"-license ");

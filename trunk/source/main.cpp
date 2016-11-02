@@ -807,7 +807,7 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                             Settings.savedscale=Settings.scale=n;
                             PostMessage(MainWindow.hMain,WM_UPDATETHEME,0,0);
                         }
-                    }
+        }
                     Settings.flags&=~(FLAG_SHOWDRPNAMES1|FLAG_SHOWDRPNAMES2);
                     if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV2),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES1;
                     if(SendMessage(GetDlgItem(data.pages[0],IDD_P1_DRV3),BM_GETCHECK,BST_CHECKED,0))Settings.flags|=FLAG_SHOWDRPNAMES2;
@@ -1238,6 +1238,8 @@ LRESULT CALLBACK MainWindow_t::WndProcMainCallback(HWND hwnd,UINT uMsg,WPARAM wP
 
 LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    WINDOWPLACEMENT wndp;
+    wndp.length=sizeof(WINDOWPLACEMENT);
     RECT rect;
     short x,y;
 
@@ -1303,13 +1305,12 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             break;
 
         case WM_DESTROY:
-            GetWindowRect(hwnd,&rect);
-            if(!IsIconic(hwnd)&&!Settings.autosized)
+            if(GetWindowPlacement(hwnd, &wndp))
             {
-                Settings.wndwx=rect.right-rect.left;
-                Settings.wndwy=rect.bottom-rect.top;
+                Settings.wndsc=wndp.showCmd;
+                Settings.wndwx=wndp.rcNormalPosition.right-wndp.rcNormalPosition.left;
+                Settings.wndwy=wndp.rcNormalPosition.bottom-wndp.rcNormalPosition.top;
             }
-
             vLang->StopMonitor();
             vTheme->StopMonitor();
             delete canvasMain;
@@ -1342,9 +1343,12 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             // Move to the center of the screen
             if(!wParam)break;
             GetWindowRect(GetDesktopWindow(),&rect);
-            rect.left=(rect.right-D(MAINWND_WX))/2;
-            rect.top=(rect.bottom-D(MAINWND_WY))/2;
-            MoveWindow(hwnd,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
+            wndp.showCmd=Settings.wndsc;
+            wndp.rcNormalPosition.left=(rect.right-D(MAINWND_WX))/2;
+            wndp.rcNormalPosition.top=(rect.bottom-D(MAINWND_WY))/2;
+            wndp.rcNormalPosition.right=wndp.rcNormalPosition.left+Settings.wndwx;
+            wndp.rcNormalPosition.bottom=wndp.rcNormalPosition.top+Settings.wndwy;
+            SetWindowPlacement(hwnd, &wndp);
             break;
 
         case WM_BUNDLEREADY:

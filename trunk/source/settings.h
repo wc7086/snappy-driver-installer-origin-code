@@ -186,7 +186,7 @@ public:
     int expertmode;
     int hintdelay;
     int scale;
-    int wndwx,wndwy;
+    int wndwx,wndwy,wndsc;
     int filters;
     int virtual_os_version;  // index into the array in WinVersions
     int virtual_arch_type;
