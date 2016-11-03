@@ -108,6 +108,7 @@ BEGIN
         VALUE "Translation",
             0x401, 1200, // Arabic
             0x402, 1200, // Bulgarian
+			0x403, 1200, // Catalan
             0x405, 1200, // Czech
             0x406, 1200, // Danish
             0x407, 1200, // German
