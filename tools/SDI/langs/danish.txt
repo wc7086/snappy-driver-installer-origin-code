@@ -20,7 +20,7 @@ STR_SELECT_ALL_H        = "Ctrl+A"
 STR_SELECT_NONE         = "Ryd markering"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
-STR_LANG                = "Sprog"
+STR_LANG                = "Sprog (Language)"
 STR_LANG_H              = ""
 STR_THEME               = "Tema"
 STR_THEME_H             = ""

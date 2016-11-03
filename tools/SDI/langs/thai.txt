@@ -20,7 +20,7 @@ STR_SELECT_ALL_H        = "Ctrl+A"
 STR_SELECT_NONE         = "เลือกอย่างเดียว"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
-STR_LANG                = "ภาษา"
+STR_LANG                = "ภาษา (Language)"
 STR_LANG_H              = ""
 STR_THEME               = "ธีม"
 STR_THEME_H             = ""
