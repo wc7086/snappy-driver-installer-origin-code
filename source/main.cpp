@@ -1346,8 +1346,8 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             wndp.showCmd=Settings.wndsc;
             wndp.rcNormalPosition.left=(rect.right-D(MAINWND_WX))/2;
             wndp.rcNormalPosition.top=(rect.bottom-D(MAINWND_WY))/2;
-            wndp.rcNormalPosition.right=wndp.rcNormalPosition.left+Settings.wndwx;
-            wndp.rcNormalPosition.bottom=wndp.rcNormalPosition.top+Settings.wndwy;
+            wndp.rcNormalPosition.right=wndp.rcNormalPosition.left+D(MAINWND_WX);
+            wndp.rcNormalPosition.bottom=wndp.rcNormalPosition.top+D(MAINWND_WY);
             SetWindowPlacement(hwnd, &wndp);
             break;
 
