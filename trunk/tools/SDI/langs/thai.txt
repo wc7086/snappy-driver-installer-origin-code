@@ -367,7 +367,7 @@ STR_OPTION_MAX_UPLOAD   = "ความเร็วการอัพโหล�
 STR_OPTION_DIR_DRIVERS  = "ไดร์เวอร์"
 STR_OPTION_DIR_INDEXES  = "ดัชนี"
 STR_OPTION_DIR_INDEXESH = "ดัชนี (มนุษย์สามารถอ่านได้)"
-STR_OPTION_DIR_DATA     = "ธีมและการแปล"
+STR_OPTION_DIR_DATA     = "ธีมและภาษา"
 STR_OPTION_DIR_LOGS     = "ไฟล์ Log"
 
 // Advanced tab
