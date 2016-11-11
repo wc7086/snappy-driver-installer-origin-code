@@ -34,8 +34,8 @@ typedef unsigned ofst;
 // Misc struct
 class infdata_t
 {
-    int catalogfile;
-    int feature;
+    int catalogfile=0;
+    int feature=0;
     int inf_pos;
     ofst cat;
     int start_index;

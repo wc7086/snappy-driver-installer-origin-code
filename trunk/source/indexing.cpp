@@ -1925,8 +1925,8 @@ void Driverpack::print_index_hr()
     getindexfilename(col->getIndex_linear_dir(),L"txt",filename);
     f=_wfopen(filename,L"wt");
 
-    Log.print_con("Saving %S\n",filename);
-    fprintf(f,"%S\\%S (%d inf files)\n",getPath(),getFilename(),static_cast<int>(n));
+    Log.print_con("Saving %s\n",filename);
+    fprintf(f,"%s\\%s (%d inf files)\n",getPath(),getFilename(),static_cast<int>(n));
     for(inffile_index=0;inffile_index<n;inffile_index++)
     {
         d_i=&inffile[inffile_index];
