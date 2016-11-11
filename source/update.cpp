@@ -975,20 +975,22 @@ void UpdaterImp::moveNewFiles()
 
         // Prepare online indexes
         wchar_t *p=filenamefull_dst;
-        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        if(p&&StrStrIW(filenamefull_src.Get(),L"indexes\\SDI\\"))*p=L'_';
-
-        // Create dirs for the file
-        WStringShort dirs;
-        dirs.append(filenamefull_dst);
-        p=dirs.GetV();
-        while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-        if(p[-1]==L'\\')
+        if(p)
         {
-            *--p=0;
-            mkdir_r(dirs.Get());
-        }
+            while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
+            if(StrStrIW(filenamefull_src.Get(),L"indexes\\SDI\\"))*p=L'_';
 
+            // Create dirs for the file
+            WStringShort dirs;
+            dirs.append(filenamefull_dst);
+            p=dirs.GetV();
+            while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
+            if(p[-1]==L'\\')
+            {
+                *--p=0;
+                mkdir_r(dirs.Get());
+            }
+        }
         // Move file
         Log.print_con("New file: %S\n",filenamefull_dst);
         if(!MoveFileEx(filenamefull_src.Get(),filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
