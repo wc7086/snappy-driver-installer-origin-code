@@ -1916,14 +1916,6 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                 #endif
                 break;
             }
-            if(Popup->floating_itembar==SLOT_PATREON)
-            {
-                if(StrStrIW(STR(STR_LANG_ID),L"Russian"))
-                    System.run_command(L"open",L"http://vk.com/snappydriverinstaller?w=page-71369181_50543112",SW_SHOWNORMAL,0);
-                else
-                    System.run_command(L"open",L"https://www.patreon.com/sdi_tool",SW_SHOWNORMAL,0);
-                break;
-            }
 
             if(Popup->floating_itembar==SLOT_TRANSLATION)
             {
@@ -2001,8 +1993,6 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                     Popup->drawpopup(itembar_i,STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
                     Popup->drawpopup(itembar_i,0,FLOATING_DOWNLOAD,x,y,hField);
-                else if(itembar_i==SLOT_PATREON)
-                    Popup->drawpopup(itembar_i,STR_PATREON_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
                     Popup->drawpopup(itembar_i,STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
