@@ -61,6 +61,7 @@ sdi.cfg
 -showdrpnames2    Shows driverpack names above.
 -oldstyle         Shows driver list using old style.
 -preservecfg      Prevents updating of sdi.cfg.
+-hidepatreon      Hides the Patreon button.
 -cfg:<FileName>   Loads <file> instead of "sdi.cfg".
 
 -------

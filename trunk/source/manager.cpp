@@ -171,6 +171,9 @@ int itembar_t::box_status()
         case SLOT_NOUPDATES:
             return BOX_NOUPDATES;
 
+        case SLOT_PATREON:
+            return BOX_PATREON;
+
         case SLOT_TRANSLATION:
             return BOX_TRANSLATION;
 
@@ -1446,6 +1449,14 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
             canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)/2,bufw);
+            break;
+
+        case SLOT_PATREON:
+            pos+=D_X(ITEM_TEXT_OFS_Y);
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,STR(STR_PATREON1));
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+15));
+            canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y),STR(STR_PATREON2));
             break;
 
         case SLOT_TRANSLATION:
