@@ -499,7 +499,7 @@ int calc_identifierscore(int dev_pos,int dev_ishw,int inf_pos)
         return 0x2000+dev_pos;
 
                                 // device compatible ID and a compatible ID in an INF
-        return 0x3000+dev_pos+0x100*inf_pos;
+    return 0x3000+dev_pos+0x100*inf_pos;
 }
 
 Driver::Driver(State *state,Device *cur_device,HKEY hkey,Driverpack *unpacked_drp)
