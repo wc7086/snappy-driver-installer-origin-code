@@ -761,7 +761,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     if((manager_g->getlocale()&0xFF)==0x22)showpatreon=false;
     if((manager_g->getlocale()&0xFF)==0x23)showpatreon=false;
     //if(StrStrIW(STR(STR_LANG_ID),L"English")==nullptr)showpatreon=false;
-    /* if(emptydrp) */ showpatreon=false;  // uncomment this code to enable Patreon
+    if(emptydrp) showpatreon=false;  // uncomment this code to enable Patreon
     if(Settings.flags&FLAG_HIDEPATREON)showpatreon=false;
     manager_g->itembar_settext(SLOT_PATREON,showpatreon,nullptr,ret,0,0);
 
