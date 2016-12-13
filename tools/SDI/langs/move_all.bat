@@ -33,6 +33,7 @@ copy gui_da.ini danish.txt
 copy gui_ko.ini korean.txt
 copy gui_th.ini thai.txt
 copy gui_ca.ini catalan.txt
+copy gui_zh_TW.ini chinese_tw.txt
 
 rem following exist in transifex but currently not supported in SDI
 rem copy gui_bn.ini bengali.txt
@@ -40,7 +41,6 @@ rem copy gui_bs.ini bosnian.txt
 rem copy gui_hi.ini hindi.txt
 rem copy gui_mk.ini macedonian.txt
 rem copy gui_si.ini sinhala.txt
-rem copy gui_zh_TW.ini chinese_tw.txt
 rem copy gui_sq.ini albanian.txt
 rem copy gui_ms.ini malay.txt
 rem copy gui_sk.ini slovak.txt

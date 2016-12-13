@@ -775,7 +775,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 
         // Translation isn't completed
         case 0x1A: // Bosnian (bs) and Croatian (hr) and Serbian (sr)
-        case 0x04: // Chinese (zh)
         case 0x0B: // Finnish (fi)
         case 0x21: // Indonesian (id)
         case 0x1b: // Slovak (sk)
@@ -796,6 +795,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         // Translation is in good shape
         case 0x01: // Arabic (ar)
         case 0x03: // Catalan (ca)
+        case 0x04: // Chinese (zh)
         case 0x2B: // Armenian (hy)
         case 0x02: // Bulgarian (bg)
         case 0x06: // Danish (da)
