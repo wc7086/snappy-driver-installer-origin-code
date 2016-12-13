@@ -106,6 +106,7 @@ BEGIN
     BLOCK "VarFileInfo"
     BEGIN
         VALUE "Translation",
+            0x004, 1200, // Chinese simplified
             0x401, 1200, // Arabic
             0x402, 1200, // Bulgarian
 			0x403, 1200, // Catalan
