@@ -651,11 +651,23 @@ int Hwidmatch::calc_altsectscore(const State *state,int curscore)
 
     if(StrStrIA(getdrp_infpath(),intel4))
         if(!isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C31")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8D31")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8C7F")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9C7F")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9C31")&&
-           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_0F35")&&
            !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9CB1")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_A12F")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_A22F")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_9D2F")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_A2AF")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_22B5")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_15B5")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_15B6")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_15C1")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_15DB")&&
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_15D4")&&
 //           !isvalid_usb30hub(hwidmatch,state,L"pnp0a08")&&
-           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_8CB1"))return 0;
+           !isvalid_usb30hub(state,L"IUSB3\\ROOT_HUB30&VID_8086&PID_0F35"))return 0;
 
     if(StrStrIA(getdrp_infpath(),"matchver\\")||
        StrStrIA(getdrp_infpath(),"L\\Realtek\\")||
