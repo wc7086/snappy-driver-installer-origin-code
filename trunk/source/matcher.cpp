@@ -56,6 +56,7 @@ const char *nts[NUM_DECS]=
     "nt.6.3","ntx86.6.3","ntamd64.6.3","ntia64.6.3", // 8.1
     "nt.6.4","ntx86.6.4","ntamd64.6.4","ntia64.6.4", // 10
     "nt.10.0","ntx86.10.0","ntamd64.10.0","ntia64.10.0", // 10
+    "nt.10.0.1","ntx86.10.0.1","ntamd64.10.0.1","ntia64.10.0.1", // 10
     "nt",    "ntx86",    "ntamd64",    "ntia64",
     "nt..",  "ntx86..",  "ntamd64..",  "ntia64..",
 };
