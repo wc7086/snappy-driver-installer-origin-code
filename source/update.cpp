@@ -56,7 +56,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "main.h"
 
-#define TORRENT_URL "http://snappy-driver-installer.sourceforge.net/SDI_Update.torrent"
+#define TORRENT_URL "http://DriverOff.net/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
 
 using namespace libtorrent;
