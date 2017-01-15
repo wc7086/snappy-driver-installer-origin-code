@@ -3,7 +3,7 @@
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
 
-STR_LANG_NAME           = "英文"
+STR_LANG_NAME           = "正體中文"
 STR_LANG_ID             = "Chinese (Taiwan)"
 STR_LANG_GROUP          = 0x000A
 STR_LANG_CODE           = 0x04
