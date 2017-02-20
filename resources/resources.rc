@@ -128,9 +128,11 @@ BEGIN
             0x416, 1200, // Portuguese (Brazil)
             0x418, 1200, // Romanian
             0x419, 1200, // Russian
+            0x41A, 1200, // Croatia
             0x41D, 1200, // Swedish
 			0x41E, 1200, // Thai
             0x41F, 1200, // Turkish
+            0x421, 1200, // Indonesia
             0x422, 1200, // Ukrainian
             0x423, 1200, // Belarusian
             0x425, 1200, // Estonian
