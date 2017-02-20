@@ -2000,13 +2000,13 @@ void Driverpack::print_index_hr()
             }
             else if(manuf_index!=manuf_index_last)break;
 
-            fprintf(f,"  Decors:\n");
-            fprintf(f,"    %-15s%d\n","plain",plain);
-            for(i=0;i<NUM_DECS;i++)
-            {
-                if(cnts[i]>=0)fprintf(f,"    %-15s%d\n",nts[i],cnts[i]);
-            }
-            fprintf(f,"\n");
+        fprintf(f,"  Decors:\n");
+        fprintf(f,"    %-15s%d\n","plain",plain);
+        for(i=0;i<NUM_DECS;i++)
+        {
+            if(cnts[i]>=0)fprintf(f,"    %-15s%d\n",nts[i],cnts[i]);
+        }
+        fprintf(f,"\n");
     }
     fprintf(f,"  HWIDS:%u\n",(unsigned)HWID_list.size());
     fclose(f);

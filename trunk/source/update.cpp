@@ -56,7 +56,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "main.h"
 
-#define TORRENT_URL "http://DriverOff.net/SDI_Update.torrent"
+#define TORRENT_URL "http://sdi-tool.org/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
 
 using namespace libtorrent;
@@ -774,9 +774,8 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             break;
 
         // Translation isn't completed
-        case 0x1A: // Bosnian (bs) and Croatian (hr) and Serbian (sr)
+        //case 0x1A: // Bosnian (bs) and Croatian (hr) and Serbian (sr)
         case 0x0B: // Finnish (fi)
-        case 0x21: // Indonesian (id)
         case 0x1b: // Slovak (sk)
         case 0x24: // Slovenian (sl)
             manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,1,0,0);
@@ -814,9 +813,11 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         case 0x16: // Portuguese (pt)
         case 0x19: // Russian (ru)
         case 0x0A: // Spanish (es)
+        case 0x1A: // Croatian (hr)
         case 0x1D: // Swedish (sv)
         case 0x1E: // Thai (th)
         case 0x1F: // Turkish (tr)
+        case 0x21: // Indonesian (id)
         case 0x22: // Ukrainian (uk)
         case 0x23: // Belarusian (be)
         case 0x25: // Estonian (et)
