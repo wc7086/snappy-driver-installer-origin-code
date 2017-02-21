@@ -497,6 +497,7 @@ void MainWindow_t::lang_refresh()
     }
 
     rtl=language[STR_RTL].val;
+    if(rtl!=1)rtl=0;
     setMirroring(hField);
     setMirroring(hMain);
     hLang->SetMirroring();
