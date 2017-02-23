@@ -1011,7 +1011,7 @@ void UpdaterImp::checkUpdates()
 
 void UpdaterImp::ShowProgress(wchar_t *buf)
 {
-    wchar_t num1[64],num2[64];
+    wchar_t num1[BUFLEN],num2[BUFLEN];
 
     format_size(num1,TorrentStatus.downloaded,0);
     format_size(num2,TorrentStatus.downloadsize,0);
