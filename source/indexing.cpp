@@ -1926,7 +1926,7 @@ void Driverpack::print_index_hr()
     f=_wfopen(filename,L"wt");
 
     Log.print_con("Saving %s\n",filename);
-    fprintf(f,"%s\\%s (%d inf files)\n",getPath(),getFilename(),static_cast<int>(n));
+    fwprintf(f,L"%s\\%s (%d inf files)\n",getPath(),getFilename(),static_cast<int>(n));
     for(inffile_index=0;inffile_index<n;inffile_index++)
     {
         d_i=&inffile[inffile_index];
@@ -1937,8 +1937,8 @@ void Driverpack::print_index_hr()
         t=&d_i->version;
         t->str_date(date,true);
         t->str_version(vers);
-        fprintf(f,"    date\t\t\t%S\n",date.Get());
-        fprintf(f,"    version\t\t\t%S\n",vers.Get());
+        fwprintf(f,L"    date\t\t\t%S\n",date.Get());
+        fwprintf(f,L"    version\t\t\t%S\n",vers.Get());
         for(i=0;i<NUM_VER_NAMES;i++)
             if(d_i->fields[i])
             {
