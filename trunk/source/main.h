@@ -117,7 +117,7 @@ private:
     int horiz_sh=0;
 
 public:
-    HWND hPopup;
+    HWND hPopup=nullptr;
     Popup_t();
     ~Popup_t();
     void init();

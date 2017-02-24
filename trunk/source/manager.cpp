@@ -386,7 +386,9 @@ void itembar_t::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,si
         int i;
         cur_driver=devicematch_f->driver;
         wsprintf(bufw,L"%s",txt->getw(cur_driver->MatchingDeviceId));
-        for(i=0;bufw[i];i++)i_hwid[i]=(char)toupper(bufw[i]);i_hwid[i]=0;
+        for(i=0;bufw[i];i++)
+            i_hwid[i]=(char)toupper(bufw[i]);
+        i_hwid[i]=0;
     }
     if(hwidmatch_f)
     {
@@ -1935,7 +1937,9 @@ void Manager::popup_driverlist(Canvas &canvas,int wx,int wy,size_t i)
     if(cur_driver)
     {
         wsprintf(bufw,L"%s",txt->getw(cur_driver->MatchingDeviceId));
-        for(k=0;bufw[k];k++)i_hwid[k]=(char)toupper(bufw[k]);i_hwid[k]=0;
+        for(k=0;bufw[k];k++)
+            i_hwid[k]=(char)toupper(bufw[k]);
+        i_hwid[k]=0;
 
         WStringShort date;
         WStringShort vers;

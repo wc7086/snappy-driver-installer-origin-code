@@ -29,7 +29,7 @@ protected:
     std::unordered_map <std::wstring,int> lookuptbl;
     int res;
 
-    Filemon *mon;
+    Filemon *mon=nullptr;
     int elem_id;
     const wchar_t *folder;
 
