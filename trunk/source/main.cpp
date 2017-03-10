@@ -1919,9 +1919,9 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
             }
             if(Popup->floating_itembar==SLOT_PATREON)
             {
-                if(StrStrIW(STR(STR_LANG_ID),L"Russian"))
-                    System.run_command(L"open",L"http://vk.com/snappydriverinstaller?w=page-71369181_50543112",SW_SHOWNORMAL,0);
-                else
+//                if(StrStrIW(STR(STR_LANG_ID),L"Russian"))
+//                    System.run_command(L"open",L"http://vk.com/snappydriverinstaller?w=page-71369181_50543112",SW_SHOWNORMAL,0);
+//                else
                     System.run_command(L"open",L"https://www.patreon.com/sdi_tool",SW_SHOWNORMAL,0);
                 break;
             }
