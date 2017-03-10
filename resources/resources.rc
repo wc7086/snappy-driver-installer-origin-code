@@ -94,11 +94,11 @@ BEGIN
     BEGIN
         BLOCK "040904E4"
         BEGIN
-            VALUE "FileDescription",  "Snappy Driver Installer"
+            VALUE "FileDescription",  "Snappy Driver Installer Origin"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "LegalCopyright",   "GNU GPL v3"
             VALUE "OriginalFilename", "SDI_" SVN_REV2 ".exe"
-            VALUE "ProductName",      "Snappy Driver Installer"
+            VALUE "ProductName",      "Snappy Driver Installer Origin"
             VALUE "ProductVersion",   SVN_REV2
         END
     END
@@ -106,6 +106,7 @@ BEGIN
     BLOCK "VarFileInfo"
     BEGIN
         VALUE "Translation",
+            0x409, 1252, // English
             0x004, 1200, // Chinese simplified
             0x401, 1200, // Arabic
             0x402, 1200, // Bulgarian
@@ -114,7 +115,6 @@ BEGIN
             0x406, 1200, // Danish
             0x407, 1200, // German
             0x408, 1200, // Greek
-            0x409, 1252, // English
             0x40A, 1200, // Spanish
             0x40C, 1200, // French
             0x40D, 1200, // Hebrew
