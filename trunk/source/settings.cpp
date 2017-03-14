@@ -133,6 +133,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argint(pr,L"-downlimit:",     &Updater->downlimit))continue;
         if(argint(pr,L"-uplimit:",       &Updater->uplimit))continue;
         if(argint(pr,L"-connections:",   &Updater->connections))continue;
+        if(argstr(pr,L"-torrent_url:",   Updater->torrent_url))continue;
 
         if(argopt(pr,L"-license",        &license))continue;
         if(argopt(pr,L"-expertmode",     &expertmode))continue;
@@ -249,12 +250,12 @@ void Settings_t::save()
               L"\"-data_dir:%ws\"\n\"-log_dir:%ws\"\n\n"
               L"\"-finish_cmd:%ws\"\n\"-finishrb_cmd:%ws\"\n\"-finish_upd_cmd:%ws\"\n\n"
               L"\"-lang:%ws\"\n\"-theme:%ws\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-wndsc:%d\n-scale:%d\n-filters:%d\n\n"
-              L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
+              L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n-torrent_url:%ws\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
             STR(STR_LANG_ID),curtheme,hintdelay,wndwx,wndwy,wndsc,autosized?savedscale:scale,filters,
-            Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections);
+            Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections,Updater->torrent_url);
 
     if(license)fwprintf(f,L"-license ");
     if(expertmode)fwprintf(f,L"-expertmode ");

@@ -31,7 +31,7 @@ class Updater_t
 public:
     int numfiles=0;
     static int torrentport,downlimit,uplimit,connections;
-
+    static wchar_t torrent_url[BUFSIZ];
 public:
     virtual ~Updater_t(){}
 

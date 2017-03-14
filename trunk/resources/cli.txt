@@ -76,6 +76,7 @@ Torrent
 -connections:<num>Sets the maximum number of connections.
 -finish_upd_cmd:<cmd> Specifies a command executed upon completion of download.
 -autoclose        Close the application after downloading.
+-torrent_url:     Location of the torrent
 
 ---------
 Emulation
