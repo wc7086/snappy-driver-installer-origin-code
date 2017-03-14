@@ -56,7 +56,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 // Depend on Win32API
 #include "main.h"
 
-#define TORRENT_URL "http://snappy-driver-installer.org/downloads/SDI_Update.torrent"
 #define SMOOTHING_FACTOR 0.005
 
 using namespace libtorrent;
@@ -183,6 +182,7 @@ int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
+wchar_t Updater_t::torrent_url[BUFSIZ];
 int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
@@ -1138,7 +1138,10 @@ void UpdaterImp::downloadTorrent()
 
     // Setup path and URL
     params.save_path="update";
-    params.url=TORRENT_URL;
+    char url[BUFSIZ];
+    wcstombs(url, Updater->torrent_url, BUFSIZ);
+    params.url=url;
+    Log.print_con("Torrent: %s\n",url);
     params.flags=add_torrent_params::flag_paused;
     hTorrent=hSession->add_torrent(params,ec);
     if(ec)Log.print_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
@@ -1364,4 +1367,5 @@ int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
+wchar_t Updater_t::torrent_url[BUFSIZ];
 #endif

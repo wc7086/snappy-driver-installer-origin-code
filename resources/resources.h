@@ -78,12 +78,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDD_P2_CON    503
 #define IDD_P2_DOWN   504
 #define IDD_P2_UP     505
+#define IDD_P2_TURL   511
 #define IDD_P2_PORTE  506
 #define IDD_P2_CONE   507
 #define IDD_P2_DOWNE  508
 #define IDD_P2_UPE    509
 
 #define IDD_P2_UPD    510
+#define IDD_P2_TURLE  512
 
 // Path tab
 #define IDD_Page3     600

@@ -700,6 +700,7 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_CON),STR(STR_OPTION_MAX_CON));
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_DOWN),STR(STR_OPTION_MAX_DOWNLOAD));
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UP),STR(STR_OPTION_MAX_UPLOAD));
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_TURL),STR(STR_OPTION_TORRENT_URL));
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPD),STR(STR_OPTION_CHECKUPDATES));
                 SetWindowText(GetDlgItem(data.pages[1],IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
 
@@ -749,6 +750,8 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_DOWNE),str.Get());
                 str.sprintf(L"%d",Updater->uplimit);
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPE),str.Get());
+                str.sprintf(L"%s",Updater->torrent_url);
+                SetWindowText(GetDlgItem(data.pages[1],IDD_P2_TURLE),str.Get());
                 if(!(Settings.flags&FLAG_CHECKUPDATES))SendMessage(GetDlgItem(data.pages[1],IDD_P2_UPD),BM_SETCHECK,BST_CHECKED,0);
                 if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(GetDlgItem(data.pages[1],IDONLYUPDATE),BM_SETCHECK,BST_CHECKED,0);
 
@@ -798,6 +801,7 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
             break;
 
         case WM_COMMAND:
+            wchar_t str[BUFSIZ];
             switch(wp)
             {
                 case IDOK:
@@ -828,6 +832,8 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                     GetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPE),num,32);
                     Updater->uplimit=_wtoi_my(num);
                     Updater->SetLimits();
+                    GetWindowText(GetDlgItem(data.pages[1],IDD_P2_TURLE),str,BUFSIZ);
+                    wcsncpy(Updater->torrent_url,str,BUFSIZ);
 
                     if(!SendMessage(GetDlgItem(data.pages[1],IDD_P2_UPD),BM_GETCHECK,0,0))
                         Settings.flags|=FLAG_CHECKUPDATES;

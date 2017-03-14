@@ -408,7 +408,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                 itembar->install_status=(instflag&INSTALLDRIVERS)?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
                 MainWindow.redrawfield();
                 int tries=0;
-                int r;
+                int r=0;
                 do
                 {
                     if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;

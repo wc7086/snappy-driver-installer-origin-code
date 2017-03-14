@@ -196,17 +196,18 @@ STYLE DS_SETFONT|WS_CHILD|DS_CONTROL
 FONT 8,"MS Shell Dlg"
 BEGIN
     GROUPBOX        "Torrent", IDD_P2_TOR, 5, 5, GROUPW, 91+70-4, 0
-    LTEXT           "Port", IDD_P2_PORT, 5+OFSX, OFSY+BTW*0, LABELW, 14, SS_LEFT
-    LTEXT           "Max connections (0 - unlimited)", IDD_P2_CON, 5+OFSX, OFSY+BTW*2, LABELW, 14, SS_LEFT
-    LTEXT           "Max download speed in KB/s (0 - unlimited)", IDD_P2_DOWN, 5+OFSX, OFSY+BTW*4, LABELW, 14, SS_LEFT
-    LTEXT           "Max upload speed in KB/s (0 - unlimited)", IDD_P2_UP, 5+OFSX, OFSY+BTW*6, LABELW, 14, SS_LEFT
-    EDITTEXT        IDD_P2_PORTE, 5+OFSX, OFSYL+BTW*1-4, EDITW, 14, ES_AUTOHSCROLL
-    EDITTEXT        IDD_P2_CONE, 5+OFSX, OFSYL+BTW*3-4, EDITW, 14, ES_AUTOHSCROLL
-    EDITTEXT        IDD_P2_DOWNE, 5+OFSX, OFSYL+BTW*5-4, EDITW, 14, ES_AUTOHSCROLL
-    EDITTEXT        IDD_P2_UPE, 5+OFSX, OFSYL+BTW*7-4, EDITW, 14, ES_AUTOHSCROLL
-
-    CHECKBOX        "Do not check for updates", IDD_P2_UPD,5, 103+70-8,LABELW2,14,BS_AUTOCHECKBOX
-    CHECKBOX        "Do not notify about missing driverpacks", IDONLYUPDATE,5, 103+14+70-8,LABELW2,14,BS_AUTOCHECKBOX
+    LTEXT           "Port", IDD_P2_PORT, 5+OFSX, OFSY, LABELW, 14, SS_LEFT
+    LTEXT           "Max connections (0 - unlimited)", IDD_P2_CON, 5+OFSX, OFSY+28, LABELW, 14, SS_LEFT
+    LTEXT           "Max download speed in KB/s (0 - unlimited)", IDD_P2_DOWN, 5+OFSX, OFSY+56, LABELW, 14, SS_LEFT
+    LTEXT           "Max upload speed in KB/s (0 - unlimited)", IDD_P2_UP, 5+OFSX, OFSY+84, LABELW, 14, SS_LEFT
+    LTEXT           "Torrent URL (requires app restart)", IDD_P2_TURL, 5+OFSX, OFSY+112, LABELW, 14, SS_LEFT
+    EDITTEXT        IDD_P2_PORTE, 5+OFSX, OFSYL+14, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_CONE, 5+OFSX, OFSYL+42, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_DOWNE, 5+OFSX, OFSYL+70, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_UPE, 5+OFSX, OFSYL+98, EDITW, 14, ES_AUTOHSCROLL
+    EDITTEXT        IDD_P2_TURLE, 5+OFSX, OFSYL+126, EDITW3, 14, ES_AUTOHSCROLL
+    CHECKBOX        "Do not check for updates", IDD_P2_UPD,5, 164,LABELW2,14,BS_AUTOCHECKBOX
+    CHECKBOX        "Do not notify about missing driverpacks", IDONLYUPDATE,5, 175,LABELW2,14,BS_AUTOCHECKBOX
 END
 
 IDD_Page3 DIALOGEX 0,0,0,0
