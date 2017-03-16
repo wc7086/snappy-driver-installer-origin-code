@@ -44,8 +44,8 @@
 				<Option parameters="-disableinstall -extractdir:temp1 -showconsole" />
 				<Compiler>
 					<Add option="-pg" />
-					<Add option="-g" />
 					<Add option="-m32" />
+					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSE_TORRENT" />
 				</Compiler>
@@ -137,7 +137,6 @@
 			<Add option="-Wnon-virtual-dtor" />
 			<Add option="-Wshadow" />
 			<Add option="-Winit-self" />
-			<Add option="-Wredundant-decls" />
 			<Add option="-Wcast-align" />
 			<Add option="-Wfloat-equal" />
 			<Add option="-Wunreachable-code" />

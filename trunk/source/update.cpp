@@ -702,10 +702,13 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     // Add driverpacks to the list
     for(int i=0;i<Updater->numfiles;i++)
     {
+        char *filename=nullptr;
+        char *filenamefull=nullptr;
         file_entry fe=ti->file_at(i);
-        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
-        const char *filename=strchr(filenamefull,'\\')+1;
-        if(!filename)filename=filenamefull;
+        filenamefull=strchr(fe.path.c_str(),'\\')+1;
+        filename=strchr(filenamefull,'\\');
+        if(filename)filename=strchr(filenamefull,'\\')+1;
+        else filename=filenamefull;
 
         if(StrStrIA(filenamefull,".7z"))
         {
