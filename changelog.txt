@@ -1,0 +1,57 @@
+Snappy Driver Installer Origin
+by Glenn Delahoy
+www.snappy-driver-installer.org
+
+
+Change Log
+
+R543 16 Mar 2017
+Added configurable torrent URL
+Fixed bug in Update dialog
+
+R541 10 Mar 2017
+Initial version of Origin
+Changed all URLs to www.snappy-driver-installer.org
+Removed vk.com
+
+R539 27 Feb 2017
+Boost 1.62 in search path
+Test RTL value
+Set Croatian RTL
+Miscellaneous small bug fixes, compiler warnings etc.
+
+R536 21 Feb 2017
+Updated translations
+Compiler warnings
+Torrent location back to sdi-tool.org
+
+R535 18 Jan 2017
+Updated translations
+
+R533 30 Dec 2016
+Added Chinese (Taiwan) language
+Updated translations
+Whitelisted a usb 3.0 hub
+Relocated torrent update home to DriverOff.net
+
+R526 08 Dec 2016
+Updated translations
+
+R524 19 Nov 2016
+Updated translations
+Added Thai translation
+Fixed the maximize bug
+Assorted small bug fixes
+
+R513 23 Oct 2016
+Updated Greek translation
+Added Korean translation
+Assorted small bug fixes
+Updated GCC to 6.2.0
+Updated Boost to 1.62.0
+Restore Points: Check to see if System Protection is enabled and display a message if not
+Restore Points: Halt driver installation and display a message if a restore point fails
+Restore Points: Adjust system settings to ensure restore point is always created
+Restore Points: Item added to restore point context menu to open System Properties
+Restore Points: Fixed context menu item restore point rollback on 64-bit build
+Restore Points: Added command line switch -nostop to prevent stopping in event of restore point failure
