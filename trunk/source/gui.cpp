@@ -80,7 +80,7 @@ public:
 
         // Actions
         p=new wPanel{5,BOX_PANEL4,KB_ACTIONS,true};
-        p->Add(new wButton  {STR_OPENLOGS,          new OpenLogsCommand});
+        p->Add(new wButton  {STR_REFRESH,           new RefreshCommand});
         p->Add(new wButton  {STR_SNAPSHOT,          new SnapshotCommand});
         p->Add(new wButton  {STR_EXTRACT,           new ExtractCommand});
         p->Add(new wButton  {STR_DRVDIR,            new DrvDirCommand});
@@ -453,12 +453,14 @@ void wButton::Accept(WidgetVisitor &visitor)
 
 void wLogo::Accept(WidgetVisitor &visitor)
 {
-    visitor.VisitwLogo(this);
+    UNREFERENCED_PARAMETER(visitor);
+//    visitor.VisitwLogo(this);
 }
 
 void wTextRev::Accept(WidgetVisitor &visitor)
 {
-    visitor.VisitwTextRev(this);
+    UNREFERENCED_PARAMETER(visitor);
+//    visitor.VisitwTextRev(this);
 }
 
 void wTextSys1::Accept(WidgetVisitor &visitor)
@@ -610,22 +612,6 @@ void ClickVisiter::VisitwButton(wButton *a)
 {
     a->hitscan(x,y);
     if(a->isSelected&&!right)a->command->LeftClick();
-}
-
-void ClickVisiter::VisitwLogo(wLogo *a)
-{
-    a->hitscan(x,y);
-    if(a->isSelected&&!right)
-        System.run_command(L"open",L"https://snappy-driver-installer.org/",SW_SHOWNORMAL,0);
-}
-
-void ClickVisiter::VisitwTextRev(wTextRev *a)
-{
-    if(triggered)return;
-
-    a->hitscan(x,y);
-    if(a->isSelected&&!right)
-        System.run_command(L"open",L"https://snappy-driver-installer.org/",SW_SHOWNORMAL,0);
 }
 
 void ClickVisiter::VisitwTextSys1(wTextSys1 *a)

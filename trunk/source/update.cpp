@@ -147,6 +147,9 @@ public:
     void SetFilePriority(const wchar_t *name,int pri);
     void SetLimits();
     void OpenDialog();
+
+    void DownloadAll();
+    void DownloadIndexes();
 };
 Updater_t *CreateUpdater(){return new UpdaterImp;}
 
@@ -182,7 +185,7 @@ int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
-wchar_t Updater_t::torrent_url[BUFSIZ];
+wchar_t Updater_t::torrent_url[BUFSIZ]=L"http://www.snappy-driver-installer.org/downloads/SDI_Update.torrent";
 int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
@@ -626,6 +629,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     // Calculate size and progress for the app and indexes
     int missingindexes=0;
     int newver=0;
+    int NewExeVer=0;
     __int64 basesize=0,basedownloaded=0;
     __int64 indexsize=0,indexdownloaded=0;
     for(int i=0;i<Updater->numfiles;i++)
@@ -648,7 +652,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             basesize+=fe.size;
             basedownloaded+=file_progress[i];
             if(StrStrIA(filenamefull,"sdi_R"))
-                newver=atol(StrStrIA(filenamefull,"sdi_R")+5);
+                NewExeVer=atol(StrStrIA(filenamefull,"sdi_R")+5);
         }
     }
 
@@ -665,11 +669,11 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 
     // Add the app to the list
     lvI.lParam    =-2;
-    //newver=300;
+
     int row=0;
     int LatestExeVersion=System.FindLatestExeVersion();
-    if(newver>LatestExeVersion)ret+=newver<<8;
-    if(newver>LatestExeVersion&&ListView.IsVisible())
+
+    if(NewExeVer>LatestExeVersion&&ListView.IsVisible())
     {
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
         if(!update)row=ListView.InsertItem(&lvI);
@@ -677,7 +681,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         ListView.SetItemTextUpdate(row,1,buf);
         wsprintf(buf,L"%d%%",(int)(basedownloaded*100/basesize));
         ListView.SetItemTextUpdate(row,2,buf);
-        wsprintf(buf,L" SDI_R%d",newver);
+        wsprintf(buf,L" SDI_R%d",NewExeVer);
         ListView.SetItemTextUpdate(row,3,buf);
         wsprintf(buf,L" SDI_R%d",LatestExeVersion);
         ListView.SetItemTextUpdate(row,4,buf);
@@ -754,7 +758,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     // preselect the first item in the list
     ListView.SetItemState(0,LVIS_FOCUSED|LVIS_SELECTED,LVIS_FOCUSED|LVIS_SELECTED);
 
-    if(update)return ret;
+    if(update)return ret+=NewExeVer<<8;
 
     if(ret)manager_g->itembar_settext(SLOT_NODRIVERS,0);
     manager_g->itembar_settext(SLOT_DOWNLOAD,ret?1:0,nullptr,ret,0,0);
@@ -829,7 +833,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             break;
     }
 
-    return ret;
+    return ret+=NewExeVer<<8;
 }
 
 void UpdateDialog_t::setFilePriority(const wchar_t *name,int pri)
@@ -1205,6 +1209,20 @@ void UpdaterImp::resumeDownloading()
     torrenttime=System.GetTickCountWr();
 }
 
+void UpdaterImp::DownloadAll()
+{
+    for(int i=0;i<Updater->numfiles;i++)
+        hTorrent.file_priority(i,1);
+    Updater->resumeDownloading();
+}
+
+void UpdaterImp::DownloadIndexes()
+{
+    for(int i=0;i<Updater->numfiles;i++)
+        if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))
+            hTorrent.file_priority(i,2);
+    Updater->resumeDownloading();
+}
 unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 {
 	UNREFERENCED_PARAMETER(arg);

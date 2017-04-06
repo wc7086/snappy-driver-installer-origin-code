@@ -15,6 +15,8 @@ You should have received a copy of the GNU General Public License
 along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define IDC_STATIC     -1
+
 #define RESFILE       100
 
 #define IDI_ICON1     200
@@ -31,6 +33,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDR_LOGO      211
 #define IDR_PATREON   212
 #define IDR_TRANS     213
+#define IDB_LOGO      214
 
 // Dialogs
 #define IDD_DIALOG1   301
@@ -112,3 +115,33 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDD_P4_CMD3E  708
 
 #define IDD_P4_CONSL  709
+
+// About box
+#define IDM_ABOUT     16
+#define IDM_OPENLOGS  17
+#define IDM_LICENSE   18
+#define IDD_ABOUT     800
+#define IDD_ABOUT_T1  801
+#define IDD_ABOUT_T2  802
+#define IDD_ABOUT_T3  803
+#define IDD_ABOUT_T4  804
+#define IDD_ABOUT_T5  805
+#define IDD_ABOUT_T6  806
+#define IDD_ABOUT_T7  808
+#define IDD_ABOUT_T8  809
+#define IDD_ABOUT_T9  810
+#define IDC_SYSLINK1  811
+
+// welcome box
+#define IDD_WELCOME   900
+#define IDD_TXT_WELC  901
+#define IDD_T1_WELC   902
+#define IDD_T2_WELC   903
+#define IDD_T3_WELC   904
+#define IDD_T4_WELC   905
+#define IDD_T5_WELC   906
+#define IDD_T6_WELC   907
+#define IDD_P1_WELC   910
+#define IDD_P2_WELC   911
+#define IDD_P3_WELC   912
+#define IDD_B1_WELC   913

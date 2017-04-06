@@ -239,6 +239,7 @@ void checktimer(const wchar_t *str,long long t,int uMsg);
 
 // GUI
 BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
+BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam);
 
 //#include "debug_new.h"
 void* operator new(size_t size, const char* file, int line);

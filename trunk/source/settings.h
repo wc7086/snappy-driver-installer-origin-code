@@ -193,7 +193,6 @@ public:
 
     bool autosized=false;
     int  savedscale;
-    bool speakmode=false;
 
 public:
     Settings_t();

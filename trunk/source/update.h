@@ -50,6 +50,8 @@ public:
     virtual void SetFilePriority(const wchar_t *name,int pri)=0;
     virtual void SetLimits()=0;
     virtual void OpenDialog()=0;
+    virtual void DownloadAll()=0;
+    virtual void DownloadIndexes()=0;
 };
 Updater_t *CreateUpdater();
 

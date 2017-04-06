@@ -333,6 +333,34 @@ void MainWindow_t::MainLoop(int nCmd)
         return;
     }
 
+    // add options to the system menu
+    MENUITEMINFO mi1,mi2,mi3,mi4;
+    mi1.cbSize=sizeof(MENUITEMINFO);
+    mi1.fMask=MIIM_FTYPE;
+    mi1.wID=0;
+    mi1.fType=MFT_SEPARATOR;
+    mi2.cbSize=sizeof(MENUITEMINFO);
+    mi2.fMask=MIIM_STRING|MIIM_ID;
+    mi2.wID=IDM_ABOUT;
+    mi2.dwTypeData=_T("About");
+    mi3.cbSize=sizeof(MENUITEMINFO);
+    mi3.fMask=MIIM_STRING|MIIM_ID;
+    mi3.wID=IDM_OPENLOGS;
+    mi3.dwTypeData=const_cast<wchar_t *>STR(STR_OPENLOGS);
+    mi4.cbSize=sizeof(MENUITEMINFO);
+    mi4.fMask=MIIM_STRING|MIIM_ID;
+    mi4.wID=IDM_LICENSE;
+    mi4.dwTypeData=_T("License Information");
+
+    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
+    if (pSysMenu != NULL)
+    {
+        InsertMenuItem(pSysMenu, 0, TRUE, &mi1);
+        InsertMenuItem(pSysMenu, 0, TRUE, &mi2);
+        InsertMenuItem(pSysMenu, 1, TRUE, &mi3);
+        InsertMenuItem(pSysMenu, 2, TRUE, &mi4);
+    }
+
     // license dialog
     if(!Settings.license)
         DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)LicenseProcedure);
@@ -359,7 +387,17 @@ void MainWindow_t::MainLoop(int nCmd)
     {
         //time_test=System.GetTickCountWr()-time_total;log_times();
         ShowWindow(hMain,(Settings.flags&FLAG_NOGUI)?SW_HIDE:nCmd);
-
+/*
+        // if there are no drivers and indexes then show the welcome screen
+        wchar_t spec1[BUFLEN];
+        wchar_t spec2[BUFLEN];
+        wcscpy(spec1,Settings.drp_dir);wcscat(spec1,L"\\*.*");
+        wcscpy(spec2,Settings.index_dir);wcscat(spec2,L"\\*.*");
+        if(!System.FileExists2(spec1)&&!System.FileExists2(spec2))
+        {
+           DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
+        }
+*/
         int done=0;
         while(!done)
         {
@@ -880,6 +918,91 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
             break;
     }
 
+    return FALSE;
+}
+
+static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+    HWND Ctl1;
+    HWND Ctl2;
+    HWND Ctl3;
+    HWND Ctl4;
+    HWND Ctl5;
+
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        return TRUE;
+
+    case WM_COMMAND:
+        switch(wParam)
+        {
+            case IDOK:
+                EndDialog(hwnd,wParam);
+                return TRUE;
+            case IDCANCEL:
+                EndDialog(hwnd,wParam);
+                break;
+            default:
+                break;
+        }
+        break;
+
+    case WM_CTLCOLORSTATIC:
+        // modify the fonts for colours and bold and size etc
+        Ctl1=GetDlgItem(hwnd,IDD_ABOUT_T1);
+        Ctl2=GetDlgItem(hwnd,IDD_ABOUT_T4);
+        Ctl3=GetDlgItem(hwnd,IDD_ABOUT_T6);
+        Ctl4=GetDlgItem(hwnd,IDD_ABOUT_T8);
+        Ctl5=GetDlgItem(hwnd,IDD_ABOUT_T9);
+
+        if((HWND)lParam==Ctl1)
+        {
+            HFONT hTitleFont = CreateFont(26,0,0,0,600,
+                                         FALSE,FALSE,FALSE,
+                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                         L"Tahoma");
+            HDC hdcStatic=(HDC)wParam;
+            SetTextColor(hdcStatic, RGB(0,0,240));
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            SetBkMode(hdcStatic,TRANSPARENT);
+            SelectObject(hdcStatic,hTitleFont);
+            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        }
+        else if(((HWND)lParam==Ctl2)||(HWND)lParam==Ctl3)
+        {
+            HFONT hFont = CreateFont(9,0,0,0,700,
+                                         FALSE,FALSE,FALSE,
+                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                         L"MS Sans Serif");
+            HDC hdcStatic=(HDC)wParam;
+            //SetTextColor(hdcStatic, GetSysColor());
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            SetBkMode(hdcStatic,TRANSPARENT);
+            SelectObject(hdcStatic,hFont);
+            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        }
+        else if(((HWND)lParam==Ctl4)||(HWND)lParam==Ctl5)
+        {
+            HFONT hFont = CreateFont(10,0,0,0,550,
+                                         FALSE,FALSE,FALSE,
+                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                         L"MS Sans Serif");
+            HDC hdcStatic=(HDC)wParam;
+            SetTextColor(hdcStatic, RGB(0,0,255));
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            SetBkMode(hdcStatic,TRANSPARENT);
+            SelectObject(hdcStatic,hFont);
+            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        }
+        else return TRUE;
+
+    default:
+        break;
+    }
     return FALSE;
 }
 
@@ -1602,6 +1725,34 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             canvasMain->end();
             break;
 
+        case WM_SYSCOMMAND:
+            {
+                wp=LOWORD(wParam);
+                switch (wp)
+                {
+                    case IDM_ABOUT:
+                    {
+                        DialogBox( ghInst,MAKEINTRESOURCE(IDD_ABOUT), MainWindow.hMain,(DLGPROC)AboutBoxProc);
+                        return 0;
+                    }
+                    case IDM_OPENLOGS:
+                    {
+                        ShellExecute(MainWindow.hMain,L"explore",Settings.log_dir,nullptr,nullptr,SW_SHOW);
+                        return 0;
+                    }
+                    case IDM_LICENSE:
+                    {
+                        DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),MainWindow.hMain,(DLGPROC)LicenseProcedure);
+                        return 0;
+                    }
+                    default:
+                        DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
+                        break;
+                }
+                DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
+                break;
+            }
+
         case WM_ERASEBKGND:
             return 1;
 
@@ -1722,10 +1873,9 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     wchar_t buf[BUFLEN];
                     wchar_t buf2[BUFLEN];
                     const wchar_t *str=manager_g->getHWIDby(id);
-                    //wsprintf(buf,L"https://www.google.com/#q=%s",str);
                     wsprintf(buf,L"http://catalog.update.microsoft.com/v7/site/search.aspx?q=%s",str);
                     escapeAmpUrl(buf2,buf);
-                    System.run_command(L"iexplore.exe",buf2,SW_SHOW,0);
+                    System.run_command(L"open",buf2,SW_SHOW,0);
 
                 }
                 else
@@ -1781,9 +1931,9 @@ void RestPointCheckboxCommand::RightClick(int x,int y)
 }
 
 //{ Buttons
-void OpenLogsCommand::LeftClick(bool)
+void RefreshCommand::LeftClick(bool)
 {
-    ShellExecute(MainWindow.hMain,L"explore",Settings.log_dir,nullptr,nullptr,SW_SHOW);
+    invalidate(INVALIDATE_DEVICES|INVALIDATE_SYSINFO|INVALIDATE_INDEXES|INVALIDATE_MANAGER);
 }
 
 void SnapshotCommand::LeftClick(bool)
@@ -1925,16 +2075,13 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
             }
             if(Popup->floating_itembar==SLOT_PATREON)
             {
-//                if(StrStrIW(STR(STR_LANG_ID),L"Russian"))
-//                    System.run_command(L"open",L"http://vk.com/snappydriverinstaller?w=page-71369181_50543112",SW_SHOWNORMAL,0);
-//                else
-                    System.run_command(L"open",L"https://www.patreon.com/sdi_tool",SW_SHOWNORMAL,0);
+                System.run_command(L"open",L"https://www.patreon.com/sdi_tool",SW_SHOWNORMAL,0);
                 break;
             }
 
             if(Popup->floating_itembar==SLOT_TRANSLATION)
             {
-                System.run_command(L"open",L"https://www.transifex.com/snappy-driver-installer/snappy-driver-installer",SW_SHOWNORMAL,0);
+                //System.run_command(L"open",L"https://www.transifex.com/snappy-driver-installer/snappy-driver-installer",SW_SHOWNORMAL,0);
                 break;
             }
 
@@ -2127,11 +2274,6 @@ LRESULT Popup_t::PopupProcedure2(HWND hwnd,UINT message,WPARAM wParam,LPARAM lPa
                     manager_g->popup_driverlist(*canvasPopup,rect.right,rect.bottom,floating_itembar);
                     break;
 
-                case FLOATING_ABOUT:
-                    canvasPopup->SetFont(Popup->hFontP);
-                    popup_about(*canvasPopup);
-                    break;
-
                 case FLOATING_DOWNLOAD:
                     canvasPopup->SetFont(Popup->hFontP);
                     #ifdef USE_TORRENT
@@ -2232,4 +2374,110 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
     }
     return FALSE;
 }
+
+BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+    HWND Ctl1;
+    HWND Ctl2;
+    HWND Ctl3;
+    HWND Ctl4;
+
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        // preselect the first option
+        SendMessage(GetDlgItem(hwnd,IDD_P1_WELC),BM_SETCHECK,BST_CHECKED,0);
+        // set focus to download button
+        //PostMessage(GetDlgItem(hwnd,IDD_B1_WELC), WM_UPDATEUISTATE,MAKEWPARAM(UIS_CLEAR,UISF_HIDEFOCUS),0);
+        SetFocus(GetDlgItem(hwnd,IDD_B1_WELC));
+        return TRUE;
+
+    case WM_COMMAND:
+        switch(wParam)
+        {
+            case IDCLOSE:
+                EndDialog(hwnd,wParam);
+                return TRUE;
+            case IDCANCEL:
+                EndDialog(hwnd,wParam);
+                break;
+            case IDD_B1_WELC:
+                if(SendMessage(GetDlgItem(hwnd,IDD_P1_WELC),BM_GETCHECK,BST_CHECKED,0))
+                {
+                    // download everything
+                    Settings.flags&=~FLAG_AUTOUPDATE;
+                    Updater->DownloadAll();
+                }
+                else if(SendMessage(GetDlgItem(hwnd,IDD_P3_WELC),BM_GETCHECK,BST_CHECKED,0))
+                {
+                    // download indexes only
+                    Settings.flags&=~FLAG_AUTOUPDATE;
+                    Updater->DownloadIndexes();
+                }
+                EndDialog(hwnd,wParam);
+                return TRUE;
+            default:
+                break;
+        }
+        break;
+
+    case WM_CTLCOLORSTATIC:
+        // modify the fonts for colours and bold and size etc
+        Ctl1=GetDlgItem(hwnd,IDD_T1_WELC);
+        Ctl2=GetDlgItem(hwnd,IDD_T2_WELC);
+        Ctl3=GetDlgItem(hwnd,IDD_T3_WELC);
+        Ctl4=GetDlgItem(hwnd,IDD_T4_WELC);
+
+        if((HWND)lParam==Ctl1)
+        {
+            HFONT hTitleFont = CreateFont(26,0,0,0,600,
+                                         FALSE,FALSE,FALSE,
+                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                         L"Tahoma");
+            HDC hdcStatic=(HDC)wParam;
+            SetTextColor(hdcStatic, RGB(0,0,240));
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            SetBkMode(hdcStatic,TRANSPARENT);
+            SelectObject(hdcStatic,hTitleFont);
+            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        }
+        else if((HWND)lParam==Ctl4)
+        {
+            HFONT hFont = CreateFont(9,0,0,0,700,
+                                         FALSE,FALSE,FALSE,
+                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                         L"MS Sans Serif");
+            HDC hdcStatic=(HDC)wParam;
+            //SetTextColor(hdcStatic, GetSysColor());
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            SetBkMode(hdcStatic,TRANSPARENT);
+            SelectObject(hdcStatic,hFont);
+            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        }
+        else if(((HWND)lParam==Ctl2)||(HWND)lParam==Ctl3)
+        {
+            HFONT hFont = CreateFont(10,0,0,0,550,
+                                         FALSE,FALSE,FALSE,
+                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                         L"MS Sans Serif");
+            HDC hdcStatic=(HDC)wParam;
+            SetTextColor(hdcStatic, RGB(0,0,255));
+            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            SetBkMode(hdcStatic,TRANSPARENT);
+            SelectObject(hdcStatic,hFont);
+            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        }
+
+        else return TRUE;
+
+    default:
+        break;
+    }
+    return FALSE;
+}
+
+
 //}
