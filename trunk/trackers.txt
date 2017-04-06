@@ -1,0 +1,11 @@
+udp://tracker.coppersurfer.tk:6969/announce
+
+http://retracker.local/announce
+
+http://tracker.tfile.me/announce
+
+http://bt.nnm-club.info:2710/announce
+
+udp://opentor.org:2710
+
+NOTE: It's important to keep empty lines between urls.

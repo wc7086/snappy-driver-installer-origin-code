@@ -96,6 +96,7 @@ BEGIN
     BEGIN
         BLOCK "040904E4"
         BEGIN
+            VALUE "CompanyName",      "Glenn Delahoy"
             VALUE "FileDescription",  "Snappy Driver Installer Origin"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "LegalCopyright",   "GNU GPL v3"
