@@ -18,6 +18,7 @@ Added License Information to system menu
 Added Refresh button to action buttons
 Removed logo hover hint
 Initialised the torrent url
+Begin Welcome screen
 
 Note: The System Menu is the very top left of the application window
       next to the caption. Top right if you read right-to-left.
