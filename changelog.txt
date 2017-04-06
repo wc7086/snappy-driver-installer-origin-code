@@ -5,7 +5,26 @@ www.snappy-driver-installer.org
 
 Change Log
 
+
+Updated version number
+Added support for *.sdi.inf files
+Removed screen reader functions
+Changed 'Modified' to 'Test Build'
+Fixed bug in 'new exe' output
+Search for hardware id tool now uses default browser
+Added About box to system menu
+Moved Open Logs to system menu
+Added License Information to system menu
+Added Refresh button to action buttons
+Removed logo hover hint
+Initialised the torrent url
+
+Note: The System Menu is the very top left of the application window
+      next to the caption. Top right if you read right-to-left.
+      Click on the little SDI logo on the caption bar.
+
 R543 16 Mar 2017
+Driver Packs 17031
 Added configurable torrent URL
 Fixed bug in Update dialog
 

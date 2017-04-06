@@ -48,6 +48,8 @@ entry_t language[STR_NM]=
     DEF_STR("STR_EXPERT")
     DEF_STR("STR_EXPERT_H")
 
+    DEF_STR("STR_REFRESH")
+    DEF_STR("STR_REFRESH_H")
     DEF_STR("STR_OPENLOGS")
     DEF_STR("STR_OPENLOGS_H")
     DEF_STR("STR_SNAPSHOT")
@@ -140,7 +142,7 @@ entry_t language[STR_NM]=
     DEF_STR("STR_SYSINF_32BIT")
     DEF_STR("STR_SYSINF_64BIT")
 
-// About
+// About - deprecated
     DEF_STR("STR_ABOUT_VER")
     DEF_STR("STR_ABOUT_DEV_TITLE")
     DEF_STR("STR_ABOUT_DEV_LIST")

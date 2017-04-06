@@ -80,67 +80,12 @@ unsigned SystemImp::GetTickCountWr()
     return GetTickCount();
 }
 
-bool SystemImp::IsScreenReaderActive()
-{
-    bool bActive=false;
-    bool bReturn=SystemParametersInfo(SPI_GETSCREENREADER,0,&bActive,0);
-    //Speak(L"Hello 12 to 224");
-    return bReturn&&bActive;
-}
-
-Event *SystemImp::narratorE;
-WStringShort SystemImp::str;
-bool SystemImp::nar_active;
-
 SystemImp::SystemImp()
 {
-    /*nar_active=true;
-    narrator=CreateThread();
-    narratorE=CreateEventWr();
-    narrator->start(&thread_narrator,nullptr);*/
 }
 
 SystemImp::~SystemImp()
 {
-    /*nar_active=0;
-    narratorE->raise();
-    narrator->join();
-    delete narrator;
-    delete narratorE;*/
-}
-
-unsigned int __stdcall SystemImp::thread_narrator(void *)
-{
-    ISpVoice *pVoice=nullptr;
-
-    if(FAILED(CoInitialize(nullptr)))return 0;
-    HRESULT hr=CoCreateInstance(CLSID_SpVoice,nullptr,CLSCTX_ALL,IID_ISpVoice,(void **)&pVoice);
-
-    while(nar_active)
-    {
-        narratorE->wait();
-        if(!nar_active)break;
-        if(SUCCEEDED(hr))
-        {
-            WStringShort str1;
-            str1.strcpy(str.Get());
-            str.strcpy(L"");
-            hr=pVoice->Speak(str1.Get(),0,nullptr);
-
-        }
-
-    }
-    pVoice->Release();
-    return 0;
-}
-
-void SystemImp::Speak(const wchar_t *str1)
-{
-    if(!Settings.speakmode)return;
-
-    str.append(L" ");
-    str.append(str1);
-    narratorE->raise();
 }
 
 bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)
@@ -227,6 +172,29 @@ void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *fu
 bool SystemImp::FileExists(const wchar_t *path)
 {
     return PathFileExists(path)!=0;
+}
+
+bool SystemImp::FileExists2(const wchar_t *spec)
+{
+    bool ret=FALSE;
+    WStringShort buf;
+    buf.sprintf(L"%s",spec);
+    WIN32_FIND_DATAW FindFileData;
+    HANDLE hFind=FindFirstFileW(buf.Get(),&FindFileData);
+    if(hFind!=INVALID_HANDLE_VALUE)
+    {
+        while(FindNextFileW(hFind,&FindFileData)!=0)
+        {
+            if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==0)
+            {
+                ret=TRUE;
+                break;
+            }
+        }
+        FindClose(hFind);
+    }
+
+    return ret;
 }
 
 void SystemImp::ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize)

@@ -92,7 +92,7 @@ public:
 };
 
 // Buttons
-class OpenLogsCommand:public Command
+class RefreshCommand:public Command
 {
 public:
     void LeftClick(bool=false);
@@ -406,8 +406,6 @@ public:
 
     void VisitwCheckbox(wCheckbox *);
     void VisitwButton(wButton *);
-    void VisitwLogo(wLogo *);
-    void VisitwTextRev(wTextRev *);
     void VisitwTextSys1(wTextSys1 *);
 };
 //}

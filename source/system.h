@@ -67,11 +67,6 @@ typedef int (__cdecl *WINAPI5_vscwprintf)(const wchar_t * __restrict__ _Format,v
 //{ System
 class SystemImp
 {
-    ThreadAbs *narrator=nullptr;
-    static Event *narratorE;
-    static WStringShort str;
-    static bool nar_active;
-
     HINSTANCE hinstLib=nullptr;
     WINAPI5_vscwprintf _vscwprintf_func=nullptr;
 
@@ -82,16 +77,13 @@ public:
     bool IsLangInstalled(int group);
     unsigned GetTickCountWr();
 
-    bool IsScreenReaderActive();
-    static unsigned int __stdcall thread_narrator(void *arg);
-    void Speak(const wchar_t *str);
-
     int canWrite(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
     void benchmark();
 
     void deletefile(const wchar_t *filename);
     bool FileExists(const wchar_t *filename);
+    bool FileExists2(const wchar_t *spec);
     void ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize);
     bool ChooseDir(wchar_t *path,const wchar_t *title);
     bool ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_t *ext);

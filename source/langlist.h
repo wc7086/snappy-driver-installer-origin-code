@@ -48,6 +48,8 @@ enum
     STR_EXPERT,
     STR_EXPERT_H,
 
+    STR_REFRESH,
+    STR_REFRESH_H,
     STR_OPENLOGS,
     STR_OPENLOGS_H,
     STR_SNAPSHOT,
@@ -140,7 +142,7 @@ enum
     STR_SYSINF_32BIT,
     STR_SYSINF_64BIT,
 
-// About
+// About - deprecated
     STR_ABOUT_VER,
     STR_ABOUT_DEV_TITLE,
     STR_ABOUT_DEV_LIST,
