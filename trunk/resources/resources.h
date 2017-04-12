@@ -120,6 +120,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDM_ABOUT     16
 #define IDM_OPENLOGS  17
 #define IDM_LICENSE   18
+#define IDM_DRVDIR    19
 #define IDD_ABOUT     800
 #define IDD_ABOUT_T1  801
 #define IDD_ABOUT_T2  802

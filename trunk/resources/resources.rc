@@ -297,24 +297,26 @@ BEGIN
             , IDD_TXT_WELC, 115,24,250,90,SS_LEFT
     LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_T2_WELC,115,67,200,15,SS_LEFT
     LTEXT   "Support: www.patreon.com/sdi_tool",IDD_T3_WELC,115,76,200,15,SS_LEFT
-    LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_T4_WELC,40,102,380,40,SS_LEFT
-    LTEXT   "Before you begin, you'll need to download driver packs or indexes. Select one of "
-            "the following options and click the Download button to start downloading."
-            ,IDD_TXT_WELC,40,112,320,40,SS_LEFT
-    AUTORADIOBUTTON "Download All Driver Packs", IDD_P1_WELC, 40,140,200,12,WS_GROUP
+    LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_T4_WELC,40,100,380,40,SS_LEFT
+    LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
+            "the following options and click the Download button to start downloading.\n\n"
+            "Note: Look for additional tools on the System Menu at the top left of the SDI "
+            "main window."
+            ,IDD_TXT_WELC,40,110,320,40,SS_LEFT
+    AUTORADIOBUTTON "Download All Driver Packs", IDD_P1_WELC, 40,153,200,12,WS_GROUP
     LTEXT   "Get the latest version of the driver packs. "
             "This is a big download and will take "
             "anywhere from an hour to a day depending on availability and internet speed. "
             "When complete, you'll have everything required to work offline. If you're a "
             "technician, this is the option you want."
-            ,IDD_TXT_WELC,52,151,300,28,SS_LEFT
-    AUTORADIOBUTTON "Download Indexes Only", IDD_P3_WELC,40,185,200,12,0
+            ,IDD_TXT_WELC,52,165,300,28,SS_LEFT
+    AUTORADIOBUTTON "Download Indexes Only", IDD_P3_WELC,40,193,200,12,0
     LTEXT   "Get the latest version of the indexes. This allows you to "
-            "scan any PC and find a match for drivers available in the driver packs.  Once "
+            "scan any PC to see which drivers need to be installed or updated.  Once "
             "you've determined the required drivers, they can be downloaded and installed. "
             "This is a small download and should only take a few minutes but you'll need "
             "an internet connection later on when you need to download the required driver packs."
-            ,IDD_TXT_WELC,52,196,300,40,SS_LEFT
+            ,IDD_TXT_WELC,52,205,300,40,SS_LEFT
     DEFPUSHBUTTON "Download",IDD_B1_WELC,155,266,91,28
     PUSHBUTTON "&Close", IDCLOSE, 339, 266, 51, 28
 END

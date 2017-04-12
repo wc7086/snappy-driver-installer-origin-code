@@ -1135,7 +1135,7 @@ void UpdaterImp::downloadTorrent()
         alert::storage_notification);
 
     // Settings
-    settings.user_agent="Snappy Driver Installer/" SVN_REV2;
+    settings.user_agent="Snappy Driver Installer Origin/" SVN_REV2;
     settings.always_send_user_agent=true;
     settings.anonymous_mode=false;
     settings.choking_algorithm=session_settings::auto_expand_choker;
@@ -1250,6 +1250,10 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {
+        // successfully downloaded the torrent
+        // notify main window
+        MainWindow.DownloadedTorrent();
+
         // Wait till is allowed to download driverpacks
         if(Settings.flags&FLAG_AUTOUPDATE&&System.canWrite(L"update"))
             UpdateDialog.openDialog();

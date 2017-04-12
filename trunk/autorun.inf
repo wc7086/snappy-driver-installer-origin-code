@@ -1,5 +1,5 @@
 [autorun]
-open=SDI_R.exe
-icon=SDI_R.exe
+open=SDI_auto.bat
+icon=SDI_R548.exe
 
 [NOT_A_VIRUS]
