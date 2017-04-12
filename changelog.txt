@@ -2,10 +2,17 @@ Snappy Driver Installer Origin
 by Glenn Delahoy
 www.snappy-driver-installer.org
 
-
 Change Log
 
+R551
+Welcome screen completed. It appears when there are no driver packs and indexes found
+Updated torrent agent
+Moved some themes out to Additional Themes
+Moved Select Driver Dir to system menu
+AddSystemMenuItem
 
+R548 06 April 2017
+Driver Packs 17034
 Updated version number
 Added support for *.sdi.inf files
 Removed screen reader functions

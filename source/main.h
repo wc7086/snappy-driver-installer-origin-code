@@ -192,6 +192,7 @@ private:
     LRESULT WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
     LRESULT WndProcMain(HWND,UINT,WPARAM,LPARAM);
     LRESULT WndProcField(HWND,UINT,WPARAM,LPARAM);
+    void AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typedata);
 
 public:
     void MainLoop(int nCmd);
@@ -214,6 +215,7 @@ public:
     void setscrollpos(int pos);
 
     void ShowProgressInTaskbar(bool show,long long complited=0,long long total=0);
+    void DownloadedTorrent();
 
     MainWindow_t();
     ~MainWindow_t();

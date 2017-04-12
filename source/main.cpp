@@ -156,8 +156,8 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Load settings
     init_CLIParam();
     if(!Settings.load_cfg_switch(GetCommandLineW()))
-    if(!Settings.load(L"sdi.cfg"))
-        Settings.load(L"tools\\SDI\\settings.cfg");
+        if(!Settings.load(L"sdi.cfg"))
+            Settings.load(L"tools\\SDI\\settings.cfg");
 
     Settings.parse(GetCommandLineW(),1);
     RUN_CLI();
@@ -278,6 +278,20 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     return ret_global;
 }
 
+void MainWindow_t::AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typedata)
+{
+    MENUITEMINFO mi;
+    mi.cbSize=sizeof(MENUITEMINFO);
+    mi.fMask=mask;
+    mi.wID=id;
+    mi.fType=type;
+    mi.dwTypeData=typedata;
+
+    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
+    if (pSysMenu != NULL)
+        InsertMenuItem(pSysMenu, 0, TRUE, &mi);
+}
+
 void MainWindow_t::MainLoop(int nCmd)
 {
     if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)return;
@@ -333,33 +347,13 @@ void MainWindow_t::MainLoop(int nCmd)
         return;
     }
 
-    // add options to the system menu
-    MENUITEMINFO mi1,mi2,mi3,mi4;
-    mi1.cbSize=sizeof(MENUITEMINFO);
-    mi1.fMask=MIIM_FTYPE;
-    mi1.wID=0;
-    mi1.fType=MFT_SEPARATOR;
-    mi2.cbSize=sizeof(MENUITEMINFO);
-    mi2.fMask=MIIM_STRING|MIIM_ID;
-    mi2.wID=IDM_ABOUT;
-    mi2.dwTypeData=_T("About");
-    mi3.cbSize=sizeof(MENUITEMINFO);
-    mi3.fMask=MIIM_STRING|MIIM_ID;
-    mi3.wID=IDM_OPENLOGS;
-    mi3.dwTypeData=const_cast<wchar_t *>STR(STR_OPENLOGS);
-    mi4.cbSize=sizeof(MENUITEMINFO);
-    mi4.fMask=MIIM_STRING|MIIM_ID;
-    mi4.wID=IDM_LICENSE;
-    mi4.dwTypeData=_T("License Information");
-
-    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
-    if (pSysMenu != NULL)
-    {
-        InsertMenuItem(pSysMenu, 0, TRUE, &mi1);
-        InsertMenuItem(pSysMenu, 0, TRUE, &mi2);
-        InsertMenuItem(pSysMenu, 1, TRUE, &mi3);
-        InsertMenuItem(pSysMenu, 2, TRUE, &mi4);
-    }
+    // add options to the system menu - in reverse order
+    AddSystemMenuItem(MIIM_FTYPE,0,MFT_SEPARATOR,const_cast<wchar_t *>(L""));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_LICENSE,0,const_cast<wchar_t *>(L"License Information"));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_ABOUT,0,const_cast<wchar_t *>(L"About"));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,const_cast<wchar_t *>STR(STR_DRVDIR));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,const_cast<wchar_t *>STR(STR_OPENLOGS));
+//    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SHAREDRV,0,const_cast<wchar_t *>(L"Share Driver Packs"));
 
     // license dialog
     if(!Settings.license)
@@ -387,17 +381,6 @@ void MainWindow_t::MainLoop(int nCmd)
     {
         //time_test=System.GetTickCountWr()-time_total;log_times();
         ShowWindow(hMain,(Settings.flags&FLAG_NOGUI)?SW_HIDE:nCmd);
-/*
-        // if there are no drivers and indexes then show the welcome screen
-        wchar_t spec1[BUFLEN];
-        wchar_t spec2[BUFLEN];
-        wcscpy(spec1,Settings.drp_dir);wcscat(spec1,L"\\*.*");
-        wcscpy(spec2,Settings.index_dir);wcscat(spec2,L"\\*.*");
-        if(!System.FileExists2(spec1)&&!System.FileExists2(spec2))
-        {
-           DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
-        }
-*/
         int done=0;
         while(!done)
         {
@@ -1230,6 +1213,19 @@ void MainWindow_t::ShowProgressInTaskbar(bool show,long long complited,long long
     CoUninitialize();
 }
 
+void MainWindow_t::DownloadedTorrent()
+{
+        // if there are no drivers and indexes then show the welcome screen
+        wchar_t spec1[BUFLEN];
+        wchar_t spec2[BUFLEN];
+        wcscpy(spec1,Settings.drp_dir);wcscat(spec1,L"\\*.*");
+        wcscpy(spec2,Settings.index_dir);wcscat(spec2,L"\\*.*");
+        if(!System.FileExists2(spec1)&&!System.FileExists2(spec2))
+        {
+           DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
+        }
+}
+
 void MainWindow_t::tabadvance(int v)
 {
     if(v>0)
@@ -1733,6 +1729,14 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     case IDM_ABOUT:
                     {
                         DialogBox( ghInst,MAKEINTRESOURCE(IDD_ABOUT), MainWindow.hMain,(DLGPROC)AboutBoxProc);
+                        return 0;
+                    }
+                    case IDM_DRVDIR:
+                    {
+                        if(System.ChooseDir(Settings.drpext_dir,STR(STR_DRVDIR)))
+                        {
+                            invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                        }
                         return 0;
                     }
                     case IDM_OPENLOGS:
@@ -2404,17 +2408,19 @@ BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
             case IDD_B1_WELC:
                 if(SendMessage(GetDlgItem(hwnd,IDD_P1_WELC),BM_GETCHECK,BST_CHECKED,0))
                 {
+                    EndDialog(hwnd,wParam);
                     // download everything
                     Settings.flags&=~FLAG_AUTOUPDATE;
                     Updater->DownloadAll();
                 }
                 else if(SendMessage(GetDlgItem(hwnd,IDD_P3_WELC),BM_GETCHECK,BST_CHECKED,0))
                 {
+                    EndDialog(hwnd,wParam);
                     // download indexes only
                     Settings.flags&=~FLAG_AUTOUPDATE;
                     Updater->DownloadIndexes();
                 }
-                EndDialog(hwnd,wParam);
+
                 return TRUE;
             default:
                 break;
