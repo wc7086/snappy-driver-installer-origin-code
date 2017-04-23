@@ -1498,7 +1498,8 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                     buf.sprintf(L" /c %s",Settings.finish_upd);
                     System.run_command(L"cmd",buf.Get(),SW_HIDE,0);
                 }
-                if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
+                if((Settings.flags&FLAG_AUTOCLOSE)&&!(Settings.flags&FLAG_AUTOINSTALL))
+                    PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
 
                 downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
 
