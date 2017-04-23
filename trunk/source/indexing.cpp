@@ -652,9 +652,11 @@ void Collection::populate()
     manager_g->itembar_setactive(SLOT_INDEXING,0);
     if(driverpack_list.size()<=1&&(Settings.flags&FLAG_DPINSTMODE)==0)
     {
-        manager_g->itembar_settext(SLOT_NODRIVERS,L"",0);
         emptydrp=true;
-    }else
+        if((Settings.flags&FLAG_CHECKUPDATES)==0)
+            manager_g->itembar_settext(SLOT_NODRIVERS,L"",0);
+    }
+    else
         emptydrp=false;
 
     driverpack_list[0].genhashes();

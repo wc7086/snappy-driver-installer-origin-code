@@ -89,6 +89,7 @@ enum MessagesWND
     WM_BUNDLEREADY     = WM_APP+1,
     WM_UPDATELANG      = WM_APP+2,
     WM_UPDATETHEME     = WM_APP+3,
+    WM_SEEDING         = WM_APP+4,
 };
 //}
 
@@ -193,6 +194,7 @@ private:
     LRESULT WndProcMain(HWND,UINT,WPARAM,LPARAM);
     LRESULT WndProcField(HWND,UINT,WPARAM,LPARAM);
     void AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typedata);
+    void ModifySystemMenuItem(UINT mask,UINT id, wchar_t* typedata);
 
 public:
     void MainLoop(int nCmd);
@@ -216,6 +218,7 @@ public:
 
     void ShowProgressInTaskbar(bool show,long long complited=0,long long total=0);
     void DownloadedTorrent();
+    void ResetUpdater();
 
     MainWindow_t();
     ~MainWindow_t();

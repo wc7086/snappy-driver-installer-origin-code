@@ -1438,7 +1438,13 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
 
         case SLOT_NOUPDATES:
             pos+=D_X(ITEM_TEXT_OFS_Y);
-            wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
+            if(*itembar->txt1)
+                wsprintf(bufw,L"%s",itembar->txt1);
+            else if(items_list.size()>RES_SLOTS)
+                wsprintf(bufw,L"%s",STR(STR_NOUPDATES));
+            else
+                wsprintf(bufw,L"%s",STR(STR_INITIALIZING));
+            //wsprintf(bufw,L"%s",STR(items_list.size()>RES_SLOTS?STR_NOUPDATES:STR_INITIALIZING));
             canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)/2,bufw);
             break;
@@ -1464,7 +1470,9 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             break;
 
         case SLOT_DOWNLOAD:
-            if(itembar->val1>>8)
+            if(*itembar->txt1)
+                wsprintf(bufw,L"%s",itembar->txt1);
+            else if(itembar->val1>>8)
                 wsprintf(bufw,STR(itembar->val1&0xFF?STR_UPD_AVAIL3:STR_UPD_AVAIL1),static_cast<int>(itembar->val1>>8),static_cast<int>(itembar->val1&0xFF));
             else
                 wsprintf(bufw,STR(STR_UPD_AVAIL2),static_cast<int>(itembar->val1&0xFF));
@@ -1473,7 +1481,10 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             if(!Updater->isPaused())
             {
                 Updater->ShowProgress(bufw);
-                itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_MODIFY));
+                if(Updater->isSeedingDrivers()||Updater->isSeedingDownloads())
+                    itembar->drawbutton(canvas,x,pos,bufw,STR(STR_DWN_MODIFY));
+                else
+                    itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_MODIFY));
             }
             else
 #endif

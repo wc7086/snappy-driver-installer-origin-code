@@ -117,6 +117,8 @@ class UpdaterImp:public Updater_t
     static bool finishedupdating;
     static bool finisheddownloading;
     static bool movingfiles;
+    static bool closingsession;
+    static bool SeedMode;
 
     int averageSpeed=0;
     long long torrenttime=0;
@@ -142,6 +144,8 @@ public:
     bool isTorrentReady();
     bool isPaused();
     bool isUpdateCompleted();
+    bool isSeedingDownloads();
+    bool isSeedingDrivers();
 
     int  Populate(int flags);
     void SetFilePriority(const wchar_t *name,int pri);
@@ -150,6 +154,9 @@ public:
 
     void DownloadAll();
     void DownloadIndexes();
+    void StartSeedingDrivers();
+    void StopSeedingDrivers();
+    void StopSeedingDownloads();
 };
 Updater_t *CreateUpdater(){return new UpdaterImp;}
 
@@ -190,6 +197,8 @@ int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
 bool UpdaterImp::movingfiles;
+bool UpdaterImp::closingsession;
+bool UpdaterImp::SeedMode;
 Event *UpdaterImp::downloadmangar_event=nullptr;
 ThreadAbs *UpdaterImp::thandle_download=nullptr;
 //}
@@ -482,12 +491,13 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 {
     UNREFERENCED_PARAMETER(lParam);
     LVCOLUMN lvc;
-    HWND thispcbut,chk;
+    HWND thispcbut,chk1,chk2;
     wchar_t buf[32];
     int i;
 
     thispcbut=GetDlgItem(hwnd,IDCHECKTHISPC);
-    chk=GetDlgItem(hwnd,IDONLYUPDATE);
+    chk1=GetDlgItem(hwnd,IDONLYUPDATE);
+    chk2=GetDlgItem(hwnd,IDKEEPSEEDING);
 
     switch(Message)
     {
@@ -508,7 +518,8 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             UpdateDialog.populate(0,true);
             UpdateDialog.updateTexts();
             UpdateDialog.setCheckboxes();
-            if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(chk,BM_SETCHECK,BST_CHECKED,0);
+            if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(chk1,BM_SETCHECK,BST_CHECKED,0);
+            if(Settings.flags&FLAG_KEEPSEEDING)SendMessage(chk2,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
             SetTimer(hwnd,1,2000,nullptr);
@@ -543,7 +554,9 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     hUpdate=nullptr;
                     UpdateDialog.setPriorities();
                     Settings.flags&=~FLAG_ONLYUPDATES;
-                    if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
+                    if(SendMessage(chk1,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
+                    Settings.flags&=~FLAG_KEEPSEEDING;
+                    if(SendMessage(chk2,BM_GETCHECK,0,0))Settings.flags|=FLAG_KEEPSEEDING;
                     Updater->resumeDownloading();
                     EndDialog(hwnd,IDOK);
                     return TRUE;
@@ -551,7 +564,9 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                 case IDACCEPT:
                     UpdateDialog.setPriorities();
                     Settings.flags&=~FLAG_ONLYUPDATES;
-                    if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
+                    if(SendMessage(chk1,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
+                    Settings.flags&=~FLAG_KEEPSEEDING;
+                    if(SendMessage(chk2,BM_GETCHECK,0,0))Settings.flags|=FLAG_KEEPSEEDING;
                     Updater->resumeDownloading();
                     return TRUE;
 
@@ -562,9 +577,12 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
 
                 case IDONLYUPDATE:
                     Settings.flags&=~FLAG_ONLYUPDATES;
-                    if(SendMessage(chk,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
+                    if(SendMessage(chk1,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
                     UpdateDialog.populate(0,true);
                     break;
+
+                case IDKEEPSEEDING:
+                    return TRUE;
 
                 case IDCHECKALL:
                 case IDUNCHECKALL:
@@ -635,6 +653,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     for(int i=0;i<Updater->numfiles;i++)
     {
         file_entry fe=ti->file_at(i);
+        // the file name minus the parent directory 'SDI_Update'
         const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
 
         if(StrStrIA(filenamefull,"indexes\\"))
@@ -726,6 +745,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             newver=getnewver(filenamefull);
             oldver=getcurver(filename);
 
+            // this flag means only get new versions of packs i already have
             if(Settings.flags&FLAG_ONLYUPDATES)
                 {if(newver>oldver&&oldver)ret++;else continue;}
             else
@@ -764,11 +784,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     manager_g->itembar_settext(SLOT_DOWNLOAD,ret?1:0,nullptr,ret,0,0);
 
     bool showpatreon=ret?1:0;
-    //if((manager_g->getlocale()&0xFF)==0x19)showpatreon=false;
-    if((manager_g->getlocale()&0xFF)==0x22)showpatreon=false;
-    if((manager_g->getlocale()&0xFF)==0x23)showpatreon=false;
-    //if(StrStrIW(STR(STR_LANG_ID),L"English")==nullptr)showpatreon=false;
-    if(emptydrp) showpatreon=false;  // uncomment this code to enable Patreon
+    if(emptydrp)showpatreon=false;
     if(Settings.flags&FLAG_HIDEPATREON)showpatreon=false;
     manager_g->itembar_settext(SLOT_PATREON,showpatreon,nullptr,ret,0,0);
 
@@ -902,13 +918,39 @@ void UpdaterImp::updateTorrentStatus()
         if(averageSpeed)t->remaining=(t->downloadsize-t->downloaded)/averageSpeed*1000;
     }
 
-    t->status_strid=STR_TR_ST0+st.state;
-    if(movingfiles)t->status_strid=STR_TR_ST8;
-    else if(hSession->is_paused())
+    // st.state is the enumerated type of the current state of the torrent
+    // "There is only a distinction between finished and seeding if some pieces
+    //  or files have been set to priority 0, i.e. are not downloaded."
+
+    // if the session is shut down then clear the stats
+    if(hSession->is_paused())
     {
-        *t={};  // zero out the stats
+        *t={};
         t->status_strid=STR_TR_ST4;
     }
+    // if torrent is seeding
+    else if((st.state==torrent_status::finished)&SeedMode)
+        t->status_strid=STR_TR_ST5;
+    // if we're moving the downloaded files
+    else if(movingfiles)
+        t->status_strid=STR_TR_ST8;
+    // other torrent states
+    else if(st.state==torrent_status::queued_for_checking)
+        t->status_strid=STR_TR_ST0;
+    else if(st.state==torrent_status::checking_files)
+        t->status_strid=STR_TR_ST1;
+    else if(st.state==torrent_status::downloading_metadata)
+        t->status_strid=STR_TR_ST2;
+    else if(st.state==torrent_status::downloading)
+        t->status_strid=STR_TR_ST3;
+    else if(st.state==torrent_status::finished)
+        t->status_strid=STR_TR_ST4;
+    else if(st.state==torrent_status::seeding)
+        t->status_strid=STR_TR_ST5;
+    else if(st.state==torrent_status::allocating)
+        t->status_strid=STR_TR_ST6;
+    else if(st.state==torrent_status::checking_resume_data)
+        t->status_strid=STR_TR_ST7;
 
     t->sessionpaused=hSession->is_paused();
     t->torrentpaused=st.paused;
@@ -948,7 +990,7 @@ void UpdaterImp::moveNewFiles()
     ti=hTorrent.torrent_file();
     monitor_pause=1;
 
-    // Delete old online idexes if new are downloaded
+    // Delete old online indexes if new are downloaded
     for(i=0;i<numfiles;i++)
         if(hTorrent.file_priority(i)&&
            StrStrIA(ti->file_at(i).path.c_str(),"indexes\\SDI"))
@@ -1018,13 +1060,44 @@ void UpdaterImp::checkUpdates()
 
 void UpdaterImp::ShowProgress(wchar_t *buf)
 {
-    wchar_t num1[BUFLEN],num2[BUFLEN];
+    // updates the text on the updates button
+    if(hSession)
+    {
+        wchar_t num1[BUFLEN],num2[BUFLEN],num3[BUFLEN],num4[BUFLEN];
+        format_size(num1,TorrentStatus.downloaded,0);
+        format_size(num2,TorrentStatus.downloadsize,0);
+        format_size(num3,TorrentStatus.uploadspeed,1);
+        format_size(num4,TorrentStatus.uploaded,0);
 
-    format_size(num1,TorrentStatus.downloaded,0);
-    format_size(num2,TorrentStatus.downloadsize,0);
-
-    wsprintf(buf,STR(STR_UPD_PROGRES),num1,num2,
+        std::vector<torrent_status> temp;
+        hSession->get_torrent_status(&temp,&yes1,0);
+        if(temp.empty())return;
+        torrent_status& st=temp[0];
+        if(closingsession)
+            wsprintf(buf,STR(STR_DWN_CLOSING));
+        else if(movingfiles)
+            wsprintf(buf,STR(STR_TR_ST8));
+        else if(st.state==torrent_status::queued_for_checking)
+            wsprintf(buf,STR(STR_TR_ST0));
+        else if(st.state==torrent_status::checking_files)
+            wsprintf(buf,L"Checking files %s of %s (%d%%)",num1,num2,
                 (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
+        else if(st.state==torrent_status::downloading_metadata)
+            wsprintf(buf,STR(STR_TR_ST2));
+        else if(st.state==torrent_status::downloading)
+            wsprintf(buf,STR(STR_UPD_PROGRES),num1,num2,
+                (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
+        else if((st.state==torrent_status::finished)&SeedMode)
+            wsprintf(buf,STR(STR_DWN_SEEDING),num3,num4);
+        else if(st.state==torrent_status::finished)
+            wsprintf(buf,STR(STR_TR_ST4));
+        else if(st.state==torrent_status::seeding)
+            wsprintf(buf,STR(STR_DWN_SEEDING),num3,num4);
+        else if(st.state==torrent_status::allocating)
+            wsprintf(buf,STR(STR_TR_ST6));
+        else if(st.state==torrent_status::checking_resume_data)
+            wsprintf(buf,STR(STR_TR_ST7));
+    }
 }
 
 void UpdaterImp::ShowPopup(Canvas &canvas)
@@ -1078,6 +1151,8 @@ void UpdaterImp::ShowPopup(Canvas &canvas)
 
 UpdaterImp::UpdaterImp()
 {
+    SeedMode=false;
+    closingsession=false;
     TorrentStatus.sessionpaused=1;
     downloadmangar_exitflag=DOWNLOAD_STATUS_WAITING;
 
@@ -1100,6 +1175,9 @@ UpdaterImp::~UpdaterImp()
 
 void UpdaterImp::downloadTorrent()
 {
+	// checking for updates
+    manager_g->itembar_settext(SLOT_DOWNLOAD,1,STR(STR_UPD_CHECKING),1,0,0);
+
     error_code ec;
     int i;
     add_torrent_params params;
@@ -1108,7 +1186,6 @@ void UpdaterImp::downloadTorrent()
     hSession=new session(fingerprint("LT",LIBTORRENT_VERSION_MAJOR,LIBTORRENT_VERSION_MINOR,0,0),session::add_default_plugins);
 
     hSession->start_lsd();
-    //hSession->start_upnp();
     hSession->start_natpmp();
 
     // Connecting
@@ -1122,6 +1199,7 @@ void UpdaterImp::downloadTorrent()
     dht.privacy_lookups=true;
     hSession->set_dht_settings(dht);
     settings.use_dht_as_fallback=false;
+    settings.broadcast_lsd=true;
     hSession->add_dht_router(std::make_pair(std::string("router.bittorrent.com"),6881));
     hSession->add_dht_router(std::make_pair(std::string("router.utorrent.com"),6881));
     hSession->add_dht_router(std::make_pair(std::string("router.bitcomet.com"),6881));
@@ -1149,7 +1227,7 @@ void UpdaterImp::downloadTorrent()
     wcstombs(url, Updater->torrent_url, BUFSIZ);
     params.url=url;
     Log.print_con("Torrent: %s\n",url);
-    params.flags=add_torrent_params::flag_paused;
+    params.flags=add_torrent_params::flag_paused|add_torrent_params::flag_seed_mode|add_torrent_params::flag_auto_managed;
     hTorrent=hSession->add_torrent(params,ec);
     if(ec)Log.print_err("ERROR: failed to add torrent: %s\n",ec.message().c_str());
 
@@ -1163,26 +1241,37 @@ void UpdaterImp::downloadTorrent()
     for(i=0;i<200;i++)
     {
         Log.print_con(".");
+        // test if torrent has been retrieved
         if(hTorrent.torrent_file())
         {
             downloadmangar_exitflag=DOWNLOAD_STATUS_TORRENT_GOT;
             Log.print_con("DONE\n");
             break;
         }
+        // test if there was some error condition
         if(downloadmangar_exitflag!=DOWNLOAD_STATUS_DOWLOADING_TORRENT)break;
         Sleep(100);
     }
+
+	// checking for updates
+    manager_g->itembar_settext(SLOT_DOWNLOAD,0,L"",1,0,0);
+
+    // test if we failed to get the torrent
     if(!hTorrent.torrent_file())
     {
+        if(emptydrp) manager_g->itembar_settext(SLOT_NODRIVERS,1);
         downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
         Log.print_con("FAILED\n");
         return;
     }
 
-    // Pupulate list
+    // Populate list
     i=UpdateDialog.populate(0);
     Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
+
+    // clear the torrent priorities
     for(int j=0;j<numfiles;j++)hTorrent.file_priority(j,0);
+
     Timers.stop(time_chkupdate);
 }
 
@@ -1201,6 +1290,7 @@ void UpdaterImp::resumeDownloading()
         downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_DATA;
         downloadmangar_event->raise();
     }
+
     hSession->resume();
     // sometimes the torrent stays paused
     hTorrent.resume();
@@ -1223,6 +1313,85 @@ void UpdaterImp::DownloadIndexes()
             hTorrent.file_priority(i,2);
     Updater->resumeDownloading();
 }
+
+void UpdaterImp::StartSeedingDrivers()
+{
+    // don't interrupt the current session
+    if(!hSession->is_paused())
+        return;
+
+    // i'm going to point the torrent files back to
+    // the actual drivers directory rather than the update directory
+    // and enable seeding for whatever files exist there
+    // once i've done this it's no good for regular downloading
+
+    wchar_t buf[BUFLEN];
+    buf[0]=0;
+    hSession->pause();
+    boost::intrusive_ptr<torrent_info const> ti;
+    ti=hTorrent.torrent_file();
+    if(!ti)return;
+
+    // modify the files in the torrent
+    for(int i=0;i<ti->num_files();i++)
+    {
+        // disable all files by default
+        hTorrent.file_priority(i,0);
+        // get the file entry
+        file_entry fe=ti->file_at(i);
+        std::string file=fe.path;
+        size_t p=file.find("drivers\\");
+        if(p!=std::string::npos)
+        // seed *existing* drivers only
+        {
+            // remove the parent directory 'SDI_Update'
+            file.replace(0,p,"");
+            // prepend the app path
+            file=System.AppPathS()+"\\"+file;
+            // if the file exists, reset the path in the torrent and enable it
+            MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,file.c_str(),strlen(file.c_str())+1,buf,BUFLEN);
+            if(System.FileExists2(buf))
+            {
+                hTorrent.rename_file(i,file);
+                hTorrent.file_priority(i,1);
+                Log.print_con("Seeding: %s\n",file.c_str());
+            }
+        }
+    }
+
+    // restart the torrent
+    SeedMode=true;
+    resumeDownloading();
+
+    // update the system menu text
+    PostMessage(MainWindow.hMain, WM_SEEDING, 0, 1);
+}
+
+void UpdaterImp::StopSeedingDrivers()
+{
+    // switching off SeedMode will trigger MoveFiles which we don't want
+    if(isSeedingDrivers())
+    {
+        // update the button status via ShowProgress
+        closingsession=true;
+        // give the gui time to update
+        // when it's done it will reset the updater via WM_TIMER
+        SetTimer(MainWindow.hMain,2,500,nullptr);
+        // update the system menu text
+        PostMessage(MainWindow.hMain, WM_SEEDING, 0, 0);
+    }
+}
+
+void UpdaterImp::StopSeedingDownloads()
+{
+    // are we in an updates session (triggered from the updates dialog)
+    if(isSeedingDownloads())
+    {
+        SeedMode=false;
+        Settings.flags&=~FLAG_KEEPSEEDING;
+    }
+}
+
 unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 {
 	UNREFERENCED_PARAMETER(arg);
@@ -1262,6 +1431,10 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
         if(downloadmangar_exitflag==DOWNLOAD_STATUS_STOPPING)break;
 
+        // check for dialog option to continue seeding
+        if(Settings.flags&FLAG_KEEPSEEDING)
+            SeedMode=true;
+
         // Downloading loop
         Log.print_con("{torrent_start\n");
         while(downloadmangar_exitflag==DOWNLOAD_STATUS_DOWLOADING_DATA&&hSession)
@@ -1282,7 +1455,8 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 holder=hSession->pop_alert();
             }
 
-            if(TorrentStatus.status_strid==STR_TR_ST0+libtorrent::torrent_status::finished)
+            // process the downloads when finished and not seeding
+            if((TorrentStatus.status_strid==STR_TR_ST0+libtorrent::torrent_status::finished)&&!SeedMode)
             {
                 Log.print_con("Torrent: finished\n");
                 hSession->pause();
@@ -1325,6 +1499,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                     System.run_command(L"cmd",buf.Get(),SW_HIDE,0);
                 }
                 if(Settings.flags&FLAG_AUTOCLOSE)PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
+
                 downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
 
                 // Flash in taskbar
@@ -1349,14 +1524,14 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
         monitor_pause=0;
         Log.print_con("}torrent_stop\n");
         downloadmangar_event->reset();
-    }
+    } // !=DOWNLOAD_STATUS_STOPPING
 
     if(hSession)
     {
+        Log.print_con("Closing torrent session...");
         hSession->remove_torrent(hTorrent);
         hSession->pause();
         hSession->abort();
-        Log.print_con("Closing torrent session...");
         delete hSession;
         Log.print_con("DONE\n");
         hSession=nullptr;
@@ -1370,7 +1545,8 @@ void UpdaterImp::pause(){downloadmangar_exitflag=DOWNLOAD_STATUS_PAUSING;}
 bool UpdaterImp::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 bool UpdaterImp::isPaused(){return TorrentStatus.sessionpaused;}
 bool UpdaterImp::isUpdateCompleted(){return finishedupdating;}
-
+bool UpdaterImp::isSeedingDownloads(){return SeedMode&&Settings.flags&FLAG_KEEPSEEDING;}
+bool UpdaterImp::isSeedingDrivers(){return SeedMode&&!(Settings.flags&FLAG_KEEPSEEDING);}
 int  UpdaterImp::Populate(int flags){return UpdateDialog.populate(flags,!flags);}
 void UpdaterImp::SetFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
 void UpdaterImp::SetLimits()

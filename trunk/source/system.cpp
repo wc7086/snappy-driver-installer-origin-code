@@ -183,6 +183,10 @@ bool SystemImp::FileExists2(const wchar_t *spec)
     HANDLE hFind=FindFirstFileW(buf.Get(),&FindFileData);
     if(hFind!=INVALID_HANDLE_VALUE)
     {
+        if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==0)
+            ret=TRUE;
+        else
+
         while(FindNextFileW(hFind,&FindFileData)!=0)
         {
             if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==0)
@@ -269,7 +273,12 @@ int SystemImp::_vscwprintf_dll(const wchar_t * _Format,va_list _ArgList)
     return _vscwprintf_func?_vscwprintf_func(_Format,_ArgList):1024*4;
 }
 
-std::wstring SystemImp::AppPath()
+std::string SystemImp::wtoa (const std::wstring& wstr)
+{
+   return (std::string(wstr.begin(), wstr.end()));
+}
+
+std::wstring SystemImp::AppPathW()
 {
     std::wstring path;
     path.resize(MAX_PATH, 0);
@@ -279,10 +288,16 @@ std::wstring SystemImp::AppPath()
     return path;
 }
 
+std::string SystemImp::AppPathS()
+{
+    std::wstring path=AppPathW();
+    return wtoa(path);
+}
+
 int SystemImp::FindLatestExeVersion()
 {
     int ver=SVN_REV;
-    std::wstring spec=AppPath()+L"\\SDI_R*.exe";
+    std::wstring spec=AppPathW()+L"\\SDI_R*.exe";
     WIN32_FIND_DATA fd;
     HANDLE hFind=::FindFirstFile(spec.c_str(), &fd);
     if(hFind!=INVALID_HANDLE_VALUE)
