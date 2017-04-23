@@ -65,18 +65,19 @@ CAPTION "Update"
     CONTROL         "", IDLIST, WC_LISTVIEW, WS_TABSTOP | WS_BORDER | LVS_REPORT|LVS_SINGLESEL|LVS_SHOWSELALWAYS,
         5, 5, 389, LISTY-20, WS_EX_LEFT|LVS_EX_CHECKBOXES
 
-    CHECKBOX        "Only update", IDONLYUPDATE,5, POSY1-20,300,14,BS_AUTOCHECKBOX
+    CHECKBOX        "Only update", IDONLYUPDATE,5, POSY1-25,300,12,BS_AUTOCHECKBOX
+    CHECKBOX        "Continue seeding after download is finished", IDKEEPSEEDING, 5, POSY1-15, 300, 12, BS_AUTOCHECKBOX
 
-    PUSHBUTTON      "Check All",   IDCHECKALL,                        5, POSY1,  90, 14
-    PUSHBUTTON      "Uncheck All", IDUNCHECKALL,                    107, POSY1,  90, 14
+    PUSHBUTTON      "Check All",   IDCHECKALL,                        5, POSY1+3,  90, 14
+    PUSHBUTTON      "Uncheck All", IDUNCHECKALL,                    107, POSY1+3,  90, 14
     PUSHBUTTON      "Check only needed for this PC", IDCHECKTHISPC,   5, POSY2, 192, 14
 
     DEFPUSHBUTTON   "OK",     IDOK,     110+120, POSY2, 50, 14,BS_DEFPUSHBUTTON
     PUSHBUTTON      "Cancel", IDCANCEL, 163+120, POSY2, 50, 14
     PUSHBUTTON      "Accept", IDACCEPT, 216+120, POSY2, 50, 14
 
-    LTEXT           "Total download size: xx MB",   IDTOTALSIZE,  230, POSY3, 150, 14
-    LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 230, POSY1, 150, 14
+    LTEXT           "Total download size: xx MB",   IDTOTALSIZE,  250, POSY3+5, 150, 12
+    LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 250, POSY1+5, 150, 12
 }
 
 #define VER_FILEVERSION             0,4,0,SVN_REV
@@ -260,8 +261,8 @@ BEGIN
             SVN_BUILD_DATE "\n"
             SVN_BUILD_NOTE
             , IDD_ABOUT_T2, 115,24,250,90,SS_LEFT
-    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,67,200,15,SS_LEFT
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,76,200,15,SS_LEFT
+    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,67,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,77,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Developers: \tBadPointer, Glenn Delahoy\n"
             "Contributors: \te39, QuarQ, SamLab, Sorc, volodya61, WindR\n"
             "              \tComputer Bloke",IDD_ABOUT_T3,10,92,380,40,SS_LEFT
@@ -295,8 +296,8 @@ BEGIN
             SVN_BUILD_DATE "\n"
             SVN_BUILD_NOTE
             , IDD_TXT_WELC, 115,24,250,90,SS_LEFT
-    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_T2_WELC,115,67,200,15,SS_LEFT
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_T3_WELC,115,76,200,15,SS_LEFT
+    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_T2_WELC,115,67,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_T3_WELC,115,77,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_T4_WELC,40,100,380,40,SS_LEFT
     LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
             "the following options and click the Download button to start downloading.\n\n"

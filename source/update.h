@@ -30,6 +30,7 @@ class Updater_t
 {
 public:
     int numfiles=0;
+    static bool SeedMode;
     static int torrentport,downlimit,uplimit,connections;
     static wchar_t torrent_url[BUFSIZ];
 public:
@@ -45,6 +46,8 @@ public:
     virtual bool isTorrentReady()=0;
     virtual bool isPaused()=0;
     virtual bool isUpdateCompleted()=0;
+    virtual bool isSeedingDrivers()=0;
+    virtual bool isSeedingDownloads()=0;
 
     virtual int  Populate(int flags)=0;
     virtual void SetFilePriority(const wchar_t *name,int pri)=0;
@@ -52,6 +55,9 @@ public:
     virtual void OpenDialog()=0;
     virtual void DownloadAll()=0;
     virtual void DownloadIndexes()=0;
+    virtual void StartSeedingDrivers()=0;
+    virtual void StopSeedingDrivers()=0;
+    virtual void StopSeedingDownloads()=0;
 };
 Updater_t *CreateUpdater();
 

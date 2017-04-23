@@ -92,7 +92,9 @@ public:
 
     void UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj);
     int _vscwprintf_dll(const wchar_t * _Format,va_list _ArgList);
-    std::wstring AppPath();
+    std::string wtoa (const std::wstring& wstr);
+    std::wstring AppPathW();
+    std::string AppPathS();
     int FindLatestExeVersion();
     bool SystemProtectionEnabled(State *state);
     int GetRestorePointCreationFrequency();

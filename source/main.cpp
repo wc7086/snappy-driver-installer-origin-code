@@ -292,6 +292,25 @@ void MainWindow_t::AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typeda
         InsertMenuItem(pSysMenu, 0, TRUE, &mi);
 }
 
+void MainWindow_t::ModifySystemMenuItem(UINT mask, UINT id, wchar_t* typedata)
+{
+    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
+    if (pSysMenu==NULL)return;
+
+    MENUITEMINFO mi;
+    memset(&mi, 0, sizeof(MENUITEMINFO));
+
+    mi.cbSize=sizeof(MENUITEMINFO);
+    mi.fMask=mask;
+    mi.fType=0;
+
+    if(GetMenuItemInfo(pSysMenu, id, false, &mi))
+    {
+        mi.dwTypeData=typedata;
+        SetMenuItemInfo(pSysMenu, id, false, &mi);
+    }
+}
+
 void MainWindow_t::MainLoop(int nCmd)
 {
     if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)return;
@@ -349,11 +368,11 @@ void MainWindow_t::MainLoop(int nCmd)
 
     // add options to the system menu - in reverse order
     AddSystemMenuItem(MIIM_FTYPE,0,MFT_SEPARATOR,const_cast<wchar_t *>(L""));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_LICENSE,0,const_cast<wchar_t *>(L"License Information"));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_ABOUT,0,const_cast<wchar_t *>(L"About"));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_LICENSE,0,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_ABOUT,0,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
     AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,const_cast<wchar_t *>STR(STR_DRVDIR));
     AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,const_cast<wchar_t *>STR(STR_OPENLOGS));
-//    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SHAREDRV,0,const_cast<wchar_t *>(L"Share Driver Packs"));
+    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SEED,0,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
 
     // license dialog
     if(!Settings.license)
@@ -917,6 +936,18 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
     case WM_INITDIALOG:
         return TRUE;
 
+    case WM_SETCURSOR:
+        // 2 hyperlinks
+        if ((LOWORD(lParam)==HTCLIENT) &&
+            ((GetDlgCtrlID((HWND)wParam) == IDD_ABOUT_T8)||
+             (GetDlgCtrlID((HWND)wParam) == IDD_ABOUT_T9)))
+        {
+            SetCursor(LoadCursor(nullptr, IDC_HAND));
+            SetWindowLongPtr(hwnd, DWLP_MSGRESULT, TRUE);
+            return true;
+        }
+        break;
+
     case WM_COMMAND:
         switch(wParam)
         {
@@ -925,6 +956,12 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
                 return TRUE;
             case IDCANCEL:
                 EndDialog(hwnd,wParam);
+                break;
+            case IDD_ABOUT_T8:
+                System.run_command(L"open",WEB_HOMEPAGE,SW_SHOWNORMAL,0);
+                break;
+            case IDD_ABOUT_T9:
+                System.run_command(L"open",WEB_PATREONPAGE,SW_SHOWNORMAL,0);
                 break;
             default:
                 break;
@@ -1222,8 +1259,21 @@ void MainWindow_t::DownloadedTorrent()
         wcscpy(spec2,Settings.index_dir);wcscat(spec2,L"\\*.*");
         if(!System.FileExists2(spec1)&&!System.FileExists2(spec2))
         {
-           DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
+            // don't show if there is any command line arguments
+            int argc;
+            CommandLineToArgvW(GetCommandLineW(),&argc);
+            if(argc<2)
+                DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
         }
+}
+
+void MainWindow_t::ResetUpdater()
+{
+    #ifdef USE_TORRENT
+    delete Updater;
+    Updater=CreateUpdater();
+    Updater->checkUpdates();
+    #endif // USE_TORRENT
 }
 
 void MainWindow_t::tabadvance(int v)
@@ -1477,6 +1527,22 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             SetWindowPlacement(hwnd, &wndp);
             break;
 
+        case WM_SEEDING:
+            {
+                switch(lParam)
+                {
+                    case 1:
+                        ModifySystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SEED,const_cast<wchar_t *>STR(STR_SYST_STOP_SEED));
+                        break;
+                    case 0:
+                        ModifySystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SEED,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            break;
+
         case WM_BUNDLEREADY:
             {
                 Bundle *bb=reinterpret_cast<Bundle *>(wParam);
@@ -1705,10 +1771,14 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             break;
 
         case WM_TIMER:
-            if(manager_g->animate())
-                redrawfield();
+            if(manager_g->animate())redrawfield();
             else
-                KillTimer(hwnd,1);
+            {
+                #ifdef USE_TORRENT
+                if(wParam==2)MainWindow.ResetUpdater();
+                #endif // USE_TORRENT
+                KillTimer(hwnd,wParam);
+            }
             break;
 
         case WM_PAINT:
@@ -1729,6 +1799,14 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     case IDM_ABOUT:
                     {
                         DialogBox( ghInst,MAKEINTRESOURCE(IDD_ABOUT), MainWindow.hMain,(DLGPROC)AboutBoxProc);
+                        return 0;
+                    }
+                    case IDM_SEED:
+                    {
+                        #ifdef USE_TORRENT
+                        if(Updater->isSeedingDrivers())Updater->StopSeedingDrivers();
+                        else Updater->StartSeedingDrivers();
+                        #endif // USE_TORRENT
                         return 0;
                     }
                     case IDM_DRVDIR:
@@ -2073,13 +2151,15 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
             if(Popup->floating_itembar==SLOT_DOWNLOAD)
             {
                 #ifdef USE_TORRENT
-                Updater->OpenDialog();
+                if(Updater->isSeedingDrivers())Updater->StopSeedingDrivers();
+                else if(Updater->isSeedingDownloads())Updater->StopSeedingDownloads();
+                else Updater->OpenDialog();
                 #endif
                 break;
             }
             if(Popup->floating_itembar==SLOT_PATREON)
             {
-                System.run_command(L"open",L"https://www.patreon.com/sdi_tool",SW_SHOWNORMAL,0);
+                System.run_command(L"open",WEB_PATREONPAGE,SW_SHOWNORMAL,0);
                 break;
             }
 
@@ -2396,6 +2476,18 @@ BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
         SetFocus(GetDlgItem(hwnd,IDD_B1_WELC));
         return TRUE;
 
+    case WM_SETCURSOR:
+        // 2 hyperlinks
+        if ((LOWORD(lParam)==HTCLIENT) &&
+            ((GetDlgCtrlID((HWND)wParam) == IDD_T2_WELC)||
+             (GetDlgCtrlID((HWND)wParam) == IDD_T3_WELC)))
+        {
+            SetCursor(LoadCursor(nullptr, IDC_HAND));
+            SetWindowLongPtr(hwnd, DWLP_MSGRESULT, TRUE);
+            return true;
+        }
+        break;
+
     case WM_COMMAND:
         switch(wParam)
         {
@@ -2422,6 +2514,12 @@ BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 }
 
                 return TRUE;
+            case IDD_T2_WELC:
+                System.run_command(L"open",WEB_HOMEPAGE,SW_SHOWNORMAL,0);
+                break;
+            case IDD_T3_WELC:
+                System.run_command(L"open",WEB_PATREONPAGE,SW_SHOWNORMAL,0);
+                break;
             default:
                 break;
         }

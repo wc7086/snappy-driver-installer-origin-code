@@ -52,6 +52,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDTOTALSIZE   310
 #define IDONLYUPDATE  311
 #define IDTOTALAVAIL  313
+#define IDKEEPSEEDING 314
 
 // Options
 #define IDC_TAB1      312
@@ -116,11 +117,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 
 #define IDD_P4_CONSL  709
 
-// About box
+// system menu
 #define IDM_ABOUT     16
 #define IDM_OPENLOGS  17
 #define IDM_LICENSE   18
 #define IDM_DRVDIR    19
+#define IDM_SEED      20
+
+// About box
 #define IDD_ABOUT     800
 #define IDD_ABOUT_T1  801
 #define IDD_ABOUT_T2  802
@@ -146,3 +150,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define IDD_P2_WELC   911
 #define IDD_P3_WELC   912
 #define IDD_B1_WELC   913
+
+#define WEB_HOMEPAGE    L"http://www.snappy-driver-installer.org"
+#define WEB_PATREONPAGE L"https://www.patreon.com/sdi_tool"
