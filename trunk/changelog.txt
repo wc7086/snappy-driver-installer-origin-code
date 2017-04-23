@@ -4,14 +4,36 @@ www.snappy-driver-installer.org
 
 Change Log
 
-R551
-Welcome screen completed. It appears when there are no driver packs and indexes found
-Updated torrent agent
-Moved some themes out to Additional Themes
-Moved Select Driver Dir to system menu
-AddSystemMenuItem
-
-R548 06 April 2017
+Version 0.5.0.554
+23 April 2017
+Driver Packs 17043
+Updated version number
+Welcome screen completed. It appears when there are no driver packs and indexes
+ found and no command line arguments given (ie new users).
+Updated torrent agent id.
+Moved some themes out to Additional Themes.
+Moved Select Driver Dir to system menu.
+Added seeding option to Updates dialog. This keeps the update session running,
+ seeding all files that have been downloaded. When the update session is stopped
+ by clicking on the update button, the updates are processed in the normal
+ fashion. This is perfect if you leave updates running overnight.
+Added 'Seed driver packs' option to the System Menu. At any time when not doing
+ updates, you can switch this on to enable sharing of the driver packs in your
+ working "drivers" directory. Sometimes it wants to do a little downloading
+ first, this is a quirk in the bittorrent protocol and is normal and
+ unavoidable. This is different to the seeding option on the Updates dialog.
+Added more status feedback from the torrent.
+Added 'Checking for updates' status on startup.
+Added web page hyperlinks to Welcome screen and About box.
+In case you're wondering why the executable suddenly got bigger, it's
+ because I no longer use the exe packer to compress it.
+Remove No Drivers Available message if not checking for updates.
+Updated torrent trackers.
+Prevent autoclose after autoupdate if autoinstall is also present.
+A bunch of small changes and fixes.
+ 
+Version 0.4.0.548
+06 April 2017
 Driver Packs 17034
 Updated version number
 Added support for *.sdi.inf files
