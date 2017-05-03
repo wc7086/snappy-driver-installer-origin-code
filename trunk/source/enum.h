@@ -94,8 +94,10 @@ public:
     int  getDriverIndex()const{return driver_index;}
     ofst getHardwareID()const{return HardwareID;}
     ofst getCompatibleIDs()const{return CompatibleIDs;}
+    ofst getFriendlyName()const{return FriendlyName;}
     ofst getDriver()const{return Driver;}
     ofst getDescr()const{return Devicedesc;}
+    ofst getMfg()const{return Mfg;}
     ofst getRet()const{return ret;}
     ofst getProblem()const{return problem;}
 
@@ -144,8 +146,14 @@ private:
     void calc_dev_pos(const Device *cur_device,const State *state,int *ishw,int *dev_pos);
 
 public:
+    ofst getProviderName()const{return ProviderName;}
+    ofst getDriverDate()const{return DriverDate;}
+    ofst getDriverVersion()const{return DriverVersion;}
     ofst getInfPath()const{return InfPath;}
+    ofst getInfSection()const{return InfSection;}
     ofst getMatchingDeviceId()const{return MatchingDeviceId;}
+    ofst getDriverDesc()const{return DriverDesc;}
+    ofst getCat()const{return cat;}
     const Version *getVersion()const{return &version;}
 
     unsigned calc_score_h(const State *state)const;

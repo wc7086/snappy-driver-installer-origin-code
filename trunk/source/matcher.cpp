@@ -319,6 +319,7 @@ public:
     void populate();
     void print();
     void sorta(size_t *v);
+    void write_device_list(wchar_t *filename);
 
     const wchar_t *finddrp(const wchar_t *s) override{return col->finddrp(s);}
     State *getState(){return state;}
@@ -443,6 +444,54 @@ void MatcherImp::print()
         Log.print_file("\n");
     }
     Log.print_file("}matcher_print\n\n");
+}
+
+void MatcherImp::write_device_list(wchar_t *filename)
+{
+    if(!System.canWrite(filename))
+    {
+        Log.print_err("ERROR in write_device_list(): Unwriteable,'%S'\n",filename);
+        return;
+    }
+
+    FILE *f=_wfopen(filename,L"wt");
+    if(!f)
+    {
+        Log.print_err("ERROR in write_device_list(): Failed to open file,'%S'\n",filename);
+        return;
+    }
+
+    wchar_t buffer[1024];
+    int n;
+    const Txt *txt=&state->textas;
+
+    for(auto &devicematch:devicematch_list)
+    {
+        n=wsprintf(buffer,L"[Device]\nName: %s\nDescription: %s\nManufacturer: %s\nHardware ID: %s\nDriver: %s\n\n",
+                   txt->get(devicematch.device->getFriendlyName()),
+                   txt->get(devicematch.device->getDescr()),
+                   txt->get(devicematch.device->getMfg()),
+                   txt->get(devicematch.device->getHardwareID()),
+                   txt->get(devicematch.device->getDriver()));
+        if(n)
+        {
+            fputws(buffer,f);
+
+            if(devicematch.driver)
+            {
+                n=wsprintf(buffer,L"[Driver]\nDescription: %s\nProvider: %s\nDate: %s\nVersion: %s\nMatching Device ID: %s\nInf Path: %s\nInf Section: %s\n\n",
+                           txt->get(devicematch.driver->getDriverDesc()),
+                           txt->get(devicematch.driver->getProviderName()),
+                           txt->get(devicematch.driver->getDriverDate()),
+                           txt->get(devicematch.driver->getDriverVersion()),
+                           txt->get(devicematch.driver->getMatchingDeviceId()),
+                           txt->get(devicematch.driver->getInfPath()),
+                           txt->get(devicematch.driver->getInfSection()));
+                if(n)fputws(buffer,f);
+            }
+        }
+    }
+    fclose(f);
 }
 
 void MatcherImp::sorta(size_t *v)

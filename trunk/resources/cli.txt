@@ -4,7 +4,7 @@ Task-oriented
 -?                Show this help window.
 
 -7z               Run in 7z archiver mode.
-                  Example: SDI.exe -7z x DP_TV_Beholder_14020.7z
+                  Example: SDIO.exe -7z x DP_TV_Beholder_14020.7z
 
 -install <hwid> <inffile>
                   Install driver with specified <hwid> from <inffile>.
@@ -35,6 +35,8 @@ Task-oriented
 -nologfile        Suppress creating logs.
 -nosnapshot       Suppress creating snapshots.
 -nostamp          Creates logs and snapshot without timestamps.
+-getdevicelist:<file>
+                  Writes a text file containing details of all devices and drivers
 
 ------------
 sdi.cfg
@@ -112,7 +114,7 @@ Verbose
 The -verbose:<flags> switch is used to set log detail level.
 For example, in order to log only sections DeviceInfo and manager_print
 you have to calculate the sum: 4+16=20.
-SDI.exe -verbose:20
+SDIO.exe -verbose:20
 
 LOG_VERBOSE_ARGS       | 0x0001 |    1 | Sections: "Settings".
 LOG_VERBOSE_SYSINFO    | 0x0002 |    2 | Sections: "Windows", "Environment".

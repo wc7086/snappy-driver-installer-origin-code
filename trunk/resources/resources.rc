@@ -23,20 +23,19 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "resources.h"
 #include "..\source\svnrev.h"
 
-IDI_ICON1       ICON        "icon.ico"
+IDI_ICON1       ICON        "iconorigin.ico"
 IDR_UP          RESFILE     "up.webp"
 IDR_DOWN        RESFILE     "down.webp"
 IDR_UP_H        RESFILE     "up.webp"
 IDR_DOWN_H      RESFILE     "down.webp"
-IDR_LOGO        RESFILE     "logo.webp"
+IDR_LOGO        RESFILE     "logoorigin.webp"
 IDR_PATREON     RESFILE     "patreon.webp"
-IDR_TRANS       RESFILE     "trans.webp"
 IDR_LICENSE     RESFILE     "gpl-3.0.txt"
 IDR_THEME       RESFILE     "..\\tools\\SDI\\themes\\metallic.txt"
 IDR_LANG        RESFILE     "..\\tools\\SDI\\langs\\english.txt"
 IDR_INSTALL64   RESFILE     "install64.exe"
 IDR_CLI_HELP    RESFILE     "CLI.txt"
-IDB_LOGO        BITMAP      "logo128.bmp"
+IDB_LOGO        BITMAP      "logoorigin128.bmp"
 
 #define SIZEY 270
 #define LISTY SIZEY-53
@@ -80,9 +79,9 @@ CAPTION "Update"
     LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 250, POSY1+5, 150, 12
 }
 
-#define VER_FILEVERSION             0,5,0,SVN_REV
-#define VER_FILEVERSION_STR         "0.5 " SVN_REV2 "\0"
-#define VER_VERSION                 "Version: 0.5.0"
+#define VER_FILEVERSION             0,6,0,SVN_REV
+#define VER_FILEVERSION_STR         "0.6 " SVN_REV2 "\0"
+#define VER_VERSION                 "Version: 0.6.0"
 
 #define VER_PRODUCTVERSION          VER_FILEVERSION
 #define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
@@ -101,7 +100,7 @@ BEGIN
             VALUE "FileDescription",  "Snappy Driver Installer Origin"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "LegalCopyright",   "GNU GPL v3"
-            VALUE "OriginalFilename", "SDI_" SVN_REV2 ".exe"
+            VALUE "OriginalFilename", "SDIO_" SVN_REV2 ".exe"
             VALUE "ProductName",      "Snappy Driver Installer Origin"
             VALUE "ProductVersion",   SVN_REV2
         END
@@ -204,12 +203,10 @@ BEGIN
     LTEXT           "Max connections (0 - unlimited)", IDD_P2_CON, 5+OFSX, OFSY+28, LABELW, 14, SS_LEFT
     LTEXT           "Max download speed in KB/s (0 - unlimited)", IDD_P2_DOWN, 5+OFSX, OFSY+56, LABELW, 14, SS_LEFT
     LTEXT           "Max upload speed in KB/s (0 - unlimited)", IDD_P2_UP, 5+OFSX, OFSY+84, LABELW, 14, SS_LEFT
-    LTEXT           "Torrent URL (requires app restart)", IDD_P2_TURL, 5+OFSX, OFSY+112, LABELW, 14, SS_LEFT
     EDITTEXT        IDD_P2_PORTE, 5+OFSX, OFSYL+14, EDITW, 14, ES_AUTOHSCROLL
     EDITTEXT        IDD_P2_CONE, 5+OFSX, OFSYL+42, EDITW, 14, ES_AUTOHSCROLL
     EDITTEXT        IDD_P2_DOWNE, 5+OFSX, OFSYL+70, EDITW, 14, ES_AUTOHSCROLL
     EDITTEXT        IDD_P2_UPE, 5+OFSX, OFSYL+98, EDITW, 14, ES_AUTOHSCROLL
-    EDITTEXT        IDD_P2_TURLE, 5+OFSX, OFSYL+126, EDITW3, 14, ES_AUTOHSCROLL
     CHECKBOX        "Do not check for updates", IDD_P2_UPD,5, 164,LABELW2,14,BS_AUTOCHECKBOX
     CHECKBOX        "Do not notify about missing driverpacks", IDONLYUPDATE,5, 175,LABELW2,14,BS_AUTOCHECKBOX
 END
@@ -301,8 +298,8 @@ BEGIN
     LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_T4_WELC,40,100,380,40,SS_LEFT
     LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
             "the following options and click the Download button to start downloading.\n\n"
-            "Note: Look for additional tools on the System Menu at the top left of the SDI "
-            "main window."
+            "Note: Look for additional tools on the System Menu at the top left of the "
+            "main application window."
             ,IDD_TXT_WELC,40,110,320,40,SS_LEFT
     AUTORADIOBUTTON "Download All Driver Packs", IDD_P1_WELC, 40,153,200,12,WS_GROUP
     LTEXT   "Get the latest version of the driver packs. "

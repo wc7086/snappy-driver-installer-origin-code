@@ -1201,9 +1201,7 @@ int Driverpack::genindex()
                 cc++;
                 if(outSizeProcessed)
                 {
-                    if(StrStrIW(infname,L".sdi.inf"))
-                        driverpack_indexinf_async(infpath.Get(),infname,outBuffer+offset,outSizeProcessed);
-                    else if(StrStrIW(infname,L".inf"))
+                    if(StrStrIW(infname,L".inf"))
                         driverpack_indexinf_async(infpath.Get(),infname,outBuffer+offset,outSizeProcessed);
                     else
                         driverpack_parsecat_async(infpath.Get(),infname,outBuffer+offset,outSizeProcessed);

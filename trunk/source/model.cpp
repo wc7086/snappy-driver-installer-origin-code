@@ -208,6 +208,8 @@ void Bundle::bundle_lowprioirity()
     state.print();
     matcher->print();
     manager_g->print_hr();
+    if(wcslen(Settings.device_list_filename)>0)
+        matcher->write_device_list(Settings.device_list_filename);
 
     #ifdef USE_TORRENT
     if(Settings.flags&FLAG_CHECKUPDATES&&!Timers.get(time_chkupdate))Updater->checkUpdates();

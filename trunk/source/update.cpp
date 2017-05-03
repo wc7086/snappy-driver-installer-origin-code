@@ -192,7 +192,7 @@ int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
-wchar_t Updater_t::torrent_url[BUFSIZ]=L"http://www.snappy-driver-installer.org/downloads/SDI_Update.torrent";
+wchar_t Updater_t::torrent_url[BUFSIZ]=L"http://www.snappy-driver-installer.org/downloads/SDIO_Update.torrent";
 int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
@@ -670,8 +670,8 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         {
             basesize+=fe.size;
             basedownloaded+=file_progress[i];
-            if(StrStrIA(filenamefull,"sdi_R"))
-                NewExeVer=atol(StrStrIA(filenamefull,"sdi_R")+5);
+            if(StrStrIA(filenamefull,"sdio_R"))
+                NewExeVer=atol(StrStrIA(filenamefull,"sdio_R")+6);
         }
     }
 
@@ -700,9 +700,9 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         ListView.SetItemTextUpdate(row,1,buf);
         wsprintf(buf,L"%d%%",(int)(basedownloaded*100/basesize));
         ListView.SetItemTextUpdate(row,2,buf);
-        wsprintf(buf,L" SDI_R%d",NewExeVer);
+        wsprintf(buf,L" SDIO_R%d",NewExeVer);
         ListView.SetItemTextUpdate(row,3,buf);
-        wsprintf(buf,L" SDI_R%d",LatestExeVersion);
+        wsprintf(buf,L" SDIO_R%d",LatestExeVersion);
         ListView.SetItemTextUpdate(row,4,buf);
         ListView.SetItemTextUpdate(row,5,STR(STR_UPD_YES));
         row++;
@@ -787,68 +787,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     if(emptydrp)showpatreon=false;
     if(Settings.flags&FLAG_HIDEPATREON)showpatreon=false;
     manager_g->itembar_settext(SLOT_PATREON,showpatreon,nullptr,ret,0,0);
-
-    if(showpatreon)
-    switch(manager_g->getlocale()&0xFF)
-    {
-        // Not translated
-        default:
-            manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,1,0,0);
-            break;
-
-        // Translation isn't completed
-        //case 0x1A: // Bosnian (bs) and Croatian (hr) and Serbian (sr)
-        case 0x0B: // Finnish (fi)
-        case 0x1b: // Slovak (sk)
-        case 0x24: // Slovenian (sl)
-            manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,1,0,0);
-            break;
-
-        // Translation is out of date
-        case 0x2C: // Azerbaijani (az) [no translators on Transifex]
-        case 0x12: // Korean (ko)
-        case 0x05: // Czech (cs)
-        case 0x27: // Lithuanian (lt)
-        case 0x18: // Romanian (ro) [no translators on Transifex]
-        case 0x26: // Latvian (lv) [no translators on Transifex]
-            manager_g->itembar_settext(SLOT_TRANSLATION,1,nullptr,2,0,0);
-            break;
-
-        // Translation is in good shape
-        case 0x01: // Arabic (ar)
-        case 0x03: // Catalan (ca)
-        case 0x04: // Chinese (zh)
-        case 0x2B: // Armenian (hy)
-        case 0x02: // Bulgarian (bg)
-        case 0x06: // Danish (da)
-        case 0x09: // English (en)
-        case 0x0C: // French (fr)
-        case 0x37: // Georgian (ka)
-        case 0x07: // German (de)
-        case 0x08: // Greek (el)
-        case 0x0D: // Hebrew (he)
-        case 0x0E: // Hungarian (hu)
-        case 0x10: // Italian (it)
-        case 0x11: // Japanese (ja)
-        case 0x13: // Dutch (nl)
-        case 0x14: // Norwegian (no)
-        case 0x15: // Polish (pl)
-        case 0x16: // Portuguese (pt)
-        case 0x19: // Russian (ru)
-        case 0x0A: // Spanish (es)
-        case 0x1A: // Croatian (hr)
-        case 0x1D: // Swedish (sv)
-        case 0x1E: // Thai (th)
-        case 0x1F: // Turkish (tr)
-        case 0x21: // Indonesian (id)
-        case 0x22: // Ukrainian (uk)
-        case 0x23: // Belarusian (be)
-        case 0x25: // Estonian (et)
-        case 0x29: // Persian (fa)
-        case 0x2A: // Vietnamese (vi)
-            break;
-    }
-
     return ret+=NewExeVer<<8;
 }
 
