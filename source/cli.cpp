@@ -68,9 +68,11 @@ void Parse_save_installed_id_swith(const wchar_t *ParamStr)
 
     if(wcslen(ParamStr)>tmpLen)
     {
-        if(ParamStr[tmpLen]==L':')wcscpy(CLIParam.SaveInstalledFileName,ParamStr+tmpLen+1);else
-            if(ParamStr[tmpLen]==L' ')wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
-            else return;
+        if(ParamStr[tmpLen]==L':')
+            wcscpy(CLIParam.SaveInstalledFileName,ParamStr+tmpLen+1);
+        else if(ParamStr[tmpLen]==L' ')
+            wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);
+        else return;
     }
     else
         wcscpy(CLIParam.SaveInstalledFileName,INSTALLEDVENFILENAMEDEFPATH);

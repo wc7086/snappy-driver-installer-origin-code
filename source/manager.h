@@ -47,7 +47,7 @@ enum SLOTS
     SLOT_VIRUS_HIDDEN  = 3,
     SLOT_NODRIVERS     = 4,
     SLOT_PATREON       = 5,
-    SLOT_TRANSLATION   = 6,
+//    SLOT_TRANSLATION   = 6,
     SLOT_DOWNLOAD      = 7,
     SLOT_NOUPDATES     = 8,
     SLOT_DPRDIR        = 9,

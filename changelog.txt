@@ -4,6 +4,14 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Updated bitmaps and icons for Origin.
+Transifex is no longer used. If you want to help out with translations,
+ contact me on the Patreon page.
+Updated default Metallic theme.
+Added -getdevicelist command line option.
+Changed the executable names to SDIO_*.
+The torrent url is now hard coded again.
+
 Version 0.5.0.554
 23 April 2017
 Driver Packs 17043

@@ -297,7 +297,7 @@ std::string SystemImp::AppPathS()
 int SystemImp::FindLatestExeVersion()
 {
     int ver=SVN_REV;
-    std::wstring spec=AppPathW()+L"\\SDI_R*.exe";
+    std::wstring spec=AppPathW()+L"\\SDIO_R*.exe";
     WIN32_FIND_DATA fd;
     HANDLE hFind=::FindFirstFile(spec.c_str(), &fd);
     if(hFind!=INVALID_HANDLE_VALUE)
@@ -307,7 +307,7 @@ int SystemImp::FindLatestExeVersion()
             if(!(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
             {
                 std::wstring v=fd.cFileName;
-                int vi=_wtoi(v.substr(5,3).c_str());
+                int vi=_wtoi(v.substr(6,3).c_str());
                 if(vi>ver)ver=vi;
             }
         }while(::FindNextFile(hFind,&fd));

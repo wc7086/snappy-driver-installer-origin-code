@@ -181,6 +181,7 @@ public:
     wchar_t finish    [BUFLEN];
     wchar_t finish_upd[BUFLEN];
     wchar_t finish_rb [BUFLEN];
+    wchar_t device_list_filename[BUFLEN];
 
     int flags;
     int statemode;

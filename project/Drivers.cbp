@@ -23,6 +23,7 @@
 					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSE_TORRENT" />
+					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -41,13 +42,15 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
-				<Option parameters="-disableinstall -nosnapshot" />
+				<Option parameters="-disableinstall -extractdir:temp1 -showconsole" />
 				<Compiler>
 					<Add option="-pg" />
 					<Add option="-m32" />
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSE_TORRENT" />
+					<Add directory="source" />
+					<Add directory="../source" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
@@ -74,6 +77,7 @@
 					<Add option="-m64" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSE_TORRENT" />
+					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -99,6 +103,7 @@
 					<Add option="-m64" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSE_TORRENT" />
+					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
@@ -125,6 +130,7 @@
 					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DCONSOLE_MODE" />
+					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -222,6 +228,13 @@
 		<Unit filename="../source/matcher.h" />
 		<Unit filename="../source/model.cpp" />
 		<Unit filename="../source/model.h" />
+		<Unit filename="../source/script.cpp">
+			<Option target="Win32 Release" />
+			<Option target="Win32 Debug" />
+			<Option target="Win64 Release" />
+			<Option target="Win64 Debug" />
+		</Unit>
+		<Unit filename="../source/script.h" />
 		<Unit filename="../source/settings.cpp" />
 		<Unit filename="../source/settings.h" />
 		<Unit filename="../source/svnrev.h" />
