@@ -4,6 +4,9 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 0.6.0.558
+5 May 2017
+Driver Packs 17045
 Updated bitmaps and icons for Origin.
 Transifex is no longer used. If you want to help out with translations,
  contact me on the Patreon page.
