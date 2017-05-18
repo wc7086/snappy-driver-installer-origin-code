@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #define _WIN32_IE 0x0501
@@ -21,7 +19,6 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include <commctrl.h>
 #include <winuser.h>
 #include "resources.h"
-#include "..\source\svnrev.h"
 
 IDI_ICON1       ICON        "iconorigin.ico"
 IDR_UP          RESFILE     "up.webp"
@@ -79,30 +76,25 @@ CAPTION "Update"
     LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 250, POSY1+5, 150, 12
 }
 
-#define VER_FILEVERSION             0,6,0,SVN_REV
-#define VER_FILEVERSION_STR         "0.6 " SVN_REV2 "\0"
-#define VER_VERSION                 "Version: 0.6.0"
-
-#define VER_PRODUCTVERSION          VER_FILEVERSION
-#define VER_PRODUCTVERSION_STR      VER_FILEVERSION_STR
-
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     VER_FILEVERSION
 PRODUCTVERSION  VER_PRODUCTVERSION
 FILEOS          VOS__WINDOWS32
 FILETYPE        VFT_APP
+FILEFLAGS       VS_FF_DEBUG | VS_FF_PRERELEASE | VS_FF_SPECIALBUILD
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904E4"
+        BLOCK "040904E4" // Lang=US English, CharSet=Windows Multilingual
         BEGIN
-            VALUE "CompanyName",      "Glenn Delahoy"
-            VALUE "FileDescription",  "Snappy Driver Installer Origin"
+            VALUE "CompanyName",      "Glenn Delahoy\0"
+            VALUE "FileDescription",  "Snappy Driver Installer Origin\0"
+            VALUE "LegalCopyright",   "GNU GPL v3\0"
+            VALUE "OriginalFilename", "SDIO_R" SVN_REV_STR ".exe\0"
+            VALUE "ProductName",      "Snappy Driver Installer Origin\0"
             VALUE "FileVersion",      VER_FILEVERSION_STR
-            VALUE "LegalCopyright",   "GNU GPL v3"
-            VALUE "OriginalFilename", "SDIO_" SVN_REV2 ".exe"
-            VALUE "ProductName",      "Snappy Driver Installer Origin"
-            VALUE "ProductVersion",   SVN_REV2
+            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
+            VALUE "SpecialBuild",     SVN_MODIFIED
         END
     END
 
@@ -253,13 +245,12 @@ BEGIN
     CONTROL IDB_LOGO,IDC_STATIC,WC_STATIC,SS_BITMAP,5,5, 32, 32
     LTEXT   "Snappy Driver Installer Origin",IDD_ABOUT_T1,115,4,250,90,SS_LEFT
     LTEXT   COPYRIGHT_DATE "\n"
-            VER_VERSION "\n"
-            SVN_BUILD_REV "\n"
+            VER_VERSION_STR "\n"
             SVN_BUILD_DATE "\n"
             SVN_BUILD_NOTE
             , IDD_ABOUT_T2, 115,24,250,90,SS_LEFT
-    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,67,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,77,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,57,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,67,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Developers: \tBadPointer, Glenn Delahoy\n"
             "Contributors: \te39, QuarQ, SamLab, Sorc, volodya61, WindR\n"
             "              \tComputer Bloke",IDD_ABOUT_T3,10,92,380,40,SS_LEFT
@@ -288,13 +279,12 @@ BEGIN
     CONTROL IDB_LOGO,IDC_STATIC,WC_STATIC,SS_BITMAP,5,5, 32, 32
     LTEXT   "Snappy Driver Installer Origin",IDD_T1_WELC,115,4,250,90,SS_LEFT
     LTEXT   COPYRIGHT_DATE "\n"
-            VER_VERSION "\n"
-            SVN_BUILD_REV "\n"
+            VER_VERSION_STR "\n"
             SVN_BUILD_DATE "\n"
             SVN_BUILD_NOTE
             , IDD_TXT_WELC, 115,24,250,90,SS_LEFT
-    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_T2_WELC,115,67,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_T3_WELC,115,77,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_T2_WELC,115,57,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_T3_WELC,115,67,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_T4_WELC,40,100,380,40,SS_LEFT
     LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
             "the following options and click the Download button to start downloading.\n\n"
