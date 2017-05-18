@@ -26,15 +26,14 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #define SVN_REV_M "$WCDATE=%m$"
 #define SVN_REV_Y $WCDATE=%Y$
 
-#if $WCMODS?1:0$
-#define SVN_REV_STR "R$WCREV$ [" SVN_MODIFIED "] ($WCNOW=%d.%m.%Y$)"
-#define SVN_REV2    "R$WCREV$ [" SVN_MODIFIED "]"
-#define SVN_BUILD_NOTE "Note: " SVN_MODIFIED
-#else
-#define SVN_REV_STR "R$WCREV$ ($WCDATE=%d.%m.%Y$)"
-#define SVN_REV2    "R$WCREV$"
+//#if $WCMODS?1:0$
+//#define SVN_REV_STR "R$WCREV$ [" SVN_MODIFIED "] ($WCNOW=%d.%m.%Y$)"
+//#define SVN_REV2    "R$WCREV$ [" SVN_MODIFIED "]"
+//#define SVN_BUILD_NOTE "Note: " SVN_MODIFIED
+//#else
+#define SVN_REV_STR "$WCREV$"
 #define SVN_BUILD_NOTE ""
-#endif
+//#endif
 
 #define SVN_BUILD_REV "Revision: R$WCREV$"
 #define SVN_BUILD_DATE "Build Date: $WCNOW=%d$ $WCNOW=%b$ $WCNOW=%Y$"
