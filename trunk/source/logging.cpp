@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -163,7 +161,7 @@ void Log_t::print_err(char const *format,...)
 {
     char buffer[1024*16];
 
-    if((log_verbose&LOG_VERBOSE_LOG_ERR)==0)return;
+    if((log_verbose&(LOG_VERBOSE_LOG_ERR|LOG_VERBOSE_DEBUG))==0)return;
     va_list args;
     va_start(args,format);
     vsprintf(buffer,format,args);
@@ -176,7 +174,7 @@ void Log_t::print_con(char const *format,...)
 {
     char buffer[1024*16];
 
-    if((log_verbose&LOG_VERBOSE_LOG_CON)==0)return;
+    if((log_verbose&(LOG_VERBOSE_LOG_CON|LOG_VERBOSE_DEBUG))==0)return;
     va_list args;
     va_start(args,format);
     wvsprintfA(buffer,format,args);
@@ -188,6 +186,19 @@ void Log_t::print_con(char const *format,...)
 void Log_t::print_nul(char const *format,...)
 {
     UNREFERENCED_PARAMETER(format);
+}
+
+void Log_t::print_debug(char const *format,...)
+{
+    char buffer[1024*16];
+
+    if((log_verbose&LOG_VERBOSE_DEBUG)==0)return;
+    va_list args;
+    va_start(args,format);
+    wvsprintfA(buffer,format,args);
+    if(logfile)fputs(buffer,logfile);
+    fputs(buffer,stdout);
+    va_end(args);
 }
 //}
 
