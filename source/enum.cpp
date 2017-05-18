@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -850,24 +848,24 @@ void State::contextmenu2(int x,int y)
     TrackPopupMenu(hPopupMenu,TPM_LEFTALIGN,rect.left+x,rect.top+y,0,MainWindow.hMain,nullptr);
 }
 
-void State::save(const wchar_t *filename)
+int State::save(const wchar_t *filename)
 {
     FILE *f;
     size_t sz;
     int version=VER_STATE;
 
-    if(Settings.flags&FLAG_NOSNAPSHOT)return;
+    if(Settings.flags&FLAG_NOSNAPSHOT)return 0;
     Log.print_con("Saving state in '%S'...",filename);
     if(!System.canWrite(filename))
     {
         Log.print_err("ERROR in state_save(): Write-protected,'%S'\n",filename);
-        return;
+        return 1;
     }
     f=_wfopen(filename,L"wb");
     if(!f)
     {
         Log.print_err("ERROR in state_save(): failed _wfopen(%S)\n",errno_str());
-        return;
+        return 1;
     }
 
     sz=
@@ -898,6 +896,7 @@ void State::save(const wchar_t *filename)
 
     fclose(f);
     Log.print_con("OK\n");
+    return 0;
 }
 
 int  State::load(const wchar_t *filename)

@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -21,6 +19,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "settings.h"
 #include "system.h"
 #include "manager.h"
+#include "matcher.h"
 
 #include <windows.h>
 #include <process.h>
@@ -41,6 +40,9 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "main.h"
 
 #include "system_imp.h"
+#include <SRRestorePtAPI.h> // for RestorePoint
+typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
+
 
 SystemImp System;
 int monitor_pause=0;
@@ -281,11 +283,18 @@ std::string SystemImp::wtoa (const std::wstring& wstr)
 std::wstring SystemImp::AppPathW()
 {
     std::wstring path;
+    std::wstring long_path;
     path.resize(MAX_PATH, 0);
     auto path_size(GetModuleFileNameW(nullptr, &path.front(), MAX_PATH));
     path.resize(path_size);
-    path=path.substr(0,path.find_last_of(L"\\/"));
-    return path;
+
+    int length=GetLongPathNameW(path.c_str(),nullptr,0);
+    wchar_t* buffer = new wchar_t[length];
+    length = GetLongPathNameW(path.c_str(), buffer, length);
+    long_path=std::wstring(buffer);
+    long_path=long_path.substr(0,long_path.find_last_of(L"\\/"));
+
+    return long_path;
 }
 
 std::string SystemImp::AppPathS()
@@ -314,6 +323,47 @@ int SystemImp::FindLatestExeVersion()
         ::FindClose(hFind);
     }
     return ver;
+}
+
+int SystemImp::getver(const char *s)
+{
+    while(*s)
+    {
+        if(*s=='_'&&s[1]>='0'&&s[1]<='9')
+            return atoi(s+1);
+
+        s++;
+    }
+    return 0;
+}
+
+int SystemImp::getcurver(const char *ptr)
+{
+    // find the latest version of the given
+    // driver pack in my list
+    WStringShort bffw;
+
+    bffw.sprintf(L"%S",ptr);
+    wchar_t *s=bffw.GetV();
+    while(*s)
+    {
+        if(*s=='_'&&s[1]>='0'&&s[1]<='9')
+        {
+            *s=0;
+            s=const_cast<wchar_t *>(manager_g->matcher->finddrp(bffw.Get()));
+            if(!s)return 0;
+            while(*s)
+            {
+                if(*s==L'_'&&s[1]>=L'0'&&s[1]<=L'9')
+                    return _wtoi_my(s+1);
+
+                s++;
+            }
+            return 0;
+        }
+        s++;
+    }
+    return 0;
 }
 
 bool SystemImp::SystemProtectionEnabled(State *state)
@@ -398,6 +448,55 @@ void SystemImp::SetRestorePointCreationFrequency(int freq)
         RegCloseKey(hkey);
     }
     else Log.print_err("ERROR in SetRestorePointCreationFrequency(): error in RegOpenKeyEx %d\n",err);
+}
+
+bool SystemImp::CreateRestorePoint(std::wstring desc)
+{
+    RESTOREPOINTINFOW pRestorePtSpec;
+    STATEMGRSTATUS pSMgrStatus;
+    WINAPI5t_SRSetRestorePointW WIN5f_SRSetRestorePointW;
+    bool restorePointSucceeded=false;
+
+        // get the current state of restore points
+        int restorePointFrequency=System.GetRestorePointCreationFrequency();
+        // set to always create a restore point
+        System.SetRestorePointCreationFrequency(0);
+        hinstLib=LoadLibrary(L"SrClient.dll");
+        if(hinstLib!=NULL)
+            WIN5f_SRSetRestorePointW=(WINAPI5t_SRSetRestorePointW)GetProcAddress(hinstLib,"SRSetRestorePointW");
+
+        if(hinstLib&&WIN5f_SRSetRestorePointW)
+        {
+            memset(&pRestorePtSpec,0,sizeof(RESTOREPOINTINFOW));
+            pRestorePtSpec.dwEventType=BEGIN_SYSTEM_CHANGE;
+            pRestorePtSpec.dwRestorePtType=DEVICE_DRIVER_INSTALL;
+            wcscpy(pRestorePtSpec.szDescription,desc.c_str());
+            if(Settings.flags&FLAG_DISABLEINSTALL)
+            {
+                Sleep(2000);
+                restorePointSucceeded=true;
+            }
+            else
+            {
+                restorePointSucceeded=WIN5f_SRSetRestorePointW(&pRestorePtSpec,&pSMgrStatus);
+                Log.print_debug("Restore Point: %d (%d)\n",(int)restorePointSucceeded,pSMgrStatus.nStatus);
+            }
+            // return it to the state we found it in
+            System.SetRestorePointCreationFrequency(restorePointFrequency);
+
+            if(!restorePointSucceeded)
+            {
+                if(pSMgrStatus.nStatus==ERROR_SERVICE_DISABLED)
+                    Log.print_err("ERROR: CreateRestorePoint : Failed to create restore point. Restore points disabled.\n");
+                else
+                    Log.print_err("ERROR: CreateRestorePoint : Failed to create restore point.\n");
+            }
+        }
+        else
+            Log.print_err("ERROR: CreateRestorePoint : Failed to create restore point %d\n",hinstLib);
+
+        if(hinstLib)FreeLibrary(hinstLib);
+    return restorePointSucceeded;
 }
 
 //{ FileMonitor
