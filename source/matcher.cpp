@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -319,7 +317,7 @@ public:
     void populate();
     void print();
     void sorta(size_t *v);
-    void write_device_list(wchar_t *filename);
+    int write_device_list(wchar_t *filename);
 
     const wchar_t *finddrp(const wchar_t *s) override{return col->finddrp(s);}
     State *getState(){return state;}
@@ -446,19 +444,19 @@ void MatcherImp::print()
     Log.print_file("}matcher_print\n\n");
 }
 
-void MatcherImp::write_device_list(wchar_t *filename)
+int MatcherImp::write_device_list(wchar_t *filename)
 {
     if(!System.canWrite(filename))
     {
         Log.print_err("ERROR in write_device_list(): Unwriteable,'%S'\n",filename);
-        return;
+        return 1;
     }
 
     FILE *f=_wfopen(filename,L"wt");
     if(!f)
     {
         Log.print_err("ERROR in write_device_list(): Failed to open file,'%S'\n",filename);
-        return;
+        return 1;
     }
 
     wchar_t buffer[1024];
@@ -492,6 +490,7 @@ void MatcherImp::write_device_list(wchar_t *filename)
         }
     }
     fclose(f);
+    return 0;
 }
 
 void MatcherImp::sorta(size_t *v)

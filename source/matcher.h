@@ -70,7 +70,7 @@ public:
     virtual void populate()=0;
     virtual void print()=0;
     virtual void sorta(size_t *v)=0;
-    virtual void write_device_list(wchar_t *filename)=0;
+    virtual int write_device_list(wchar_t *filename)=0;
 
     virtual const wchar_t *finddrp(const wchar_t *s)=0;
     virtual State *getState()=0;
