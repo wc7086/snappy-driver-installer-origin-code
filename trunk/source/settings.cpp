@@ -1,19 +1,18 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include "com_header.h"
 #include "common.h"
 #include "logging.h"
@@ -174,7 +173,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
             wchar_t buf[BUFLEN];
             Log.print_con("Install '%S' '%s'\n",argv[i+1],argv[i+2]);
             GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
-            wsprintf(extractdir,L"%s\\SDI",buf);
+            wsprintf(extractdir,L"%s\\SDIO",buf);
             installmode=MODE_INSTALLING;
             driver_install(argv[i+1],argv[i+2],&ret_global,&needreboot);
             Log.print_con("Ret: %X,%d\n",ret_global,needreboot);
