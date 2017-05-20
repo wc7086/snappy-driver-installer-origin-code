@@ -128,3 +128,4 @@ LOG_VERBOSE_LAGCOUNTER | 0x0200 |  512 | GUI lag counter.
 LOG_VERBOSE_DEVSYNC    | 0x0400 | 1024 | Sections: "{Updated".
 LOG_VERBOSE_BATCH      | 0x0800 | 2048 | Batch processing of snapshots.
 LOG_VERBOSE_DEBUG      | 0x1000 | 4096 | Debug output.
+LOG_VERBOSE_TORRENT    | 0x2000 | 8196 | Torrent output
