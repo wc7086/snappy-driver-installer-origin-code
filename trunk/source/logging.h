@@ -63,6 +63,7 @@ enum LOG_VERBOSE
     LOG_VERBOSE_DEVSYNC   = 0x0400,
     LOG_VERBOSE_BATCH     = 0x0800,
     LOG_VERBOSE_DEBUG     = 0x1000,
+    LOG_VERBOSE_TORRENT   = 0x2000,
 };
 
 #define print_index print_nul
