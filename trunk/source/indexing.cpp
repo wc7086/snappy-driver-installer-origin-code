@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 //#define MERGE_FINDER
@@ -98,7 +96,7 @@ public:
         #ifndef _WIN64
         while(num>250)
         {
-            Log.print_con("The queue is full. Waiting...\n");
+            Log.print_debug("The queue is full. Waiting...\n");
             Sleep(100);
         }
         #endif
@@ -549,6 +547,8 @@ void Collection::scanfolder(const wchar_t *path,void *arg)
 
 void Collection::loadOnlineIndexes()
 {
+    // load online indexes for driver packs
+    // that i don't have
     WStringShort buf;;
     buf.sprintf(L"%s\\_*.*",index_bin_dir);
     WIN32_FIND_DATA FindFileData;
@@ -564,7 +564,7 @@ void Collection::loadOnlineIndexes()
         (buf.GetV())[8]=L'D';
         if(System.FileExists(buf.Get()))
         {
-            Log.print_con("Skip %S\n",buf.Get());
+            Log.print_debug("Skip %S\n",buf.Get());
             continue;
         }
 
@@ -1691,7 +1691,6 @@ unsigned int __stdcall Driverpack::indexinf_thread(void *arg)
         manager_g->itembar_settext(SLOT_INDEXING,1,bufw2.Get(),drp_cur,drp_count,(drp_cur)*1000/drp_count);
         drp_cur++;
 
-        //Log.print_con("Str %ws\n",data.drp->getFilename());
         while(1)
         {
             data.drp->objs_new->wait_and_pop(t);
@@ -1731,7 +1730,8 @@ unsigned int __stdcall Driverpack::savedrp_thread(void *arg)
     {
         bufw2.sprintf(L"%s\\%s",data.drp->getPath(),data.drp->getFilename());
         Log.print_con("Saving indexes for '%S'\n",bufw2.Get());
-        if(Settings.flags&COLLECTION_USE_LZMA)manager_g->itembar_settext(SLOT_INDEXING,2,bufw2.Get(),cur_,count_);
+        if(Settings.flags&COLLECTION_USE_LZMA)
+            manager_g->itembar_settext(SLOT_INDEXING,2,bufw2.Get(),cur_,count_);
         cur_++;
         data.drp->saveindex();
     }
