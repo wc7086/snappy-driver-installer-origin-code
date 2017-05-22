@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -83,6 +81,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
     Bundle *bundle=static_cast<Bundle *>(arg);
 
     InitializeCriticalSection(&sync);
+    CRITICAL_SECTION_ACTIVE=true;
     while(1)
     {
         // Wait for an update request
@@ -119,7 +118,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
                 manager_g->matcher=bundle[bundle_shadow].matcher;
                 manager_g->populate();
                 manager_g->filter(Settings.filters);
-                bundle[bundle_shadow].bundle_lowprioirity();
+                bundle[bundle_shadow].bundle_lowpriority();
                 break;
             }
             else // GUI mode
@@ -129,9 +128,9 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
 
             // Save indexes, write info, etc
             Log.print_con("{2Sync\n");
-            EnterCriticalSection(&sync);
+            if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
 
-            bundle[bundle_shadow].bundle_lowprioirity();
+            bundle[bundle_shadow].bundle_lowpriority();
             Log.print_con("*** FINISH secondary ***\n\n");
 
             // Swap display and shadow bundle
@@ -139,10 +138,11 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             bundle_shadow^=1;
             Log.print_con("}2Sync\n");
             bundle[bundle_shadow].bundle_init();
-            LeaveCriticalSection(&sync);
+            if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
         }
     }
 
+    CRITICAL_SECTION_ACTIVE=false;
     DeleteCriticalSection(&sync);
     return 0;
 }
@@ -197,7 +197,7 @@ void Bundle::bundle_load(Bundle *pbundle)
     Timers.stop(time_test);
 }
 
-void Bundle::bundle_lowprioirity()
+void Bundle::bundle_lowpriority()
 {
     Timers.stoponce(time_startup,time_total);
     Timers.print();
@@ -211,8 +211,15 @@ void Bundle::bundle_lowprioirity()
     if(wcslen(Settings.device_list_filename)>0)
         matcher->write_device_list(Settings.device_list_filename);
 
+    if(Settings.flags&FLAG_SCRIPTMODE)
+    {
+        collection.save();
+        return;
+    }
+
     #ifdef USE_TORRENT
-    if(Settings.flags&FLAG_CHECKUPDATES&&!Timers.get(time_chkupdate))Updater->checkUpdates();
+    if(Settings.flags&FLAG_CHECKUPDATES&&!Timers.get(time_chkupdate))
+        Updater->checkUpdates();
     #endif
 
     collection.save();

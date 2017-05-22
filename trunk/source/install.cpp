@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -27,6 +25,8 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "install.h"
 #include "gui.h"
 #include "theme.h"
+#include "indexing.h"
+#include "model.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -214,7 +214,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     WINAPI5t_SRSetRestorePointW WIN5f_SRSetRestorePointW;
     int failed=0,installed=0;
 
-    EnterCriticalSection(&sync);
+    if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
 
     // Prepare extract dir
 
@@ -231,44 +231,53 @@ unsigned int __stdcall Manager::thread_install(void *arg)
 
     // Download driverpacks
 #ifdef USE_TORRENT
-    unsigned downdrivers=0;
-    itembar=&manager_g->items_list[RES_SLOTS];
-    for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
-        if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
+    if((Settings.flags&(FLAG_SCRIPTMODE|FLAG_UPDATESOK)) ||
+        (!(Settings.flags&FLAG_SCRIPTMODE)))
     {
-        if(!Updater->isTorrentReady())
+        unsigned downdrivers=0;
+        itembar=&manager_g->items_list[RES_SLOTS];
+        // find which items are selected
+        // check if the associated driver pack is set to DRIVERPACK_TYPE_UPDATE
+        // and set it's priority in the torrent
+        for(i=RES_SLOTS;i<manager_g->items_list.size()&&installmode==MODE_INSTALLING;i++,itembar++)
+            if(itembar->checked&&itembar->isactive&&itembar->hwidmatch&&itembar->hwidmatch->getdrp_packontorrent())
         {
-            Log.print_con("Waiting for torrent");
-            for(j=0;j<200;j++)
+            if(!Updater->isTorrentReady())
             {
-                Log.print_con("*");
-                if(Updater->isTorrentReady())
+                Log.print_con("Waiting for torrent");
+                for(j=0;j<200;j++)
                 {
-                    Log.print_con("DONE\n");
-                    break;
+                    Log.print_con("*");
+                    if(Updater->isTorrentReady())
+                    {
+                        Log.print_con("DONE\n");
+                        break;
+                    }
+                    Sleep(100);
                 }
-                Sleep(100);
+                if(!Updater->isTorrentReady())break;
             }
-            if(!Updater->isTorrentReady())break;
+            Updater->SetFilePriority(itembar->hwidmatch->getdrp_packname(),1);
+            downdrivers++;
         }
-        Updater->SetFilePriority(itembar->hwidmatch->getdrp_packname(),1);
-        downdrivers++;
-    }
-    if(downdrivers)
-    {
-        Updater->resumeDownloading();
-        Log.print_con("{{{{{{{{\n");
-        while(installmode&&!Updater->isUpdateCompleted())
+        // if any DRIVERPACK_TYPE_UPDATE items are selected in the torrent
+        // then do the download
+        if(downdrivers)
         {
-            Sleep(500);
+            Updater->resumeDownloading();
+            Log.print_con("{{{{{{{{\n");
+            while(installmode&&!Updater->isUpdateCompleted())
+            {
+                Sleep(500);
+            }
+            Log.print_con("{}}}}}}}}}\n");
         }
-        Log.print_con("{}}}}}}}}}\n");
-    }
-    if(installmode==MODE_STOPPING)
-    {
-        itembar->install_status=STR_INST_STOPPING;
-        manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
-        manager_g->selectnone();
+        if(installmode==MODE_STOPPING)
+        {
+            itembar->install_status=STR_INST_STOPPING;
+            manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
+            manager_g->selectnone();
+        }
     }
 #endif
 
@@ -296,7 +305,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             pRestorePtSpec.dwEventType=BEGIN_SYSTEM_CHANGE;
             pRestorePtSpec.dwRestorePtType=DEVICE_DRIVER_INSTALL;
             wcscpy(pRestorePtSpec.szDescription,L"Installed drivers");
-            LeaveCriticalSection(&sync);
+            if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
             if(Settings.flags&FLAG_DISABLEINSTALL)
             {
                 Sleep(2000);
@@ -309,7 +318,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
             }
             // return it to the state we found it in
             System.SetRestorePointCreationFrequency(restorePointFrequency);
-            EnterCriticalSection(&sync);
+            if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
 
             manager_g->items_list[SLOT_RESTORE_POINT].percent=1000;
             if(restorePointSucceeded)
@@ -369,6 +378,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                     unpacked?hwidmatch->getdrp_packpath():extractdir,
                     hwidmatch->getdrp_infpath(),
                     hwidmatch->getdrp_infname());
+            Log.print_debug("%S\n",hwidmatch->getdrp_packname());
             if(System.FileExists(inf))
             {
                 Log.print_con("Already unpacked(%S)\n",inf);
@@ -407,9 +417,9 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                 do
                 {
                     if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                    LeaveCriticalSection(&sync);
+                    if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
                     r=Extract7z(cmd);
-                    EnterCriticalSection(&sync);
+                    if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
                     itembar=&manager_g->items_list[itembar_act];
                     if(r==2)
                     {
@@ -464,12 +474,12 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                 MainWindow.redrawfield();
 
                 installtime=System.GetTickCountWr();
-                LeaveCriticalSection(&sync);
+                if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
                 if(installmode==MODE_INSTALLING)
                     driver_install(hwid,inf,&ret,&needrb);
                 else
                     ret=1;
-                EnterCriticalSection(&sync);
+                if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
                 totalinstalltime+=installtime=System.GetTickCountWr()-installtime;
                 itembar=&manager_g->items_list[itembar_act];
 
@@ -555,14 +565,17 @@ unsigned int __stdcall Manager::thread_install(void *arg)
         FlashWindowEx(&fi);
     }
     itembar_act=0;
-    Log.print_con("Exctract: %ld secs\n",totalextracttime/1000);
+    Log.print_con("Extract: %ld secs\n",totalextracttime/1000);
     Log.print_con("Install: %ld secs\n",totalinstalltime/1000);
     ret_global=installed+(failed<<16);
     if(needreboot)ret_global|=0x40<<24;
-    LeaveCriticalSection(&sync);
+    if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
     MainWindow.ShowProgressInTaskbar(false);
     invalidate(INVALIDATE_DEVICES);
     MainWindow.redrawmainwnd();
+
+    installupdate_exitflag=1;
+    installupdate_event->raise();
 
     return 0;
 }

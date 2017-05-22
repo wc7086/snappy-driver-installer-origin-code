@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -121,6 +119,7 @@ void itembar_t::str_status(wchar_t *buf)
 
 void itembar_t::drawbutton(Canvas &canvas,int x,int pos,const wchar_t *str1,const wchar_t *str2)
 {
+    if(Settings.flags&FLAG_SCRIPTMODE)return;
     pos+=D_X(ITEM_TEXT_OFS_Y);
     canvas.SetTextColor(D_C(boxindex[box_status()]+14));
     canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,str1);
@@ -597,6 +596,27 @@ int  Manager::manager_drplive(const wchar_t *s)
     return 1;
 }
 
+bool Manager::isSelected(const wchar_t *s)
+{
+    itembar_t *itembar;
+    bool ret=false;
+    itembar=&items_list[RES_SLOTS];
+    for(size_t k=RES_SLOTS;k<items_list.size();k++,itembar++)
+    {
+        if(itembar->checked && itembar->hwidmatch)
+        {
+            std::wstring drp=itembar->hwidmatch->getdrp_packname();
+            if(StrStrIW(drp.c_str(),s))
+            {
+                ret=true;
+                //if(ret)Log.print_debug("%S is selected.\n", s);
+                break;
+            }
+        }
+    }
+    return ret;
+}
+
 void Manager::populate()
 {
     size_t remap[1024*8];
@@ -974,10 +994,10 @@ void Manager::updateoverall()
             MainWindow.ShowProgressInTaskbar(true,items_list[SLOT_EXTRACTING].percent,1000);
     }
 }
-void Manager::install(int flagsv)
+size_t Manager::install(int flagsv)
 {
     instflag=flagsv;
-    _beginthreadex(nullptr,0,&thread_install,nullptr,0,nullptr);
+    return _beginthreadex(nullptr,0,&thread_install,nullptr,0,nullptr);
 }
 
 void Manager::testitembars()
@@ -1151,11 +1171,37 @@ void Manager::selectall()
         }
     }
 }
+
+int Manager::selected()
+{
+    int count=0;
+    itembar_t *itembar;
+    itembar=&items_list[RES_SLOTS];
+    for(size_t i=RES_SLOTS;i<items_list.size();i++,itembar++)
+        if(itembar->checked)
+        {
+            count++;
+            //Log.print_debug("%S\n",itembar->hwidmatch->getdrp_packname());
+        }
+    return count;
+}
+
+int Manager::active()
+{
+    int count=0;
+    itembar_t *itembar;
+    itembar=&items_list[RES_SLOTS];
+    for(size_t i=RES_SLOTS;i<items_list.size();i++,itembar++)
+        if(itembar->isactive)
+        count++;
+    return count;
+}
 //}
 
 //{ Helpers
 void Manager::itembar_settext(size_t i,const wchar_t *txt1,int percent)
 {
+    if(Settings.flags&FLAG_SCRIPTMODE)return;
     itembar_t *itembar=&items_list[i];
     wcscpy(itembar->txt1,txt1);
     itembar->percent=percent;
@@ -1165,6 +1211,7 @@ void Manager::itembar_settext(size_t i,const wchar_t *txt1,int percent)
 
 void Manager::itembar_settext(size_t i,int act,const wchar_t *txt1,__int64 val1v,__int64 val2v,__int64 percent)
 {
+    if(Settings.flags&FLAG_SCRIPTMODE)return;
     itembar_t *itembar=&items_list[i];
     if(txt1)wcscpy(itembar->txt1,txt1);
     if(val1v>=0)itembar->val1=val1v;
@@ -1188,7 +1235,7 @@ void Manager::set_rstpnt(int checked)
     MainWindow.redrawfield();
 }
 
-void Manager::itembar_setactive(size_t i,int val){ items_list[i].isactive=val; }
+void Manager::itembar_setactive(size_t i,int val){items_list[i].isactive=val;}
 void Manager::popup_drivercmp(Manager *manager,Canvas &canvas,int wx,int wy,size_t index){ items_list[Popup->floating_itembar].popup_drivercmp(manager,canvas,wx,wy,index); }
 void Manager::contextmenu(int x,int y){items_list[Popup->floating_itembar].contextmenu(x,y);}
 const wchar_t *Manager::getHWIDby(int id)const{return items_list[Popup->floating_itembar].devicematch->device->getHWIDby(id,matcher->getState());}
@@ -1727,7 +1774,7 @@ void Manager::restorepos1(Manager *manager_prev)
     setpos();
     Log.print_con("}Sync\n");
     invaidate_set=0;
-    LeaveCriticalSection(&sync);
+    if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
 
     #ifdef USE_TORRENT
     Updater->Populate(0);

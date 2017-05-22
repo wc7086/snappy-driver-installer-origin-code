@@ -13,32 +13,32 @@ You should have received a copy of the GNU General Public License along with
 Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef INSTALL_H
-#define INSTALL_H
+#ifndef SCRIPT_H
+#define SCRIPT_H
 
-// Global vars
-extern long long ar_total,ar_proceed;
-extern int instflag;
-extern size_t itembar_act;
-extern int needreboot;
-extern wchar_t extractdir[BUFLEN];
+#include <vector>
+#include "manager.h"
 
-extern volatile int installupdate_exitflag;
-extern Event *installupdate_event;
+extern Manager *manager_g;
 
-extern long long totalinstalltime,totalextracttime;
-
-// Installer
-enum INSTALLER
+class Script
 {
-    INSTALLDRIVERS     = 1,
-    OPENFOLDER         = 2,
+    std::vector<std::wstring>ScriptText;
+    public:
+        Script();
+        virtual ~Script();
+        bool loadscript();
+        bool runscript();
+        static bool cmdArgIsPresent();
+    protected:
+
+    private:
+        wchar_t *ltrim(wchar_t *s);
+        void selectNone();
+        void selectAll();
+        int updatesInitialised();
+        void doParameters(std::wstring &cmd);
+        std::vector<std::wstring> parameters;
 };
 
-void _7z_total(long long i);
-int  _7z_setcomplited(long long i);
-void driver_install(wchar_t *hwid,const wchar_t *inf,int *ret,int *needrb);
-void removeextrainfs(wchar_t *inf);
-void save_wndinfo();
-
-#endif
+#endif // SCRIPT_H

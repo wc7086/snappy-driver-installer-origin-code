@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef MANAGER_H
@@ -127,12 +125,14 @@ public:
     void hitscan(int x,int y,size_t *i,int *zone);
     void clear();
     void updateoverall();
-    void install(int flags);
+    size_t install(int flags);
     void testitembars();
     void toggle(size_t index);
     void expand(size_t index,EXPAND_MODE f);
     void selectnone();
     void selectall();
+    int selected();
+    int active();
 
 // Driver list
     size_t countItems();
@@ -146,6 +146,7 @@ public:
     void restorepos(Manager *manager_prev);
     void popup_driverlist(Canvas &canvas,int wx,int wy,size_t i);
     int  manager_drplive(const wchar_t *s);
+    bool isSelected(const wchar_t *s);
     void set_rstpnt(int checked);
     void itembar_settext(size_t i,const wchar_t *txt1,int percent);
     void itembar_settext(size_t i,int act,const wchar_t *txt1=nullptr,__int64 val1v=0,__int64 val2v=1,__int64 percent=-1);

@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -42,16 +40,21 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "enum.h"   // non-portable
 #include "main.h"
 #include "model.h"
+#include "script.h"
 
 //{ Global variables
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 Console_t *Console;
 
+volatile int installupdate_exitflag=0;
+Event *installupdate_event;
+
 volatile int deviceupdate_exitflag=0;
 Event *deviceupdate_event;
 HINSTANCE ghInst;
 CRITICAL_SECTION sync;
+bool CRITICAL_SECTION_ACTIVE=false;
 int manager_active=0;
 int bundle_display=1;
 int bundle_shadow=0;
@@ -130,12 +133,9 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     Timers.start(time_total);
 
-    // Hide the console window as soon as possible
-#ifdef _MSC_VER
-    Console=new Console2;
-#else
-    Console=new Console1;
-#endif
+    std::cout << "\nSnappy Driver Installer Origin\n";
+    std::cout << "      " << VER_VERSION_STR << "\n";
+    std::cout << SVN_BUILD_NOTE << "\n\n";
 
     // Determine number of CPU cores
     SYSTEM_INFO siSysInfo;
@@ -144,6 +144,26 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     // 7-zip
     registerall();
+
+    // scripting
+    if(Script::cmdArgIsPresent())
+    {
+        Script script;
+        if(script.loadscript())
+        {
+            deviceupdate_event=CreateEventWr();
+            script.runscript();
+            delete deviceupdate_event;
+        }
+        return 0;
+    }
+
+    // Hide the console window as soon as possible
+#ifdef _MSC_VER
+    Console=new Console2;
+#else
+    Console=new Console1;
+#endif
 
     // Check if the mouse present
     if(!GetSystemMetrics(SM_MOUSEPRESENT))MainWindow.kbpanel=KB_FIELD;
@@ -1548,7 +1568,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                 Bundle *bb=reinterpret_cast<Bundle *>(wParam);
                 Manager *manager_prev=manager_g;
                 Log.print_con("{Sync");
-                EnterCriticalSection(&sync);
+                if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
                 Log.print_con("...\n");
                 manager_active++;
                 manager_active&=1;
