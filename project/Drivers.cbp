@@ -9,7 +9,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Win32 Release">
-				<Option output="../SDI_R" prefix_auto="1" extension_auto="1" />
+				<Option output="../SDIO_R" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option object_output="../obj/Release" />
 				<Option type="1" />
@@ -23,7 +23,6 @@
 					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSE_TORRENT" />
-					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -36,21 +35,19 @@
 				</Linker>
 			</Target>
 			<Target title="Win32 Debug">
-				<Option output="../SDI_RD" prefix_auto="1" extension_auto="1" />
+				<Option output="../SDIO_RD" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option object_output="../obj/Debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
-				<Option parameters="-disableinstall -extractdir:temp1 -showconsole" />
+				<Option parameters="-disableinstall -showconsole -script:scripts\example-script.txt updates option2 option3" />
 				<Compiler>
 					<Add option="-pg" />
 					<Add option="-m32" />
 					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSE_TORRENT" />
-					<Add directory="source" />
-					<Add directory="../source" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
@@ -63,7 +60,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win64 Release">
-				<Option output="../SDI_x64_R" prefix_auto="1" extension_auto="1" />
+				<Option output="../SDIO_x64_R" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option object_output="../obj/Release64" />
 				<Option type="1" />
@@ -77,7 +74,6 @@
 					<Add option="-m64" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DUSE_TORRENT" />
-					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -90,7 +86,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win64 Debug">
-				<Option output="../SDI_x64_RD" prefix_auto="1" extension_auto="1" />
+				<Option output="../SDIO_x64_RD" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option object_output="../obj/Debug64" />
 				<Option type="1" />
@@ -99,11 +95,10 @@
 				<Option parameters="-disableinstall -extractdir:temp1 -showconsole" />
 				<Compiler>
 					<Add option="-pg" />
-					<Add option="-g" />
 					<Add option="-m64" />
+					<Add option="-g" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DUSE_TORRENT" />
-					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
@@ -116,7 +111,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win32 Console">
-				<Option output="../SDI_RC" prefix_auto="1" extension_auto="1" />
+				<Option output="../SDIO_RC" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
 				<Option object_output="../obj/Console" />
 				<Option type="1" />
@@ -130,7 +125,6 @@
 					<Add option="-m32" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DCONSOLE_MODE" />
-					<Add directory="source" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -228,12 +222,7 @@
 		<Unit filename="../source/matcher.h" />
 		<Unit filename="../source/model.cpp" />
 		<Unit filename="../source/model.h" />
-		<Unit filename="../source/script.cpp">
-			<Option target="Win32 Release" />
-			<Option target="Win32 Debug" />
-			<Option target="Win64 Release" />
-			<Option target="Win64 Debug" />
-		</Unit>
+		<Unit filename="../source/script.cpp" />
 		<Unit filename="../source/script.h" />
 		<Unit filename="../source/settings.cpp" />
 		<Unit filename="../source/settings.h" />

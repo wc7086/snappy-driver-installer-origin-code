@@ -4,6 +4,18 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 0.7.0.576
+22 May 2017
+Driver Packs 17051
+Added scripting engine. This involves many small changes throughout
+ the code. Let me know if I've broken something.
+ See scripts\scripting.txt for details.
+Added new Metro theme.
+Updated source file headers for Origin.
+Moved to conventional version numbers.
+Added LOG_VERBOSE_TORRENT and LOG_VERBOSE_DEBUG
+Miscellaneous small changes and fixes.
+
 Version 0.6.0.558
 5 May 2017
 Driver Packs 17045

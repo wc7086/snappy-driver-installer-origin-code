@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef MAIN_H
@@ -31,8 +29,8 @@ extern class Popup_t *Popup;
 
 #include "resources.h"
 
-// Misc
-#define APPTITLE            L"Snappy Driver Installer Origin " TEXT(SVN_REV2)
+// svnrev_template.h
+#define APPTITLE            L"Snappy Driver Installer Origin " TEXT(VER_VERSION_STR) " " TEXT(SVN_BUILD_NOTE)
 #define VER_MARKER          "SDW"
 #define VER_STATE           0x102
 #define VER_INDEX           0x205
@@ -102,6 +100,7 @@ extern int num_cores;
 extern bool emptydrp;
 extern HINSTANCE ghInst;
 extern CRITICAL_SECTION sync;
+extern bool CRITICAL_SECTION_ACTIVE;
 extern Console_t *Console;
 
 // Popup

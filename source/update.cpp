@@ -1,18 +1,16 @@
 /*
-This file is part of Snappy Driver Installer.
+This file is part of Snappy Driver Installer Origin.
 
-Snappy Driver Installer is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Snappy Driver Installer Origin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License or (at your option) any later version.
 
-Snappy Driver Installer is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Snappy Driver Installer Origin is distributed in the hope that it will be useful
+but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "com_header.h"
@@ -28,6 +26,7 @@ along with Snappy Driver Installer.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 #include "gui.h"
 #include "draw.h"
+#include "install.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -157,6 +156,14 @@ public:
     void StartSeedingDrivers();
     void StopSeedingDrivers();
     void StopSeedingDownloads();
+
+    int scriptInitUpdates(int torrentport);
+    int scriptDownloadApp();
+    int scriptDownloadIndexes();
+    int scriptDownloadDrivers(std::wstring mode);
+    int scriptDownloadEverything();
+    int scriptDoDownload();
+    int scriptInstall();
 };
 Updater_t *CreateUpdater(){return new UpdaterImp;}
 
@@ -427,6 +434,8 @@ void UpdateDialog_t::setCheckboxes()
 
 void UpdateDialog_t::setPriorities()
 {
+    // set the torrent priorities based on the list items checkboxes
+
     // Clear priorities for driverpacks
     for(int i=0;i<Updater->numfiles;i++)
     if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
@@ -436,18 +445,23 @@ void UpdateDialog_t::setPriorities()
     int base_pri=0,indexes_pri=0;
     for(int i=0;i<ListView.GetItemCount();i++)
     {
+        // get each list view item
         LVITEM item;
         item.mask=LVIF_PARAM;
         item.iItem=i;
         ListView.GetItem(&item);
+        // get the item check state
         int val=ListView.GetCheckState(i);
 
+        // app priority will be 2 if checked
         if(item.lParam==-2)base_pri=val?2:0;
+        // index priority will be 2 if checked
         if(item.lParam==-1)indexes_pri=val?2:0;
+        // driver priority will be 1 if checked
         if(item.lParam>= 0)hTorrent.file_priority(static_cast<int>(item.lParam),val);
     }
 
-    // Set priorities for the app and indexes
+    // Set priorities for any torrent file that's not a driver
     for(int i=0;i<Updater->numfiles;i++)
     if(!StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\"))
         hTorrent.file_priority(i,StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\")?indexes_pri:base_pri);
@@ -656,6 +670,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         // the file name minus the parent directory 'SDI_Update'
         const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
 
+        // looking for missing "_" online indexes
         if(StrStrIA(filenamefull,"indexes\\"))
         {
             indexsize+=fe.size;
@@ -928,7 +943,7 @@ void UpdaterImp::moveNewFiles()
     ti=hTorrent.torrent_file();
     monitor_pause=1;
 
-    // Delete old online indexes if new are downloaded
+    // Delete old "_" online indexes if new are downloaded
     for(i=0;i<numfiles;i++)
         if(hTorrent.file_priority(i)&&
            StrStrIA(ti->file_at(i).path.c_str(),"indexes\\SDI"))
@@ -961,7 +976,7 @@ void UpdaterImp::moveNewFiles()
         // Delete old driverpacks
         if(StrStrIA(filenamefull,"drivers\\"))removeOldDriverpacks(filenamefull_dst+8);
 
-        // Prepare online indexes
+        // Prepare "_" online indexes
         wchar_t *p=filenamefull_dst;
         if(p)
         {
@@ -1095,6 +1110,10 @@ UpdaterImp::UpdaterImp()
     downloadmangar_exitflag=DOWNLOAD_STATUS_WAITING;
 
     downloadmangar_event=CreateEventWr(true);
+
+    installupdate_exitflag=0;
+    installupdate_event=CreateEventWr(true);
+
     thandle_download=CreateThread();
     thandle_download->start(&thread_download,nullptr);
 }
@@ -1151,7 +1170,7 @@ void UpdaterImp::downloadTorrent()
         alert::storage_notification);
 
     // Settings
-    settings.user_agent="Snappy Driver Installer Origin/" SVN_REV2;
+    settings.user_agent="Snappy Driver Installer Origin " VER_PRODUCTVERSION_STR;
     settings.always_send_user_agent=true;
     settings.anonymous_mode=false;
     settings.choking_algorithm=session_settings::auto_expand_choker;
@@ -1191,8 +1210,15 @@ void UpdaterImp::downloadTorrent()
         Sleep(100);
     }
 
+    if(Settings.flags&FLAG_SCRIPTMODE)
+    {
+        if(!hTorrent.torrent_file())
+            downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
+        return;
+    }
+
 	// checking for updates
-    manager_g->itembar_settext(SLOT_DOWNLOAD,0,L"",1,0,0);
+	manager_g->itembar_settext(SLOT_DOWNLOAD,0,L"",1,0,0);
 
     // test if we failed to get the torrent
     if(!hTorrent.torrent_file())
@@ -1235,6 +1261,223 @@ void UpdaterImp::resumeDownloading()
     finisheddownloading=0;
     finishedupdating=0;
     torrenttime=System.GetTickCountWr();
+}
+
+int UpdaterImp::scriptInitUpdates(int torrentport)
+{
+    Updater->torrentport=torrentport;
+    checkUpdates();
+    while(downloadmangar_exitflag==DOWNLOAD_STATUS_DOWLOADING_TORRENT)
+        downloadmangar_event->wait();
+
+    // Read torrent info
+    boost::intrusive_ptr<torrent_info const> ti;
+    ti=hTorrent.torrent_file();
+    Updater->numfiles=0;
+    if(ti)
+    {
+        Updater->numfiles=ti->num_files();
+        Settings.flags|=FLAG_UPDATESOK;
+        Log.print_con("Torrent downloaded successfully\n");
+    }
+    else
+    {
+        Log.print_con("Torrent download failed\n");
+        return 1;
+    }
+
+    return (downloadmangar_exitflag==DOWNLOAD_STATUS_TORRENT_GOT?0:1);
+}
+
+int UpdaterImp::scriptDownloadApp()
+{
+    if((Settings.flags&FLAG_UPDATESOK)==0)
+    {
+        Log.print_err("Error: get : Updates not initialised");
+        return 1;
+    }
+
+    // select everything that's not indexes and drivers in the torrent
+    for(int i=0;i<Updater->numfiles;i++)
+    {
+        if(!(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))&&
+           !(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\")))
+            hTorrent.file_priority(i,2);
+        else
+            hTorrent.file_priority(i,0);
+    }
+    return scriptDoDownload();
+}
+
+int UpdaterImp::scriptDownloadIndexes()
+{
+    if((Settings.flags&FLAG_UPDATESOK)==0)
+    {
+        Log.print_err("Error: get : Updates not initialised");
+        return 1;
+    }
+
+    // select indexes in the torrent
+    for(int i=0;i<Updater->numfiles;i++)
+    {
+        // get the file entry
+        file_entry fe=hTorrent.torrent_file()->file_at(i);
+        std::string file=fe.path;
+        size_t p=file.find("indexes\\");
+        if(p!=std::string::npos)
+            hTorrent.file_priority(i,2);
+        else
+            hTorrent.file_priority(i,0);
+    }
+    return scriptDoDownload();
+}
+
+int UpdaterImp::scriptDownloadDrivers(std::wstring mode)
+{
+    if((Settings.flags&FLAG_UPDATESOK)==0)
+    {
+        Log.print_err("Error: get : Updates not initialised");
+        return 1;
+    }
+    Log.print_debug("%d items selected\n",manager_g->selected());
+
+    bool all=_wcsicmp(mode.c_str(),L"all")==0;
+    bool missing=_wcsicmp(mode.c_str(),L"missing")==0;
+    bool updates=_wcsicmp(mode.c_str(),L"updates")==0;
+    bool selected=_wcsicmp(mode.c_str(),L"selected")==0;
+
+    // set all active
+    manager_g->filter(126);
+
+    boost::intrusive_ptr<torrent_info const> ti;
+    ti=hTorrent.torrent_file();
+    int updatecount=0;
+
+    // iterate the torrent
+    for(int i=0;i<Updater->numfiles;i++)
+    {
+        // disable all files by default
+        hTorrent.file_priority(i,0);
+        // get the file entry
+        file_entry fe=ti->file_at(i);
+        std::string file=fe.path;
+        // look for driver entries
+        size_t p=file.find("drivers\\");
+        if(p!=std::string::npos)
+        {
+            file.erase(0,p+8);
+            int curver=System.getcurver(file.c_str());
+            int newver=System.getver(file.c_str());
+            bool getfile=false;
+            if(all)
+                getfile=newver>curver;
+            else if(missing)
+                getfile=newver>curver&&!curver;
+            else if(updates)
+                getfile=newver>curver&&curver;
+            else if (selected&&newver>curver)
+            {
+                std::wstring widestr = std::wstring(file.begin(), file.end());
+                getfile=manager_g->isSelected(widestr.c_str()) &&
+                        !manager_g->manager_drplive(widestr.c_str()); // 0 = yes
+            }
+            if(getfile)
+            {
+                Log.print_debug("Getting: %s\n", file.c_str());
+                hTorrent.file_priority(i,1);
+                updatecount++;
+            }
+        }
+    }
+
+    if(!updatecount)
+    {
+        Log.print_con("Driver packs are up to date, nothing to do\n");
+        return 0;
+    }
+
+    Log.print_con("Getting %d driver packs\n",updatecount);
+    return scriptDoDownload();
+}
+
+int UpdaterImp::scriptDownloadEverything()
+{
+    if((Settings.flags&FLAG_UPDATESOK)==0)
+    {
+        Log.print_err("Error: get : Updates not initialised");
+        return 1;
+    }
+
+    boost::intrusive_ptr<torrent_info const> ti;
+    ti=hTorrent.torrent_file();
+
+    for(int i=0;i<Updater->numfiles;i++)
+        hTorrent.file_priority(i,0);
+
+    // select everything that's not drivers
+    for(int i=0;i<Updater->numfiles;i++)
+    {
+        if(!(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"drivers\\")))
+            hTorrent.file_priority(i,2);
+    }
+
+    // missing and updated drivers
+    for(int i=0;i<Updater->numfiles;i++)
+    {
+        // get the file entry
+        file_entry fe=ti->file_at(i);
+        std::string file=fe.path;
+        // look for driver entries
+        size_t p=file.find("drivers\\");
+        if(p!=std::string::npos)
+        {
+            file.erase(0,p+8);
+            int curver=System.getcurver(file.c_str());
+            int newver=System.getver(file.c_str());
+            // newer or missing
+            if(newver>curver)
+            {
+                Log.print_debug("Getting: %s\n", file.c_str());
+                hTorrent.file_priority(i,1);
+            }
+        }
+    }
+    return scriptDoDownload();
+}
+
+int UpdaterImp::scriptDoDownload()
+{
+    int count=0;
+    for(int i=0;i<Updater->numfiles;i++)
+        if(hTorrent.file_priority(i))count++;
+    if(!count)return 0;
+    resumeDownloading();
+    while(downloadmangar_exitflag==DOWNLOAD_STATUS_DOWLOADING_DATA)
+        downloadmangar_event->wait();
+    return (downloadmangar_exitflag==DOWNLOAD_STATUS_FINISHED_DOWNLOADING?0:1);
+}
+
+int UpdaterImp::scriptInstall()
+{
+    // check if anything selected
+    if(manager_g->selected()==0)
+    {
+        Log.print_err("Error: install : Nothing selected");
+        return 1;
+    }
+
+    manager_g->itembar_setactive(SLOT_RESTORE_POINT,0);
+    // switch off all files by default
+    if(Settings.flags&FLAG_UPDATESOK)
+    {
+        for(int i=0;i<Updater->numfiles;i++)
+            hTorrent.file_priority(i,0);
+    }
+    manager_g->install(INSTALLDRIVERS);
+    installupdate_exitflag=0;
+    while(installupdate_exitflag==0)
+        installupdate_event->wait();
+    return (installupdate_exitflag==1?0:1); // 1=success
 }
 
 void UpdaterImp::DownloadAll()
@@ -1335,11 +1578,11 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 	UNREFERENCED_PARAMETER(arg);
 
     // Wait till is allowed to download the torrent
-    Log.print_con("{thread_download\n");
+    Log.print_debug("{thread_download\n");
     downloadmangar_event->wait();
     if(downloadmangar_exitflag!=DOWNLOAD_STATUS_DOWLOADING_TORRENT)
     {
-        Log.print_con("}thread_download(never started)\n");
+        Log.print_debug("}thread_download(never started)\n");
         return 0;
     }
 
@@ -1355,12 +1598,12 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
     Updater1->updateTorrentStatus();
     downloadmangar_event->reset();
 
+    // successfully downloaded the torrent
+    // notify main window
+    MainWindow.DownloadedTorrent();
+
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {
-        // successfully downloaded the torrent
-        // notify main window
-        MainWindow.DownloadedTorrent();
-
         // Wait till is allowed to download driverpacks
         if(Settings.flags&FLAG_AUTOUPDATE&&System.canWrite(L"update"))
             UpdateDialog.openDialog();
@@ -1381,15 +1624,19 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
             // Show progress
             Updater1->updateTorrentStatus();
-            MainWindow.ShowProgressInTaskbar(true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
-            InvalidateRect(Popup->hPopup,nullptr,0);
+            if(!(Settings.flags&FLAG_SCRIPTMODE))
+            {
+                MainWindow.ShowProgressInTaskbar(true,TorrentStatus.downloaded,TorrentStatus.downloadsize);
+                InvalidateRect(Popup->hPopup,nullptr,0);
+            }
 
             // Send libtorrent messages to log
             std::unique_ptr<alert> holder;
             holder=hSession->pop_alert();
             while(holder.get())
             {
-                Log.print_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
+                if(Log.isAllowed(LOG_VERBOSE_TORRENT))
+                    Log.print_con("Torrent: %s | %s\n",holder.get()->what(),holder.get()->message().c_str());
                 holder=hSession->pop_alert();
             }
 
@@ -1426,34 +1673,43 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
                 Updater1->updateTorrentStatus();
                 hTorrent.force_recheck();
 
-                // Update list
-                UpdateDialog.populate(0,true);
-
-                // Execute user cmd
-                if(*Settings.finish_upd)
+                if(Settings.flags&FLAG_SCRIPTMODE)
                 {
-                    WStringShort buf;
-                    buf.sprintf(L" /c %s",Settings.finish_upd);
-                    System.run_command(L"cmd",buf.Get(),SW_HIDE,0);
+                    downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
+                    downloadmangar_event->raise();
                 }
-                if((Settings.flags&FLAG_AUTOCLOSE)&&!(Settings.flags&FLAG_AUTOINSTALL))
-                    PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
-
-                downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
-
-                // Flash in taskbar
-                MainWindow.ShowProgressInTaskbar(false);
-                FLASHWINFO fi;
-                fi.cbSize=sizeof(FLASHWINFO);
-                fi.hwnd=MainWindow.hMain;
-                fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
-                fi.uCount=1;
-                fi.dwTimeout=0;
-                if(installmode==MODE_NONE)
+                else
                 {
-                    FlashWindowEx(&fi);
-                    invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
-                }
+                    // Update list
+                    UpdateDialog.populate(0,true);
+
+                    // Execute user cmd
+                    if(*Settings.finish_upd)
+                    {
+                        WStringShort buf;
+                        buf.sprintf(L" /c %s",Settings.finish_upd);
+                        System.run_command(L"cmd",buf.Get(),SW_HIDE,0);
+                    }
+                    if((Settings.flags&FLAG_AUTOCLOSE)&&!(Settings.flags&FLAG_AUTOINSTALL))
+                        PostMessage(MainWindow.hMain,WM_CLOSE,0,0);
+
+                    downloadmangar_exitflag=DOWNLOAD_STATUS_FINISHED_DOWNLOADING;
+                    downloadmangar_event->raise();
+
+                    // Flash in taskbar
+                    MainWindow.ShowProgressInTaskbar(false);
+                    FLASHWINFO fi;
+                    fi.cbSize=sizeof(FLASHWINFO);
+                    fi.hwnd=MainWindow.hMain;
+                    fi.dwFlags=FLASHW_ALL|FLASHW_TIMERNOFG;
+                    fi.uCount=1;
+                    fi.dwTimeout=0;
+                    if(installmode==MODE_NONE)
+                    {
+                        FlashWindowEx(&fi);
+                        invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
+                    }
+                }// else script mode
             }
         }
         // Download is completed
