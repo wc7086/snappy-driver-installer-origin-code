@@ -1,7 +1,8 @@
-******************************
+*******************************
 Snappy Driver Installer Origin
-by Glenn Delahoy
-******************************
+       by Glenn Delahoy
+www.snappy-driver-installer.org
+*******************************
 
 *********************
 *** CAVEAT EMPTOR ***
