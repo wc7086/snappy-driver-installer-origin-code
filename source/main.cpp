@@ -1842,11 +1842,8 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         return 0;
                     }
                     default:
-                        DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
-                        break;
+                        return DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
                 }
-                DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
-                break;
             }
 
         case WM_ERASEBKGND:
