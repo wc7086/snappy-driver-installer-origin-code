@@ -7,32 +7,49 @@ www.snappy-driver-installer.org
 *********************
 *** CAVEAT EMPTOR ***
 *********************
-Script mode is still early in development. It will improve over time but right now it is somewhat primitive and most likely full of bugs so don't run it on mission critical or customer machines just yet. However, please give it a run on your test machines and let me know what bugs you find and what needs to be added. As usual, any loss is your problem, not mine.
+Script mode is still early in development. It will improve over time but right 
+now it is most likely full of bugs so don't run it on mission critical or 
+customer machines just yet. However, please give it a run on your test machines 
+and let me know what bugs you find and what needs to be added. As usual, any 
+loss is your problem, not mine.
 
 Scripting
 *********
-Script mode is console only. The main thing to keep in mind is that, being a script, everything happens in a linear fashion, one thing at a time, like a batch file and certain things need to happen before others. A script is a simple text file and can be created with Notepad or your favourite text editor. There's a few example scripts included in the package. If you modify any of these, be sure to rename them so they don't get overwritten by future updates.
+Script mode is console only. The main thing to keep in mind is that, being a 
+script, everything happens in a linear fashion, one thing at a time, like a 
+batch file and certain things need to happen before others. A script is a simple 
+text file and can be created with Notepad or your favourite text editor. There's 
+a few example scripts included in the package. If you modify any of these, be 
+sure to rename them so they don't get overwritten by future updates.
 
 Running A Script
 ****************
-To run a script, start SDIO with the -script:<scriptfile> command line argument.  For example:
+To run a script, start SDIO with the -script:<scriptfile> command line argument.  
+For example:
 
-	SDIO_R580.exe -script:example-script.txt
+	SDIO_R580.exe -script:scripts\example-script.txt
 
-If the script command is found, all prior arguments on the command line are ignored and the following 9 arguments are fed into the script as %1 through %9 parameters. %0 represents the script file name. These replaceable parameters can be used anywhere within the script. For example, in a goto command.
+If the script command is found, all prior arguments on the command line are 
+ignored and the following 9 arguments are fed into the script as %1 through %9 
+parameters. %0 represents the script file name. These replaceable parameters can 
+be used anywhere within the script. For example, in a goto command.
 
-	SDIO_R580.exe -script:example-script.txt option1 option2
+	SDIO_R580.exe -script:scripts\example-script.txt option1 option2
 	
 	where:
-		%0 = "example-script.txt"
+		%0 = "scripts\example-script.txt"
 		%1 = "option1"
 		%2 = "option2"
 		
-In the script you might have a command like "goto %1" which, in the above example, would expand to "goto option1". A command of "goto %2" would expand to "goto option2".
+In the script you might have a command like "goto %1" which, in the above 
+example, would expand to "goto option1". A command of "goto %2" would expand to 
+"goto option2".
 
 Config File
 ***********
-The config file is ignored and all command line arguments prior to -script are ignored. Therefore, all configuration is done within the script. Make no assumptions except the following defaults.
+The config file is ignored and all command line arguments prior to -script are 
+ignored. Therefore, all configuration is done within the script. Make no 
+assumptions except the following defaults.
 
 Defaults:
 	No log file
@@ -44,18 +61,37 @@ Defaults:
 	Verbose:           nothing
 	Torrent port       50171
 
+If the script doesn't handle your configuration requirements, let me know.
+
 Script Commands
 ***************
-Each line of the script file is one command followed by any arguments, separated by spaces. There is no leading "-" or "/" sign. Any line beginning with "#" or ";" is a comment and is ignored. Any line beginning with ":" is a label used as a target for a "goto" command. Arguments given in triangular brackets, "< >", are required and will give an error if missing. Arguments given in square brackets, "[ ]", are optional and may be omitted. Defaults may or may not be used for each command.
+Each line of the script file is one command followed by any arguments, separated 
+by spaces. There is no leading "-" or "/" sign. Any line beginning with "#" or 
+";" is a comment and is ignored. Any line beginning with ":" is a label used as 
+a target for a "goto" command. Arguments given in triangular brackets, "< >", 
+are required and will give an error if missing. Arguments given in square 
+brackets, "[ ]", are optional and may be omitted. Defaults may or may not be 
+used for each command.
 
 init [reindex]
-	Initialises the scripting engine, loads the indexes and drivers, builds any missing indexes and scans the current PC for devices. This should be done nearly always after setting directories and before anything else. It can also be used at any point in the script to reset the engine and allow new driver packs to be indexed locally. If the optional "reindex" argument is given, all indexes are rebuilt.
+	Initialises the scripting engine, loads the indexes and drivers, builds any 
+	missing indexes and scans the current PC for devices. This should nearly 
+	always be done after setting directories and before anything else. It can 
+	also be used at any point in the script to reset the engine and allow new 
+	driver packs to be indexed locally or a change of path configuration. If the 
+	optional "reindex" argument is given, all indexes are rebuilt.
+	
 checkupdates
-	Downloads the latest update torrent and reads it into memory. You must do this before other update commands. If you don't do this or it fails, all further update commands will fail. If you're in an environment where you don't want the torrent client to activate then don't run checkupdates.
-get <app | indexes | driverpacks <all | missing | updates | selected> | everything
+	Downloads the latest update torrent and reads it into memory. You must do 
+	this before other update commands. If you don't do this or it fails, all 
+	subsequent update commands will fail. If you're in an environment where you 
+	don't want the torrent client to activate then don't run checkupdates.
+	
+get <app | indexes | driverpacks <all | missing | updates | selected> | everything>
 	Downloads updates. Specify *one* of the given file types.
 	app
-		Downloads the latest application, tools, languages, themes and all other files that are not drivers or indexes.
+		Downloads the latest application, tools, languages, themes and all other 
+		files that are not drivers or indexes.
 	indexes
 		Downloads the latest online indexes.
 	driverpacks <all | missing | updates | selected>
@@ -65,55 +101,121 @@ get <app | indexes | driverpacks <all | missing | updates | selected> | everythi
 		updates = only updates for driver packs you already have
 		selected = only the selected missing and updated driver packs
 	everything
-		Downloads the latest of everything: application, indexes and driver packs.
-select <missing newer current older better worse>
-	Select the drivers to be installed. The equivalent on the gui is setting the expert filters and then Select All. Specify one or more of the given arguments separated by a space. 
-	Eg: select missing newer better.
+		Downloads the latest of everything: application, indexes and driver 
+		packs.
+		
+	For example: get driverpacks updates
+		
+select < [missing newer current older better worse] [drpfilters] >
+	Select the drivers to be installed. The equivalent on the gui is setting the 
+	expert filters and then Select All. Specify one or more of the given 
+	arguments separated by a space.
+	
+	For example: select missing newer better
+	
+	To further narrow your selection, you can specify one or more driver pack 
+	filters. These are specified by using the middle part (in between the 
+	underscores) of the driver pack zip file name. So for example, specify "lan" 
+	to include only those drivers found in the "DP_LAN_xxxxx.7z" driver pack. 
+	Other examples are: chipset, printer, video, wlan-wifi, wwan-4g.
+	
+	For example: select missing lan
+	
+	You can specify any	combination of regular filters and driver pack filters.
+	Anything that doesn't match one of the six regular filters is assumed to be 
+	a driver pack filter. If you specify a non existent regular filter or driver 
+	pack filter, nothing will be selected.
+	
 install
-	Install the selected drivers. If drivers are not found locally they will be automatically downloaded if checkupdates previously completed successfully.
+	Install the selected drivers. If drivers are not found locally they will be 
+	automatically downloaded if checkupdates previously completed successfully.
+	So you don't need to do a 'get' command, just the 'select' and 'install'.
+	
 snapshot [filename]
-	Saves a snapshot to disk. If the optional "filename" argument is specified, the snapshot is saved to that file. If the file name is not given, the snapshot is saved to the logs directory with a timestamp in the file name.
+	Saves a snapshot to disk. If the optional "filename" argument is specified, 
+	the snapshot is saved to that file. If the file name is not given, the 
+	snapshot is saved to the logs directory with a timestamp in the file name.
+	
 loadsnapshot <filename>
-	Loads the specified snapshot from disk. This must be placed immediately before the "init" command. The init command will then load the snapshot instead of scanning the PC. In theory you can do this many times in a script.
+	Loads the specified snapshot from disk. This must be placed immediately 
+	before the "init" command. The init command will then load the snapshot 
+	instead of scanning the PC. In theory you can do this many times in a 
+	script.
+	
 unloadsnapshot
-	Returns to "real" mode. This must be placed immediately before the "init" command. The init command will then perform a normal scan of the current PC.
+	Returns to "real" mode. This must be placed immediately before the "init" 
+	command. The init command will then perform a normal scan of the current PC.
+	
 writedevicelist <filename>
 	Saves the full list of devices and drivers to the given file name.
+	
 restorepoint [description]
-	Create a restore point using the specified description. If no description is given, a default description is used.
+	Create a restore point using the specified description. If no description is 
+	given, a default description is used.
+	
 logdir <directory>
 	Sets the log directory to the given directory.
+	
 drpdir <directory>
 	Sets the driver packs directory to the given directory.
+	
 indexdir <directory>
 	Sets the index directory to the given directory.
+	
 extractdir <directory>
-	Sets the temporary directory used for archive extraction. If it's not set, the default is "%temp%\SDIO\"
+	Sets the temporary directory used for archive extraction. If it's not set, 
+	the default is "%temp%\SDIO\"
+	
 torrentport <port>
 	Set the torrent listening port. The default is 50171.
+
+activetorrent <num>
+	Set the active updates torrent. A value of 1 is the normal SDIO updates, a
+	value of 2 is the driver packs updates.
+	
 echo [any text]
 	Displays the given text to the console.
+	
 debug [on|off]
-	Sets the console/log verbosity to debug. This is the same as LOG_VERBOSE_DEBUG.
+	Sets the console/log verbosity to debug. This is the same as 
+	LOG_VERBOSE_DEBUG.
+	
 logging [on|off]
 	Enables logging to file.
+	
 verbose [verbositiness]
 	Controls the console/log verbosity. See cli.txt for details.
+	
 enableinstall [on|off]
-	Controls whether restore points are actually created and drivers are actually installed. If "on" is specified, restore points are created and drivers are installed. If "off" is specified, all the actions right up to the point of driver installation or restore point creation are performed but the actual installation/creation is skipped. This provides a way to test things without trashing your PC.
+	Controls whether restore points are actually created and drivers are 
+	actually installed. If "on" is specified, restore points are created and 
+	drivers are installed. If "off" is specified, all the actions right up to 
+	the point of driver installation or restore point creation are performed but 
+	the actual installation/creation is skipped. This provides a way to test 
+	things without trashing your PC.
+	
 reboot [ifneeded]
-	Reboot the machine now. If the optional "ifneeded" argument is specified, reboot will be initiated only if the most recent install command has indicated a reboot is required to complete driver installation.
+	Reboot the machine now. If the optional "ifneeded" argument is specified, 
+	reboot will be initiated only if the most recent install command has 
+	indicated a reboot is required to complete driver installation.
+	
 pause
 	Pause script execution until a key is pressed.
+	
 cmd <command>
 	Execute the given command in a command shell.
+	
 onerror < end | goto <label> >
 	Performs the specified action if the previous command resulted in an error.
 	end
 		Immediately ends execution of the script.
 	goto
-		Transfers script execution to the line following the specified label. The label can contain the ":" prefix or not.
+		Transfers script execution to the line following the specified label. 
+		The label can contain the ":" prefix or not.
+		
 goto <label>
-	Transfers script execution to the line following the specified label. The label can contain the ":" prefix or not.
+	Transfers script execution to the line following the specified label. The 
+	label can contain the ":" prefix or not.
+	
 end
 	End script execution.

@@ -127,6 +127,9 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDM_LICENSE   18
 #define IDM_DRVDIR    19
 #define IDM_SEED      20
+#define IDM_UPDATES   21
+#define IDM_UPDATES_SDIO 22
+#define IDM_UPDATES_DRIVERS 23
 
 // About box
 #define IDD_ABOUT     800

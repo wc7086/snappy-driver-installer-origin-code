@@ -211,6 +211,7 @@ void SystemImp::ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize)
 int SystemImp::canWrite(const wchar_t *path)
 {
     DWORD flagsv;
+    DWORD lasterror;
     wchar_t drive[4];
 
     wcscpy(drive,L"C:\\");
@@ -218,10 +219,20 @@ int SystemImp::canWrite(const wchar_t *path)
     if(path&&wcslen(path)>1&&path[1]==':')
     {
         drive[0]=path[0];
-        GetVolumeInformation(drive,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
+        if(!GetVolumeInformation(drive,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0))
+        {
+            lasterror=GetLastError();
+            Log.print_err("Error: canWrite : GetVolumeInformation(1) failed with error %d\n",lasterror);
+            if(lasterror==3)Log.print_err("Error: Path not found: %S\n",path);
+        }
     }
     else
-        GetVolumeInformation(nullptr,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0);
+        if(!GetVolumeInformation(nullptr,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0))
+        {
+            lasterror=GetLastError();
+            Log.print_err("Error: canWrite : GetVolumeInformation(2) failed with error %d\n",lasterror);
+            if(lasterror==3)Log.print_err("Error: Path not found: %S\n",path);
+        }
 
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
