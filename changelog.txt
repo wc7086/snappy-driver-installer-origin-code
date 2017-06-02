@@ -6,8 +6,8 @@ www.snappy-driver-installer.org
 
 Change Log
 
-Version 0.8.0.579
-01 June 2017
+Version 0.8.0.580
+03 June 2017
 Driver Packs 17051
 Fixed main window resize bug.
 Added driver pack filter to scripting.
