@@ -123,6 +123,8 @@ class UpdaterImp:public Updater_t
     long long torrenttime=0;
 
 private:
+    std::wstring const* active_torrent_url;
+    std::wstring const* active_torrent_save_path;
     void downloadTorrent();
     void updateTorrentStatus();
     void removeOldDriverpacks(const wchar_t *ptr);
@@ -195,11 +197,15 @@ WNDPROC UpdateDialog_t::wpOrigButtonProc;
 int UpdateDialog_t::bMouseInWindow=0;
 
 // Updater (static)
+const std::wstring Updater_t::torrent_url=L"http://www.snappy-driver-installer.org/downloads/SDIO_Update.torrent";
+const std::wstring Updater_t::torrent2_url=L"http://www.snappy-driver-installer.org/downloads/Drivers.torrent";
+const std::wstring Updater_t::torrent_save_path=L"update";
+const std::wstring Updater_t::torrent2_save_path=L"update\\SDIO_Update";
+int Updater_t::activetorrent=1;
 int Updater_t::torrentport=50171;
 int Updater_t::downlimit=0;
 int Updater_t::uplimit=0;
 int Updater_t::connections=0;
-wchar_t Updater_t::torrent_url[BUFSIZ]=L"http://www.snappy-driver-installer.org/downloads/SDIO_Update.torrent";
 int UpdaterImp::downloadmangar_exitflag;
 bool UpdaterImp::finishedupdating;
 bool UpdaterImp::finisheddownloading;
@@ -959,29 +965,32 @@ void UpdaterImp::moveNewFiles()
     if(hTorrent.file_priority(i))
     {
         file_entry fe=ti->file_at(i);
-        const char *filenamefull=strchr(fe.path.c_str(),'\\')+1;
-
+        std::string filenamefull=fe.path;
+        if(activetorrent==1)
+            filenamefull=strchr(fe.path.c_str(),'\\')+1;
         // Skip autorun.inf and del_old_driverpacks.bat
-        if(StrStrIA(filenamefull,"autorun.inf")||StrStrIA(filenamefull,".bat"))continue;
+        if(StrStrIA(filenamefull.c_str(),"autorun.inf")||StrStrIA(filenamefull.c_str(),".bat"))continue;
+
+        wchar_t filenamefull_src[BUFLEN];
+        wsprintf(filenamefull_src,L"%s\\%S", active_torrent_save_path->c_str(),fe.path.c_str());
 
         // Determine destination dirs
-        WStringShort filenamefull_src;
         wchar_t filenamefull_dst[BUFLEN];
-        filenamefull_src.sprintf(L"update\\%S",fe.path.c_str());
-        wsprintf(filenamefull_dst,L"%S",filenamefull);
+        wsprintf(filenamefull_dst,L"%S",filenamefull.c_str());
         strsub(filenamefull_dst,L"indexes\\SDI",Settings.index_dir);
         strsub(filenamefull_dst,L"drivers",Settings.drp_dir);
         strsub(filenamefull_dst,L"tools\\SDI",Settings.data_dir);
 
         // Delete old driverpacks
-        if(StrStrIA(filenamefull,"drivers\\"))removeOldDriverpacks(filenamefull_dst+8);
+        if(StrStrIA(filenamefull.c_str(),"drivers\\"))
+            removeOldDriverpacks(filenamefull_dst+8);
 
         // Prepare "_" online indexes
         wchar_t *p=filenamefull_dst;
         if(p)
         {
             while(wcschr(p,L'\\'))p=wcschr(p,L'\\')+1;
-            if(StrStrIW(filenamefull_src.Get(),L"indexes\\SDI\\"))*p=L'_';
+            if(StrStrIW(filenamefull_src,L"indexes\\SDI\\"))*p=L'_';
 
             // Create dirs for the file
             WStringShort dirs;
@@ -996,7 +1005,7 @@ void UpdaterImp::moveNewFiles()
         }
         // Move file
         Log.print_con("New file: %S\n",filenamefull_dst);
-        if(!MoveFileEx(filenamefull_src.Get(),filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
+        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
             Log.print_syserr(GetLastError(),L"MoveFileEx()");
     }
     System.run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
@@ -1109,6 +1118,20 @@ UpdaterImp::UpdaterImp()
     TorrentStatus.sessionpaused=1;
     downloadmangar_exitflag=DOWNLOAD_STATUS_WAITING;
 
+    switch(activetorrent)
+    {
+        case 1:
+            active_torrent_url=&torrent_url;
+            active_torrent_save_path=&torrent_save_path;
+            break;
+        case 2:
+            active_torrent_url=&torrent2_url;
+            active_torrent_save_path=&torrent2_save_path;
+            break;
+        default:
+            break;
+    }
+
     downloadmangar_event=CreateEventWr(true);
 
     installupdate_exitflag=0;
@@ -1179,10 +1202,12 @@ void UpdaterImp::downloadTorrent()
     hSession->set_settings(settings);
 
     // Setup path and URL
-    params.save_path="update";
     char url[BUFSIZ];
-    wcstombs(url, Updater->torrent_url, BUFSIZ);
+    wcstombs(url,active_torrent_url->c_str(),BUFSIZ);
+    char spath[BUFSIZ];
+    wcstombs(spath,active_torrent_save_path->c_str(),BUFSIZ);
     params.url=url;
+    params.save_path=spath;
     Log.print_con("Torrent: %s\n",url);
     params.flags=add_torrent_params::flag_paused|add_torrent_params::flag_seed_mode|add_torrent_params::flag_auto_managed;
     hTorrent=hSession->add_torrent(params,ec);

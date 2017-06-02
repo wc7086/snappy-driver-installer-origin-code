@@ -132,6 +132,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argint(pr,L"-downlimit:",     &Updater->downlimit))continue;
         if(argint(pr,L"-uplimit:",       &Updater->uplimit))continue;
         if(argint(pr,L"-connections:",   &Updater->connections))continue;
+        if(argint(pr,L"-activetorrent:", &Updater->activetorrent))continue;
 
         if(argopt(pr,L"-license",        &license))continue;
         if(argopt(pr,L"-expertmode",     &expertmode))continue;

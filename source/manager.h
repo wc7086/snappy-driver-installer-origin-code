@@ -115,7 +115,7 @@ private:
 public:
     void init(Matcher *matcher);
     void populate();
-    void filter(int options);
+    void filter(int options,std::vector<std::wstring> *drpfilter=nullptr);
     void print_tbl();
     void print_hr();
     int  getlocale();

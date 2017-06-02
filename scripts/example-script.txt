@@ -59,7 +59,7 @@ get driverpacks updates
 echo Creating restore point
 restorepoint
 onerror goto :end
-select missing better
+select missing better lan wlan-wifi
 install
 onerror goto :end
 

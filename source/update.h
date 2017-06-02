@@ -29,8 +29,11 @@ class Updater_t
 public:
     int numfiles=0;
     static bool SeedMode;
-    static int torrentport,downlimit,uplimit,connections;
-    static wchar_t torrent_url[BUFSIZ];
+    static int torrentport,downlimit,uplimit,connections,activetorrent;
+    static const std::wstring torrent_url;
+    static const std::wstring torrent2_url;
+    static const std::wstring torrent_save_path;
+    static const std::wstring torrent2_save_path;
 public:
     virtual ~Updater_t(){}
 

@@ -184,23 +184,42 @@ bool Script::runscript()
                 LastExitCode=Bundle::thread_loadall(&bundle);
                 Settings.flags&=~COLLECTION_FORCE_REINDEXING;
             }
+            else if(_wcsicmp(args[0].c_str(),L"activetorrent")==0)
+            {
+                if(args.size()>1)
+                {
+                    Updater_t::activetorrent=std::stoi(args[1]);
+                    Log.print_debug("Argument: %d\n",Updater_t::activetorrent);
+                    #ifdef USE_TORRENT
+                    delete Updater;
+                    Updater=CreateUpdater();
+                    #endif // USE_TORRENT
+                }
+                else
+                {
+                    LastExitCode=1;
+                    Log.print_err("Error: activetorrent : Missing argument\n");
+                }
+            }
             else if(StrStrIW(args[0].c_str(),L"select"))
             {
                 int filter=0;
+                std::vector<std::wstring> drpfilter;
                 for(size_t i=1;i<args.size();i++)
                 {
                     if(_wcsicmp(args[i].c_str(),L"missing")==0)filter|=2;
-                    if(_wcsicmp(args[i].c_str(),L"newer")==0)filter|=4;
-                    if(_wcsicmp(args[i].c_str(),L"current")==0)filter|=8;
-                    if(_wcsicmp(args[i].c_str(),L"older")==0)filter|=16;
-                    if(_wcsicmp(args[i].c_str(),L"better")==0)filter|=32;
-                    if(_wcsicmp(args[i].c_str(),L"worse")==0)filter|=64;
+                    else if(_wcsicmp(args[i].c_str(),L"newer")==0)filter|=4;
+                    else if(_wcsicmp(args[i].c_str(),L"current")==0)filter|=8;
+                    else if(_wcsicmp(args[i].c_str(),L"older")==0)filter|=16;
+                    else if(_wcsicmp(args[i].c_str(),L"better")==0)filter|=32;
+                    else if(_wcsicmp(args[i].c_str(),L"worse")==0)filter|=64;
+                    else drpfilter.push_back(args[i]);
                 }
-                if(filter>0)
+                if((filter>0)||(drpfilter.size()>0))
                 {
-                    Log.print_debug("Argument: %d\n",filter);
+                    Log.print_debug("Argument: %d, %d\n",filter,drpfilter.size());
                     selectNone();
-                    manager_g->filter(filter);
+                    manager_g->filter(filter,&drpfilter);
                     selectAll();
                     LastExitCode=0;
                     Log.print_con("%d drivers selected\n",manager_g->selected());
@@ -417,8 +436,8 @@ bool Script::runscript()
             {
                 if(args.size()>1)
                 {
-                    Log.print_debug("Argument: %d\n",torrentport);
                     torrentport=std::stoi(args[1]);
+                    Log.print_debug("Argument: %d\n",torrentport);
                 }
                 else
                 {

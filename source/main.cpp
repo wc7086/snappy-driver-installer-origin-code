@@ -60,6 +60,7 @@ int bundle_display=1;
 int bundle_shadow=0;
 bool emptydrp;
 WinVersions winVersions;
+HMENU UpdatesMenu;
 
 // drag/drop in elevated processess
 // https://helgeklein.com/blog/2010/03/how-to-enable-drag-and-drop-for-an-elevated-mfc-application-on-vistawindows-7/
@@ -298,7 +299,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     return ret_global;
 }
 
-void MainWindow_t::AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typedata)
+void MainWindow_t::AddMenuItem(HMENU parent,UINT mask,UINT id,UINT type,HMENU hSubMenu,wchar_t* typedata)
 {
     MENUITEMINFO mi;
     mi.cbSize=sizeof(MENUITEMINFO);
@@ -306,28 +307,27 @@ void MainWindow_t::AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typeda
     mi.wID=id;
     mi.fType=type;
     mi.dwTypeData=typedata;
+    mi.hSubMenu=hSubMenu;
 
-    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
-    if (pSysMenu != NULL)
-        InsertMenuItem(pSysMenu, 0, TRUE, &mi);
+    if (parent != NULL)
+        InsertMenuItem(parent, 0, TRUE, &mi);
 }
 
-void MainWindow_t::ModifySystemMenuItem(UINT mask, UINT id, wchar_t* typedata)
+void MainWindow_t::ModifyMenuItem(HMENU parent, UINT mask, UINT id, UINT state, wchar_t* typedata)
 {
-    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
-    if (pSysMenu==NULL)return;
+    if (parent==NULL)return;
 
     MENUITEMINFO mi;
     memset(&mi, 0, sizeof(MENUITEMINFO));
-
     mi.cbSize=sizeof(MENUITEMINFO);
     mi.fMask=mask;
-    mi.fType=0;
 
-    if(GetMenuItemInfo(pSysMenu, id, false, &mi))
+    if(GetMenuItemInfo(parent, id, false, &mi))
     {
+        mi.fType=0;
+        mi.fState=state;
         mi.dwTypeData=typedata;
-        SetMenuItemInfo(pSysMenu, id, false, &mi);
+        SetMenuItemInfo(parent, id, false, &mi);
     }
 }
 
@@ -386,13 +386,22 @@ void MainWindow_t::MainLoop(int nCmd)
         return;
     }
 
-    // add options to the system menu - in reverse order
-    AddSystemMenuItem(MIIM_FTYPE,0,MFT_SEPARATOR,const_cast<wchar_t *>(L""));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_LICENSE,0,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_ABOUT,0,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,const_cast<wchar_t *>STR(STR_DRVDIR));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,const_cast<wchar_t *>STR(STR_OPENLOGS));
-    AddSystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SEED,0,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
+    HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
+
+    // the updates sub-menu - reverse order
+    UpdatesMenu=CreatePopupMenu();
+    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_DRIVERS,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
+    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_SDIO,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
+    ModifyMenuItem(UpdatesMenu,MIIM_STRING|MIIM_STATE|MIIM_ID,IDM_UPDATES_SDIO,MFS_CHECKED,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
+
+    // add options to the system menu - reverse order
+    AddMenuItem(pSysMenu,MIIM_FTYPE,0,MFT_SEPARATOR,nullptr,const_cast<wchar_t *>(L""));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_LICENSE,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_ABOUT,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_SEED,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
 
     // license dialog
     if(!Settings.license)
@@ -1281,13 +1290,28 @@ void MainWindow_t::DownloadedTorrent()
         }
 }
 
-void MainWindow_t::ResetUpdater()
+void MainWindow_t::ResetUpdater(int activetorrent)
 {
     #ifdef USE_TORRENT
     delete Updater;
+    Updater_t::activetorrent=activetorrent;
     Updater=CreateUpdater();
     Updater->checkUpdates();
     #endif // USE_TORRENT
+
+    switch (activetorrent)
+    {
+        case 1:
+            ModifyMenuItem(UpdatesMenu,MIIM_STRING|MIIM_STATE|MIIM_ID,IDM_UPDATES_SDIO,MFS_CHECKED,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
+            ModifyMenuItem(UpdatesMenu,MIIM_STRING|MIIM_STATE|MIIM_ID,IDM_UPDATES_DRIVERS,MFS_UNCHECKED,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
+            break;
+        case 2:
+            ModifyMenuItem(UpdatesMenu,MIIM_STRING|MIIM_STATE|MIIM_ID,IDM_UPDATES_SDIO,MFS_UNCHECKED,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
+            ModifyMenuItem(UpdatesMenu,MIIM_STRING|MIIM_STATE|MIIM_ID,IDM_UPDATES_DRIVERS,MFS_CHECKED,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
+            break;
+        default:
+            break;
+    }
 }
 
 void MainWindow_t::tabadvance(int v)
@@ -1543,13 +1567,14 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
 
         case WM_SEEDING:
             {
+                HMENU pSysMenu = GetSystemMenu(MainWindow.hMain,FALSE);
                 switch(lParam)
                 {
                     case 1:
-                        ModifySystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SEED,const_cast<wchar_t *>STR(STR_SYST_STOP_SEED));
+                        ModifyMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_SEED,0,const_cast<wchar_t *>STR(STR_SYST_STOP_SEED));
                         break;
                     case 0:
-                        ModifySystemMenuItem(MIIM_STRING|MIIM_ID,IDM_SEED,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
+                        ModifyMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_SEED,0,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
                         break;
                     default:
                         break;
@@ -1823,6 +1848,20 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         #endif // USE_TORRENT
                         return 0;
                     }
+                    case IDM_UPDATES_SDIO:
+                        {
+                            #ifdef USE_TORRENT
+                            MainWindow.ResetUpdater(1);
+                            #endif // USE_TORRENT
+                            return 0;
+                        }
+                    case IDM_UPDATES_DRIVERS:
+                        {
+                            #ifdef USE_TORRENT
+                            MainWindow.ResetUpdater(2);
+                            #endif // USE_TORRENT
+                            return 0;
+                        }
                     case IDM_DRVDIR:
                     {
                         if(System.ChooseDir(Settings.drpext_dir,STR(STR_DRVDIR)))

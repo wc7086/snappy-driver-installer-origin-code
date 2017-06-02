@@ -192,8 +192,8 @@ private:
     LRESULT WndProcCommon(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
     LRESULT WndProcMain(HWND,UINT,WPARAM,LPARAM);
     LRESULT WndProcField(HWND,UINT,WPARAM,LPARAM);
-    void AddSystemMenuItem(UINT mask,UINT id,UINT type,wchar_t* typedata);
-    void ModifySystemMenuItem(UINT mask,UINT id, wchar_t* typedata);
+    void AddMenuItem(HMENU parent,UINT mask,UINT id,UINT type,HMENU hSubMenu,wchar_t* typedata);
+    void ModifyMenuItem(HMENU parent, UINT mask,UINT id,UINT state,wchar_t* typedata);
 
 public:
     void MainLoop(int nCmd);
@@ -217,7 +217,7 @@ public:
 
     void ShowProgressInTaskbar(bool show,long long complited=0,long long total=0);
     void DownloadedTorrent();
-    void ResetUpdater();
+    void ResetUpdater(int activetorrent=1);
 
     MainWindow_t();
     ~MainWindow_t();

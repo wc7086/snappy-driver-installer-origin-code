@@ -646,7 +646,7 @@ void Manager::populate()
     items_list.shrink_to_fit();
 }
 
-void Manager::filter(int options)
+void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
 {
     Devicematch *devicematch;
     itembar_t *itembar,*itembar1,*itembar_drp=nullptr,*itembar_drpcur=nullptr;
@@ -729,9 +729,31 @@ void Manager::filter(int options)
                 //[X] Newer
                 //[ ] Worse
                 //worse, no problem
-                if((options&FILTER_SHOW_NEWER)!=0
-                   &&(options&FILTER_SHOW_WORSE_RANK)==0&&(options&FILTER_SHOW_INVALID)==0
-                   &&itembar->hwidmatch->getStatus()&STATUS_WORSE&&devicematch->device->problem==0&&devicematch->driver)continue;
+                if((options&FILTER_SHOW_NEWER)!=0 &&
+                   (options&FILTER_SHOW_WORSE_RANK)==0 &&
+                   (options&FILTER_SHOW_INVALID)==0 &&
+                   itembar->hwidmatch->getStatus()&STATUS_WORSE &&
+                   devicematch->device->problem==0 &&
+                   devicematch->driver)
+                   continue;
+
+                // driver pack filters
+                if(drpfilter)
+                {
+                    bool filtermatch=false;
+                    std::wstring drpname=itembar->hwidmatch->getdrp_packname();
+                    for(std::vector<std::wstring>::iterator txt = drpfilter->begin(); txt != drpfilter->end(); ++txt)
+                    {
+                        std::wstring w=*txt;
+                        w.insert(0,L"dp_");w.append(L"_");
+                        if(StrStrIW(drpname.c_str(),w.c_str()))
+                        {
+                            filtermatch=true;
+                            break;
+                        }
+                    }
+                    if(!filtermatch)continue;
+                }
 
                 if(itembar->hwidmatch->getdrp_packontorrent()&&!ontorrent)
                     ontorrent=1;
