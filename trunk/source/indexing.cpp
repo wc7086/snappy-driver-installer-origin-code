@@ -677,9 +677,6 @@ void Collection::populate()
 
 void Collection::save()
 {
-    #ifdef CONSOLE_MODE
-    return;
-    #endif
     if(*Settings.drpext_dir)return;
     if(!System.canWrite(index_bin_dir))
     {

@@ -476,7 +476,6 @@ size_t decode(char *dest,size_t dest_sz,const char *src,size_t src_sz)
 
 void registerall()
 {
-#ifndef CONSOLE_MODE
     NArchive::N7z::register7z();
     registerBCJ();
     registerBCJ2();
@@ -486,7 +485,6 @@ void registerall()
     registerLZMA2();
 
     CrcGenerateTable();
-#endif
 }
 //}
 

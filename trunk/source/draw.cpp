@@ -231,11 +231,7 @@ void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
     BYTE *big;
     hasalpha=sx=sy=0;
     ldc=nullptr;
-#ifdef CONSOLE_MODE
-    UNREFERENCED_PARAMETER(data)
-    UNREFERENCED_PARAMETER(sz)
-    return;
-#else
+
     int ret=WebPGetInfo(data,sz,&sx,&sy);
     if(!ret)
     {
@@ -248,7 +244,7 @@ void ImageImp::CreateMyBitmap(BYTE *data,size_t sz)
         Log.print_err("ERROR in image_load(): failed WebPDecodeBGRA\n");
         return;
     }
-#endif
+
     BITMAPINFO bmi;
     ZeroMemory(&bmi,sizeof(BITMAPINFO));
     bmi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);

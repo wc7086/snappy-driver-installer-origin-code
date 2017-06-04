@@ -183,15 +183,6 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     Settings.parse(GetCommandLineW(),1);
     RUN_CLI();
 
-    // Reset paths for GUI-less version of the app
-    #ifdef CONSOLE_MODE
-    Settings.flags|=FLAG_NOGUI;
-    Settings.license=1;
-    wcscpy(Settings.drp_dir,Settings.log_dir);
-    wcscpy(Settings.index_dir,Settings.log_dir);
-    wcscpy(Settings.output_dir,Settings.log_dir);
-    #endif
-
     // Close the app if the work is done
     if(Settings.statemode==STATEMODE_EXIT)
     {
@@ -201,12 +192,10 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     }
 
     // Bring back the console window
-    #ifndef CONSOLE_MODE
     if(Settings.flags&FLAG_SHOWCONSOLE)
         Console->Show();
     else
         Console->Hide();
-    #endif
 
     // Start logging
     ExpandEnvironmentStrings(Settings.logO_dir,Settings.log_dir,BUFLEN);
@@ -268,9 +257,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     #endif
 
     // Save settings
-    #ifndef CONSOLE_MODE
     Settings.save();
-    #endif
 
     // Free allocated resources
     delete vLang;
