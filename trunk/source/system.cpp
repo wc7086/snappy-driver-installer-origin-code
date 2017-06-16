@@ -146,9 +146,11 @@ void mkdir_r(const wchar_t *path)
     if(path[1]==L':'&&path[2]==0)return;
     if(!System.canWrite(path))
     {
-        Log.print_err("ERROR in mkdir_r(): Write-protected,'%S'\n",path);
+        Log.print_err("ERROR in mkdir_r(): Path not found or write-protected,'%S'\n",path);
         return;
     }
+
+    if(System.DirectoryExists(path))return;
 
     wchar_t buf[BUFLEN];
     wcscpy(buf,path);
@@ -201,6 +203,26 @@ bool SystemImp::FileExists2(const wchar_t *spec)
     }
 
     return ret;
+}
+
+bool SystemImp::DirectoryExists(const wchar_t *spec)
+{
+    DWORD ftyp=GetFileAttributesW(spec);
+    if(ftyp!=INVALID_FILE_ATTRIBUTES)
+    {
+        if((ftyp&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
+            return true;
+        else
+            return false;
+    }
+    else
+    {
+        DWORD error=GetLastError();
+        if(error&(ERROR_PATH_NOT_FOUND|ERROR_FILE_NOT_FOUND|ERROR_INVALID_NAME|ERROR_BAD_NETPATH))
+            return false;
+        else
+            return true;
+    }
 }
 
 void SystemImp::ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize)

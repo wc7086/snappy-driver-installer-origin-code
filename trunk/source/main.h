@@ -30,7 +30,7 @@ extern class Popup_t *Popup;
 #include "resources.h"
 
 // svnrev_template.h
-#define APPTITLE            L"Snappy Driver Installer Origin " TEXT(VER_VERSION_STR) " " TEXT(SVN_BUILD_NOTE)
+#define APPTITLE            L"Snappy Driver Installer Origin " TEXT(VER_VERSION_STR2) " " TEXT(SVN_BUILD_NOTE)
 #define VER_MARKER          "SDW"
 #define VER_STATE           0x102
 #define VER_INDEX           0x205

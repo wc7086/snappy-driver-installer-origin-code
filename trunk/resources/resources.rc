@@ -43,14 +43,15 @@ IDB_LOGO        BITMAP      "logoorigin128.bmp"
 
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "drv.exe.manifest"
 
-IDD_DIALOG1 DIALOGEX DISCARDABLE 0, 0, 340, 349
+IDD_DIALOG1 DIALOGEX DISCARDABLE 0, 0, 335, 295
+FONT 8, "Courier New"
 STYLE DS_MODALFRAME|WS_POPUP|WS_CAPTION|WS_SYSMENU|DS_CENTER
 CAPTION "Snappy Driver Installer Origin License"
 {
     LTEXT           "Please read the following License Agreement carefully before using this program.",0,10,10,300,20
-    DEFPUSHBUTTON   "&Decline", IDCANCEL, 10, 318, 70, 20
-    PUSHBUTTON      "&Accept",  IDOK,     87, 318, 70, 20
-    EDITTEXT        IDC_EDIT1, 10, 30, 320, 300-30, WS_HSCROLL|WS_VSCROLL|ES_MULTILINE|ES_READONLY
+    DEFPUSHBUTTON   "&Decline", IDCANCEL, 10, 268, 70, 20
+    PUSHBUTTON      "&Accept",  IDOK,     255, 268, 70, 20
+    EDITTEXT        IDC_EDIT1, 10, 30, 315, 230, WS_VSCROLL|ES_MULTILINE|ES_READONLY
 }
 
 IDD_DIALOG2 DIALOGEX 0, 0, 400, SIZEY
@@ -78,7 +79,7 @@ CAPTION "Update"
 
 VS_VERSION_INFO VERSIONINFO
 FILEVERSION     VER_FILEVERSION
-PRODUCTVERSION  VER_PRODUCTVERSION
+PRODUCTVERSION  VER_FILEVERSION
 FILEOS          VOS__WINDOWS32
 FILETYPE        VFT_APP
 FILEFLAGS       VS_FF_DEBUG | VS_FF_PRERELEASE | VS_FF_SPECIALBUILD
@@ -93,7 +94,7 @@ BEGIN
             VALUE "OriginalFilename", "SDIO_R" SVN_REV_STR ".exe\0"
             VALUE "ProductName",      "Snappy Driver Installer Origin\0"
             VALUE "FileVersion",      VER_FILEVERSION_STR
-            VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
+            VALUE "ProductVersion",   VER_FILEVERSION_STR
             VALUE "SpecialBuild",     SVN_BUILD_NOTE
         END
     END

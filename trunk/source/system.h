@@ -82,6 +82,7 @@ public:
     void deletefile(const wchar_t *filename);
     bool FileExists(const wchar_t *filename);
     bool FileExists2(const wchar_t *spec);
+    bool DirectoryExists(const wchar_t *spec);
     void ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize);
     bool ChooseDir(wchar_t *path,const wchar_t *title);
     bool ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_t *ext);

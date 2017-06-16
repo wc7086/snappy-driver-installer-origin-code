@@ -100,6 +100,8 @@ enum GUI_ID
     ID_URL4            =45,
 
     ID_SYSPROPS        =50,
+    ID_COMPMNG         =51,
+    ID_SYSPROT         =52,
 
     ID_HWID_CLIP      =100,
     ID_HWID_WEB       =200,
