@@ -45,7 +45,7 @@ PROGR_S_BITMAP_FILL      = PROGR_BITMAP_FILL
 PANEL_OFSX               = 10
 PANEL_OFSY               = 10
 PANEL_WX                 = 170
-PANEL_WY                 = 21
+PANEL_WY                 = 22
 PANEL_INSIDE_COLOR       = 0xD0A0A0 // set 0xFF000000 to expose the background
 PANEL_OUTLINE_COLOR      = 0x000000
 PANEL_OUTLINE_WIDTH      = 0        // set 0 to remove the borders
@@ -72,7 +72,7 @@ PANEL1_INSIDE_COLOR      = 0x4090F0
 PANEL3_OFSX              = PANEL_OFSX
 PANEL3_OFSY              = 84
 PANEL3_WX                = PANEL_WX
-PANEL3_WY                = 21
+PANEL3_WY                = PANEL_WY
 PANEL3_INSIDE_COLOR      = 0xD09030
 
 // Panel, install
@@ -84,9 +84,9 @@ PANEL2_INSIDE_COLOR      = 0xA04020
 
 // Panel, install button
 PANEL9_OFSX              = PANEL_OFSX
-PANEL9_OFSY              = 199
+PANEL9_OFSY              = 202
 PANEL9_WX                = PANEL_WX
-PANEL9_WY                = 22
+PANEL9_WY                = 17
 PANEL9_INSIDE_COLOR      = 0x5010D0
 PANEL9_OUTLINE_COLOR     = 0x5010D0
 PANEL9_OUTLINE_WIDTH     = 1	
@@ -98,7 +98,7 @@ PANEL9_OUTLINE_ROUND_H   = PANEL_OUTLINE_ROUND_H
 
 // Panel, selectall button
 PANEL10_OFSX             = PANEL9_OFSX
-PANEL10_OFSY             = 223
+PANEL10_OFSY             = 221
 PANEL10_WX               = PANEL9_WX
 PANEL10_WY               = PANEL9_WY
 PANEL10_INSIDE_COLOR     = PANEL9_INSIDE_COLOR
@@ -107,7 +107,7 @@ PANEL10_OUTLINE_WIDTH    = PANEL9_OUTLINE_WIDTH
 
 // Panel, selectnone button
 PANEL11_OFSX             = PANEL9_OFSX
-PANEL11_OFSY             = 247
+PANEL11_OFSY             = 244
 PANEL11_WX               = PANEL9_WX
 PANEL11_WY               = PANEL9_WY
 PANEL11_INSIDE_COLOR     = PANEL9_INSIDE_COLOR
@@ -116,9 +116,9 @@ PANEL11_OUTLINE_WIDTH    = PANEL9_OUTLINE_WIDTH
 
 // Panel containing actions - dimensions per button
 PANEL4_OFSX              = PANEL_OFSX
-PANEL4_OFSY              = 274
+PANEL4_OFSY              = 266
 PANEL4_WX                = PANEL9_WX
-PANEL4_WY                = 22
+PANEL4_WY                = 21
 PANEL4_INSIDE_COLOR      = PANEL9_INSIDE_COLOR
 PANEL4_OUTLINE_COLOR     = PANEL9_OUTLINE_COLOR
 PANEL4_OUTLINE_WIDTH     = PANEL9_OUTLINE_WIDTH
@@ -148,14 +148,14 @@ BUTTON_BITMAP_FILL_H     = BUTTON_BITMAP_FILL
 
 // Panel, filters (found)
 PANEL5_OFSX              = PANEL_OFSX
-PANEL5_OFSY              = 374
+PANEL5_OFSY              = 361
 PANEL5_WX                = PANEL_WX
 PANEL5_WY                = PANEL_WY
 PANEL5_INSIDE_COLOR      = 0x108010
 
 // Panel, filters (not found)
 PANEL6_OFSX              = PANEL_OFSX
-PANEL6_OFSY              = 522
+PANEL6_OFSY              = 513
 // Panel, revision
 PANEL8_OFSX              = -1
 PANEL8_OFSY              = -1

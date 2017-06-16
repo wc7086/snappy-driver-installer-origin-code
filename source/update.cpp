@@ -1156,7 +1156,7 @@ UpdaterImp::~UpdaterImp()
 void UpdaterImp::downloadTorrent()
 {
 	// checking for updates
-    manager_g->itembar_settext(SLOT_DOWNLOAD,1,STR(STR_UPD_CHECKING),1,0,0);
+    manager_g->itembar_settext(SLOT_DOWNLOAD,1,STR(STR_UPD_CHECKING),0,0,0);
 
     error_code ec;
     int i;
@@ -1193,7 +1193,7 @@ void UpdaterImp::downloadTorrent()
         alert::storage_notification);
 
     // Settings
-    settings.user_agent="Snappy Driver Installer Origin " VER_PRODUCTVERSION_STR;
+    settings.user_agent="Snappy Driver Installer Origin " VER_VERSION_STR2;
     settings.always_send_user_agent=true;
     settings.anonymous_mode=false;
     settings.choking_algorithm=session_settings::auto_expand_choker;
@@ -1243,7 +1243,7 @@ void UpdaterImp::downloadTorrent()
     }
 
 	// checking for updates
-	manager_g->itembar_settext(SLOT_DOWNLOAD,0,L"",1,0,0);
+	manager_g->itembar_settext(SLOT_DOWNLOAD,0,L"",0,0,0);
 
     // test if we failed to get the torrent
     if(!hTorrent.torrent_file())

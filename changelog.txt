@@ -6,6 +6,14 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 0.8.1.582
+17 June 2017
+Driver Packs 17062
+Fixed phantom "available: 1 driverpacks" bug
+Fixed phantom mkdir_r error
+Reset driver space hint horizontal scroll
+Added Tools menu
+
 Version 0.8.0.580
 03 June 2017
 Driver Packs 17051

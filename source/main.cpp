@@ -60,7 +60,7 @@ int bundle_display=1;
 int bundle_shadow=0;
 bool emptydrp;
 WinVersions winVersions;
-HMENU UpdatesMenu;
+HMENU ToolsMenu,UpdatesMenu;
 
 // drag/drop in elevated processess
 // https://helgeklein.com/blog/2010/03/how-to-enable-drag-and-drop-for-an-elevated-mfc-application-on-vistawindows-7/
@@ -134,8 +134,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     Timers.start(time_total);
 
-    std::cout << "\nSnappy Driver Installer Origin\n";
-    std::cout << "      " << VER_VERSION_STR << "\n";
+    std::cout << "\nSnappy Driver Installer Origin " << VER_VERSION_STR2 << "\n";
     std::cout << SVN_BUILD_NOTE << "\n\n";
 
     // Determine number of CPU cores
@@ -375,6 +374,13 @@ void MainWindow_t::MainLoop(int nCmd)
 
     HMENU pSysMenu = GetSystemMenu(hMain,FALSE);
 
+    // the tools menu - reverse order
+    ToolsMenu=CreatePopupMenu();
+//    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROT,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSPROT));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROPS,0,nullptr,const_cast<wchar_t *>STR(STR_REST_SYSPROPS));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_DEVICEMNG,0,nullptr,const_cast<wchar_t *>STR(STR_SYS_DEVICEMNG));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_COMPMNG,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_COMPMNG));
+
     // the updates sub-menu - reverse order
     UpdatesMenu=CreatePopupMenu();
     AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_DRIVERS,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
@@ -388,6 +394,7 @@ void MainWindow_t::MainLoop(int nCmd)
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_TOOLS,0,ToolsMenu,const_cast<wchar_t *>STR(STR_TOOLS));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_SEED,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
 
     // license dialog
@@ -1766,6 +1773,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                 manager_g->setpos();
                 redrawfield();
             }
+            if(wParam==VK_SPACE)
+            {
+                space_down=0;
+                Popup->AddShift(0xffff);
+            }
             break;
 
         case WM_SYSKEYDOWN:
@@ -1847,6 +1859,26 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                             #ifdef USE_TORRENT
                             MainWindow.ResetUpdater(2);
                             #endif // USE_TORRENT
+                            return 0;
+                        }
+                    case ID_COMPMNG:
+                        {
+                            System.run_command(L"compmgmt.msc",nullptr,SW_SHOW,0);
+                            return 0;
+                        }
+                    case ID_DEVICEMNG:
+                        {
+                            System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
+                            return 0;
+                        }
+                    case ID_SYSPROPS:
+                        {
+                            System.run_command(L"cmd",L"/c control system",SW_HIDE,0);
+                            return 0;
+                        }
+                    case ID_SYSPROT:
+                        {
+                            System.run_command(L"systempropertiesprotection",nullptr,SW_SHOW,0);
                             return 0;
                         }
                     case IDM_DRVDIR:
@@ -2312,7 +2344,10 @@ void Popup_t::init()
 
 void Popup_t::AddShift(int i)
 {
-    horiz_sh-=i/5;
+    if(i==0xffff)
+        horiz_sh=0;
+    else
+        horiz_sh-=i/5;
     if(horiz_sh>0)horiz_sh=0;
     InvalidateRect(hPopup,nullptr,0);
 }
@@ -2426,6 +2461,12 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
             hEditBox=GetDlgItem(hwnd,IDC_EDIT1);
             SetWindowTextA(hEditBox,s);
             SendMessage(hEditBox,EM_SETREADONLY,1,0);
+            // only show decline button on startup
+            if(GetParent(hwnd))
+            {
+                ShowWindow(GetDlgItem(hwnd,IDCANCEL),SW_HIDE);
+                SetFocus(GetDlgItem(hwnd,IDOK));
+            }
             return TRUE;
 
         case WM_COMMAND:
@@ -2437,7 +2478,7 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
                     return TRUE;
 
                 case IDCANCEL:
-                    Settings.license=0;
+                    if(!GetParent(hwnd))Settings.license=0;
                     EndDialog(hwnd,IDCANCEL);
                     return TRUE;
 
