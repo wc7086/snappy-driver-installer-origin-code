@@ -7,11 +7,9 @@ www.snappy-driver-installer.org
 *********************
 *** CAVEAT EMPTOR ***
 *********************
-Script mode is still early in development. It will improve over time but right 
-now it is most likely full of bugs so don't run it on mission critical or 
-customer machines just yet. However, please give it a run on your test machines 
-and let me know what bugs you find and what needs to be added. As usual, any 
-loss is your problem, not mine.
+Script mode is still early in development. You should test it thoroughly before 
+using it on mission critical or customer machines. Let me know what bugs you 
+find and what needs to be added. As usual, any loss is your problem, not mine.
 
 Scripting
 *********
