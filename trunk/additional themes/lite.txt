@@ -63,13 +63,14 @@ PANEL2_OUTLINE_WIDTH     = 0
 PANEL2_BITMAP_FILENAME   = ""
 
 // Panel, lang_theme
-PANEL3_OFSY              = 125
+PANEL3_OFSY              = 127
 
 // Panel, actions
 PANEL4_OFSX              = PANEL9_OFSX
-PANEL4_OFSY              = 242
+PANEL4_OFSY              = 252
 PANEL4_WX                = PANEL9_WX
 PANEL4_WY                = 22
+PANEL4_INSIDE_COLOR      = 0xff000000
 PANEL4_OUTLINE_WIDTH     = 0
 
 // Panel, filters (found)
@@ -77,13 +78,15 @@ PANEL5_OFSY              = 365
 PANEL5_WY                = 22
 
 // Panel, filters (not found)
-PANEL6_OFSY              = 530
+PANEL6_OFSY              = 532
 
 // Panel, filters (special)
-PANEL7_OFSY              = 600
+PANEL7_OFSX              = PANEL5_OFSX
+PANEL7_OFSY              = 640
+PANEL7_WY                = 21
 
 // Panel, revision
-PANEL8_OFSX              = 14
+PANEL8_OFSX              = -1
 
 // Panel, install button
 PANEL9_OFSX              = 12
