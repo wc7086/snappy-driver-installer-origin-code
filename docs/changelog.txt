@@ -6,7 +6,7 @@ www.snappy-driver-installer.org
 
 Change Log
 
-Version 0.9.0.586
+Version 0.9.0.593
 1 July 2017
 Driver Packs 17064
 Added more options to the Tools menu.
