@@ -439,6 +439,12 @@ void strtolower(const char *s1,size_t len)
     }
 }
 
+std::string to_lower(std::string str)
+{
+    for( char& c : str ) c = std::tolower(c) ;
+    return str ;
+}
+
 size_t unicode2ansi(const unsigned char *s,char *out,size_t size)
 {
     size_t ret;

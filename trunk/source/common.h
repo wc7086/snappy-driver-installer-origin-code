@@ -62,6 +62,7 @@ public:
 void strsub(wchar_t *str,const wchar_t *pattern,const wchar_t *rep);
 void strtoupper(const char *s,size_t len);
 void strtolower(const char *s,size_t len);
+std::string to_lower(std::string str);
 size_t unicode2ansi(const unsigned char *s,char *out,size_t size);
 int _wtoi_my(const wchar_t *str);
 
