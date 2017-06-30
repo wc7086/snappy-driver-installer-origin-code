@@ -225,9 +225,12 @@ bool SystemImp::DirectoryExists(const wchar_t *spec)
     }
 }
 
-void SystemImp::ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize)
+std::wstring SystemImp::ExpandEnvVar(std::wstring source)
 {
-    ExpandEnvironmentStringsW(source,dest,bufsize);
+    wchar_t d[BUFLEN];
+    *d=0;
+    ExpandEnvironmentStringsW(source.c_str(),d,BUFLEN);
+    return d;
 }
 
 int SystemImp::canWrite(const wchar_t *path)
@@ -296,6 +299,15 @@ int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int w
     WaitForSingleObject(ShExecInfo.hProcess,INFINITE);
     GetExitCodeProcess(ShExecInfo.hProcess,&ret);
     return ret;
+}
+
+void SystemImp::run_controlpanel(const wchar_t* cmd)
+{
+    PVOID OldValue=NULL;
+    bool b=Wow64DisableWow64FsRedirection(&OldValue);
+    std::wstring cp=System.ExpandEnvVar(L"%windir%\\System32\\control.exe");
+    System.run_command(cp.c_str(),cmd,SW_NORMAL,0);
+    if(b)Wow64RevertWow64FsRedirection(OldValue);
 }
 
 int SystemImp::_vscwprintf_dll(const wchar_t * _Format,va_list _ArgList)

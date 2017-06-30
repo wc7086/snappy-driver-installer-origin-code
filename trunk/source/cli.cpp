@@ -37,11 +37,9 @@ CommandLineParam_t CLIParam;
 
 static void ExpandPath(wchar_t *Apath)
 {
-    wchar_t infoBuf[BUFLEN];
-
-    *infoBuf=0;
-    System.ExpandEnvVar(Apath,infoBuf,BUFLEN);
-    wcscpy(Apath,infoBuf);
+    std::wstring infoBuf;
+    infoBuf=System.ExpandEnvVar(std::wstring(Apath));
+    wcscpy(Apath,infoBuf.c_str());
 }
 
 void SaveHWID(wchar_t *hwid)
