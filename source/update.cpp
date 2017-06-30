@@ -154,6 +154,7 @@ public:
     void OpenDialog();
 
     void DownloadAll();
+    void DownloadNetwork();
     void DownloadIndexes();
     void StartSeedingDrivers();
     void StopSeedingDrivers();
@@ -376,9 +377,13 @@ void UpdateDialog_t::updateTexts()
 
     // Buttons
     SetWindowText(hUpdate,STR(STR_UPD_TITLE));
+    SetWindowText(GetDlgItem(hUpdate,IDSELECTION),STR(STR_UPD_SELECTION));
+    SetWindowText(GetDlgItem(hUpdate,IDOPTIONS),STR(STR_UPD_OPTIONS));
     SetWindowText(GetDlgItem(hUpdate,IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
+    SetWindowText(GetDlgItem(hUpdate,IDKEEPSEEDING),STR(STR_UPD_KEEPSEEDING));
     SetWindowText(GetDlgItem(hUpdate,IDCHECKALL),STR(STR_UPD_BTN_ALL));
     SetWindowText(GetDlgItem(hUpdate,IDUNCHECKALL),STR(STR_UPD_BTN_NONE));
+    SetWindowText(GetDlgItem(hUpdate,IDCHECKNETWORK),STR(STR_UPD_BTN_NETWORK));
     SetWindowText(GetDlgItem(hUpdate,IDCHECKTHISPC),STR(STR_UPD_BTN_THISPC));
     SetWindowText(GetDlgItem(hUpdate,IDOK),STR(STR_UPD_BTN_OK));
     SetWindowText(GetDlgItem(hUpdate,IDCANCEL),STR(STR_UPD_BTN_CANCEL));
@@ -624,6 +629,14 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     }
                     return TRUE;
 
+                case IDCHECKNETWORK:
+                    for(i=0;i<ListView.GetItemCount();i++)
+                    {
+                        *buf=0;
+                        ListView.GetItemText(i,0,buf,32);
+                        bool chk=StrStrIW(buf,L"_LAN_")||StrStrIW(buf,L"_WLAN-WiFi_")||StrStrIW(buf,L"_WWAN-4G_");
+                        ListView.SetCheckState(i,chk);
+                    }
                 default:
                     break;
             }
@@ -1508,7 +1521,32 @@ int UpdaterImp::scriptInstall()
 void UpdaterImp::DownloadAll()
 {
     for(int i=0;i<Updater->numfiles;i++)
-        hTorrent.file_priority(i,1);
+        if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))
+            hTorrent.file_priority(i,2);
+        else
+            hTorrent.file_priority(i,1);
+    Updater->resumeDownloading();
+}
+
+void UpdaterImp::DownloadNetwork()
+{
+    for(int i=0;i<Updater->numfiles;i++)
+    {
+        // indexes
+        if(StrStrIA(hTorrent.torrent_file()->file_at(i).path.c_str(),"indexes\\"))
+            hTorrent.file_priority(i,2);
+        else
+        {
+            // the file name minus the path
+            std::string filename=strrchr(hTorrent.torrent_file()->file_at(i).path.c_str(),'\\')+1;
+            // look for all networking packs
+            size_t found1=filename.find("_LAN_");
+            size_t found2=filename.find("_WLAN-WiFi_");
+            size_t found3=filename.find("_WWAN-4G_");
+            if((found1!=std::string::npos)||(found2!=std::string::npos)||(found3!=std::string::npos))
+                hTorrent.file_priority(i,1);
+        }
+    }
     Updater->resumeDownloading();
 }
 
@@ -1522,6 +1560,8 @@ void UpdaterImp::DownloadIndexes()
 
 void UpdaterImp::StartSeedingDrivers()
 {
+    if(!hSession)return;
+
     // don't interrupt the current session
     if(!hSession->is_paused())
         return;
@@ -1545,7 +1585,7 @@ void UpdaterImp::StartSeedingDrivers()
         hTorrent.file_priority(i,0);
         // get the file entry
         file_entry fe=ti->file_at(i);
-        std::string file=fe.path;
+        std::string file=to_lower(fe.path);
         size_t p=file.find("drivers\\");
         if(p!=std::string::npos)
         // seed *existing* drivers only

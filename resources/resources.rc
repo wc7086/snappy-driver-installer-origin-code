@@ -34,7 +34,7 @@ IDR_INSTALL64   RESFILE     "install64.exe"
 IDR_CLI_HELP    RESFILE     "CLI.txt"
 IDB_LOGO        BITMAP      "logoorigin128.bmp"
 
-#define SIZEY 270
+#define SIZEY 300
 #define LISTY SIZEY-53
 #define POSY1 SIZEY-42
 #define POSY2 SIZEY-22
@@ -60,21 +60,24 @@ STYLE DS_CENTER | DS_MODALFRAME |WS_CAPTION |WS_VISIBLE|WS_POPUP|WS_SYSMENU
 CAPTION "Update"
 {
     CONTROL         "", IDLIST, WC_LISTVIEW, WS_TABSTOP | WS_BORDER | LVS_REPORT|LVS_SINGLESEL|LVS_SHOWSELALWAYS,
-        5, 5, 389, LISTY-20, WS_EX_LEFT|LVS_EX_CHECKBOXES
+        5, 5, 389, LISTY-50, WS_EX_LEFT|LVS_EX_CHECKBOXES
 
-    CHECKBOX        "Only update", IDONLYUPDATE,5, POSY1-25,300,12,BS_AUTOCHECKBOX
-    CHECKBOX        "Continue seeding after download is finished", IDKEEPSEEDING, 5, POSY1-15, 300, 12, BS_AUTOCHECKBOX
+    GROUPBOX        "Selection",IDSELECTION,5,206,182,86
+    PUSHBUTTON      "Check All",   IDCHECKALL,   10, 216, 80, 14
+    PUSHBUTTON      "Uncheck All", IDUNCHECKALL, 10, 234, 80, 14
+    PUSHBUTTON      "This PC Only", IDCHECKTHISPC, 96, 216, 80, 14
+    PUSHBUTTON      "Network Only", IDCHECKNETWORK, 96, 234, 80, 14
 
-    PUSHBUTTON      "Check All",   IDCHECKALL,                        5, POSY1+3,  90, 14
-    PUSHBUTTON      "Uncheck All", IDUNCHECKALL,                    107, POSY1+3,  90, 14
-    PUSHBUTTON      "Check only needed for this PC", IDCHECKTHISPC,   5, POSY2, 192, 14
+    LTEXT           "Total download size: xx MB",   IDTOTALSIZE,  10, 266, 150, 12
+    LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 10, 278, 150, 12
+
+    GROUPBOX        "Options",IDOPTIONS,200,206,194,66
+    CHECKBOX        "Only update", IDONLYUPDATE,205,216,180,12,BS_AUTOCHECKBOX
+    CHECKBOX        "Continue seeding after download is finished", IDKEEPSEEDING, 205, 228, 180, 12, BS_AUTOCHECKBOX
 
     DEFPUSHBUTTON   "OK",     IDOK,     110+120, POSY2, 50, 14,BS_DEFPUSHBUTTON
     PUSHBUTTON      "Cancel", IDCANCEL, 163+120, POSY2, 50, 14
     PUSHBUTTON      "Accept", IDACCEPT, 216+120, POSY2, 50, 14
-
-    LTEXT           "Total download size: xx MB",   IDTOTALSIZE,  250, POSY3+5, 150, 12
-    LTEXT           "Total available space: xx MB", IDTOTALAVAIL, 250, POSY1+5, 150, 12
 }
 
 VS_VERSION_INFO VERSIONINFO
@@ -161,8 +164,8 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8,"MS Shell Dlg"
 CAPTION "Options"
 BEGIN
-    DEFPUSHBUTTON   "OK",     IDOK,     110+42, POSY2-10, 50, 14,BS_DEFPUSHBUTTON
-    PUSHBUTTON      "Cancel", IDCANCEL, 163+42, POSY2-10, 50, 14
+    DEFPUSHBUTTON   "OK",     IDOK,     110+42, 238, 50, 14,BS_DEFPUSHBUTTON
+    PUSHBUTTON      "Cancel", IDCANCEL, 163+42, 238, 50, 14
     CONTROL         "", IDC_TAB1, WC_TABCONTROL, WS_TABSTOP, 5, 5, 253, 220
 END
 
@@ -170,10 +173,10 @@ IDD_Page1 DIALOGEX 0,0,0,0
 STYLE DS_SETFONT|WS_CHILD|DS_CONTROL
 FONT 8,"MS Shell Dlg"
 BEGIN
-    GROUPBOX        "Driverpack names", IDD_P1_DRV, 5, 5, GROUPW, 5+BTW*3+14, 0
-    AUTORADIOBUTTON "Do not show driverpack names", IDD_P1_DRV1, 5+OFSX, OFSY+BTW*0, LABELW, 14, WS_GROUP
-    AUTORADIOBUTTON "Show driverpack names on the right", IDD_P1_DRV2, 5+OFSX, OFSY+BTW*1, LABELW, 14, 0
-    AUTORADIOBUTTON "Show driverpack names above", IDD_P1_DRV3, 5+OFSX, OFSY+BTW*2, LABELW, 14, 0
+    GROUPBOX        "Driver Pack Names", IDD_P1_DRV, 5, 5, GROUPW, 5+BTW*3+14, 0
+    AUTORADIOBUTTON "Do not show driver pack names", IDD_P1_DRV1, 5+OFSX, OFSY+BTW*0, LABELW, 14, WS_GROUP
+    AUTORADIOBUTTON "Show driver pack names on the right", IDD_P1_DRV2, 5+OFSX, OFSY+BTW*1, LABELW, 14, 0
+    AUTORADIOBUTTON "Show driver pack names above", IDD_P1_DRV3, 5+OFSX, OFSY+BTW*2, LABELW, 14, 0
 
     GROUPBOX        "Interface scaling", IDD_P1_ZOOMG, 5, 80+5, GROUPW, 63, 0
     LTEXT           "You can also zoom via Ctrl+mouse wheel", IDD_P1_ZOOML, 5+OFSX, 95+5, LABELW, 14, SS_LEFT
@@ -211,7 +214,7 @@ BEGIN
     GROUPBOX        "", 0, 5, 5, GROUPW, 190, 0
     LTEXT           "Drivers", IDD_P3_DIR1, 5+OFSX, OFSY+BTW*0, LABELW, 14, SS_LEFT
     LTEXT           "Indexes", IDD_P3_DIR2, 5+OFSX, OFSY+BTW*2, LABELW, 14, SS_LEFT
-    LTEXT           "Indexes (human-readble)", IDD_P3_DIR3, 5+OFSX, OFSY+BTW*4, LABELW, 14, SS_LEFT
+    LTEXT           "Indexes (human-readable)", IDD_P3_DIR3, 5+OFSX, OFSY+BTW*4, LABELW, 14, SS_LEFT
     LTEXT           "Data", IDD_P3_DIR4, 5+OFSX, OFSY+BTW*6, LABELW, 14, SS_LEFT
     LTEXT           "Logs", IDD_P3_DIR5, 5+OFSX, OFSY+BTW*8, LABELW, 14, SS_LEFT
     EDITTEXT        IDD_P3_DIR1E, 5+OFSX, OFSYL+BTW*1-4, EDITW3, 14, ES_AUTOHSCROLL
@@ -278,34 +281,39 @@ FONT 9, "MS Sans Serif"
 CAPTION "Welcome"
 BEGIN
     CONTROL IDB_LOGO,IDC_STATIC,WC_STATIC,SS_BITMAP,5,5, 32, 32
-    LTEXT   "Snappy Driver Installer Origin",IDD_T1_WELC,115,4,250,90,SS_LEFT
+    LTEXT   "Snappy Driver Installer Origin",IDD_WELC_TITLE,115,4,300,90,SS_LEFT
     LTEXT   COPYRIGHT_DATE "\n"
             VER_VERSION_STR "\n"
             SVN_BUILD_DATE "\n"
             SVN_BUILD_NOTE
-            , IDD_TXT_WELC, 115,24,250,90,SS_LEFT
-    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_T2_WELC,115,57,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_T3_WELC,115,67,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_T4_WELC,40,100,380,40,SS_LEFT
+            , IDD_WELC_TEXT, 115,24,250,90,SS_LEFT
+    LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_WELC_LINK1,115,57,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_WELC_LINK2,115,67,200,10,SS_LEFT|SS_NOTIFY
+    LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_WELC_SUBTITLE,40,95,380,40,SS_LEFT
     LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
-            "the following options and click the Download button to start downloading.\n\n"
-            "Note: Look for additional tools on the System Menu at the top left of the "
+            "the following options to start downloading. The Updates bar will keep you apprised of"
+            "the download status."
+            ,IDD_WELC_INTRO,40,105,320,40,SS_LEFT
+    LTEXT   "Note: Look for additional tools on the System Menu at the top left of the "
             "main application window."
-            ,IDD_TXT_WELC,40,110,320,40,SS_LEFT
-    AUTORADIOBUTTON "Download All Driver Packs", IDD_P1_WELC, 40,153,200,12,WS_GROUP
-    LTEXT   "Get the latest version of the driver packs. "
+            ,IDD_WELC_INTRO2,40,126,320,40,SS_LEFT
+    DEFPUSHBUTTON "Download All Driver Packs", IDD_WELC_BUTTON1,40,148,75,35,BS_MULTILINE
+    LTEXT   "Get the entire driver pack collection. "
             "This is a big download and will take "
             "anywhere from an hour to a day depending on availability and internet speed. "
             "When complete, you'll have everything required to work offline. If you're a "
             "technician, this is the option you want."
-            ,IDD_TXT_WELC,52,165,300,28,SS_LEFT
-    AUTORADIOBUTTON "Download Indexes Only", IDD_P3_WELC,40,193,200,12,0
-    LTEXT   "Get the latest version of the indexes. This allows you to "
-            "scan any PC to see which drivers need to be installed or updated.  Once "
-            "you've determined the required drivers, they can be downloaded and installed. "
-            "This is a small download and should only take a few minutes but you'll need "
-            "an internet connection later on when you need to download the required driver packs."
-            ,IDD_TXT_WELC,52,205,300,40,SS_LEFT
-    DEFPUSHBUTTON "Download",IDD_B1_WELC,155,266,91,28
-    PUSHBUTTON "&Close", IDCLOSE, 339, 266, 51, 28
+            ,IDD_WELC_BUTTON1_DESC,130,148,240,35,SS_LEFT
+    PUSHBUTTON "Download Network Drivers Only", IDD_WELC_BUTTON2,40,188,75,35,BS_MULTILINE
+    LTEXT   "Get the latest LAN, WLAN, and Wifi drivers. This allows you to get "
+            "any PC online quickly and is a relatively small download.",IDD_WELC_BUTTON2_DESC,130,196,240,35,SS_LEFT
+    PUSHBUTTON "Download Indexes Only", IDD_WELC_BUTTON3,40,228,75,35,BS_MULTILINE
+    LTEXT   "This allows you to "
+            "scan your PC to see which drivers need to be installed or updated. "
+            "The download will only take a few minutes but you'll need "
+            "an internet connection when the required driver packs "
+            "need to be downloaded. "
+            "If you're a casual user, this is the option you want."
+            ,IDD_WELC_BUTTON3_DESC,130,228,240,35,SS_LEFT
+    PUSHBUTTON "&Close", IDD_WELC_CLOSE, 339, 266, 51, 28
 END
