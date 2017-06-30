@@ -55,6 +55,7 @@ public:
     virtual void SetLimits()=0;
     virtual void OpenDialog()=0;
     virtual void DownloadAll()=0;
+    virtual void DownloadNetwork()=0;
     virtual void DownloadIndexes()=0;
     virtual void StartSeedingDrivers()=0;
     virtual void StopSeedingDrivers()=0;

@@ -15,11 +15,11 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\source\svnrev.h"
 
-#define VER_FILEVERSION             0,8,1,SVN_REV
-#define VER_FILEVERSION_STR         "0.8.1." SVN_REV_STR "\0"
+#define VER_FILEVERSION             0,9,0,SVN_REV
+#define VER_FILEVERSION_STR         "0.9.0." SVN_REV_STR "\0"
 
-#define VER_VERSION_STR             "Version 0.8.1." SVN_REV_STR
-#define VER_VERSION_STR2            "v0.8.1"
+#define VER_VERSION_STR             "Version 0.9.0." SVN_REV_STR
+#define VER_VERSION_STR2            "v0.9.0"
 
 #define IDC_STATIC     -1
 
@@ -58,6 +58,9 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDONLYUPDATE  311
 #define IDTOTALAVAIL  313
 #define IDKEEPSEEDING 314
+#define IDOPTIONS     315
+#define IDCHECKNETWORK 316
+#define IDSELECTION   317
 
 // Options
 #define IDC_TAB1      312
@@ -145,18 +148,21 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDC_SYSLINK1  811
 
 // welcome box
-#define IDD_WELCOME   900
-#define IDD_TXT_WELC  901
-#define IDD_T1_WELC   902
-#define IDD_T2_WELC   903
-#define IDD_T3_WELC   904
-#define IDD_T4_WELC   905
-#define IDD_T5_WELC   906
-#define IDD_T6_WELC   907
-#define IDD_P1_WELC   910
-#define IDD_P2_WELC   911
-#define IDD_P3_WELC   912
-#define IDD_B1_WELC   913
+#define IDD_WELCOME           900
+#define IDD_WELC_TITLE        901
+#define IDD_WELC_SUBTITLE     902
+#define IDD_WELC_INTRO        903
+#define IDD_WELC_INTRO2       904
+#define IDD_WELC_BUTTON1      905
+#define IDD_WELC_BUTTON1_DESC 906
+#define IDD_WELC_BUTTON2      907
+#define IDD_WELC_BUTTON2_DESC 908
+#define IDD_WELC_BUTTON3      909
+#define IDD_WELC_BUTTON3_DESC 910
+#define IDD_WELC_CLOSE        911
+#define IDD_WELC_LINK1        912
+#define IDD_WELC_LINK2        913
+#define IDD_WELC_TEXT         920
 
 #define WEB_HOMEPAGE    L"http://www.snappy-driver-installer.org"
 #define WEB_PATREONPAGE L"https://www.patreon.com/sdi_tool"
