@@ -287,7 +287,6 @@ void itembar_t::contextmenu(int x,int y)
     {
         InsertMenu(hPopupMenu,0,MF_BYPOSITION|MF_STRING|flags1,ID_SCHEDULE, STR(STR_REST_SCHEDULE));
         InsertMenu(hPopupMenu,1,MF_BYPOSITION|MF_STRING,       ID_SHOWALT,  STR(STR_REST_ROLLBACK));
-        InsertMenu(hPopupMenu,2,MF_BYPOSITION|MF_STRING,       ID_SYSPROPS, STR(STR_REST_SYSPROPS));
 
         RECT rect;
         SetForegroundWindow(MainWindow.hMain);
