@@ -77,13 +77,14 @@ public:
 
     int canWrite(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
+    void run_controlpanel(const wchar_t* cmd);
     void benchmark();
 
     void deletefile(const wchar_t *filename);
     bool FileExists(const wchar_t *filename);
     bool FileExists2(const wchar_t *spec);
     bool DirectoryExists(const wchar_t *spec);
-    void ExpandEnvVar(const wchar_t *source,wchar_t *dest,int bufsize);
+    std::wstring ExpandEnvVar(std::wstring source);
     bool ChooseDir(wchar_t *path,const wchar_t *title);
     bool ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_t *ext);
     void CreateDir(const wchar_t *filename);
