@@ -129,14 +129,14 @@ STR_SYSINF_CPU_ARCH     = "CPU Architecture"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
-// About
-STR_ABOUT_VER           = "v0.3"
-STR_ABOUT_DEV_TITLE     = "Developers: "
-STR_ABOUT_DEV_LIST      = "BadPointer, Glenn Delahoy"
-STR_ABOUT_TESTERS_TITLE = "Contributors: "
-STR_ABOUT_TESTERS_LIST  = "e39, QuarQ, SamLab, Sorc, volodya61, WindR"
-STR_ABOUT_TRANS_TITLE   = "Translators: "
-STR_ABOUT_LICENSE       = "Snappy Driver Installer is licensed under the terms of the GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer uses the following technologies:\n* WebP is licensed under the terms of the BSD license\n* libtorrent is licensed under the terms of the BSD license\n* Backtrace is licensed under the terms of the BSD license\n* 7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n\nSnappy Driver Installer is powered by DriverPacks that were developed by the DriverPacks Team.\n\n(Click now in order to visit a website)"
+// About (deprecated)
+STR_ABOUT_VER           = ""
+STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_LIST      = ""
+STR_ABOUT_TESTERS_TITLE = ""
+STR_ABOUT_TESTERS_LIST  = ""
+STR_ABOUT_TRANS_TITLE   = ""
+STR_ABOUT_LICENSE       = ""
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "unknown"
