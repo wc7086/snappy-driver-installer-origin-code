@@ -119,14 +119,14 @@ STR_SYSINF_CPU_ARCH     = "CPU_Arch"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
-// About
-//STR_ABOUT_VER
-STR_ABOUT_DEV_TITLE     = "開発者: "
-//STR_ABOUT_DEV_LIST
-STR_ABOUT_TESTERS_TITLE = "協力者: "
-//STR_ABOUT_TESTERS_LIST
-STR_ABOUT_TRANS_TITLE   = "翻訳者: "
-STR_ABOUT_LICENSE       = "Snappy Driver Installer は、 GNU 一般公衆利用許諾書 バージョン 3 の条件の下でライセンスされています。\n\n\n\n\nSnappy Driver Installer には次のテクノロジが使用されています:\n(* WebP は BSD ライセンス条件下でライセンスされています)\n(* libtorrent は BSD ライセンス条件下でライセンスされています)\n(* Backtrace は BSD ライセンス条件下でライセンスされています)\n(* 7-Zip は GNU ライブラリ、または Lesser 一般公衆利用許諾契約書 バージョン 2 の下でライセンスされています)\n\nSnappy Driver Installer は、各 DriverPacks チームにより開発/提供されている Driverpacks を元に機能するツールです。\n\n(クリックでウェブサイトへ)"
+// About (deprecated)
+STR_ABOUT_VER           = ""
+STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_LIST      = ""
+STR_ABOUT_TESTERS_TITLE = ""
+STR_ABOUT_TESTERS_LIST  = ""
+STR_ABOUT_TRANS_TITLE   = ""
+STR_ABOUT_LICENSE       = ""
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "不明"
@@ -382,3 +382,16 @@ STR_OPTION_CONSOLE      = "コンソール ウィンドウを表示"
 STR_PATREON1             = "このツールを気に入ってもらえたら Patreon で私達をサポートしてください。"
 STR_PATREON2             = "(ここをクリックで Patreon ページを開く)"
 STR_PATREON_H            = ""
+
+// Welcome
+STR_WELCOME_TITLE        = "Snappy Driver Installer Origin"
+STR_WELCOME_SUBTITLE     = "Welcome To Snappy Driver Installer Origin"
+STR_WELCOME_INTRO        = "Before you can begin, you'll need to download driver packs or indexes. Select one of the following options to start downloading. The Updates bar will keep you apprised of the download status."
+STR_WELCOME_INTRO2       = "Note: Look for additional tools on the System Menu at the top left of the main application window."
+STR_WELCOME_BUTTON1      = "Download All Driver Packs"
+STR_WELCOME_BUTTON1_DESC = "Get the entire driver pack collection. This is a big download and will take anywhere from an hour to a day depending on availability and internet speed. When complete, you'll have everything required to work offline. If you're a technician, this is the option you want."
+STR_WELCOME_BUTTON2      = "Download Network Drivers Only"
+STR_WELCOME_BUTTON2_DESC = "Get the latest LAN, WLAN, and Wifi drivers. This allows you to get any PC online quickly and is a relatively small download."
+STR_WELCOME_BUTTON3      = "Download Indexes Only"
+STR_WELCOME_BUTTON3_DESC = "This allows you to scan your PC to see which drivers need to be installed or updated. The download will only take a few minutes but you'll need an internet connection when the required driver packs need to be downloaded. If you're a casual user, this is the option you want."
+STR_WELCOME_CLOSE        = "Close"

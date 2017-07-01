@@ -119,14 +119,14 @@ STR_SYSINF_CPU_ARCH     = "Arsitektur CPU"
 STR_SYSINF_32BIT        = "32-bit"
 STR_SYSINF_64BIT        = "64-bit"
 
-// About
-//STR_ABOUT_VER
-STR_ABOUT_DEV_TITLE     = "Pengembang:"
-//STR_ABOUT_DEV_LIST
-STR_ABOUT_TESTERS_TITLE = "Kontributor:"
-//STR_ABOUT_TESTERS_LIST
-STR_ABOUT_TRANS_TITLE   = "Penterjemah:"
-STR_ABOUT_LICENSE       = "Snappy Driver Installer dilisensikan di bawah ketentuan versi 3 GNU General Public License \n\nSnappy Driver Installer menggunakan teknologi berikut:\n\n* WebP dilisensikan di bawah ketentuan lisensi BSD\n* Libtorrent dilisensikan di bawah ketentuan lisensi BSD\n* Backtrace dilisensikan di bawah ketentuan lisensi BSD\n* 7-Zip dilisensikan di bawah ketentuan Perpustakaan GNU atau Lesser General Public License versi  2\n\nSnappy Driver Installer  didukung oleh DriverPacks yang dikembangkan oleh DriverPacks Team.\n\n(Klik sekarang untuk mengunjungi website)"
+// About (deprecated)
+STR_ABOUT_VER           = ""
+STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_LIST      = ""
+STR_ABOUT_TESTERS_TITLE = ""
+STR_ABOUT_TESTERS_LIST  = ""
+STR_ABOUT_TRANS_TITLE   = ""
+STR_ABOUT_LICENSE       = ""
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "tidak diketahui"
@@ -382,3 +382,16 @@ STR_OPTION_CONSOLE      = "Menunjukkan jendela konsol"
 STR_PATREON1             = "SDI dikelola oleh sukarelawan pd waktu senggang. Jk anda suka aplikasi ini, tolong dukung kami di Patreon"
 STR_PATREON2             = "(Klik disini untuk membuka halaman Patreon)"
 STR_PATREON_H            = ""
+
+// Welcome
+STR_WELCOME_TITLE        = "Snappy Driver Installer Origin"
+STR_WELCOME_SUBTITLE     = "Welcome To Snappy Driver Installer Origin"
+STR_WELCOME_INTRO        = "Before you can begin, you'll need to download driver packs or indexes. Select one of the following options to start downloading. The Updates bar will keep you apprised of the download status."
+STR_WELCOME_INTRO2       = "Note: Look for additional tools on the System Menu at the top left of the main application window."
+STR_WELCOME_BUTTON1      = "Download All Driver Packs"
+STR_WELCOME_BUTTON1_DESC = "Get the entire driver pack collection. This is a big download and will take anywhere from an hour to a day depending on availability and internet speed. When complete, you'll have everything required to work offline. If you're a technician, this is the option you want."
+STR_WELCOME_BUTTON2      = "Download Network Drivers Only"
+STR_WELCOME_BUTTON2_DESC = "Get the latest LAN, WLAN, and Wifi drivers. This allows you to get any PC online quickly and is a relatively small download."
+STR_WELCOME_BUTTON3      = "Download Indexes Only"
+STR_WELCOME_BUTTON3_DESC = "This allows you to scan your PC to see which drivers need to be installed or updated. The download will only take a few minutes but you'll need an internet connection when the required driver packs need to be downloaded. If you're a casual user, this is the option you want."
+STR_WELCOME_CLOSE        = "Close"
