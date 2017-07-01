@@ -119,14 +119,14 @@ STR_SYSINF_CPU_ARCH     = "მოცულობა"
 STR_SYSINF_32BIT        = "32-ბიტ"
 STR_SYSINF_64BIT        = "64-ბიტ"
 
-// About
-//STR_ABOUT_VER
-STR_ABOUT_DEV_TITLE     = "დეველოპერები: "
-//STR_ABOUT_DEV_LIST
-STR_ABOUT_TESTERS_TITLE = "პროექტის წევრები: "
-//STR_ABOUT_TESTERS_LIST
-STR_ABOUT_TRANS_TITLE   = "თარგმანი: "
-STR_ABOUT_LICENSE       = "Snappy Driver Installer განაწილებული ქვეშ ლიცენზიის GNU General Public License version 3\n\n\n\n\nSnappy Driver Installer გამოყენებს ტექნოლოგიებს:\n* WebP (BSD license)\n* libtorrent (BSD license)\n* Backtrace (BSD license)\n* 7-Zip (GNU Library or Lesser General Public License\n version 2)\n\nSnappy Driver Installer იყენებს დრაივერპაკების ტექნოლოგია, მიერ შემუშავებული გუნდი DriverPacks.net.\n\n(დააჭირეთ მაუსის მარცხენა ღილაკს გახსნა საიტები)"
+// About (deprecated)
+STR_ABOUT_VER           = ""
+STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_LIST      = ""
+STR_ABOUT_TESTERS_TITLE = ""
+STR_ABOUT_TESTERS_LIST  = ""
+STR_ABOUT_TRANS_TITLE   = ""
+STR_ABOUT_LICENSE       = ""
 
 // Popup on drivers(while holding Ctrl or spacebar)
 STR_HINT_UNKNOWN        = "უცნობი"
@@ -380,3 +380,16 @@ STR_OPTION_CONSOLE      = "კონსოლის ფანჯარას ჩ
 STR_PATREON1             = "თქვენ შეგიძლიათ პროგრამის განვითარების მხარდაჭერა Patreon სისტემას მეშვეობით"
 STR_PATREON2             = "(დააჭირეთ აქ, რათა გახსნას ბრაუზერის გვერდი)"
 STR_PATREON_H            = ""
+
+// Welcome
+STR_WELCOME_TITLE        = "Snappy Driver Installer Origin"
+STR_WELCOME_SUBTITLE     = "Welcome To Snappy Driver Installer Origin"
+STR_WELCOME_INTRO        = "Before you can begin, you'll need to download driver packs or indexes. Select one of the following options to start downloading. The Updates bar will keep you apprised of the download status."
+STR_WELCOME_INTRO2       = "Note: Look for additional tools on the System Menu at the top left of the main application window."
+STR_WELCOME_BUTTON1      = "Download All Driver Packs"
+STR_WELCOME_BUTTON1_DESC = "Get the entire driver pack collection. This is a big download and will take anywhere from an hour to a day depending on availability and internet speed. When complete, you'll have everything required to work offline. If you're a technician, this is the option you want."
+STR_WELCOME_BUTTON2      = "Download Network Drivers Only"
+STR_WELCOME_BUTTON2_DESC = "Get the latest LAN, WLAN, and Wifi drivers. This allows you to get any PC online quickly and is a relatively small download."
+STR_WELCOME_BUTTON3      = "Download Indexes Only"
+STR_WELCOME_BUTTON3_DESC = "This allows you to scan your PC to see which drivers need to be installed or updated. The download will only take a few minutes but you'll need an internet connection when the required driver packs need to be downloaded. If you're a casual user, this is the option you want."
+STR_WELCOME_CLOSE        = "Close"
