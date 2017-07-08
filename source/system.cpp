@@ -43,7 +43,6 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include <SRRestorePtAPI.h> // for RestorePoint
 typedef int (WINAPI *WINAPI5t_SRSetRestorePointW)(PRESTOREPOINTINFOW pRestorePtSpec,PSTATEMGRSTATUS pSMgrStatus);
 
-
 SystemImp System;
 int monitor_pause=0;
 HFONT CLIHelp_Font;
@@ -301,13 +300,38 @@ int SystemImp::run_command(const wchar_t* file,const wchar_t* cmd,int show,int w
     return ret;
 }
 
+int SystemImp::run_command32(const wchar_t* file,const wchar_t* cmd,int show,int wait)
+{
+    // dynamic binding to kernel32 is good
+    PVOID OldValue=NULL;
+    LPFN_Wow64DisableWow64FsRedirection pfnWow64DisableWowFsRedirection=(LPFN_Wow64DisableWow64FsRedirection)GetProcAddress(GetModuleHandle(_T("kernel32")),"Wow64DisableWow64FsRedirection");
+    LPFN_Wow64RevertWow64FsRedirection pfnWow64RevertWowFsRedirection=(LPFN_Wow64RevertWow64FsRedirection)GetProcAddress(GetModuleHandle(_T("kernel32")),"Wow64RevertWow64FsRedirection");
+    bool b=false;
+    if(pfnWow64DisableWowFsRedirection && pfnWow64RevertWowFsRedirection)
+        b=pfnWow64DisableWowFsRedirection(&OldValue);
+
+    std::wstring f=ExpandEnvVar(file);
+    int ret=System.run_command(f.c_str(),cmd,show,wait);
+
+    if(b && pfnWow64DisableWowFsRedirection && pfnWow64RevertWowFsRedirection)
+        pfnWow64RevertWowFsRedirection(OldValue);
+    return ret;
+}
+
 void SystemImp::run_controlpanel(const wchar_t* cmd)
 {
     PVOID OldValue=NULL;
-    bool b=Wow64DisableWow64FsRedirection(&OldValue);
+    LPFN_Wow64DisableWow64FsRedirection pfnWow64DisableWowFsRedirection=(LPFN_Wow64DisableWow64FsRedirection)GetProcAddress(GetModuleHandle(_T("kernel32")),"Wow64DisableWow64FsRedirection");
+    LPFN_Wow64RevertWow64FsRedirection pfnWow64RevertWowFsRedirection=(LPFN_Wow64RevertWow64FsRedirection)GetProcAddress(GetModuleHandle(_T("kernel32")),"Wow64RevertWow64FsRedirection");
+    bool b=false;
+    if(pfnWow64DisableWowFsRedirection && pfnWow64RevertWowFsRedirection)
+        b=pfnWow64DisableWowFsRedirection(&OldValue);
+
     std::wstring cp=System.ExpandEnvVar(L"%windir%\\System32\\control.exe");
     System.run_command(cp.c_str(),cmd,SW_NORMAL,0);
-    if(b)Wow64RevertWow64FsRedirection(OldValue);
+
+    if(b && pfnWow64DisableWowFsRedirection && pfnWow64RevertWowFsRedirection)
+        pfnWow64RevertWowFsRedirection(OldValue);
 }
 
 int SystemImp::_vscwprintf_dll(const wchar_t * _Format,va_list _ArgList)
