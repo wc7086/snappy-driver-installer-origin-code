@@ -77,6 +77,7 @@ public:
 
     int canWrite(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
+    int run_command32(const wchar_t* file,const wchar_t* cmd,int show,int wait);
     void run_controlpanel(const wchar_t* cmd);
     void benchmark();
 
@@ -117,5 +118,8 @@ typedef void (*FileChangeCallback)(const wchar_t *szFile,int Action,int lParam);
 Filemon *CreateFilemon(const wchar_t *szDirectory,int subdirs,FileChangeCallback callback);
 extern int monitor_pause;
 //}
+
+typedef BOOL (WINAPI *LPFN_Wow64DisableWow64FsRedirection)(PVOID *OldValue);
+typedef BOOL (WINAPI *LPFN_Wow64RevertWow64FsRedirection)(PVOID OldValue);
 
 #endif

@@ -26,6 +26,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "gui.h"
 #include "draw.h"   // non-portable
 #include "theme.h"
+//#include "usbwizard.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -42,10 +43,13 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "model.h"
 #include "script.h"
 
+//#include "wizards.h"
+
 //{ Global variables
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 Console_t *Console;
+//USBWizard *USBWiz;
 
 volatile int installupdate_exitflag=0;
 Event *installupdate_event;
@@ -394,6 +398,7 @@ void MainWindow_t::MainLoop(int nCmd)
     AddMenuItem(pSysMenu,MIIM_FTYPE,0,MFT_SEPARATOR,0,nullptr,const_cast<wchar_t *>(L""));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_LICENSE,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_ABOUT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
+//    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_USBWIZARD,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_USBWIZARD));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
@@ -1880,48 +1885,54 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         }
                     case ID_COMPMNG:
                         {
+                            // works on Windows XP and up
                             System.run_command(L"compmgmt.msc",nullptr,SW_SHOW,0);
                             return 0;
                         }
                     case ID_DEVICEMNG:
                         {
+                            // works on Windows XP and up
                             System.run_command(L"devmgmt.msc",nullptr,SW_SHOW,0);
                             return 0;
                         }
                     case ID_DEVICEPRNT:
                         {
+                            // works on Windows Vista and up
                             System.run_controlpanel(L"/name Microsoft.DevicesAndPrinters");
                             return 0;
                         }
                     case ID_SYSPROPS:
                         {
+                            // works on Windows Vista and up
                             System.run_controlpanel(L"system");
                             return 0;
                         }
                     case ID_SYSCONTROL:
                         {
+                            // works on Windows XP and up
                             System.run_controlpanel(nullptr);
                             return 0;
                         }
                     case ID_SYSPROT:
                         {
-                            PVOID OldValue=NULL;
-                            bool b=Wow64DisableWow64FsRedirection(&OldValue);
-                            std::wstring cmd=System.ExpandEnvVar(L"%windir%\\System32\\SystemPropertiesProtection.exe");
-                            System.run_command(cmd.c_str(),nullptr,SW_NORMAL,0);
-                            if(b)Wow64RevertWow64FsRedirection(OldValue);
+                            // works on Windows Vista and up
+                            System.run_command32(L"%windir%\\System32\\SystemPropertiesProtection.exe",nullptr,SW_NORMAL,0);
                             return 0;
                         }
                     case ID_SYSREST:
                         {
-                            // windows XP
-                            System.run_command(L"cmd",L"/c %windir%\\system32\\restore\\rstrui.exe",SW_HIDE,0);
-                            // otherwise do the normal call
-                            PVOID OldValue=NULL;
-                            bool b=Wow64DisableWow64FsRedirection(&OldValue);
-                            std::wstring cmd=System.ExpandEnvVar(L"%windir%\\System32\\rstrui.exe");
-                            System.run_command(cmd.c_str(),nullptr,SW_NORMAL,0);
-                            if(b)Wow64RevertWow64FsRedirection(OldValue);
+                            // Windows XP
+                            std::wstring b=System.ExpandEnvVar(L"%windir%\\system32\\restore\\rstrui.exe");
+                            if(System.FileExists2(b.c_str()))
+                            {
+                                b=L"/c " + b;
+                                System.run_command(L"cmd",b.c_str(),SW_HIDE,0);
+                            }
+                            else
+                            {
+                                // works on Windows Vista and up
+                                System.run_command32(L"%windir%\\System32\\rstrui.exe",nullptr,SW_NORMAL,0);
+                            }
                             return 0;
                         }
                     case IDM_DRVDIR:
@@ -1942,6 +1953,12 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),MainWindow.hMain,(DLGPROC)LicenseProcedure);
                         return 0;
                     }
+//                    case IDM_USBWIZARD:
+//                    {
+//                        if(!USBWiz)
+//                            USBWiz=new USBWizard;
+//                        USBWiz->doWizard();
+//                    }
                     default:
                         return DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
                 }
