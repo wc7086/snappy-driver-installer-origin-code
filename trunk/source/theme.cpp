@@ -415,6 +415,7 @@ void VaultTheme::EnumFiles(Combobox *lst,const wchar_t *path,int arg)
         loadFromFile(buf.Get());
         lst->AddItem(D_STR(THEME_NAME));
         wcscpy(namelist[i],buf.Get());
+        wcscpy(theme_ids[i],D_STR(THEME_NAME));
         i++;
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
@@ -458,5 +459,31 @@ void VaultTheme::updateCallback(const wchar_t *szFile,int action,int lParam)
     UNREFERENCED_PARAMETER(lParam);
 
     PostMessage(MainWindow.hMain,WM_UPDATETHEME,0,0);
+}
+
+std::wstring VaultLang::GetFileName(std::wstring id)
+{
+    std::wstring ret;
+    int j=MainWindow.hLang->GetNumItems();
+    for(int i=0;i<j;i++)
+        if(StrStrIW(lang_ids[i],id.c_str()))
+        {
+            ret=namelist[i];
+            break;
+        }
+    return ret;
+}
+
+std::wstring VaultTheme::GetFileName(std::wstring id)
+{
+    std::wstring ret;
+    int j=MainWindow.hTheme->GetNumItems();
+    for(int i=0;i<j;i++)
+        if(StrStrIW(theme_ids[i],id.c_str()))
+        {
+            ret=namelist[i];
+            break;
+        }
+    return ret;
 }
 //}

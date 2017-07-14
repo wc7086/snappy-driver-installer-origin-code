@@ -53,6 +53,7 @@ public:
     virtual void EnumFiles(Combobox *lst,const wchar_t *path,int arg=0)=0;
     virtual void StartMonitor()=0;
     virtual void StopMonitor(){delete mon;};
+    virtual std::wstring GetFileName(std::wstring id)=0;
     void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
 //}
@@ -71,12 +72,14 @@ public:
     Image *GetIcon(int){return nullptr;}
     Image *GetImage(int){return nullptr;}
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
+    std::wstring GetFileName(std::wstring id);
 };
 //}
 
 //{ VaultTheme
 class VaultTheme:public VaultImp
 {
+     wchar_t theme_ids[64][128];
     ImageStorange *Images;
     ImageStorange *Icons;
 
@@ -100,5 +103,6 @@ public:
         delete Icons;
     }
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
+    std::wstring GetFileName(std::wstring id);
 };
 //}
