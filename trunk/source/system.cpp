@@ -224,6 +224,63 @@ bool SystemImp::DirectoryExists(const wchar_t *spec)
     }
 }
 
+__int64 SystemImp::FileSize(const wchar_t *filename)
+{
+    __int64 ret=0;
+    WIN32_FIND_DATAW FindFileData;
+    HANDLE hFind=FindFirstFileW(filename,&FindFileData);
+    if(hFind!=INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            ret+=(static_cast<ULONGLONG>(FindFileData.nFileSizeHigh) <<
+                sizeof(FindFileData.nFileSizeLow) *8) |
+                     FindFileData.nFileSizeLow;
+        }
+        while(FindNextFile(hFind,&FindFileData)!=0);
+        FindClose(hFind);
+    }
+    return ret;
+}
+
+__int64 SystemImp::DirectorySize(const std::wstring directory)
+{
+    // assumes a full path and no file spec
+    std::wstring cwd(directory);
+    // add missing backslash
+    if(cwd.back()!=L'\\')
+        cwd+=L'\\';
+    std::wstring spec(cwd);
+    spec+=L"*.*";
+    __int64 ret=0;
+
+    WIN32_FIND_DATAW FindFileData;
+    HANDLE hFind=FindFirstFileW(spec.c_str(),&FindFileData);
+    if(hFind==INVALID_HANDLE_VALUE)return ret;
+
+    do
+    {
+        if(((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY) &&
+           ((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_SYSTEM)==0) &&
+            (lstrcmp(FindFileData.cFileName,L".")!=0) &&
+            (lstrcmp(FindFileData.cFileName,L"..")!=0) )
+        {
+            spec=cwd+FindFileData.cFileName;
+            ret=ret+DirectorySize(spec);
+        }
+        else if((lstrcmp(FindFileData.cFileName,L".")!=0) &&
+                (lstrcmp(FindFileData.cFileName,L"..")!=0) )
+            ret+=(static_cast<ULONGLONG>(FindFileData.nFileSizeHigh) <<
+                    sizeof(FindFileData.nFileSizeLow) *8) |
+                    FindFileData.nFileSizeLow;
+    }
+    while(FindNextFile(hFind,&FindFileData)!=0);
+    FindClose(hFind);
+
+    return ret;
+
+}
+
 std::wstring SystemImp::ExpandEnvVar(std::wstring source)
 {
     wchar_t d[BUFLEN];
