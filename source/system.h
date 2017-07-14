@@ -85,6 +85,8 @@ public:
     bool FileExists(const wchar_t *filename);
     bool FileExists2(const wchar_t *spec);
     bool DirectoryExists(const wchar_t *spec);
+    __int64 FileSize(const wchar_t *filename);
+    __int64 DirectorySize(const std::wstring directory);
     std::wstring ExpandEnvVar(std::wstring source);
     bool ChooseDir(wchar_t *path,const wchar_t *title);
     bool ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_t *ext);
