@@ -25,7 +25,9 @@ typedef unsigned ofst;
 // Misc
 #define BUFLEN 4096
 #define WIN32_LEAN_AND_MEAN
+#ifndef _WIN32_IE
 #define _WIN32_IE 0x0501
+#endif
 //#undef __STRICT_ANSI__
 //#define BENCH_MODE
 
