@@ -229,17 +229,18 @@ __int64 SystemImp::FileSize(const wchar_t *filename)
     __int64 ret=0;
     WIN32_FIND_DATAW FindFileData;
     HANDLE hFind=FindFirstFileW(filename,&FindFileData);
-    if(hFind!=INVALID_HANDLE_VALUE)
+    if(hFind==INVALID_HANDLE_VALUE)return ret;
+
+    do
     {
-        do
-        {
-            ret+=(static_cast<ULONGLONG>(FindFileData.nFileSizeHigh) <<
-                sizeof(FindFileData.nFileSizeLow) *8) |
-                     FindFileData.nFileSizeLow;
-        }
-        while(FindNextFile(hFind,&FindFileData)!=0);
-        FindClose(hFind);
+        ULARGE_INTEGER ul;
+        ul.HighPart=FindFileData.nFileSizeHigh;
+        ul.LowPart=FindFileData.nFileSizeLow;
+        ret+=ul.QuadPart;
     }
+    while(FindNextFile(hFind,&FindFileData)!=0);
+    FindClose(hFind);
+
     return ret;
 }
 
@@ -260,25 +261,26 @@ __int64 SystemImp::DirectorySize(const std::wstring directory)
 
     do
     {
-        if(((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY) &&
-           ((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_SYSTEM)==0) &&
-            (lstrcmp(FindFileData.cFileName,L".")!=0) &&
-            (lstrcmp(FindFileData.cFileName,L"..")!=0) )
+        if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
         {
-            spec=cwd+FindFileData.cFileName;
-            ret=ret+DirectorySize(spec);
+            if(!StrStrIW(FindFileData.cFileName,L"."))
+            {
+                spec=cwd+FindFileData.cFileName;
+                ret=ret+DirectorySize(spec);
+            }
         }
-        else if((lstrcmp(FindFileData.cFileName,L".")!=0) &&
-                (lstrcmp(FindFileData.cFileName,L"..")!=0) )
-            ret+=(static_cast<ULONGLONG>(FindFileData.nFileSizeHigh) <<
-                    sizeof(FindFileData.nFileSizeLow) *8) |
-                    FindFileData.nFileSizeLow;
+        else
+        {
+            ULARGE_INTEGER ul;
+            ul.HighPart=FindFileData.nFileSizeHigh;
+            ul.LowPart=FindFileData.nFileSizeLow;
+            ret+=ul.QuadPart;
+        }
     }
     while(FindNextFile(hFind,&FindFileData)!=0);
     FindClose(hFind);
 
     return ret;
-
 }
 
 std::wstring SystemImp::ExpandEnvVar(std::wstring source)
