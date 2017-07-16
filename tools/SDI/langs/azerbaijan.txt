@@ -27,6 +27,16 @@ STR_THEME_H             = ""
 STR_EXPERT              = "Ekspert rejimi"
 STR_EXPERT_H            = "Ekspert rejiminin qoşulması.\n\nMƏSLƏHƏT: Drayver haqqında əlavə məlumat almaq üçün onun üstündə Ctrl yaxud Space düyməsini sıxın.."
 
+STR_REFRESH             = "Refresh"
+STR_REFRESH_H           = "Refresh driver list"
+STR_UPDATES             = "Updates"
+STR_UPDATES_H           = "Select updates source"
+STR_UPDATES_SDIO        = "Select SDIO Updates"
+STR_UPDATES_SDIO_H      = "Select the standard SDIO updates"
+STR_UPDATES_DRIVERS     = "Select Driver Packs Updates"
+STR_UPDATES_DRIVERS_H   = "Select the latest driver packs updates"
+STR_TOOLS               = "Tools"
+STR_TOOLS_H             = "Shortcuts to Windows tools"
 STR_OPENLOGS            = "Loqları açmaq"
 STR_OPENLOGS_H          = "Şəkil və Loglar qovluqunu açmaq.\n\nBu faylları hər hansısa bir problem yaranan zaman başqa istfadəçilərdən kömək almaq üçün forumlarda yerləşdirmək tövsiyyə olunur."
 STR_SNAPSHOT            = "Şəkili yükləmək..."
@@ -35,6 +45,8 @@ STR_EXTRACT             = "Çıxartmaq..."
 STR_EXTRACT_H           = "Qeyd olunan drayverləri çıxartmaq.\n\nDrayverlərin rezerv kompyasının yaradılması üçün istifadə etmək olar. Tövsiyyə olunur bütün drayverləri öncədən yeniləmək və əmin olmaq ki hamısı höqsansız işləyir. Sonra cari versiyaların əks olunmasını açmaq və quraşdırılmanı işə salmaq."
 STR_DRVDIR              = "Mənbəni qeyd etmək..."
 STR_DRVDIR_H            = "Açılmış formada drayverlər və drayverpack olan qovluqu seçmək.\n\nQurğunun komplektində olan rəsmi diski drayverin axtarış mənbəsi kimi seçmək mümkündür."
+STR_OPTIONS_BTN         = "Options..."
+STR_OPTIONS_BTN_H       = "Open dialog box with settings."
 
 STR_SHOW_FOUND          = "Driverpackda tapıldı"
 STR_SHOW_FOUND_H        = "Aşağıda göstərilən drayver kateqoriyaları tapıldı və müvafiq olaraq quraşdırıla bilər.\n\nQuraşdırılmayay, Yeni versiya və Daha uyğun kateqoriyalardan olan drayverləri quraşdırmaq tövsiyyə olunur.."
@@ -146,6 +158,17 @@ STR_HINT_INF            = "Inf fayl: "
 STR_HINT_SECTION        = "Seksiya: "
 STR_HINT_SCORE          = "Qiymət: "
 STR_HINT_SCROLL         = "MƏSLƏHƏT: Çevirmək üçün siçanın təkərindən istfadə edin"
+
+// System menu
+STR_SYST_LICENSE        = "License information"
+STR_SYST_ABOUT          = "About"
+STR_SYST_START_SEED     = "Start seeding driver packs"
+STR_SYST_STOP_SEED      = "Stop seeding"
+STR_SYST_COMPMNG        = "Computer Management"
+STR_SYST_SYSPROT        = "System Protection"
+STR_SYST_DEVICEPRNT     = "Devices and Printers"
+STR_SYST_SYSCONTROL     = "Control Panel"
+STR_SYST_REST           = "System Restore"
 
 // Context menu
 STR_CONT_INSTALL        = "Quraşdırılmanı planlaşdırmaq"
@@ -290,9 +313,10 @@ STR_UPD_UPDATEHINT1     = "Məsləhət"
 STR_UPD_UPDATEHINT2     = "Siz ilk növbədə indekslə olan prıqramı yeniləməlisiz."
 
 // Update hint
-STR_UPD_AVAIL1          = "İnternetdən olan yenilənmə açıqdır: SDI R%d"
+STR_UPD_CHECKING        = "Checking for updates"
+STR_UPD_AVAIL1          = "İnternetdən olan yenilənmə açıqdır: SDIO R%d"
 STR_UPD_AVAIL2          = "İnternetdən yenilənmələr var: %d drayver paketi"
-STR_UPD_AVAIL3          = "İnternetdən yenilənmələr var: SDI R%d və %d drayver paketi"
+STR_UPD_AVAIL3          = "İnternetdən yenilənmələr var: SDIO R%d və %d drayver paketi"
 STR_UPD_START           = "(Yükləmək üçün bura klikləyin)"
 STR_UPD_PROGRES         = "Yüklənib %s / %s (%d%%)"
 STR_UPD_MODIFY          = "(Yenilənməni seçmək üçün bura klik edin)"
@@ -302,6 +326,9 @@ STR_DWN_DOWNLOADED_F    = "%s / %s (%d%%)"
 STR_DWN_UPLOADED        = "Verilib"
 STR_DWN_ELAPSED         = "Keçib"
 STR_DWN_REMAINING       = "Qalıb"
+STR_DWN_SEEDING         = "Seeding %s (%s)"
+STR_DWN_MODIFY          = "(Click here to stop)"
+STR_DWN_CLOSING         = "Closing session"
 
 STR_DWN_STATUS          = "Vəziyyət"
 STR_DWN_ERROR           = "Səhv"
@@ -325,6 +352,58 @@ STR_TR_ST4              = "qurtarıb"
 STR_TR_ST5              = "paylanır"
 STR_TR_ST6              = "yer rezervasiya olunur"
 STR_TR_ST7              = "bərpa"
+STR_TR_ST8              = "moving files"
+
+// Options dialog
+STR_OPTION_TITLE        = "Options"
+STR_OPTION_VIEW_TAB     = "View"
+STR_OPTION_UPDATES_TAB  = "Updates"
+STR_OPTION_PATH_TAB     = "Paths"
+STR_OPTION_ADVANCED_TAB = "Advanced"
+STR_OPTION_OK_BUTTON    = STR_UPD_BTN_OK
+STR_OPTION_CANCEL_BUTTON= STR_UPD_BTN_CANCEL
+
+// View tab
+STR_OPTION_DRPNAMES     = "Driverpack names"
+STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
+STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
+STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
+STR_OPTION_SCALLING     = "Interface scale"
+STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_SML = "Small"
+STR_OPTION_SCALLING_BIG = "Big"
+STR_OPTION_SCALLING_RST = "Reset"
+STR_OPTION_HINT         = "Hint"
+STR_OPTION_HINT_LABEL   = "Delay in milliseconds"
+
+// Updates tab
+STR_OPTION_CHECKUPDATES = "Do not check for new version of app/driverpacks"
+STR_OPTION_ONLYUPDATES  = STR_UPD_ONLYUPDATES
+STR_OPTION_TORRENT      = "Torrent"
+STR_OPTION_PORT         = "Port"
+STR_OPTION_MAX_CON      = "Max connections (0 - unlimited)"
+STR_OPTION_MAX_DOWNLOAD = "Max download speed in KB/s (0 - unlimited)"
+STR_OPTION_MAX_UPLOAD   = "Max upload speed in KB/s (0 - unlimited)"
+
+// Paths tab
+STR_OPTION_DIR_DRIVERS  = "Drivers"
+STR_OPTION_DIR_INDEXES  = "Indexes"
+STR_OPTION_DIR_INDEXESH = "Indexes (human-readable)"
+STR_OPTION_DIR_DATA     = "Themes and translations"
+STR_OPTION_DIR_LOGS     = "Log files"
+
+// Advanced tab
+STR_OPTION_CMD          = "Commands"
+STR_OPTION_CMD_LABEL    = "You can define commands that will be executed via CMD after specified operations are completed."
+STR_OPTION_CMD_FINISH   = "After installation"
+STR_OPTION_CMD_FINISHRB = "After installation (need reboot)"
+STR_OPTION_CMD_FINISHDN = "After downloading"
+STR_OPTION_CONSOLE      = "Show console window"
+
+// Patreon
+STR_PATREON1             = "Visit our Patreon page for information, tips and to support the project."
+STR_PATREON2             = "(Click here to open the Patreon page)"
+STR_PATREON_H            = ""
 
 // Welcome
 STR_WELCOME_TITLE        = "Snappy Driver Installer Origin"
