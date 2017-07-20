@@ -33,6 +33,7 @@ IDR_LANG        RESFILE     "..\\tools\\SDI\\langs\\english.txt"
 IDR_INSTALL64   RESFILE     "install64.exe"
 IDR_CLI_HELP    RESFILE     "CLI.txt"
 IDB_LOGO        BITMAP      "logoorigin128.bmp"
+IDB_WATERMARK   BITMAP      "watermark.bmp"
 
 #define SIZEY 300
 #define LISTY SIZEY-53
@@ -240,39 +241,39 @@ BEGIN
     CHECKBOX        "Show console window", IDD_P4_CONSL,5, 103+64,LABELW2,14,BS_AUTOCHECKBOX
 END
 
-IDD_ABOUT DIALOGEX DISCARDABLE 0, 0, 400, 300
+IDD_ABOUT DIALOGEX DISCARDABLE 0, 0, 382, 290
 STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION |WS_VISIBLE
 FONT 9, "MS Sans Serif"
 CAPTION "About"
 BEGIN
-    DEFPUSHBUTTON "&OK", IDOK, 339, 266, 51, 28
-    CONTROL IDB_LOGO,IDC_STATIC,WC_STATIC,SS_BITMAP,5,5, 32, 32
-    LTEXT   "Snappy Driver Installer Origin",IDD_ABOUT_T1,115,4,250,90,SS_LEFT
+    DEFPUSHBUTTON "&OK", IDOK, 322, 256, 51, 28
+    CONTROL IDB_LOGO,IDC_STATIC,WC_STATIC,SS_BITMAP,10,7, 32, 32
+    LTEXT   "Snappy Driver Installer Origin",IDD_ABOUT_T1,115,4,255,60,SS_LEFT
     LTEXT   COPYRIGHT_DATE "\n"
             VER_VERSION_STR "\n"
             SVN_BUILD_DATE "\n"
             SVN_BUILD_NOTE
-            , IDD_ABOUT_T2, 115,24,250,90,SS_LEFT
+            , IDD_ABOUT_T2, 115,24,255,60,SS_LEFT
     LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,57,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,67,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Developers: \tBadPointer, Glenn Delahoy\n"
             "Contributors: \te39, QuarQ, SamLab, Sorc, volodya61, WindR\n"
-            "              \tComputer Bloke",IDD_ABOUT_T3,10,92,380,40,SS_LEFT
-    LTEXT   "GNU General Public License",IDD_ABOUT_T4,10,130,380,60,SS_LEFT
+            "              \tComputer Bloke",IDD_ABOUT_T3,10,92,360,30,SS_LEFT
+    LTEXT   "GNU General Public License",IDD_ABOUT_T4,10,126,360,12,SS_LEFT
     LTEXT   "This program is free software: you can redistribute it and/or modify it under the "
             "terms of the GNU General Public License as published by the Free Software Foundation, "
             "either version 3 of the License, or (at your option) any later version.\n\n"
             "This program is distributed in the hope that it will be useful, but WITHOUT ANY "
             "WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A "
             "PARTICULAR PURPOSE.  See the GNU General Public License for more details."
-            ,IDD_ABOUT_T5,10,139,380,60,SS_LEFT
+            ,IDD_ABOUT_T5,10,134,360,60,SS_LEFT
     LTEXT   "Snappy Driver Installer Origin uses the following technologies:"
-            ,IDD_ABOUT_T6,10,202,380,60,SS_LEFT
+            ,IDD_ABOUT_T6,10,202,360,12,SS_LEFT
     LTEXT   "WebP is licensed under the terms of the BSD license\n"
             "libtorrent is licensed under the terms of the BSD license\n"
             "Backtrace is licensed under the terms of the BSD license\n"
             "7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n"
-            "Driver Packs by SamLab",IDD_ABOUT_T7,10,211,380,40,SS_LEFT
+            "Driver Packs by SamLab",IDD_ABOUT_T7,10,211,360,40,SS_LEFT
 END
 
 IDD_WELCOME DIALOGEX DISCARDABLE 0, 0, 400, 300
@@ -289,31 +290,33 @@ BEGIN
             , IDD_WELC_TEXT, 115,24,250,90,SS_LEFT
     LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_WELC_LINK1,115,57,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Support: www.patreon.com/sdi_tool",IDD_WELC_LINK2,115,67,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Welcome To Snappy Driver Installer Origin",IDD_WELC_SUBTITLE,40,95,380,40,SS_LEFT
+    LTEXT   "Welcome To Snappy Driver Installer Origin"
+            ,IDD_WELC_SUBTITLE,34,92,384,40,SS_LEFT
     LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
             "the following options to start downloading. The Updates bar will keep you apprised of"
             "the download status."
-            ,IDD_WELC_INTRO,40,105,320,40,SS_LEFT
+            ,IDD_WELC_INTRO,34,102,346,40,SS_LEFT
     LTEXT   "Note: Look for additional tools on the System Menu at the top left of the "
             "main application window."
-            ,IDD_WELC_INTRO2,40,126,320,40,SS_LEFT
-    DEFPUSHBUTTON "Download All Driver Packs", IDD_WELC_BUTTON1,40,148,75,35,BS_MULTILINE
+            ,IDD_WELC_INTRO2,34,126,346,40,SS_LEFT
+    DEFPUSHBUTTON "Download All Driver Packs", IDD_WELC_BUTTON1,34,148,75,35,BS_MULTILINE
     LTEXT   "Get the entire driver pack collection. "
             "This is a big download and will take "
             "anywhere from an hour to a day depending on availability and internet speed. "
             "When complete, you'll have everything required to work offline. If you're a "
             "technician, this is the option you want."
-            ,IDD_WELC_BUTTON1_DESC,130,148,240,35,SS_LEFT
-    PUSHBUTTON "Download Network Drivers Only", IDD_WELC_BUTTON2,40,188,75,35,BS_MULTILINE
+            ,IDD_WELC_BUTTON1_DESC,120,148,260,39,SS_LEFT
+    PUSHBUTTON "Download Network Drivers Only", IDD_WELC_BUTTON2,34,188,75,35,BS_MULTILINE
     LTEXT   "Get the latest LAN, WLAN, and Wifi drivers. This allows you to get "
-            "any PC online quickly and is a relatively small download.",IDD_WELC_BUTTON2_DESC,130,196,240,35,SS_LEFT
-    PUSHBUTTON "Download Indexes Only", IDD_WELC_BUTTON3,40,228,75,35,BS_MULTILINE
+            "any PC online quickly and is a relatively small download."
+            ,IDD_WELC_BUTTON2_DESC,120,194,260,35,SS_LEFT
+    PUSHBUTTON "Download Indexes Only", IDD_WELC_BUTTON3,34,228,75,38,BS_MULTILINE
     LTEXT   "This allows you to "
             "scan your PC to see which drivers need to be installed or updated. "
             "The download will only take a few minutes but you'll need "
             "an internet connection when the required driver packs "
             "need to be downloaded. "
             "If you're a casual user, this is the option you want."
-            ,IDD_WELC_BUTTON3_DESC,130,228,240,35,SS_LEFT
+            ,IDD_WELC_BUTTON3_DESC,120  ,228,260,39,SS_LEFT
     PUSHBUTTON "&Close", IDD_WELC_CLOSE, 339, 266, 51, 28
 END

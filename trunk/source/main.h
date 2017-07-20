@@ -197,6 +197,7 @@ private:
 
 public:
     void MainLoop(int nCmd);
+    void LoadMenuItems();
     void lang_refresh();
     void theme_refresh();
     void redrawfield();

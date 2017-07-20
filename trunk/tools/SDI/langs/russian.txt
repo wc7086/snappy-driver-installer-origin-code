@@ -72,7 +72,7 @@ STR_SHOW_NF_UNKNOWN_H   = "Отображать устройства, котор
 STR_SHOW_NF_STANDARD    = "Стандартные"
 STR_SHOW_NF_STANDARD_H  = "Отображать устройства, которые имеют стандартный драйвер от Microsoft.\n\nОбычно эти драйверы не требуют обновления."
 
-STR_SHOW_DISPLAY        = "Display"
+STR_SHOW_DISPLAY        = "дисплей"
 STR_SHOW_DISPLAY_H      = ""
 STR_SHOW_ONE            = "Только оптимальные"
 STR_SHOW_ONE_H          = "Предлагать к установке только самые подходящие драйверы на каждое устройство.\n\nКогда галка снята, то отображается более длинный список драйверов, отсортированный, начиная с наиболее подходящих к менее подходящим."
@@ -169,6 +169,7 @@ STR_SYST_SYSPROT        = "Защита системы"
 STR_SYST_DEVICEPRNT     = "Устройства и принтеры"
 STR_SYST_SYSCONTROL     = "Панель управления"
 STR_SYST_REST           = "Восстановление системы"
+STR_SYST_USBWIZARD      = "Создание USB-накопителя"
 
 // Context menu
 STR_CONT_INSTALL        = "Запланировать установку"
@@ -282,7 +283,7 @@ STR_UPD_TITLE           = "Обновление"
 STR_UPD_SELECTION       = "Selection"
 STR_UPD_BTN_ALL         = "Выделить все"
 STR_UPD_BTN_NONE        = "Снять выделение"
-STR_UPD_BTN_NETWORK     = "Network Only"
+STR_UPD_BTN_NETWORK     = "Только сеть"
 STR_UPD_BTN_THISPC      = "Выделить только для этого ПК"
 STR_UPD_BTN_THISPC_H    = "Для того чтобы определить какие драйверпаки содержат обновления для этого ПК, нужно сначала скачать индексы."
 STR_UPD_OPTIONS         = "Options"
@@ -424,3 +425,60 @@ STR_WELCOME_BUTTON2_DESC = "Получите новейшие драйверы L
 STR_WELCOME_BUTTON3      = "Загрузить только индексы"
 STR_WELCOME_BUTTON3_DESC = "Это позволяет сканировать ваш компьютер, чтобы узнать, какие драйверы необходимо установить или обновить. Загрузка займет всего несколько минут, но вам понадобится подключение к Интернету, когда необходимо загрузить нужные пакеты драйверов. Если вы обычный пользователь, это тот вариант, который вы хотите."
 STR_WELCOME_CLOSE        = "Закрыть"
+
+// USB Wizard - page 1
+STR_USBWIZ_TITLE         = "Создание USB-накопителя"
+STR_USBWIZ_SPACEREQ      = "Требуется пространство:"
+STR_USBWIZ_SPACEAVAIL    = "Доступное пространство:"
+STR_USBWIZ_PAGE1_DESC    = "Этот мастер поможет вам создать портативный USB-накопитель, содержащий исходный код установщика Snappy Driver и выбранные файлы. \n\nПри копировании файлов в корневой каталог выбранного устройства. Вы должны убедиться, что устройство имеет достаточную емкость для хранения необходимых файлов. Вам будет предоставлена ​​возможность сначала очистить устройство."
+
+// USB Wizard - page 2
+STR_USBWIZ_PAGE2_TITLE   = "Целевой диск"
+STR_USBWIZ_PAGE2_SUBTITLE= "Выберите съемный диск."
+STR_USBWIZ_PAGE2_DESC    = "Snappy Driver Installer Origin будет установлен в корневой каталог выбранного съемного диска. Вставьте USB-накопитель сейчас."
+STR_USBWIZ_PAGE2_DRIVE   = "Целевой съемный диск:"
+STR_USBWIZ_PAGE2_CLEAR   = "Очистить выбранный диск"
+STR_USBWIZ_PAGE2_DELETE  = "Удалить файлы"
+STR_USBWIZ_PAGE2_DELETEDESC = "Удалите все файлы и папки на диске."
+STR_USBWIZ_PAGE2_FORMAT  = "Быстрое форматирование"
+STR_USBWIZ_PAGE2_FORMATDESC = "Выполните быстрый формат диска."
+STR_USBWIZ_PAGE2_DELCONF = "Очистить съемный диск"
+STR_USBWIZ_PAGE2_DELCONF1= "Вы собираетесь удалить все данные со съемного диска"
+STR_USBWIZ_PAGE2_DELCONF2= "Вы уверены, что хотите это сделать?"
+
+// USB Wizard - page 3
+STR_USBWIZ_PAGE3_TITLE   = "Пакеты драйверов"
+STR_USBWIZ_PAGE3_SUBTITLE= "Выберите, какие пакеты драйверов и индексы должны быть включены."
+STR_USBWIZ_PAGE3_SELECT  = "Выберите пакеты драйверов для включения:"
+STR_USBWIZ_PAGE3_ALLPACKS= "Все пакеты драйверов и индексы"
+STR_USBWIZ_PAGE3_NETWORK = "Пакеты и индексы сетевых драйверов"
+STR_USBWIZ_PAGE3_SELECTED= "Выбранные пакеты драйверов и индексы"
+STR_USBWIZ_PAGE3_NOPACKS = "Нет пакетов драйверов"
+STR_USBWIZ_PAGE3_INDEXES = "Включить онлайн-индексы"
+
+// USB Wizard - page 4
+STR_USBWIZ_PAGE4_TITLE   = "Окружающая среда"
+STR_USBWIZ_PAGE4_SUBTITLE= "Выберите другие элементы для включения."
+STR_USBWIZ_PAGE4_LANGS   = "Языки"
+STR_USBWIZ_PAGE4_ALLLANG = "Включить все языки"
+STR_USBWIZ_PAGE4_CURLANG = "Текущий язык"
+STR_USBWIZ_PAGE4_THEMES  = "Темы"
+STR_USBWIZ_PAGE4_ALLTHEME= "Включить все темы"
+STR_USBWIZ_PAGE4_CURTHEME= "Текущая тема"
+STR_USBWIZ_PAGE4_DEFTHEME= "Тема по умолчанию"
+STR_USBWIZ_PAGE4_CONFIG  = "конфигурация"
+STR_USBWIZ_PAGE4_EXPERT  = "Включить экспертный режим"
+STR_USBWIZ_PAGE4_NOUPD   = "Не проверять наличие обновлений"
+STR_USBWIZ_PAGE4_NOSNAP  = "Не создавать моментальные снимки"
+STR_USBWIZ_PAGE4_NOLOG   = "Не создавать файлы журналов"
+STR_USBWIZ_PAGE4_INCAUTO = "Включить autorun.inf и SDIO_auto.bat"
+STR_USBWIZ_PAGE4_EXESIZE = "Исполняемый размер:"
+
+// USB Wizard - page 5
+STR_USBWIZ_PAGE5_TITLE   = "Готов начать"
+STR_USBWIZ_PAGE5_DESC    = "У нас есть вся необходимая информация. Когда вы нажмете кнопку «Готово», процесс начнется."
+
+// USB Wizard - progress
+STR_USBWIZ_PROGR_TITLE    = "Создание USB-накопителя"
+STR_USBWIZ_PROGR_COPYING  = "Копирование файлов"
+STR_USBWIZ_PROGR_DELETING = "Удаление файлов со съемного диска"

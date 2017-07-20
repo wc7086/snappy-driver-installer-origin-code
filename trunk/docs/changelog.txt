@@ -6,6 +6,14 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.0.0.637
+22 July 2017
+Driver Packs 17073
+Fixed bug preventing system menu from getting translated.
+Improved Welcome screen translated layout.
+Updated all language files to include all the new strings.
+Added "Create a USB Drive" wizard. See the manual for details.
+
 Version 0.9.1.596
 8 July 2017
 Driver Packs 17071
