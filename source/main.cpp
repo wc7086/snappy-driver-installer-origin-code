@@ -26,7 +26,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "gui.h"
 #include "draw.h"   // non-portable
 #include "theme.h"
-//#include "usbwizard.h"
+#include "usbwizard.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -43,13 +43,13 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "model.h"
 #include "script.h"
 
-//#include "wizards.h"
+#include "wizards.h"
 
 //{ Global variables
 Manager manager_v[2];
 Manager *manager_g=&manager_v[0];
 Console_t *Console;
-//USBWizard *USBWiz;
+USBWizard *USBWiz;
 
 volatile int installupdate_exitflag=0;
 Event *installupdate_event;
@@ -65,6 +65,9 @@ int bundle_shadow=0;
 bool emptydrp;
 WinVersions winVersions;
 HMENU pSysMenu,ToolsMenu,UpdatesMenu;
+int pSysMenuCount=0;
+// http://www.winprog.org/tutorial/dlgfaq.html
+HBRUSH g_hbrDlgBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
 
 // drag/drop in elevated processess
 // https://helgeklein.com/blog/2010/03/how-to-enable-drag-and-drop-for-an-elevated-mfc-application-on-vistawindows-7/
@@ -322,6 +325,50 @@ void MainWindow_t::ModifyMenuItem(HMENU parent, UINT mask, UINT id, UINT state, 
     }
 }
 
+void MainWindow_t::LoadMenuItems()
+{
+    if(!pSysMenu)
+    {
+        // get the initial number of items before I mess with it
+        pSysMenu=GetSystemMenu(hMain,FALSE);
+        pSysMenuCount=GetMenuItemCount(pSysMenu);
+    }
+
+    // remove all my menu entries
+    int menucount=GetMenuItemCount(pSysMenu);
+    while(menucount>pSysMenuCount)
+    {
+        DeleteMenu(pSysMenu,0,MF_BYPOSITION);
+        menucount=GetMenuItemCount(pSysMenu);
+    }
+
+    // the tools menu - reverse order
+    ToolsMenu=CreatePopupMenu();
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_DEVICEPRNT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_DEVICEPRNT));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSCONTROL,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSCONTROL));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSREST,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSREST));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSPROT));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROPS,0,0,nullptr,const_cast<wchar_t *>STR(STR_REST_SYSPROPS));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_DEVICEMNG,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYS_DEVICEMNG));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_COMPMNG,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_COMPMNG));
+
+    // the updates sub-menu - reverse order
+    UpdatesMenu=CreatePopupMenu();
+    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_DRIVERS,0,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
+    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_SDIO,0,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
+
+    // add options to the system menu - reverse order
+    AddMenuItem(pSysMenu,MIIM_FTYPE,0,MFT_SEPARATOR,0,nullptr,const_cast<wchar_t *>(L""));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_LICENSE,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_ABOUT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_USBWIZARD,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_USBWIZARD));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_TOOLS,0,0,ToolsMenu,const_cast<wchar_t *>STR(STR_TOOLS));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_STATE,IDM_SEED,0,MFS_DISABLED,nullptr,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
+}
+
 void MainWindow_t::MainLoop(int nCmd)
 {
     if((Settings.flags&FLAG_NOGUI)&&(Settings.flags&FLAG_AUTOINSTALL)==0)return;
@@ -376,34 +423,6 @@ void MainWindow_t::MainLoop(int nCmd)
         Log.print_err("ERROR in gui(): failed to create '%S' window\n",classMain);
         return;
     }
-
-    pSysMenu = GetSystemMenu(hMain,FALSE);
-
-    // the tools menu - reverse order
-    ToolsMenu=CreatePopupMenu();
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_DEVICEPRNT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_DEVICEPRNT));
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSCONTROL,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSCONTROL));
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSREST,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSREST));
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSPROT));
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROPS,0,0,nullptr,const_cast<wchar_t *>STR(STR_REST_SYSPROPS));
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_DEVICEMNG,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYS_DEVICEMNG));
-    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_COMPMNG,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_COMPMNG));
-
-    // the updates sub-menu - reverse order
-    UpdatesMenu=CreatePopupMenu();
-    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_DRIVERS,0,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
-    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_SDIO,0,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
-
-    // add options to the system menu - reverse order
-    AddMenuItem(pSysMenu,MIIM_FTYPE,0,MFT_SEPARATOR,0,nullptr,const_cast<wchar_t *>(L""));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_LICENSE,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_ABOUT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
-//    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_USBWIZARD,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_USBWIZARD));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_TOOLS,0,0,ToolsMenu,const_cast<wchar_t *>STR(STR_TOOLS));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_STATE,IDM_SEED,0,MFS_DISABLED,nullptr,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
 
     // license dialog
     if(!Settings.license)
@@ -579,6 +598,8 @@ void MainWindow_t::lang_refresh()
     GetWindowRect(hMain,&rect);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY)+1,1);
     MoveWindow(hMain,rect.left,rect.top,D(MAINWND_WX),D(MAINWND_WY),1);
+
+    LoadMenuItems();
 }
 
 void MainWindow_t::theme_refresh()
@@ -951,12 +972,6 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
 
 static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
-    HWND Ctl1;
-    HWND Ctl2;
-    HWND Ctl3;
-    HWND Ctl4;
-    HWND Ctl5;
-
     switch (msg)
     {
     case WM_INITDIALOG:
@@ -995,56 +1010,49 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
         break;
 
     case WM_CTLCOLORSTATIC:
+    {
         // modify the fonts for colours and bold and size etc
-        Ctl1=GetDlgItem(hwnd,IDD_ABOUT_T1);
-        Ctl2=GetDlgItem(hwnd,IDD_ABOUT_T4);
-        Ctl3=GetDlgItem(hwnd,IDD_ABOUT_T6);
-        Ctl4=GetDlgItem(hwnd,IDD_ABOUT_T8);
-        Ctl5=GetDlgItem(hwnd,IDD_ABOUT_T9);
+        HWND Ctl1=GetDlgItem(hwnd,IDD_ABOUT_T1);
+        HWND Ctl4=GetDlgItem(hwnd,IDD_ABOUT_T4);
+        HWND Ctl6=GetDlgItem(hwnd,IDD_ABOUT_T6);
+        HWND Ctl8=GetDlgItem(hwnd,IDD_ABOUT_T8);
+        HWND Ctl9=GetDlgItem(hwnd,IDD_ABOUT_T9);
+        HDC hdcStatic=(HDC)wParam;
 
         if((HWND)lParam==Ctl1)
         {
-            HFONT hTitleFont = CreateFont(26,0,0,0,600,
+            HFONT hTitleFont = CreateFont(28,12,0,0,620,
                                          FALSE,FALSE,FALSE,
                                          ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
                                          ANTIALIASED_QUALITY,DEFAULT_PITCH,
                                          L"Tahoma");
-            HDC hdcStatic=(HDC)wParam;
-            SetTextColor(hdcStatic, RGB(0,0,240));
-            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
-            SetBkMode(hdcStatic,TRANSPARENT);
             SelectObject(hdcStatic,hTitleFont);
-            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+            SetTextColor(hdcStatic, RGB(248,171,3));
         }
-        else if(((HWND)lParam==Ctl2)||(HWND)lParam==Ctl3)
+        else if(((HWND)lParam==Ctl4)||(HWND)lParam==Ctl6)
         {
             HFONT hFont = CreateFont(9,0,0,0,700,
                                          FALSE,FALSE,FALSE,
                                          ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
                                          ANTIALIASED_QUALITY,DEFAULT_PITCH,
                                          L"MS Sans Serif");
-            HDC hdcStatic=(HDC)wParam;
-            //SetTextColor(hdcStatic, GetSysColor());
-            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
-            SetBkMode(hdcStatic,TRANSPARENT);
             SelectObject(hdcStatic,hFont);
-            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
         }
-        else if(((HWND)lParam==Ctl4)||(HWND)lParam==Ctl5)
+        else if(((HWND)lParam==Ctl8)||(HWND)lParam==Ctl9)
         {
             HFONT hFont = CreateFont(10,0,0,0,550,
                                          FALSE,FALSE,FALSE,
                                          ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
                                          ANTIALIASED_QUALITY,DEFAULT_PITCH,
                                          L"MS Sans Serif");
-            HDC hdcStatic=(HDC)wParam;
-            SetTextColor(hdcStatic, RGB(0,0,255));
-            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
-            SetBkMode(hdcStatic,TRANSPARENT);
             SelectObject(hdcStatic,hFont);
-            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+            SetTextColor(hdcStatic, RGB(0,0,255));
         }
-        else return TRUE;
+        SetBkMode(hdcStatic,TRANSPARENT);
+        return (INT_PTR)g_hbrDlgBackground;
+    }
+    case WM_CTLCOLORDLG:
+        return (INT_PTR)g_hbrDlgBackground;
 
     default:
         break;
@@ -1953,12 +1961,13 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),MainWindow.hMain,(DLGPROC)LicenseProcedure);
                         return 0;
                     }
-//                    case IDM_USBWIZARD:
-//                    {
-//                        if(!USBWiz)
-//                            USBWiz=new USBWizard;
-//                        USBWiz->doWizard();
-//                    }
+                    case IDM_USBWIZARD:
+                    {
+                        USBWiz=new USBWizard;
+                        USBWiz->doWizard();
+                        delete USBWiz;
+                        return 0;
+                    }
                     default:
                         return DefWindowProc(hwnd, WM_SYSCOMMAND, wParam, lParam);
                 }
@@ -2576,7 +2585,15 @@ BOOL CALLBACK LicenseProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lPara
                 SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
                 return (LRESULT)GetStockObject(HOLLOW_BRUSH);
             }
-            else return TRUE;
+            else
+            {
+                HDC hdcStatic=(HDC)wParam;
+                SetBkMode(hdcStatic,TRANSPARENT);
+                return (INT_PTR)g_hbrDlgBackground;
+            }
+
+        case WM_CTLCOLORDLG:
+            return (INT_PTR)g_hbrDlgBackground;
 
         default:
             break;
@@ -2661,57 +2678,50 @@ BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
         break;
 
     case WM_CTLCOLORSTATIC:
-        // modify the fonts for colours and bold and size etc
-        Ctl1=GetDlgItem(hwnd,IDD_WELC_TITLE);
-        Ctl2=GetDlgItem(hwnd,IDD_WELC_LINK1);
-        Ctl3=GetDlgItem(hwnd,IDD_WELC_LINK2);
-        Ctl4=GetDlgItem(hwnd,IDD_WELC_SUBTITLE);
+        {
+            // modify the fonts for colours and bold and size etc
+            Ctl1=GetDlgItem(hwnd,IDD_WELC_TITLE);
+            Ctl2=GetDlgItem(hwnd,IDD_WELC_LINK1);
+            Ctl3=GetDlgItem(hwnd,IDD_WELC_LINK2);
+            Ctl4=GetDlgItem(hwnd,IDD_WELC_SUBTITLE);
+            HDC hdcStatic=(HDC)wParam;
 
-        if((HWND)lParam==Ctl1)
-        {
-            HFONT hTitleFont = CreateFont(26,0,0,0,600,
-                                         FALSE,FALSE,FALSE,
-                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
-                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
-                                         L"Tahoma");
-            HDC hdcStatic=(HDC)wParam;
-            SetTextColor(hdcStatic, RGB(0,0,240));
-            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
+            if((HWND)lParam==Ctl1)
+            {
+                HFONT hTitleFont = CreateFont(28,12,0,0,620,
+                                             FALSE,FALSE,FALSE,
+                                             ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                             ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                             L"Tahoma");
+                SetTextColor(hdcStatic, RGB(248,171,3));
+                SelectObject(hdcStatic,hTitleFont);
+            }
+            else if((HWND)lParam==Ctl4)
+            {
+                HFONT hFont = CreateFont(9,0,0,0,700,
+                                             FALSE,FALSE,FALSE,
+                                             ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                             ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                             L"MS Sans Serif");
+                SelectObject(hdcStatic,hFont);
+            }
+            else if(((HWND)lParam==Ctl2)||(HWND)lParam==Ctl3)
+            {
+                HFONT hFont = CreateFont(10,0,0,0,550,
+                                             FALSE,FALSE,FALSE,
+                                             ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
+                                             ANTIALIASED_QUALITY,DEFAULT_PITCH,
+                                             L"MS Sans Serif");
+                SetTextColor(hdcStatic, RGB(0,0,255));
+                SelectObject(hdcStatic,hFont);
+            }
+
             SetBkMode(hdcStatic,TRANSPARENT);
-            SelectObject(hdcStatic,hTitleFont);
-            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
-        }
-        else if((HWND)lParam==Ctl4)
-        {
-            HFONT hFont = CreateFont(9,0,0,0,700,
-                                         FALSE,FALSE,FALSE,
-                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
-                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
-                                         L"MS Sans Serif");
-            HDC hdcStatic=(HDC)wParam;
-            //SetTextColor(hdcStatic, GetSysColor());
-            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
-            SetBkMode(hdcStatic,TRANSPARENT);
-            SelectObject(hdcStatic,hFont);
-            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
-        }
-        else if(((HWND)lParam==Ctl2)||(HWND)lParam==Ctl3)
-        {
-            HFONT hFont = CreateFont(10,0,0,0,550,
-                                         FALSE,FALSE,FALSE,
-                                         ANSI_CHARSET,OUT_DEVICE_PRECIS,CLIP_MASK,
-                                         ANTIALIASED_QUALITY,DEFAULT_PITCH,
-                                         L"MS Sans Serif");
-            HDC hdcStatic=(HDC)wParam;
-            SetTextColor(hdcStatic, RGB(0,0,255));
-            SetBkColor(hdcStatic, GetSysColor(COLOR_WINDOW));
-            SetBkMode(hdcStatic,TRANSPARENT);
-            SelectObject(hdcStatic,hFont);
-            return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+            return (INT_PTR)g_hbrDlgBackground;
         }
 
-        else return TRUE;
-
+    case WM_CTLCOLORDLG:
+        return (INT_PTR)g_hbrDlgBackground;
     default:
         break;
     }

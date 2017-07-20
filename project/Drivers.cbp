@@ -159,6 +159,7 @@
 			<Add library="uuid" />
 			<Add library="wbemuuid" />
 			<Add library="sapi" />
+			<Add library="comctl32" />
 			<Add directory="../external" />
 		</Linker>
 		<ExtraCommands>
@@ -167,6 +168,10 @@
 		<Unit filename="../resources/cli.txt" />
 		<Unit filename="../resources/resources.h" />
 		<Unit filename="../resources/resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="../resources/wizards.h" />
+		<Unit filename="../resources/wizards.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="../source/7zip.h" />
@@ -215,6 +220,8 @@
 		<Unit filename="../source/themelist.h" />
 		<Unit filename="../source/update.cpp" />
 		<Unit filename="../source/update.h" />
+		<Unit filename="../source/usbwizard.cpp" />
+		<Unit filename="../source/usbwizard.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
