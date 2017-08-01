@@ -125,7 +125,7 @@ class UpdaterImp:public Updater_t
 private:
     std::wstring const* active_torrent_url;
     std::wstring const* active_torrent_save_path;
-    void downloadTorrent();
+    int downloadTorrent();
     void updateTorrentStatus();
     void removeOldDriverpacks(const wchar_t *ptr);
     void moveNewFiles();
@@ -1166,7 +1166,7 @@ UpdaterImp::~UpdaterImp()
     }
 }
 
-void UpdaterImp::downloadTorrent()
+int UpdaterImp::downloadTorrent()
 {
 	// checking for updates
     manager_g->itembar_settext(SLOT_DOWNLOAD,1,STR(STR_UPD_CHECKING),0,0,0);
@@ -1252,7 +1252,7 @@ void UpdaterImp::downloadTorrent()
     {
         if(!hTorrent.torrent_file())
             downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
-        return;
+        return 0;
     }
 
 	// checking for updates
@@ -1264,7 +1264,7 @@ void UpdaterImp::downloadTorrent()
         if(emptydrp) manager_g->itembar_settext(SLOT_NODRIVERS,1);
         downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
         Log.print_con("FAILED\n");
-        return;
+        return 0;
     }
 
     // Populate list
@@ -1275,6 +1275,7 @@ void UpdaterImp::downloadTorrent()
     for(int j=0;j<numfiles;j++)hTorrent.file_priority(j,0);
 
     Timers.stop(time_chkupdate);
+    return i;
 }
 
 void UpdaterImp::resumeDownloading()
@@ -1653,7 +1654,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     // Download torrent
     UpdaterImp *Updater1=dynamic_cast<UpdaterImp *>(Updater);
-    Updater1->downloadTorrent();
+    int TorrentResults=Updater1->downloadTorrent();
     if(downloadmangar_exitflag!=DOWNLOAD_STATUS_TORRENT_GOT)
     {
         Log.print_con("}thread_download(failed to download torrent)\n");
@@ -1665,7 +1666,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
 
     // successfully downloaded the torrent
     // notify main window
-    MainWindow.DownloadedTorrent();
+    PostMessage(MainWindow.hMain,WM_TORRENT,0,TorrentResults);
 
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {
