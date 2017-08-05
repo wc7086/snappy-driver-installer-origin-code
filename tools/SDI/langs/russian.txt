@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "BadPointer"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "BadPointer"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-бит"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Разработчики:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "После закачки драйверпаков"
 STR_OPTION_CONSOLE      = "Отображать консольное окно"
 
 // Patreon
-STR_PATREON1             = "Вы можете поддержать развитие программы через систему Patreon"
+STR_PATREON1             = "Посетите нашу страницу Patreon для получения информации, советов и поддержки проекта."
 STR_PATREON2             = "(Кликните здесь, чтобы открыть страницу в браузере)"
 STR_PATREON_H            = "Регулярные обновления требуют регулярной работы. Финансово поддержите нашу инициативу через систему ежемесячных дотаций Patreon!"
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "Все пакеты драйверов и индек
 STR_USBWIZ_PAGE3_NETWORK = "Пакеты и индексы сетевых драйверов"
 STR_USBWIZ_PAGE3_SELECTED= "Выбранные пакеты драйверов и индексы"
 STR_USBWIZ_PAGE3_NOPACKS = "Нет пакетов драйверов"
+STR_USBWIZ_PAGE3_ADDPATH = "Укажите дополнительный каталог драйверов"
 STR_USBWIZ_PAGE3_INDEXES = "Включить онлайн-индексы"
 
 // USB Wizard - page 4

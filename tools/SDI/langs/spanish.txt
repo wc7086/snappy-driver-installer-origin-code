@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "theFULL, Edefex"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "theFULL, Edefex"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bits"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Desarrolladores:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -406,7 +408,7 @@ STR_OPTION_CMD_FINISHDN = "Luego de descargar"
 STR_OPTION_CONSOLE      = "Mostrar ventana de la consola"
 
 // Patreon
-STR_PATREON1             = "SDI es desarrollado por voluntarios en su tiempo libre. Por favor apóyenos en Patreon si lo desea."
+STR_PATREON1             = "Visite nuestra página de Patreon para obtener información, consejos y apoyar el proyecto."
 STR_PATREON2             = "(Clic aquí para abrir la página de Patreon)"
 STR_PATREON_H            = ""
 
@@ -451,6 +453,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4

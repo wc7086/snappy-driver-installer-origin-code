@@ -133,7 +133,7 @@ STR_SYSINF_64BIT        = "64 Bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Entwickler:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -456,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "Alle Treiberpakete und Indizes"
 STR_USBWIZ_PAGE3_NETWORK = "Nur Netzwerktreiberpakete und Indizes"
 STR_USBWIZ_PAGE3_SELECTED= "Ausgewählte Treiberpakete und Indizes"
 STR_USBWIZ_PAGE3_NOPACKS = "Keine Treiberpakete"
+STR_USBWIZ_PAGE3_ADDPATH = "Geben Sie ein zusätzliches Treiberverzeichnis an"
 STR_USBWIZ_PAGE3_INDEXES = "Online-Indizes einbeziehen"
 
 // USB Wizard - page 4

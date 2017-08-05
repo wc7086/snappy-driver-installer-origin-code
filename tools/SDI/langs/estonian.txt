@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "EK"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "EK"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Arendajad:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "Peale allalaadimist"
 STR_OPTION_CONSOLE      = "Näita konsooli"
 
 // Patreon
-STR_PATREON1             = "SDI on loodud vabatahtlike poolt vabal ajal. Kui teile meeldib tarkvara palun toetage meid Patreon'is."
+STR_PATREON1             = "Külastage meie Patreoni lehte informatsiooni, näpunäidete ja projekti toetamiseks."
 STR_PATREON2             = "(Vajutage siia, et avada Patreoni lehekülg)"
 STR_PATREON_H            = ""
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4

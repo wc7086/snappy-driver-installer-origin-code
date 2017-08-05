@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "atreyu_ts, raddy, samsobi, Sorc"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "atreyu_ts, raddy, samsobi, Sorc"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-біт"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Розробники:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "Після закачування драйверпа�
 STR_OPTION_CONSOLE      = "Відображати консольне вікно"
 
 // Patreon
-STR_PATREON1             = "Ви можете підтримати розвиток програми через систему Patreon"
+STR_PATREON1             = "Завітайте на нашу сторінку Patreon для отримання інформації, порад та підтримки проекту."
 STR_PATREON2             = "(Клікніть тут, щоб відкрити сторінку в браузері)"
 STR_PATREON_H            = ""
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4

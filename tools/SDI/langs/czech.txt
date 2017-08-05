@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "lenochod"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "lenochod"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Developers:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "Po stažení"
 STR_OPTION_CONSOLE      = "Zobrazit okno konzole"
 
 // Patreon
-STR_PATREON1             = "SDI vývojáři programují ve svém volném čase. Pokud se vám aplikace líbí, podpořte nás prosím na Patreonu."
+STR_PATREON1             = "Navštivte naši stránku Patreon pro informace, tipy a podporu projektu."
 STR_PATREON2             = "(Klikněte zde pro otevření stránky Patreon)"
 STR_PATREON_H            = ""
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4
