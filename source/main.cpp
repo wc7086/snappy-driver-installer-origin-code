@@ -141,7 +141,12 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
 
     Timers.start(time_total);
 
-    std::cout << "\nSnappy Driver Installer Origin " << VER_VERSION_STR2 << "\n";
+    char bit[]="32";
+    #ifdef _WIN64
+    strcpy(bit,"64");
+    #endif // _WIN64
+
+    std::cout << "\nSnappy Driver Installer Origin " << VER_VERSION_STR2 << " (" << bit << "bit)\n";
     std::cout << SVN_BUILD_NOTE << "\n\n";
 
     // Determine number of CPU cores
@@ -356,6 +361,8 @@ void MainWindow_t::LoadMenuItems()
     UpdatesMenu=CreatePopupMenu();
     AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_DRIVERS,0,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_DRIVERS));
     AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID,IDM_UPDATES_SDIO,0,0,nullptr,const_cast<wchar_t *>STR(STR_UPDATES_SDIO));
+    AddMenuItem(UpdatesMenu,MIIM_FTYPE,0,MFT_SEPARATOR,0,nullptr,const_cast<wchar_t *>(L""));
+    AddMenuItem(UpdatesMenu,MIIM_STRING|MIIM_ID|MIIM_STATE,IDM_SEED,0,MFS_DISABLED,nullptr,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
 
     // add options to the system menu - reverse order
     AddMenuItem(pSysMenu,MIIM_FTYPE,0,MFT_SEPARATOR,0,nullptr,const_cast<wchar_t *>(L""));
@@ -364,9 +371,8 @@ void MainWindow_t::LoadMenuItems()
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_USBWIZARD,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_USBWIZARD));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_TOOLS,0,0,ToolsMenu,const_cast<wchar_t *>STR(STR_TOOLS));
-    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_STATE,IDM_SEED,0,MFS_DISABLED,nullptr,const_cast<wchar_t *>STR(STR_SYST_START_SEED));
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
 }
 
 void MainWindow_t::MainLoop(int nCmd)
@@ -975,7 +981,10 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
     switch (msg)
     {
     case WM_INITDIALOG:
-        return TRUE;
+        {
+            SetWindowText(GetDlgItem(hwnd,IDD_ABOUT_T3),STR(STR_ABOUT_DEV_TITLE));
+            return TRUE;
+        }
 
     case WM_SETCURSOR:
         // 2 hyperlinks
@@ -1013,6 +1022,7 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
     {
         // modify the fonts for colours and bold and size etc
         HWND Ctl1=GetDlgItem(hwnd,IDD_ABOUT_T1);
+        HWND Ctl3=GetDlgItem(hwnd,IDD_ABOUT_T3);
         HWND Ctl4=GetDlgItem(hwnd,IDD_ABOUT_T4);
         HWND Ctl6=GetDlgItem(hwnd,IDD_ABOUT_T6);
         HWND Ctl8=GetDlgItem(hwnd,IDD_ABOUT_T8);
@@ -1029,7 +1039,7 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
             SelectObject(hdcStatic,hTitleFont);
             SetTextColor(hdcStatic, RGB(248,171,3));
         }
-        else if(((HWND)lParam==Ctl4)||(HWND)lParam==Ctl6)
+        else if((HWND)lParam==Ctl3||((HWND)lParam==Ctl4)||(HWND)lParam==Ctl6)
         {
             HFONT hFont = CreateFont(9,0,0,0,700,
                                          FALSE,FALSE,FALSE,
@@ -1284,25 +1294,25 @@ void MainWindow_t::ShowProgressInTaskbar(bool show,long long complited,long long
     CoUninitialize();
 }
 
-void MainWindow_t::DownloadedTorrent()
+void MainWindow_t::DownloadedTorrent(int TorrentResults)
 {
-        // if there are no drivers and indexes then show the welcome screen
-        wchar_t spec1[BUFLEN];
-        wchar_t spec2[BUFLEN];
-        wcscpy(spec1,Settings.drp_dir);wcscat(spec1,L"\\*.*");
-        wcscpy(spec2,Settings.index_dir);wcscat(spec2,L"\\*.*");
-        if(!System.FileExists2(spec1)&&!System.FileExists2(spec2))
-        {
-            // don't show if there is any command line arguments
-            int argc;
-            CommandLineToArgvW(GetCommandLineW(),&argc);
-            if(argc<2)
-                DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
-        }
+    UNREFERENCED_PARAMETER(TorrentResults);
 
-        // update the menu items
-        ModifyMenuItem(pSysMenu,MIIM_STATE,IDM_SEED,MFS_ENABLED,nullptr);
-        UpdateTorrentItems(Updater->activetorrent);
+    // update the menu items
+    ModifyMenuItem(pSysMenu,MIIM_STATE,IDM_SEED,MFS_ENABLED,nullptr);
+    UpdateTorrentItems(Updater->activetorrent);
+
+    wchar_t spec1[BUFLEN];
+    wchar_t spec2[BUFLEN];
+    wcscpy(spec1,Settings.drp_dir);wcscat(spec1,L"\\*.*");
+    wcscpy(spec2,Settings.index_dir);wcscat(spec2,L"\\*.*");
+    int argc;
+    CommandLineToArgvW(GetCommandLineW(),&argc);
+
+    // if there are no drivers and no indexes
+    // and no command line then show the welcome screen
+    if(!System.FileExists2(spec1)&&!System.FileExists2(spec2)&&(argc<2))
+        DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
 }
 
 void MainWindow_t::ResetUpdater(int activetorrent)
@@ -1624,6 +1634,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             }
             break;
 
+        case WM_TORRENT:
+            {
+                DownloadedTorrent(lParam);
+                break;
+            }
         case WM_DROPFILES:
             {
                 wchar_t lpszFile[MAX_PATH]={0};

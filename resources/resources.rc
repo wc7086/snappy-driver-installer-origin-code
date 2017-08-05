@@ -256,24 +256,23 @@ BEGIN
             , IDD_ABOUT_T2, 115,24,255,60,SS_LEFT
     LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,57,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,67,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Developers: \tBadPointer, Glenn Delahoy\n"
-            "Contributors: \te39, QuarQ, SamLab, Sorc, volodya61, WindR\n"
-            "              \tComputer Bloke",IDD_ABOUT_T3,10,92,360,30,SS_LEFT
-    LTEXT   "GNU General Public License",IDD_ABOUT_T4,10,126,360,12,SS_LEFT
+    LTEXT   "Developers:",IDD_ABOUT_T3,10,97,360,30,SS_LEFT
+    LTEXT   "BadPointer, Glenn Delahoy",0,70,97,360,30,SS_LEFT
+    LTEXT   "GNU General Public License",IDD_ABOUT_T4,10,116,360,12,SS_LEFT
     LTEXT   "This program is free software: you can redistribute it and/or modify it under the "
             "terms of the GNU General Public License as published by the Free Software Foundation, "
             "either version 3 of the License, or (at your option) any later version.\n\n"
             "This program is distributed in the hope that it will be useful, but WITHOUT ANY "
             "WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A "
             "PARTICULAR PURPOSE.  See the GNU General Public License for more details."
-            ,IDD_ABOUT_T5,10,134,360,60,SS_LEFT
+            ,IDD_ABOUT_T5,10,124,360,60,SS_LEFT
     LTEXT   "Snappy Driver Installer Origin uses the following technologies:"
-            ,IDD_ABOUT_T6,10,202,360,12,SS_LEFT
+            ,IDD_ABOUT_T6,10,192,360,12,SS_LEFT
     LTEXT   "WebP is licensed under the terms of the BSD license\n"
             "libtorrent is licensed under the terms of the BSD license\n"
             "Backtrace is licensed under the terms of the BSD license\n"
             "7-Zip is licensed under the terms of the GNU Library or Lesser General Public License version 2\n"
-            "Driver Packs by SamLab",IDD_ABOUT_T7,10,211,360,40,SS_LEFT
+            "Driver Packs by SamLab",IDD_ABOUT_T7,10,201,360,40,SS_LEFT
 END
 
 IDD_WELCOME DIALOGEX DISCARDABLE 0, 0, 400, 300
