@@ -69,6 +69,16 @@ static BOOL CALLBACK EnumLanguageGroupsProc(
     return true;
 }
 
+static int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+	// If the BFFM_INITIALIZED message is received
+	// set the path to the start path.
+    UNREFERENCED_PARAMETER(lParam);
+    if((uMsg==BFFM_INITIALIZED)&&(lpData!=0))
+        SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+	return 0; // The function should always return 0.
+}
+
 bool SystemImp::IsLangInstalled(int group)
 {
     LONG lLang=group;
@@ -96,6 +106,8 @@ bool SystemImp::ChooseDir(wchar_t *path,const wchar_t *title)
     lpbi.hwndOwner=MainWindow.hMain;
     lpbi.pszDisplayName=path;
     lpbi.lpszTitle=title;
+    lpbi.lParam=(LPARAM)path;
+    lpbi.lpfn=BrowseCallbackProc;
     lpbi.ulFlags=BIF_NEWDIALOGSTYLE|BIF_EDITBOX;
 
     LPITEMIDLIST list=SHBrowseForFolder(&lpbi);
@@ -263,7 +275,7 @@ __int64 SystemImp::DirectorySize(const std::wstring directory)
     {
         if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
         {
-            if(!StrStrIW(FindFileData.cFileName,L"."))
+            if((_wcsicmp(FindFileData.cFileName,L".")!=0)&&(_wcsicmp(FindFileData.cFileName,L"..")!=0))
             {
                 spec=cwd+FindFileData.cFileName;
                 ret=ret+DirectorySize(spec);
@@ -431,10 +443,14 @@ std::string SystemImp::AppPathS()
     return wtoa(path);
 }
 
-int SystemImp::FindLatestExeVersion()
+int SystemImp::FindLatestExeVersion(int bit)
 {
     int ver=SVN_REV;
-    std::wstring spec=AppPathW()+L"\\SDIO_R*.exe";
+    std::wstring spec;
+    if(bit==32)spec=AppPathW()+L"\\SDIO_R*.exe";
+    else if(bit==64)spec=AppPathW()+L"\\SDIO_x64_R*.exe";
+    else return 0;
+
     WIN32_FIND_DATA fd;
     HANDLE hFind=::FindFirstFile(spec.c_str(), &fd);
     if(hFind!=INVALID_HANDLE_VALUE)
@@ -444,7 +460,9 @@ int SystemImp::FindLatestExeVersion()
             if(!(fd.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY))
             {
                 std::wstring v=fd.cFileName;
-                int vi=_wtoi(v.substr(6,3).c_str());
+                int vi=0;
+                if(bit==32)vi=_wtoi(v.substr(6,3).c_str());
+                else if(bit==64)vi=_wtoi(v.substr(10,3).c_str());
                 if(vi>ver)ver=vi;
             }
         }while(::FindNextFile(hFind,&fd));
@@ -518,6 +536,7 @@ bool SystemImp::SystemProtectionEnabled(State *state)
         {
             err=RegQueryValueEx(hkey,L"DisableSR",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
             if(err==ERROR_SUCCESS)ret=dwData==0;
+            else if(err==ERROR_FILE_NOT_FOUND)ret=false;
             else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
         }
         // every other version
@@ -525,6 +544,7 @@ bool SystemImp::SystemProtectionEnabled(State *state)
         {
             err=RegQueryValueEx(hkey,L"RPSessionInterval",nullptr,&dwType,(LPBYTE)&dwData,&cbData);
             if(err==ERROR_SUCCESS)ret=dwData==1;
+            else if(err==ERROR_FILE_NOT_FOUND)ret=false;
             else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
         }
 

@@ -98,7 +98,7 @@ public:
     std::string wtoa (const std::wstring& wstr);
     std::wstring AppPathW();
     std::string AppPathS();
-    int FindLatestExeVersion();
+    int FindLatestExeVersion(int bit=32);
     bool SystemProtectionEnabled(State *state);
     int GetRestorePointCreationFrequency();
     void SetRestorePointCreationFrequency(int freq);
