@@ -42,7 +42,6 @@ Settings_t::Settings_t()
     *curlang=0;
     wcscpy(curtheme,  L"(default)");
     wcscpy(logO_dir,  L"logs");
-    license=0;
 
     wcscpy(drp_dir,   L"drivers");
     wcscpy(output_dir,L"indexes\\SDI\\txt");
@@ -60,6 +59,7 @@ Settings_t::Settings_t()
     statemode=STATEMODE_REAL;
     expertmode=0;
     hintdelay=500;
+    license=0;
     scale=256;
     savedscale=scale;
     wndwx=0,wndwy=0;wndsc=1;
@@ -122,6 +122,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argstr(pr,L"-lang:",          curlang))continue;
         if(argstr(pr,L"-theme:",         curtheme))continue;
         if(argint(pr,L"-hintdelay:",     &hintdelay))continue;
+        if(argint(pr,L"-license:",       &license))continue;
         if(argint(pr,L"-scale:",         &scale))continue;
         if(argint(pr,L"-wndwx:",         &wndwx))continue;
         if(argint(pr,L"-wndwy:",         &wndwy))continue;
@@ -134,7 +135,6 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
         if(argint(pr,L"-connections:",   &Updater->connections))continue;
         if(argint(pr,L"-activetorrent:", &Updater->activetorrent))continue;
 
-        if(argopt(pr,L"-license",        &license))continue;
         if(argopt(pr,L"-expertmode",     &expertmode))continue;
         if(argflg(pr,L"-showconsole",    FLAG_SHOWCONSOLE))continue;
         if(argflg(pr,L"-norestorepnt",   FLAG_NORESTOREPOINT))continue;
@@ -252,15 +252,15 @@ void Settings_t::save()
     fwprintf(f,L"\"-drp_dir:%ws\"\n\"-index_dir:%ws\"\n\"-output_dir:%ws\"\n"
               L"\"-data_dir:%ws\"\n\"-log_dir:%ws\"\n\n"
               L"\"-finish_cmd:%ws\"\n\"-finishrb_cmd:%ws\"\n\"-finish_upd_cmd:%ws\"\n\n"
-              L"\"-lang:%ws\"\n\"-theme:%ws\"\n-hintdelay:%d\n-wndwx:%d\n-wndwy:%d\n-wndsc:%d\n-scale:%d\n-filters:%d\n\n"
+              L"\"-lang:%ws\"\n\"-theme:%ws\"\n-hintdelay:%d\n-license:%d\n"
+              L"-wndwx:%d\n-wndwy:%d\n-wndsc:%d\n-scale:%d\n-filters:%d\n\n"
               L"-port:%d\n-downlimit:%d\n-uplimit:%d\n-connections:%d\n\n",
             drp_dir,index_dir,output_dir,
             data_dir,logO_dir,
             finish,finish_rb,finish_upd,
-            STR(STR_LANG_ID),curtheme,hintdelay,wndwx,wndwy,wndsc,autosized?savedscale:scale,filters,
+            STR(STR_LANG_ID),curtheme,hintdelay,license?1:0,wndwx,wndwy,wndsc,autosized?savedscale:scale,filters,
             Updater->torrentport,Updater->downlimit,Updater->uplimit,Updater->connections);
 
-    if(license)fwprintf(f,L"-license ");
     if(expertmode)fwprintf(f,L"-expertmode ");
     if(flags&FLAG_SHOWCONSOLE)fwprintf(f,L"-showconsole ");
     if(flags&FLAG_NORESTOREPOINT)fwprintf(f,L"-norestorepnt ");
