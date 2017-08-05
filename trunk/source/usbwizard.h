@@ -40,6 +40,8 @@ class USBWizard
         int DriverPackOption=0;                    // 0=all, 1=network, 2=selected, 3=none
         int Languages=0;                           // 0=all, 1=current, 2=default english
         int Themes=0;                              // 0=all, 1=current, 2=default
+        std::wstring AdditionalPath;
+        bool pathChanged=false;
         bool IncludeOnlineIndexes=false;
         bool ExpertMode=false;
         bool NoUpdates=true;
@@ -51,7 +53,7 @@ class USBWizard
         void QuickFormatTarget(HWND parent);
         void ClearBuildList();
         void AddFile(std::wstring source,std::wstring dest);
-        void AddDirectory(std::wstring dir);
+        void AddDirectory(std::wstring dir,std::wstring targetPath);
         void BuildDrive(HWND hwnd);
         void SetProgress(__int64 chunk,__int64 TotalFileSize);
 };
