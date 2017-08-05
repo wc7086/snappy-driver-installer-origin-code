@@ -547,6 +547,13 @@ bool Script::runscript()
                     LastExitCode=System.run_command(L"cmd",buf,SW_HIDE,0);
                 }
             }
+            else if(_wcsicmp(args[0].c_str(),L"runlatest")==0)
+            {
+                std::wstring cmd;
+                for(std::vector<std::wstring>::size_type i = 1; i != args.size(); i++)
+                    cmd.append(L" "+args[i]);
+                RunLatest(cmd);
+            }
             else if(StrStrIW(args[0].c_str(),L"onerror"))
             {
                 if(LastExitCode)
@@ -668,4 +675,36 @@ void Script::doParameters(std::wstring &cmd)
                 cmd.replace(p,2,L"");
         }
     }
+}
+
+void Script::RunLatest(std::wstring args)
+{
+    // this would be run after an application update
+    // and should be followed by an "end"
+
+    // get the correct executable
+    std::wstring cmd;
+    #ifdef _WIN64
+        cmd=L"SDIO_x64_R"+std::to_wstring(System.FindLatestExeVersion(64))+L".exe";
+    #else
+        cmd=L"SDIO_R"+std::to_wstring(System.FindLatestExeVersion(32))+L".exe";
+    #endif // _WIN64
+
+    if(!System.FileExists2(cmd.c_str()))
+    {
+        Log.print_err("File not found: %S\n",cmd.c_str());
+        return;
+    }
+
+    cmd+=args;
+    Log.print_con("Cmd: %S\n",cmd.c_str());
+
+    STARTUPINFO si;
+    ZeroMemory(&si,sizeof(si));
+    si.cb = sizeof(si);
+
+    PROCESS_INFORMATION pi;
+    ZeroMemory(&pi,sizeof(pi));
+
+    CreateProcess(nullptr,(LPWSTR)cmd.c_str(),nullptr,nullptr,FALSE,CREATE_NEW_PROCESS_GROUP|CREATE_NEW_CONSOLE,nullptr,nullptr,&si,&pi);
 }

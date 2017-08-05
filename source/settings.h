@@ -173,7 +173,6 @@ public:
     wchar_t curlang   [BUFLEN];
     wchar_t curtheme  [BUFLEN];
     wchar_t logO_dir  [BUFLEN];
-    int license;
 
     wchar_t drp_dir   [BUFLEN];
     wchar_t output_dir[BUFLEN];
@@ -192,6 +191,7 @@ public:
     int statemode;
     int expertmode;
     int hintdelay;
+    int license;
     int scale;
     int wndwx,wndwy,wndsc;
     int filters;
