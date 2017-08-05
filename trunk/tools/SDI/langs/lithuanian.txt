@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "Marius Stauga"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "Marius Stauga"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bitų"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Kūrėjai:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -408,7 +410,7 @@ STR_OPTION_CMD_FINISHDN = "Po atsisiuntimo"
 STR_OPTION_CONSOLE      = "Rodyti konsolės langą"
 
 // Patreon
-STR_PATREON1             = "SDI yra sukurtas savanorių. Jei Jums patinka ši programinė įranga, prašome paremti mus Patreon."
+STR_PATREON1             = "Apsilankykite mūsų "Patreon" puslapyje, norėdami gauti informacijos, patarimų ir remti projektą."
 STR_PATREON2             = "(Spustelėkite čia, jei norite atidaryti Patreon puslapį)"
 STR_PATREON_H            = ""
 
@@ -453,6 +455,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4

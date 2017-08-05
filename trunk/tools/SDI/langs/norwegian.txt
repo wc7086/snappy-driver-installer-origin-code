@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "blc"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "blc"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Utviklere:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "Etter nedlasting"
 STR_OPTION_CONSOLE      = "Vis konsollvindu"
 
 // Patreon
-STR_PATREON1             = "SDI er utviklet av frivillige på fritiden. Hvis du liker programvaren, vennligst støtt oss på Patreon."
+STR_PATREON1             = "Besøk vår Patreon-side for informasjon, tips og støtte prosjektet."
 STR_PATREON2             = "(Klikk her for å åpne Patreon i nettleseren)"
 STR_PATREON_H            = ""
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4

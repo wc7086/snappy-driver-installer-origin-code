@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "LaMoLa"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "LaMoLa"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Fejlesztők:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "Összes Driver-csomag és Index"
 STR_USBWIZ_PAGE3_NETWORK = "Hálózati meghajtó csomagok és Indexek"
 STR_USBWIZ_PAGE3_SELECTED= "Kijelölt Illesztőprogram-csomagok és Indexek"
 STR_USBWIZ_PAGE3_NOPACKS = "Nincsenek Illesztőprogram-csomagok"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Online Indexekkel együtt"
 
 // USB Wizard - page 4

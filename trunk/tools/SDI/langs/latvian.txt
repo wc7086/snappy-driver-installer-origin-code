@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "Jurris"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "Jurris"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Izstrādātāji:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -408,7 +410,7 @@ STR_OPTION_CMD_FINISHDN = "After downloading"
 STR_OPTION_CONSOLE      = "Show console window"
 
 // Patreon
-STR_PATREON1             = "Visit our Patreon page for information, tips and to support the project."
+STR_PATREON1             = "Apmeklējiet mūsu Patreon lapu, lai iegūtu informāciju, padomus un atbalstītu projektu."
 STR_PATREON2             = "(Click here to open the Patreon page)"
 STR_PATREON_H            = ""
 
@@ -453,6 +455,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4

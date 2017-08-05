@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "Skywalker59, Sokarz, Arzach4"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "Skywalker59, Sokarz, Arzach4"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64-bit"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "Développeurs:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "Après le téléchargement"
 STR_OPTION_CONSOLE      = "Afficher la fenêtre de la console"
 
 // Patreon
-STR_PATREON1             = "SDI est développé par des volontaires sur leur temps libre. Si vous aimez SDI, soutenez nous sur Patreon."
+STR_PATREON1             = "Visitez notre page Patreon pour obtenir des informations, des conseils et pour soutenir le projet."
 STR_PATREON2             = "(Cliquez ici pour ouvrir la page Patreon)"
 STR_PATREON_H            = ""
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "Tous les packs de pilotes et les index"
 STR_USBWIZ_PAGE3_NETWORK = "Packs et index de pilotes réseau"
 STR_USBWIZ_PAGE3_SELECTED= "Packs de pilotes sélectionnés et index"
 STR_USBWIZ_PAGE3_NOPACKS = "Pas de packs de pilotes"
+STR_USBWIZ_PAGE3_ADDPATH = "Spécifiez un répertoire de pilote supplémentaire"
 STR_USBWIZ_PAGE3_INDEXES = "Inclure les index en ligne"
 
 // USB Wizard - page 4

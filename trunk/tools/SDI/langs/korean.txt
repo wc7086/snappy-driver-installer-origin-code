@@ -1,4 +1,6 @@
-﻿STR_TRANSLATORS         = "달마s"
+﻿// send updates to translations@snappy-driver-installer.org
+
+STR_TRANSLATORS         = "달마s"
 
 STR_EMPTY               = ""
 STR_EMPTY_H             = ""
@@ -131,7 +133,7 @@ STR_SYSINF_64BIT        = "64비트"
 
 // About (deprecated)
 STR_ABOUT_VER           = ""
-STR_ABOUT_DEV_TITLE     = ""
+STR_ABOUT_DEV_TITLE     = "개발자:"
 STR_ABOUT_DEV_LIST      = ""
 STR_ABOUT_TESTERS_TITLE = ""
 STR_ABOUT_TESTERS_LIST  = ""
@@ -409,7 +411,7 @@ STR_OPTION_CMD_FINISHDN = "다운로드 후"
 STR_OPTION_CONSOLE      = "콘솔 창 보기"
 
 // Patreon
-STR_PATREON1             = "SDI는 여가 시간에 자원 봉사자들에 의해 개발되고 있습니다. 이 소프트웨어가 마음에 들 경우, Patreon으로 우리에 지원해 주시기 바랍니다."
+STR_PATREON1             = "정보, 팁 및 프로젝트 지원을 위해 Patreon 페이지를 방문하십시오."
 STR_PATREON2             = "(Patreon 페이지를 열려면 여기를 클릭하세요)"
 STR_PATREON_H            = ""
 
@@ -454,6 +456,7 @@ STR_USBWIZ_PAGE3_ALLPACKS= "All driver packs and indexes"
 STR_USBWIZ_PAGE3_NETWORK = "Network driver packs and indexes"
 STR_USBWIZ_PAGE3_SELECTED= "Selected driver packs and indexes"
 STR_USBWIZ_PAGE3_NOPACKS = "No driver packs"
+STR_USBWIZ_PAGE3_ADDPATH = "Specify additional driver directory"
 STR_USBWIZ_PAGE3_INDEXES = "Include online indexes"
 
 // USB Wizard - page 4
