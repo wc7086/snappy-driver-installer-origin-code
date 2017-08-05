@@ -6,6 +6,15 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.1.0.650
+5 August 2017
+Driver Packs 17075
+Added "runlatest" command to scripts.
+Added additional driver directory to Create USB wizard.
+Updated translations.
+Fixed problems in Create USB Drive wizard delete files.
+Fixed problem in System Protection detection.
+
 Version 1.0.0.637
 22 July 2017
 Driver Packs 17073

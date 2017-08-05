@@ -88,6 +88,7 @@ enum MessagesWND
     WM_UPDATELANG      = WM_APP+2,
     WM_UPDATETHEME     = WM_APP+3,
     WM_SEEDING         = WM_APP+4,
+    WM_TORRENT         = WM_APP+5,
 };
 //}
 
@@ -217,7 +218,7 @@ public:
     void setscrollpos(int pos);
 
     void ShowProgressInTaskbar(bool show,long long complited=0,long long total=0);
-    void DownloadedTorrent();
+    void DownloadedTorrent(int TorrentResults);
     void ResetUpdater(int activetorrent=1);
     void UpdateTorrentItems(int activetorrent);
 
