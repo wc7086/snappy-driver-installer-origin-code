@@ -44,6 +44,20 @@ extern HINSTANCE ghInst;
 extern USBWizard *USBWiz;
 extern Manager *manager_g;
 
+static bool DriversSelected()
+{
+    // see if any drivers are selected on the main window
+    Collection *col=manager_g->matcher->getCol();
+    for(Driverpack &drp:*col->getList())
+    {
+        // get selected driver packs
+        std::wstring filename=drp.getFilename();
+        if(manager_g->isSelected(filename.c_str()))
+            return true;
+    }
+    return false;
+}
+
 static LRESULT CALLBACK Page1DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(wParam);
@@ -181,6 +195,7 @@ static void BuildFilesList(HWND hwnd)
 {
     // compile the files list
     // based on the user selections
+    SetCursor(LoadCursor(nullptr,IDC_WAIT));
 
     wchar_t targetDrive[] = L"A:\\";
     targetDrive[0]=USBWiz->TargetDrive;
@@ -283,6 +298,17 @@ static void BuildFilesList(HWND hwnd)
             break;
     }
 
+    // additional driver path
+    if((USBWiz->AdditionalPath.size()>0)&&System.DirectoryExists(USBWiz->AdditionalPath.c_str()))
+    {
+        // get the directory name to be included in the copy
+        std::wstring d(USBWiz->AdditionalPath);
+        size_t found=d.find_last_of(L"/\\");
+        if(found!=std::wstring::npos)
+            d.erase(0,found+1);
+        USBWiz->AddDirectory(USBWiz->AdditionalPath,L"\\drivers\\"+d);
+    }
+
     // online indexes
     if(USBWiz->IncludeOnlineIndexes)
     {
@@ -320,7 +346,7 @@ static void BuildFilesList(HWND hwnd)
             {
                 std::wstring spec(Settings.data_dir);
                 spec.append(L"\\langs");
-                USBWiz->AddDirectory(spec);
+                USBWiz->AddDirectory(spec,spec);
                 break;
             }
 
@@ -353,7 +379,7 @@ static void BuildFilesList(HWND hwnd)
         {
             std::wstring dir(Settings.data_dir);
             dir.append(L"\\themes");
-            USBWiz->AddDirectory(dir);
+            USBWiz->AddDirectory(dir,dir);
             break;
         }
         // current selected theme
@@ -374,7 +400,7 @@ static void BuildFilesList(HWND hwnd)
             found=filename.find_last_of(L".");
             if(found!=std::wstring::npos)
                 filename=filename.substr(0,found);
-            USBWiz->AddDirectory(filename);
+            USBWiz->AddDirectory(filename,filename);
             break;
         }
         // default theme
@@ -467,6 +493,8 @@ static void BuildFilesList(HWND hwnd)
     SetDlgItemText(hwnd,IDC_USBWIZ_PAGE4_EXESIZE_VAL,buf3.c_str());
 
     InvalidateRect(hwnd,nullptr,TRUE);
+    USBWiz->pathChanged=false;
+    SetCursor(LoadCursor(nullptr,IDC_ARROW));
 }
 
 static LRESULT CALLBACK Page2DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
@@ -585,7 +613,11 @@ static LRESULT CALLBACK Page3DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
     {
         case WM_INITDIALOG:
         {
-            SendDlgItemMessage(hwnd,IDC_USBWIZ_PAGE3_ALLPACKS,BM_SETCHECK,BST_CHECKED,USBWiz->DriverPackOption);
+            if(USBWiz->DriverPackOption==2)
+                SendDlgItemMessage(hwnd,IDC_USBWIZ_PAGE3_SELECTED,BM_SETCHECK,BST_CHECKED,0);
+            else
+                SendDlgItemMessage(hwnd,IDC_USBWIZ_PAGE3_ALLPACKS,BM_SETCHECK,BST_CHECKED,0);
+
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_SPACEREQ),STR(STR_USBWIZ_SPACEREQ));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_SPACEAVAIL),STR(STR_USBWIZ_SPACEAVAIL));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_SELECT),STR(STR_USBWIZ_PAGE3_SELECT));
@@ -593,6 +625,7 @@ static LRESULT CALLBACK Page3DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_NETWORK),STR(STR_USBWIZ_PAGE3_NETWORK));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_SELECTED),STR(STR_USBWIZ_PAGE3_SELECTED));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_NOPACKS),STR(STR_USBWIZ_PAGE3_NOPACKS));
+            SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_ADDPATH),STR(STR_USBWIZ_PAGE3_ADDPATH));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_INDEXES),STR(STR_USBWIZ_PAGE3_INDEXES));
             return TRUE;
         }
@@ -602,17 +635,52 @@ static LRESULT CALLBACK Page3DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
                 DWORD ntc=HIWORD(wParam);
 //                HWND hCtl=(HWND)lParam;
                 // radio buttons and checkboxes
-                if((cid==IDC_USBWIZ_PAGE3_ALLPACKS)&&(ntc==BN_CLICKED))
+                if((cid==IDC_USBWIZ_PAGE3_ALLPACKS)&&(ntc==BN_CLICKED)&&SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_ALLPACKS),BM_GETCHECK,0,0))
+                {
                     USBWiz->DriverPackOption=0;
-                else if((cid==IDC_USBWIZ_PAGE3_NETWORK)&&(ntc==BN_CLICKED))
+                    BuildFilesList(hwnd);
+                }
+                else if((cid==IDC_USBWIZ_PAGE3_NETWORK)&&(ntc==BN_CLICKED)&&SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_NETWORK),BM_GETCHECK,0,0))
+                {
                     USBWiz->DriverPackOption=1;
-                else if((cid==IDC_USBWIZ_PAGE3_SELECTED)&&(ntc==BN_CLICKED))
+                    BuildFilesList(hwnd);
+                }
+                else if((cid==IDC_USBWIZ_PAGE3_SELECTED)&&(ntc==BN_CLICKED)&&SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_SELECTED),BM_GETCHECK,0,0))
+                {
                     USBWiz->DriverPackOption=2;
-                else if((cid==IDC_USBWIZ_PAGE3_NOPACKS)&&(ntc==BN_CLICKED))
+                    BuildFilesList(hwnd);
+                }
+                else if((cid==IDC_USBWIZ_PAGE3_NOPACKS)&&(ntc==BN_CLICKED)&&SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_NOPACKS),BM_GETCHECK,0,0))
+                {
                     USBWiz->DriverPackOption=3;
+                    BuildFilesList(hwnd);
+                }
                 else if(cid==IDC_USBWIZ_PAGE3_INDEXES)
+                {
                     USBWiz->IncludeOnlineIndexes=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_INDEXES),BM_GETCHECK,0,0);
-                BuildFilesList(hwnd);
+                    BuildFilesList(hwnd);
+                }
+                else if((cid==IDC_USBWIZ_PAGE3_PATHEDIT)&&(ntc==EN_CHANGE))
+                {
+                    wchar_t buf[BUFSIZ];
+                    SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_PATHEDIT),WM_GETTEXT,BUFSIZ,LPARAM(buf));
+                    USBWiz->AdditionalPath=buf;
+                    USBWiz->pathChanged=true;
+                }
+                else if((cid==IDC_USBWIZ_PAGE3_PATHBUTTON)&&(ntc==BN_CLICKED))
+                {
+                    wchar_t path[BUFSIZ];
+                    if(USBWiz->AdditionalPath.size()>0)
+                        wcscpy(path,USBWiz->AdditionalPath.c_str());
+                    else
+                        wcscpy(path,System.AppPathW().c_str());
+                    if(System.ChooseDir(path,L"Select Additional Path"))
+                    {
+                        SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE3_PATHEDIT),WM_SETTEXT,0,LPARAM(path));
+                        BuildFilesList(hwnd);
+                    }
+                }
+
             }
             break;
 
@@ -628,7 +696,11 @@ static LRESULT CALLBACK Page3DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
                     case PSN_WIZFINISH:
                         break;
                     case PSN_WIZNEXT:
-                        break;
+                        {
+                            if(USBWiz->pathChanged)
+                                BuildFilesList(hwnd);
+                            break;
+                        }
                     case PSN_WIZBACK:
                         break;
                     case PSN_RESET:
@@ -700,15 +772,30 @@ static LRESULT CALLBACK Page4DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
 //                HWND hCtl=(HWND)lParam;
                 // radio buttons and checkboxes
                 if((cid==IDC_USBWIZ_PAGE4_ALLLANG)&&(ntc==BN_CLICKED))
+                {
                     USBWiz->Languages=0;
+                    BuildFilesList(hwnd);
+                }
                 else if((cid==IDC_USBWIZ_PAGE4_CURLANG)&&(ntc==BN_CLICKED))
+                {
                     USBWiz->Languages=1;
+                    BuildFilesList(hwnd);
+                }
                 else if((cid==IDC_USBWIZ_PAGE4_ALLTHEME)&&(ntc==BN_CLICKED))
+                {
                     USBWiz->Themes=0;
+                    BuildFilesList(hwnd);
+                }
                 else if((cid==IDC_USBWIZ_PAGE4_CURTHEME)&&(ntc==BN_CLICKED))
+                {
                     USBWiz->Themes=1;
+                    BuildFilesList(hwnd);
+                }
                 else if((cid==IDC_USBWIZ_PAGE4_DEFTHEME)&&(ntc==BN_CLICKED))
+                {
                     USBWiz->Themes=2;
+                    BuildFilesList(hwnd);
+                }
                 else if((cid==IDC_USBWIZ_PAGE4_EXPERT)&&(ntc==BN_CLICKED))
                     USBWiz->ExpertMode=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE4_EXPERT),BM_GETCHECK,0,0);
                 else if((cid==IDC_USBWIZ_PAGE4_NOUPD)&&(ntc==BN_CLICKED))
@@ -719,7 +806,7 @@ static LRESULT CALLBACK Page4DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
                     USBWiz->NoLogs=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE4_NOLOG),BM_GETCHECK,0,0);
                 else if((cid==IDC_USBWIZ_PAGE4_INCAUTO)&&(ntc==BN_CLICKED))
                     USBWiz->IncludeAutoFiles=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE4_INCAUTO),BM_GETCHECK,0,0);
-                BuildFilesList(hwnd);
+
             }
             break;
 
@@ -833,6 +920,11 @@ USBWizard::USBWizard()
     iccx.dwSize=sizeof(INITCOMMONCONTROLSEX);
     iccx.dwICC=ICC_COOL_CLASSES|ICC_NATIVEFNTCTL_CLASS|ICC_STANDARD_CLASSES|ICC_TAB_CLASSES|ICC_USEREX_CLASSES|ICC_WIN95_CLASSES;
     InitCommonControlsEx(&iccx);
+
+    if(DriversSelected())
+        DriverPackOption=2;
+    else
+        DriverPackOption=0;
 }
 
 bool USBWizard::doWizard()
@@ -962,14 +1054,27 @@ void USBWizard::ClearDirectory(const std::wstring directory)
         {
             if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
             {
-                if(!StrStrIW(FindFileData.cFileName,L"."))
+                if((_wcsicmp(FindFileData.cFileName,L".")!=0)&&(_wcsicmp(FindFileData.cFileName,L"..")!=0))
                 {
                     spec=cwd+(std::wstring)FindFileData.cFileName;
-                    ClearDirectory(spec);
-                    DWORD err=RemoveDirectory(spec.c_str());
+                    // i will try 3 times to clear the directory before moving on
+                    int errcount=0;
+                    DWORD err;
+                    do
+                    {
+                        ClearDirectory(spec);
+                        err=RemoveDirectory(spec.c_str());
+                        // return value of 0 means error
+                        if(err==0)
+                        {
+                            errcount++;
+                            Sleep(1000);
+                        }
+                    }while((err==0)&&(errcount<3));
                     if(err==0)
                     {
-                        std::wstring b=L"Error " + std::to_wstring(GetLastError()) +
+                        int LastError=GetLastError();
+                        std::wstring b=L"Error " + std::to_wstring(LastError) +
                                        L" removing directory " + spec;
                         MessageBox(nullptr, b.c_str(), L"Error", MB_ICONERROR|MB_OK);
                     }
@@ -979,6 +1084,7 @@ void USBWizard::ClearDirectory(const std::wstring directory)
             {
                 spec=cwd+(std::wstring)FindFileData.cFileName;
                 ipd->SetLine(2,spec.c_str(),TRUE,nullptr);
+                SetFileAttributes(spec.c_str(),FILE_ATTRIBUTE_NORMAL);
                 DeleteFile(spec.c_str());
             }
         }
@@ -1104,7 +1210,7 @@ void USBWizard::AddFile(std::wstring source,std::wstring dest)
     }
 }
 
-void USBWizard::AddDirectory(std::wstring dir)
+void USBWizard::AddDirectory(std::wstring dir,std::wstring targetPath)
 {
     // recurse the given path
     std::wstring spec(dir);
@@ -1120,8 +1226,8 @@ void USBWizard::AddDirectory(std::wstring dir)
     {
         if((FindFileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
         {
-            if(!StrStrIW(FindFileData.cFileName,L"."))
-                AddDirectory(dir+L"\\"+FindFileData.cFileName);
+            if((_wcsicmp(FindFileData.cFileName,L".")!=0)&&(_wcsicmp(FindFileData.cFileName,L"..")!=0))
+                AddDirectory(dir+L"\\"+FindFileData.cFileName,targetPath+L"\\"+FindFileData.cFileName);
         }
         else
         {
@@ -1135,7 +1241,9 @@ void USBWizard::AddDirectory(std::wstring dir)
             BytesRequired=BytesRequired+ul.QuadPart;
 
             std::wstring TargetFileName=targetDrive;
-            TargetFileName.append(dir+L"\\"+(std::wstring)FindFileData.cFileName);
+            TargetFileName.append(targetPath+L"\\"+FindFileData.cFileName);
+            while(TargetFileName.find(L"\\\\")!=std::wstring::npos)
+                TargetFileName.erase(TargetFileName.find(L"\\\\"),1);
             TargetList.push_back(TargetFileName);
         }
     }
