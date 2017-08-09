@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Доступны обновления из Интер
 STR_UPD_START           = "(Кликните здесь, чтобы начать загрузку)"
 STR_UPD_PROGRES         = "Загружено %s из %s (%d%%)"
 STR_UPD_MODIFY          = "(Кликните здесь, чтобы выбрать обновления)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Загружено"
 STR_DWN_DOWNLOADED_F    = "%s из %s (%d%%)"

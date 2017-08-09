@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Mises à jour disponibles: SDIO R%d et %d packs de pi
 STR_UPD_START           = "(Cliquer ici pour lancer le téléchargement)"
 STR_UPD_PROGRES         = "Téléchargé %s de %s (%d%%)"
 STR_UPD_MODIFY          = "(Cliquer ici pour sélectionner les mises à jour)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Téléchargé"
 STR_DWN_DOWNLOADED_F    = "%s de %s (%d%%)"
