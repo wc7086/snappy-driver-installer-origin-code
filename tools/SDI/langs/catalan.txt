@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "N'ha ha actualitzacions disponibles: SDIO R%d i %d dr
 STR_UPD_START           = "(Fes clic per començar a baixar)"
 STR_UPD_PROGRES         = "Baixat %s de %s (%d%%)"
 STR_UPD_MODIFY          = "(Fes clic per seleccionar actualitzacions)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Baixat"
 STR_DWN_DOWNLOADED_F    = "%s de %s (%d%%)"

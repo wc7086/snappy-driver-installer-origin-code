@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "利用可能なアップデート: SDIO R%d と %d �
 STR_UPD_START           = "(ここをクリックでダウンロード開始)"
 STR_UPD_PROGRES         = "ダウンロード済 %s / %s (%d%%)"
 STR_UPD_MODIFY          = "(ここをクリックで更新を選択)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "ダウンロード"
 STR_DWN_DOWNLOADED_F    = "%s / %s (%d%%)"

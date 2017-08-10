@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Доступні оновлення з Інтерне
 STR_UPD_START           = "(Клікніть тут, щоб розпочати завантаження)"
 STR_UPD_PROGRES         = "Завантажено %s з %s (%d%%)"
 STR_UPD_MODIFY          = "(Клікніть тут, щоб обрати оновлення)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Завантажено"
 STR_DWN_DOWNLOADED_F    = "%s з %s (%d%%)"

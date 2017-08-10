@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Υπάρχουν διαθέσιμες ενημερώ�
 STR_UPD_START           = "(Κάντε κλικ εδώ για να ξεκινήσετε τη λήψη)"
 STR_UPD_PROGRES         = "Ανέβηκε %s από %s (%d%%)"
 STR_UPD_MODIFY          = "(Κάντε κλικ εδώ, για να επιλέξετε τις ενημερώσεις)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Λήψη"
 STR_DWN_DOWNLOADED_F    = "%s από %s (% d %%)"

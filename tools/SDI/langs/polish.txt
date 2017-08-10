@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Dostępne są aktualizacje: SDIO R%d i %d pakiet(y) z
 STR_UPD_START           = "(Kliknij tutaj, aby rozpocząć pobieranie)"
 STR_UPD_PROGRES         = "Pobrano %s z %s (%d%%)"
 STR_UPD_MODIFY          = "(Kliknij tutaj, aby wybrać aktualizacje)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Pobrano"
 STR_DWN_DOWNLOADED_F    = "%s z %s (%d%%)"

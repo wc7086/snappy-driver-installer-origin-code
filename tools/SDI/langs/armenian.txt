@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Հասանելի են թարմացումներ. SDIO 
 STR_UPD_START           = "(Սեղմեք այստեղ, որպեսզի բեռնումը սկսվի)"
 STR_UPD_PROGRES         = "Բեռնված է %s ից %s (%d%%)"
 STR_UPD_MODIFY          = "(Սեղմեք այստեղ, որպեսզի ընտրեք թարմացումը)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Բեռնված է"
 STR_DWN_DOWNLOADED_F    = "%s ից %s (%d%%)"

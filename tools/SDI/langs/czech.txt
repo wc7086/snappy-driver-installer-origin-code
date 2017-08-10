@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Jsou dostupné aktualizace: SDIO R%d a %d balíčků"
 STR_UPD_START           = "(Klikneme zde pro spuštění stažení)"
 STR_UPD_PROGRES         = "Staženo %s z %s (%d%%)"
 STR_UPD_MODIFY          = "(Klikneme zde pro výběr aktualizací)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Staženo"
 STR_DWN_DOWNLOADED_F    = "%s z %s (%d%%)"
