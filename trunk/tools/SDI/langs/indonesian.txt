@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Pembaharuan tersedia: SDIO R%d dan %d pack driver"
 STR_UPD_START           = "(klik di sini untuk memulai unduhan)"
 STR_UPD_PROGRES         = "Terunduh %s dari %s (%d%%)"
 STR_UPD_MODIFY          = "(klik di sini untuk memilih pembaharuan)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Telah diunduh"
 STR_DWN_DOWNLOADED_F    = "%s dari %s (%d%%)"

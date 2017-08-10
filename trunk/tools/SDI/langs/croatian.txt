@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Dostupne su nadogradnje: SDIO R%d i %d paketa upravlj
 STR_UPD_START           = "(Klikni ovdje za početak preuzimanja)"
 STR_UPD_PROGRES         = "Preuzeto %s od %s (%d%%)"
 STR_UPD_MODIFY          = "(Kliknite ovdje da biste odabrali ažuriranja)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Preuzeto"
 STR_DWN_DOWNLOADED_F    = "%s od %s (%d%%)"

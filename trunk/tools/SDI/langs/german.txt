@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Aktualisierungen sind verfügbar: SDIO R%d und %d Tre
 STR_UPD_START           = "(Hier klicken, um das Herunterladen auszulösen)"
 STR_UPD_PROGRES         = "Heruntergeladen %s von %s (%d%%)"
 STR_UPD_MODIFY          = "(Hier klicken, um Aktualisierungen auszuwählen)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Heruntergeladen"
 STR_DWN_DOWNLOADED_F    = "%s von %s (%d%%)"

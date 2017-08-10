@@ -330,12 +330,16 @@ STR_UPD_AVAIL3          = "Actualizaciones disponibles: SDIO R%d y %d DriverPack
 STR_UPD_START           = "(Clic aquí para iniciar la descarga)"
 STR_UPD_PROGRES         = "Descargado %s de %s (%d%%)"
 STR_UPD_MODIFY          = "(Clic aquí para seleccionar actualizaciones)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Descargado"
 STR_DWN_DOWNLOADED_F    = "%s de %s (%d%%)"
 STR_DWN_UPLOADED        = "Subido"
 STR_DWN_ELAPSED         = "Tiempo transcurrido"
 STR_DWN_REMAINING       = "Tiempo restante"
+STR_DWN_SEEDING         = "Seeding %s (%s)"
+STR_DWN_MODIFY          = "(Click here to stop)"
+STR_DWN_CLOSING         = "Closing session"
 
 STR_DWN_STATUS          = "Estado"
 STR_DWN_ERROR           = "Error"

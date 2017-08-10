@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Sunt actualizări disponibile: SDIO R%d și %d pachet
 STR_UPD_START           = "(Apasă pentru a porni descărarea)"
 STR_UPD_PROGRES         = "Descărcat %s din %s (%d%%)"
 STR_UPD_MODIFY          = "(Apasă aici pentru a selecta actualizările)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Descărcat"
 STR_DWN_DOWNLOADED_F    = "%s din %s (%d%%)"

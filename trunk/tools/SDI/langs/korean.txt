@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "업데이트 가능: SDIO R%d 및 %d 드라이버팩"
 STR_UPD_START           = "(다운로드를 시작하려면 여기를 클릭하세요)"
 STR_UPD_PROGRES         = "%s / %s (%d%%) 다운로드"
 STR_UPD_MODIFY          = "(업데이트를 선택하려면 여기를 클릭하세요)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "다운로드"
 STR_DWN_DOWNLOADED_F    = "%s / %s (%d%%)"

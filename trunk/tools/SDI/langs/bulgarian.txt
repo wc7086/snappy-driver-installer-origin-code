@@ -323,12 +323,14 @@ STR_UPD_UPDATEHINT1     = "Съвет"
 STR_UPD_UPDATEHINT2     = "Трябва да обновите базата преди да можете да използвате тази функция."
 
 // Update hint
+STR_UPD_CHECKING        = "Checking for updates"
 STR_UPD_AVAIL1          = "Налични са обновления: SDIO R%d"
 STR_UPD_AVAIL2          = "Налични са обновления: %d драйверни пакета"
 STR_UPD_AVAIL3          = "Налични са обновления: SDIO R%d и %d драйверни пакета"
 STR_UPD_START           = "(Натиснете тук за да започнете изтеглянето)"
 STR_UPD_PROGRES         = "Изтеглени %s от %s (%d%%)"
 STR_UPD_MODIFY          = "(Натиснете тук за да изберете оновления)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Изтеглени"
 STR_DWN_DOWNLOADED_F    = "%s от %s (%d%%)"

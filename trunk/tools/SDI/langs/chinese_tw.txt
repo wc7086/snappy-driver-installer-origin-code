@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "可用的更新:  SDIO R%d及%d 驅動包"
 STR_UPD_START           = "(點選這裡開始下載)"
 STR_UPD_PROGRES         = "已下載%s共%s (%d%%)"
 STR_UPD_MODIFY          = "(按這裡選取更新)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "已下載"
 STR_DWN_DOWNLOADED_F    = "%s共%s (%d%%)"

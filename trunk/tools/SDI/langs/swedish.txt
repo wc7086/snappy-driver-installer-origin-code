@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Uppdateringar finns: SDIO R%d och %d drivrutinpaket"
 STR_UPD_START           = "(Klicka här för att komma till nedladdning)"
 STR_UPD_PROGRES         = "Nedladdade %s utav %s (%d%%)"
 STR_UPD_MODIFY          = "(klicka här för att välja uppdateringar)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Nedladdade"
 STR_DWN_DOWNLOADED_F    = "%s av %s (%d%%)"

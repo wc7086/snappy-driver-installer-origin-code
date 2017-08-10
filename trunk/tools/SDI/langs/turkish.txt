@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Güncelleme mevcut: SDIO R%d ve %d sürücü paketi"
 STR_UPD_START           = "(İndirmeyi başlatmak için tıklayın)"
 STR_UPD_PROGRES         = "İndirilen %s / %s (%d%%)"
 STR_UPD_MODIFY          = "(Güncellemeleri seçmek için tıklayın)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "İndirilen"
 STR_DWN_DOWNLOADED_F    = "%s / %s (%d%%)"

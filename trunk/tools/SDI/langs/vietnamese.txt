@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Cập nhật có sẵn: SDIO R%d và %d bộ cài"
 STR_UPD_START           = "(CHọn đây để tải)"
 STR_UPD_PROGRES         = "Đã tải %s trong số %s (%d%%)"
 STR_UPD_MODIFY          = "(CHọn đây để chọn các cập nhật)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Đã tải"
 STR_DWN_DOWNLOADED_F    = "%s trong số %s (%d%%)"

@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Uuendused on saadaval: SDIO R%d ja %d draiveri kogumi
 STR_UPD_START           = "(Vajutage siia, et alustad allalaadimist)"
 STR_UPD_PROGRES         = "Allalaetud %s / %s (%d%%)"
 STR_UPD_MODIFY          = "(Vajutage siia, et valida uuendused)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Allalaetud"
 STR_DWN_DOWNLOADED_F    = "%s / %s (%d%%)"

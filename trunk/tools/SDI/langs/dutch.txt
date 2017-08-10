@@ -323,18 +323,23 @@ STR_UPD_UPDATEHINT1     = "Hint"
 STR_UPD_UPDATEHINT2     = "U moet base eerst bijwerken om deze functie te gebruiken."
 
 // Update hint
+STR_UPD_CHECKING        = "Checking for updates"
 STR_UPD_AVAIL1          = "Updates zijn beschikbaar: SDIO R%d"
 STR_UPD_AVAIL2          = "Updates zijn beschikbaar: %d driverpacks"
 STR_UPD_AVAIL3          = "Updates zijn beschikbaar : SDIO R %d en %d driverpacks"
 STR_UPD_START           = "(Klik hier om de download te starten)"
 STR_UPD_PROGRES         = "Downloaded %s out of %s (%d%%)"
 STR_UPD_MODIFY          = "(Klik hier om updates te selecteren)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Gedownload"
 STR_DWN_DOWNLOADED_F    = "%s out of %s (%d%%)"
 STR_DWN_UPLOADED        = "Geüpload"
 STR_DWN_ELAPSED         = "Tijd verstreken"
 STR_DWN_REMAINING       = "Resterende tijd"
+STR_DWN_SEEDING         = "Seeding %s (%s)"
+STR_DWN_MODIFY          = "(Click here to stop)"
+STR_DWN_CLOSING         = "Closing session"
 
 STR_DWN_STATUS          = "Status"
 STR_DWN_ERROR           = "Fout"

@@ -330,6 +330,7 @@ STR_UPD_AVAIL3          = "Opdateringer er tilgængelige: SDIO R%d og %d driverp
 STR_UPD_START           = "(Klik her for at starte download)"
 STR_UPD_PROGRES         = "Downloaded %s ud af %s (%d%%)"
 STR_UPD_MODIFY          = "Klik her for at vælge opdateringer"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Downloadet"
 STR_DWN_DOWNLOADED_F    = "%s ud af %s (%d%%)"

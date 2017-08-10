@@ -274,6 +274,7 @@ STR_SYS_32              = "32-bit"
 STR_SYS_64              = "64-bit"
 STR_SYS_DEVICEMNG       = "Ierīču pārvaldnieks"
 STR_SYS_DISINSTALL      = "Atslēgt vadītāju uzstādīšanu. Atslēgt atjaunošanas punktu izveidi"
+STR_SYS_DISRESTPNT      = "Disable restore points"
 
 // Update
 STR_UPD_DIALOG_TITLE    = "Atjauninājumu pārbaude"
@@ -329,6 +330,7 @@ STR_UPD_AVAIL3          = "Pieejami atjauninājumi no Interneta: SDIO R%d un %d 
 STR_UPD_START           = "(Uzklikšķiniet šeit, lai uzsāktu lejuplādi)"
 STR_UPD_PROGRES         = "Lejuplādēts %s no %s (%d%%)"
 STR_UPD_MODIFY          = "(Uzklikšķiniet šeit, lai izvēlētos atjauninājumu)"
+STR_UPD_CHECKINGFILES   = "Checking files %s of %s (%d%%)"
 
 STR_DWN_DOWNLOADED      = "Lejuplādēts"
 STR_DWN_DOWNLOADED_F    = "%s no %s (%d%%)"
