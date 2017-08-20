@@ -90,6 +90,13 @@ enum MessagesWND
     WM_SEEDING         = WM_APP+4,
     WM_TORRENT         = WM_APP+5,
 };
+
+// torrents
+enum TORRENT_SELECTION_MODE
+{
+    TSM_NONE           = 0,
+    TSM_AUTO           = 1
+};
 //}
 
 //{ Global variables

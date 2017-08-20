@@ -66,6 +66,8 @@ bool emptydrp;
 WinVersions winVersions;
 HMENU pSysMenu,ToolsMenu,UpdatesMenu;
 int pSysMenuCount=0;
+TORRENT_SELECTION_MODE TorrentSelectionMode=TSM_NONE;
+
 // http://www.winprog.org/tutorial/dlgfaq.html
 HBRUSH g_hbrDlgBackground = CreateSolidBrush(GetSysColor(COLOR_BTNFACE));
 
@@ -245,6 +247,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Check updates
     #ifdef USE_TORRENT
     Updater=CreateUpdater();
+    TorrentSelectionMode=TSM_AUTO;
     #endif
 
     // Start folder monitors
@@ -366,6 +369,9 @@ void MainWindow_t::LoadMenuItems()
 
     // add options to the system menu - reverse order
     AddMenuItem(pSysMenu,MIIM_FTYPE,0,MFT_SEPARATOR,0,nullptr,const_cast<wchar_t *>(L""));
+    #ifndef NDEBUG
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_WELCOME,0,0,nullptr,const_cast<wchar_t *>(L"Welcome"));
+    #endif // NDEBUG
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_LICENSE,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_ABOUT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_USBWIZARD,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_USBWIZARD));
@@ -1082,6 +1088,8 @@ void MainWindow_t::snapshot()
 void MainWindow_t::extractto()
 {
     wchar_t dir[BUFLEN];
+    std::wstring path=System.AppPathW();
+    wcscpy(dir,path.c_str());
 
     if(System.ChooseDir(dir,STR(STR_EXTRACTFOLDER)))
     {
@@ -1296,12 +1304,13 @@ void MainWindow_t::ShowProgressInTaskbar(bool show,long long complited,long long
 
 void MainWindow_t::DownloadedTorrent(int TorrentResults)
 {
-    UNREFERENCED_PARAMETER(TorrentResults);
+    // a torrent has just been downloaded
 
     // update the menu items
     ModifyMenuItem(pSysMenu,MIIM_STATE,IDM_SEED,MFS_ENABLED,nullptr);
     UpdateTorrentItems(Updater->activetorrent);
 
+	// get driver count, index count, command line count
     wchar_t spec1[BUFLEN];
     wchar_t spec2[BUFLEN];
     wcscpy(spec1,Settings.drp_dir);wcscat(spec1,L"\\*.*");
@@ -1309,11 +1318,32 @@ void MainWindow_t::DownloadedTorrent(int TorrentResults)
     int argc;
     CommandLineToArgvW(GetCommandLineW(),&argc);
 
-    // if there are no drivers and no indexes
-    // and no command line then show the welcome screen
-    if(!System.FileExists2(spec1)&&!System.FileExists2(spec2)&&(argc<2))
-        DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
-}
+    // torrent results
+    int NewVersion=TorrentResults>>8;
+    int LatestExeVersion=System.FindLatestExeVersion();
+    int DriverPacksAvailable=TorrentResults&0xFF;
+
+	if(TorrentSelectionMode==TSM_AUTO)
+	{
+        // just finished downloading the first torrent after startup
+        // if there are no drivers and no indexes
+        // and no command line then show the welcome screen
+        if(!System.FileExists2(spec1)&&!System.FileExists2(spec2)&&(argc<2))
+        {
+            TorrentSelectionMode=TSM_NONE;
+            DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
+        }
+        // otherwise if there are updates on the current torrent then stop switching
+        else if((NewVersion>LatestExeVersion)||(DriverPacksAvailable>0))
+            TorrentSelectionMode=TSM_NONE;
+        // no updates on this torrent so try the next one then stop
+        else if(Updater->activetorrent==1)
+        {
+            TorrentSelectionMode=TSM_NONE;
+            ResetUpdater(2);
+        }
+	}
+ }
 
 void MainWindow_t::ResetUpdater(int activetorrent)
 {
@@ -1898,11 +1928,13 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     }
                     case IDM_UPDATES_SDIO:
                         {
+                            TorrentSelectionMode=TSM_NONE;
                             MainWindow.ResetUpdater(1);
                             return 0;
                         }
                     case IDM_UPDATES_DRIVERS:
                         {
+                            TorrentSelectionMode=TSM_NONE;
                             MainWindow.ResetUpdater(2);
                             return 0;
                         }
@@ -1969,6 +2001,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     case IDM_OPENLOGS:
                     {
                         ShellExecute(MainWindow.hMain,L"explore",Settings.log_dir,nullptr,nullptr,SW_SHOW);
+                        return 0;
+                    }
+                    case IDM_WELCOME:
+                    {
+                        DialogBox(ghInst,MAKEINTRESOURCE(IDD_WELCOME), MainWindow.hMain,(DLGPROC)WelcomeProcedure);
                         return 0;
                     }
                     case IDM_LICENSE:

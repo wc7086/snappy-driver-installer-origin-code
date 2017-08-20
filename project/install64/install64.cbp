@@ -12,7 +12,6 @@
 				<Option type="1" />
 				<Option compiler="gcc_64" />
 				<Option use_console_runner="0" />
-				<Option parameters="asd qwe" />
 				<Compiler>
 					<Add option="-fomit-frame-pointer" />
 					<Add option="-fexpensive-optimizations" />

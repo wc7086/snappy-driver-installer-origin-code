@@ -7,5 +7,7 @@
 		</Project>
 		<Project filename="install64/install64.cbp" />
 		<Project filename="7zip/lib.cbp" />
+		<Project filename="Langs/Langs.cbp" />
+		<Project filename="Translation Tool/Translation Tool.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

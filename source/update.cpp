@@ -1055,7 +1055,7 @@ void UpdaterImp::ShowProgress(wchar_t *buf)
         else if(st.state==torrent_status::queued_for_checking)
             wsprintf(buf,STR(STR_TR_ST0));
         else if(st.state==torrent_status::checking_files)
-            wsprintf(buf,L"Checking files %s of %s (%d%%)",num1,num2,
+            wsprintf(buf,STR(STR_UPD_CHECKINGFILES),num1,num2,
                 (TorrentStatus.downloadsize)?TorrentStatus.downloaded*100/TorrentStatus.downloadsize:0);
         else if(st.state==torrent_status::downloading_metadata)
             wsprintf(buf,STR(STR_TR_ST2));
@@ -1465,7 +1465,7 @@ int UpdaterImp::scriptDownloadEverything()
     {
         // get the file entry
         file_entry fe=ti->file_at(i);
-        std::string file=fe.path;
+        std::string file=to_lower(fe.path);
         // look for driver entries
         size_t p=file.find("drivers\\");
         if(p!=std::string::npos)
