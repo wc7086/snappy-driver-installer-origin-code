@@ -130,6 +130,8 @@ bool SystemImp::ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_
     ofn.lpstrDefExt=ext;
     ofn.lpstrFile  =filename;
     ofn.Flags      =OFN_FILEMUSTEXIST|OFN_HIDEREADONLY|OFN_PATHMUSTEXIST|OFN_NOCHANGEDIR;
+    std::wstring initPath=System.AppPathW();
+    ofn.lpstrInitialDir=initPath.c_str();
 
     if(GetOpenFileName(&ofn))return true;
     return false;

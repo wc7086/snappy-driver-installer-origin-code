@@ -6,6 +6,15 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.2.0.655
+20 August 2017
+Driver Packs 17082
+Set initial directory in Extract tool.
+Check both torrents on startup.
+Set initial directory in Load snapshot.
+Updated translations.
+Fixed problem with torrent 2 in script.
+
 Version 1.1.0.650
 5 August 2017
 Driver Packs 17075

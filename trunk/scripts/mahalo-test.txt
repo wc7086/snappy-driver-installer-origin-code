@@ -14,9 +14,14 @@ echo ==============================
 echo
 
 echo Initialising...
-verbose 384
+verbose 8580
+debug on
 init
 echo Getting the latest of everything...
+activetorrent 1
+checkupdates
+get everything
+activetorrent 2
 checkupdates
 get everything
 end
