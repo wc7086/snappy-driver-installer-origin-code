@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "EDsOn GENuInO"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Português Brasileiro"
 STR_LANG_ID             = "Brazilian"
 STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE

@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "달마s"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "한국어"
 STR_LANG_ID             = "Korean"
 STR_LANG_GROUP          = 8 // LGRPID_KOREAN

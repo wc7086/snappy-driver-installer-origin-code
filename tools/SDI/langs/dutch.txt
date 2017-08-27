@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "Dannyict"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Nederlands"
 STR_LANG_ID             = "Dutch"
 STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE

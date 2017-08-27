@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "atreyu_ts, raddy, samsobi, Sorc"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Українська"
 STR_LANG_ID             = "Ukrainian"
 STR_LANG_GROUP          = 0x05 // LGRPID_CYRILLIC

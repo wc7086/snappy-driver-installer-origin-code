@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "EK"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Eesti"
 STR_LANG_ID             = "Estonian"
 STR_LANG_GROUP          = 0x03 // LGRPID_BALTIC

@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "Łukasz Sumera"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Polski"
 STR_LANG_ID             = "Polish"
 STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE

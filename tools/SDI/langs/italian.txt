@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "garf02, LUIhacker"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Italiano"
 STR_LANG_ID             = "Italian"
 STR_LANG_GROUP          = 0x0001 // LGRPID_WESTERN_EUROPE

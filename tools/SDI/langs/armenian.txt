@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "Yeghiazaryan Karen-Egho"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Հայերեն"
 STR_LANG_ID             = "Armenian"
 STR_LANG_GROUP          = 0x11 // LGRPID_ARMENIAN

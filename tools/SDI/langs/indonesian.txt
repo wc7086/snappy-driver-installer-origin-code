@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "Bina Rianto"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Bahasa Indonesia"
 STR_LANG_ID             = "Indonesian"
 STR_LANG_GROUP          = 0x000e

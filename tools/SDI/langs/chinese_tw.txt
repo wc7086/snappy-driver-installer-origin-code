@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "別翻譯它.在這留下你的名字."
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "正體中文"
 STR_LANG_ID             = "Chinese (Taiwan)"
 STR_LANG_GROUP          = 0x000A
