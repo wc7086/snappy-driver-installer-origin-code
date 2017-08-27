@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "«Latinissimus»"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Deutsch"
 STR_LANG_ID             = "German"
 STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE

@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "KAUW5164"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "ภาษาไทย"
 STR_LANG_ID             = "Thai"
 STR_LANG_GROUP          = 0x000B // LGRPID_THAI

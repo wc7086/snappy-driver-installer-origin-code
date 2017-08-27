@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "blc"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Norsk"
 STR_LANG_ID             = "Norwegian"
 STR_LANG_GROUP          = 0x03 // LGRPID_BALTIC

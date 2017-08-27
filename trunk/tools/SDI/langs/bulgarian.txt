@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "Иван Иванов Ивановски"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "Български"
 STR_LANG_ID             = "Bulgarian"
 STR_LANG_GROUP          = 0x0005 //LGRPID_CYRILLIC

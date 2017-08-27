@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "giglatupuria"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "ქართული"
 STR_LANG_ID             = "Georgian"
 STR_LANG_GROUP          = LGRPID_GEORGIAN
