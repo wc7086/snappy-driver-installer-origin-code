@@ -10,7 +10,7 @@ STR_RTL                       = 0
 
 // left panel
 STR_SHOW_SYSINFO              = "Informations système"
-STR_SHOW_SYSINFO_H      = ""
+STR_SHOW_SYSINFO_H            = "Informations système"
 
 STR_INSTALL                   = "Installer"
 STR_INSTALL_H                 = "Installer les pilotes sélectionnés(Ctrl+I).\n\nASTUCE: Appuyer sur la touche MAJ en cliquant sur un pilote pour lancer l'installation immédiatement."
@@ -20,9 +20,9 @@ STR_SELECT_NONE               = "Désélectionner tout"
 STR_SELECT_NONE_H             = "Ctrl+N"
 
 STR_LANG                      = "Langue (Language)"
-STR_LANG_H                    = ""
+STR_LANG_H                    = "choisissez votre langue"
 STR_THEME                     = "Thème"
-STR_THEME_H                   = ""
+STR_THEME_H                   = "Sélectionnez un thème"
 STR_EXPERT                    = "Mode Expert"
 STR_EXPERT_H                  = "Choisir le mode Expert.\n\nASTUCE: Appuyer sur la touche Ctrl ou la barre espace en survolant un pilote avec la souris pour obtenir des informations supplémentaires à son sujet."
 
@@ -72,7 +72,7 @@ STR_SHOW_NF_STANDARD          = "Standards"
 STR_SHOW_NF_STANDARD_H        = "Affiche les pilotes standards qui sont installés mais non trouvés dans les packs.\n\nCes pilotes sont généralement installées avec Windows et ne nécessitent pas de mises à jour."
 
 STR_SHOW_DISPLAY              = "Afficher"
-STR_SHOW_DISPLAY_H            = ""
+STR_SHOW_DISPLAY_H            = "Filtres d'affichage"
 STR_SHOW_ONE                  = "Afficher seulement les meilleurs"
 STR_SHOW_ONE_H                = "Afficher seulement les meilleurs pilotes par périphérique.\n\nLorsque activé, seul le meilleur pilote pour le périphérique est affiché au lieu d'afficher tous les pilotes disponibles pour chaque périphérique."
 STR_SHOW_DUP                  = "Afficher les doublons"
@@ -81,7 +81,7 @@ STR_SHOW_INVALID              = "Afficher les invalides"
 STR_SHOW_INVALID_H            = "Afficher les pilotes qui sont incompatibles avec le système actuel.\n\nNous vous recommandons de ne PAS installer ces pilotes car ils sont incompatibles avec votre version de Windows."
 
 STR_OPTIONS                   = "Options"
-STR_OPTIONS_H                 = ""
+STR_OPTIONS_H                 = "Options"
 STR_REBOOT                    = "Redémarrer le PC après installation"
 STR_REBOOT_H                  = "Redémarrer le PC(si nécessaire) après installation(Ctrl+R).\n\nASTUCE: Vous pouvez annuler le redémarrage à n'importe quel moment en décochant la case."
 
@@ -169,6 +169,7 @@ STR_SYST_DEVICEPRNT           = "Appareils et Imprimantes"
 STR_SYST_SYSCONTROL           = "Control Panel"
 STR_SYST_REST                 = "Restauration du système"
 STR_SYST_USBWIZARD            = "Créer un lecteur USB"
+STR_SYST_TRANSLATE            = "Translation Tool"
 
 // Context menu
 STR_CONT_INSTALL              = "Planifier l'installation"
@@ -377,7 +378,7 @@ STR_OPTION_HIDE_NAMES         = "Ne pas afficher les noms des packs de pilotes"
 STR_OPTION_SHOW_RIGHT         = "Afficher les noms des packs de pilotes à droite"
 STR_OPTION_SHOW_ABOVE         = "Afficher les noms des packs de pilotes au dessus"
 STR_OPTION_SCALLING           = "Mise à l'échelle de l'interface"
-STR_OPTION_SCALLING_H         = ""
+STR_OPTION_SCALLING_H         = "Créer des éléments d'interface plus ou moins grand"
 STR_OPTION_SCALLING_SML       = "Petit"
 STR_OPTION_SCALLING_BIG       = "Grand"
 STR_OPTION_SCALLING_RST       = "Réinitialiser"
@@ -411,7 +412,7 @@ STR_OPTION_CONSOLE            = "Afficher la fenêtre de la console"
 // Patreon
 STR_PATREON1                  = "Visitez notre page Patreon pour obtenir des informations, des conseils et pour soutenir le projet."
 STR_PATREON2                  = "(Cliquez ici pour ouvrir la page Patreon)"
-STR_PATREON_H                 = ""
+STR_PATREON_H                 = "Cliquez ici pour ouvrir la page Patreon"
 
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"

@@ -2,9 +2,6 @@
 
 STR_TRANSLATORS         = "BadPointer"
 
-STR_EMPTY               = ""
-STR_EMPTY_H             = ""
-
 STR_LANG_NAME           = "English"
 STR_LANG_ID             = "English"
 STR_LANG_GROUP          = 0x01 // LGRPID_WESTERN_EUROPE
@@ -13,7 +10,7 @@ STR_RTL                 = 0
 
 // left panel
 STR_SHOW_SYSINFO        = "System information"
-STR_SHOW_SYSINFO_H      = ""
+STR_SHOW_SYSINFO_H      = "System information"
 
 STR_INSTALL             = "Install"
 STR_INSTALL_H           = "Install selected drivers(Ctrl+I).\n\nHINT: Hold the Shift key while clicking on a driver to start installing immediately."
@@ -23,9 +20,9 @@ STR_SELECT_NONE         = "Select none"
 STR_SELECT_NONE_H       = "Ctrl+N"
 
 STR_LANG                = "Language"
-STR_LANG_H              = ""
+STR_LANG_H              = "Select your language"
 STR_THEME               = "Theme"
-STR_THEME_H             = ""
+STR_THEME_H             = "Select a theme"
 STR_EXPERT              = "Expert mode"
 STR_EXPERT_H            = "Enable Expert Mode.\n\nHINT: Hold the Ctrl or Spacebar key over a driver to get extra information about the driver."
 
@@ -75,7 +72,7 @@ STR_SHOW_NF_STANDARD    = "Standard"
 STR_SHOW_NF_STANDARD_H  = "Display standard drivers which are installed in the system but are not found in driverpacks.\n\nThese drivers usually come with Windows and don't require updates."
 
 STR_SHOW_DISPLAY        = "Display"
-STR_SHOW_DISPLAY_H      = ""
+STR_SHOW_DISPLAY_H      = "Display filters"
 STR_SHOW_ONE            = "Show only best"
 STR_SHOW_ONE_H          = "Show only best drivers per device.\n\nWhen enabled, only the best matched driver per device is displayed as opposed to displaying all available drivers for each device."
 STR_SHOW_DUP            = "Show duplicates"
@@ -84,7 +81,7 @@ STR_SHOW_INVALID        = "Show invalid"
 STR_SHOW_INVALID_H      = "Show drivers which are incompatible with the current system.\n\nWe advise you NOT to install these drivers because they are incompatible with your version of Windows."
 
 STR_OPTIONS             = "Options"
-STR_OPTIONS_H           = ""
+STR_OPTIONS_H           = "Options"
 STR_REBOOT              = "Reboot PC after installation"
 STR_REBOOT_H            = "Reboot PC(if required) after installation(Ctrl+R).\n\nHINT: You can cancel rebooting PC any time by clearing the checkbox."
 
@@ -172,6 +169,7 @@ STR_SYST_DEVICEPRNT     = "Devices and Printers"
 STR_SYST_SYSCONTROL     = "Control Panel"
 STR_SYST_REST           = "System Restore"
 STR_SYST_USBWIZARD      = "Create A USB Drive"
+STR_SYST_TRANSLATE      = "Translation Tool"
 
 // Context menu
 STR_CONT_INSTALL        = "Schedule installation"
@@ -257,7 +255,7 @@ STR_RESTOREPOINT        = "Create a restore point"
 STR_RESTOREPOINT_H      = "Create a restore point in order to be able to roll back the system to an earlier state in case something goes wrong (Ctrl+P).\n\nHINT: Right click on this button to open context menu."
 STR_REST_SCHEDULE       = "Schedule creating a restore point"
 STR_REST_ROLLBACK       = "Roll back to an existing restore point..."
-STR_REST_SYSPROPS		= "System Properties"
+STR_REST_SYSPROPS       = "System Properties"
 STR_REST_CREATING       = "Creating a restore point..."
 STR_REST_CREATED        = "Restore point created"
 STR_REST_FAILED         = "Failed to create a restore point"
@@ -380,7 +378,7 @@ STR_OPTION_HIDE_NAMES   = "Don't show driverpack names"
 STR_OPTION_SHOW_RIGHT   = "Show driverpack names on the right"
 STR_OPTION_SHOW_ABOVE   = "Show driverpack names above"
 STR_OPTION_SCALLING     = "Interface scale"
-STR_OPTION_SCALLING_H   = ""
+STR_OPTION_SCALLING_H   = "Make interface elements bigger or smaller"
 STR_OPTION_SCALLING_SML = "Small"
 STR_OPTION_SCALLING_BIG = "Big"
 STR_OPTION_SCALLING_RST = "Reset"
@@ -414,7 +412,7 @@ STR_OPTION_CONSOLE      = "Show console window"
 // Patreon
 STR_PATREON1             = "Visit our Patreon page for information, tips and to support the project."
 STR_PATREON2             = "(Click here to open the Patreon page)"
-STR_PATREON_H            = ""
+STR_PATREON_H            = "Click here to open the Patreon page"
 
 // Welcome
 STR_WELCOME_TITLE        = "Snappy Driver Installer Origin"
