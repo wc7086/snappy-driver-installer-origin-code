@@ -374,11 +374,23 @@ void MainWindow_t::LoadMenuItems()
     #endif // NDEBUG
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_LICENSE,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_LICENSE));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_ABOUT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_ABOUT));
+    #ifndef NDEBUG
+    AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_TRANSLATE,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_TRANSLATE));
+    #endif
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_USBWIZARD,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_USBWIZARD));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_DRVDIR,0,0,nullptr,const_cast<wchar_t *>STR(STR_DRVDIR));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID,IDM_OPENLOGS,0,0,nullptr,const_cast<wchar_t *>STR(STR_OPENLOGS));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_TOOLS,0,0,ToolsMenu,const_cast<wchar_t *>STR(STR_TOOLS));
     AddMenuItem(pSysMenu,MIIM_STRING|MIIM_ID|MIIM_SUBMENU,IDM_UPDATES,0,0,UpdatesMenu,const_cast<wchar_t *>STR(STR_UPDATES));
+}
+
+void MainWindow_t::OpenTranslationTool()
+{
+    // get the current selected language file
+    int j=SendMessage(GetDlgItem(hMain,ID_LANG),CB_GETCURSEL,0,0);
+    std::wstring filename=vLang->GetFileName(j);
+    // run the tool
+    System.run_command(L"SDIOTranslationTool.exe",filename.c_str(),SW_SHOWNORMAL,0);
 }
 
 void MainWindow_t::MainLoop(int nCmd)
@@ -2018,6 +2030,11 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         USBWiz=new USBWizard;
                         USBWiz->doWizard();
                         delete USBWiz;
+                        return 0;
+                    }
+                    case IDM_TRANSLATE:
+                    {
+                        OpenTranslationTool();
                         return 0;
                     }
                     default:

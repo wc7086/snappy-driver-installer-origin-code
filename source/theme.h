@@ -71,6 +71,7 @@ public:
     virtual void StartMonitor()=0;
     virtual void StopMonitor()=0;
     virtual std::wstring GetFileName(std::wstring id)=0;
+    virtual std::wstring GetFileName(int id)=0;
 };
 Vaul *CreateVaultLang(entry_t *entry,size_t num,int res);
 Vaul *CreateVaultTheme(entry_t *entry,size_t num,int res);

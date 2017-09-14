@@ -18,8 +18,6 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 
 entry_t language[STR_NM]=
 {
-    DEF_STR("STR_EMPTY")
-    DEF_STR("STR_EMPTY_H")
 
 // Lang info
     DEF_STR("STR_LANG_NAME")
@@ -191,6 +189,7 @@ entry_t language[STR_NM]=
     DEF_STR("STR_SYST_SYSCONTROL")
     DEF_STR("STR_SYST_REST")
     DEF_STR("STR_SYST_USBWIZARD")
+    DEF_STR("STR_SYST_TRANSLATE")
 
 // Context menu
     DEF_STR("STR_CONT_INSTALL")

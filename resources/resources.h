@@ -15,11 +15,11 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\source\svnrev.h"
 
-#define VER_FILEVERSION             1,2,0,SVN_REV
-#define VER_FILEVERSION_STR         "1.2.0." SVN_REV_STR "\0"
+#define VER_FILEVERSION             1,2,1,SVN_REV
+#define VER_FILEVERSION_STR         "1.2.1." SVN_REV_STR "\0"
 
-#define VER_VERSION_STR             "Version 1.2.0." SVN_REV_STR
-#define VER_VERSION_STR2            "v1.2.0"
+#define VER_VERSION_STR             "Version 1.2.1." SVN_REV_STR
+#define VER_VERSION_STR2            "v1.2.1"
 
 #define IDC_STATIC     -1
 
@@ -135,6 +135,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDM_UPDATES_DRIVERS 23
 #define IDM_TOOLS     24
 #define IDM_WELCOME   25
+#define IDM_TRANSLATE 26
 
 // About box
 #define IDD_ABOUT     800
@@ -165,6 +166,14 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDD_WELC_LINK1        912
 #define IDD_WELC_LINK2        913
 #define IDD_WELC_TEXT         920
+
+// translation tool
+#define IDD_TRANSL_EDITDIALOG 1000
+#define IDC_TRANSL_KEYVALUE   1001
+#define IDC_TRANSL_EDIT1      1002
+#define IDC_TRANSL_EDIT2      1010
+#define IDC_TRANSL_COPYCLIP   1011
+#define IDC_TRANSL_CLEAR      1012
 
 #define WEB_HOMEPAGE    L"http://www.snappy-driver-installer.org"
 #define WEB_PATREONPAGE L"https://www.patreon.com/sdi_tool"

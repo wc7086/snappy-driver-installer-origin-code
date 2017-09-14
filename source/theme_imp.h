@@ -54,6 +54,7 @@ public:
     virtual void StartMonitor()=0;
     virtual void StopMonitor(){delete mon;};
     virtual std::wstring GetFileName(std::wstring id)=0;
+    virtual std::wstring GetFileName(int id)=0;
     void updateCallback(const wchar_t *szFile,int action,int lParam);
 };
 //}
@@ -73,6 +74,7 @@ public:
     Image *GetImage(int){return nullptr;}
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
     std::wstring GetFileName(std::wstring id);
+    std::wstring GetFileName(int id);
 };
 //}
 
@@ -104,5 +106,6 @@ public:
     }
     static void updateCallback(const wchar_t *szFile,int action,int lParam);
     std::wstring GetFileName(std::wstring id);
+    std::wstring GetFileName(int id);
 };
 //}
