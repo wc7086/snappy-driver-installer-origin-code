@@ -18,8 +18,6 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 
 enum
 {
-    STR_EMPTY=0,
-    STR_EMPTY_H,
 
 // Lang info
     STR_LANG_NAME,
@@ -191,6 +189,7 @@ enum
     STR_SYST_SYSCONTROL,
     STR_SYST_SYSREST,
     STR_SYST_USBWIZARD,
+    STR_SYST_TRANSLATE,
 
 // Context menu
     STR_CONT_INSTALL,

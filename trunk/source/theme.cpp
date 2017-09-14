@@ -474,6 +474,14 @@ std::wstring VaultLang::GetFileName(std::wstring id)
     return ret;
 }
 
+std::wstring VaultLang::GetFileName(int id)
+{
+    std::wstring ret;
+    if(id<MainWindow.hLang->GetNumItems())
+        ret=namelist[id];
+    return ret;
+}
+
 std::wstring VaultTheme::GetFileName(std::wstring id)
 {
     std::wstring ret;
@@ -486,4 +494,13 @@ std::wstring VaultTheme::GetFileName(std::wstring id)
         }
     return ret;
 }
+
+std::wstring VaultTheme::GetFileName(int id)
+{
+    std::wstring ret;
+    if(id<MainWindow.hTheme->GetNumItems())
+        ret=namelist[id];
+    return ret;
+}
+
 //}

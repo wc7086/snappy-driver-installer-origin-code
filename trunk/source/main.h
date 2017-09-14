@@ -202,6 +202,7 @@ private:
     LRESULT WndProcField(HWND,UINT,WPARAM,LPARAM);
     void AddMenuItem(HMENU parent,UINT mask,UINT id,UINT type,UINT state,HMENU hSubMenu,wchar_t* typedata);
     void ModifyMenuItem(HMENU parent, UINT mask,UINT id,UINT state,wchar_t* typedata);
+    void OpenTranslationTool();
 
 public:
     void MainLoop(int nCmd);

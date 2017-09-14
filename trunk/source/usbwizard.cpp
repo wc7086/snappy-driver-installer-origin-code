@@ -353,8 +353,9 @@ static void BuildFilesList(HWND hwnd)
         // current selected language
         case 1:
             {
-                // look up Settings.curlang in Vault lang_ids to get the file name
-                std::wstring filename=vLang->GetFileName(Settings.curlang);
+                // get current language from combo and look up it's file name
+                int j=SendMessage(GetDlgItem(MainWindow.hMain,ID_LANG),CB_GETCURSEL,0,0);
+                std::wstring filename=vLang->GetFileName(j);
                 SourceFileName=filename;
                 size_t found=filename.find_last_of(L"/\\");
                 if(found!=std::wstring::npos)
