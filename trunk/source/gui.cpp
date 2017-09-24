@@ -118,9 +118,9 @@ public:
         p->Add(new wCheckbox{STR_REBOOT,            new RebootCheckboxCommand});
         wPanels->Add(p);
 
-        // Logo
+        // Logo - STR{0} used to be STR_EMPTY
         p=new wLogo{1,BOX_PANEL13};
-        p->Add(new wText    {0});
+        //p->Add(new wText    {0});
         wPanels->Add(p);
 
         // Revision
