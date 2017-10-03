@@ -156,10 +156,13 @@ void Bundle::bundle_init()
 
 void Bundle::bundle_prep()
 {
+    Log.print_debug("Bundle::bundle_prep\n");
     state.getsysinfo_fast();
+    Log.print_debug("Bundle::bundle_prep::complete\n");
 }
 void Bundle::bundle_load(Bundle *pbundle)
 {
+    Log.print_debug("Bundle::bundle_load\n");
     ThreadAbs *thandle0=CreateThread();
     ThreadAbs *thandle1=CreateThread();
     ThreadAbs *thandle2=CreateThread();
@@ -176,6 +179,7 @@ void Bundle::bundle_load(Bundle *pbundle)
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
     if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;Timers.reset(time_indexes);}
 
+    Log.print_debug("Bundle::bundle_load::threads\n");
     thandle0->start(&thread_scandevices,&state);
     thandle1->start(&thread_loadindexes,&collection);
     thandle2->start(&thread_getsysinfo,&state);
@@ -195,6 +199,8 @@ void Bundle::bundle_load(Bundle *pbundle)
     matcher->getState()->textas.shrink();
     matcher->populate();
     Timers.stop(time_test);
+
+    Log.print_debug("Bundle::bundle_load::complete\n");
 }
 
 void Bundle::bundle_lowpriority()

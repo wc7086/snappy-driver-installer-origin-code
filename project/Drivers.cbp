@@ -6,6 +6,7 @@
 		<Option makefile="makefile" />
 		<Option execution_dir=".." />
 		<Option pch_mode="2" />
+		<Option default_target="Win32 Debug" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Win32 Release">

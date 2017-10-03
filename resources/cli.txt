@@ -29,7 +29,7 @@ Task-oriented
                   For exit codes refer to the documentation of DPInst.
 
 -delextrainfs     Deletes unused infs after extracting.
--verbose:<flags>  Sets log detail level.
+-verbose:<flags>  Sets log detail level. See reference manual.
 -ls:<file>        Loads snapshot.
 -nogui            Runs without GUI interface.
 -nologfile        Suppress creating logs.
@@ -107,26 +107,3 @@ Debug
 -disableinstall   Suppresses driver installation and creation of a restore point.
 -reindex          Forces reindexing of all driverpacks.
 -index_hr         Creates indexes in human-readable format.
-
--------
-Verbose
--------
-The -verbose:<flags> switch is used to set log detail level.
-For example, in order to log only sections DeviceInfo and manager_print
-you have to calculate the sum: 4+16=20.
-SDIO.exe -verbose:20
-
-LOG_VERBOSE_ARGS       | 0x0001 |    1 | Sections: "Settings".
-LOG_VERBOSE_SYSINFO    | 0x0002 |    2 | Sections: "Windows", "Environment".
-LOG_VERBOSE_DEVICES    | 0x0004 |    4 | Sections: "DeviceInfo".
-LOG_VERBOSE_MATCHER    | 0x0008 |    8 | Sections: "{matcher_print".
-LOG_VERBOSE_MANAGER    | 0x0010 |   16 | Sections: "{manager_print".
-LOG_VERBOSE_DRP        | 0x0020 |   32 | Sections: "Driverpacks".
-LOG_VERBOSE_TIMES      | 0x0040 |   64 | Sections: "Times".
-LOG_VERBOSE_LOG_ERR    | 0x0080 |  128 | Error messages.
-LOG_VERBOSE_LOG_CON    | 0x0100 |  256 | Misc messages.
-LOG_VERBOSE_LAGCOUNTER | 0x0200 |  512 | GUI lag counter.
-LOG_VERBOSE_DEVSYNC    | 0x0400 | 1024 | Sections: "{Updated".
-LOG_VERBOSE_BATCH      | 0x0800 | 2048 | Batch processing of snapshots.
-LOG_VERBOSE_DEBUG      | 0x1000 | 4096 | Debug output.
-LOG_VERBOSE_TORRENT    | 0x2000 | 8196 | Torrent output

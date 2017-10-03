@@ -85,7 +85,7 @@ private:
         LOG_VERBOSE_TIMES|
         LOG_VERBOSE_LOG_ERR|
         LOG_VERBOSE_LOG_CON|
-        LOG_VERBOSE_DEBUG|
+        //LOG_VERBOSE_DEBUG|
         //LOG_VERBOSE_DEVSYNC|
         0;
 
