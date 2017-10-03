@@ -959,14 +959,17 @@ int  State::load(const wchar_t *filename)
 
 void State::getsysinfo_fast()
 {
+    Log.print_debug("State::getsysinfo_fast\n");
     wchar_t buf[BUFLEN];
 
     // Battery
+    Log.print_debug("State::getsysinfo_fast::GetSystemPowerStatus\n");
     battery=static_cast<ofst>(textas.alloc(sizeof(SYSTEM_POWER_STATUS)));
     SYSTEM_POWER_STATUS *batteryloc=(SYSTEM_POWER_STATUS *)(textas.get(battery));
     GetSystemPowerStatus(batteryloc);
 
     // Monitors
+    Log.print_debug("State::getsysinfo_fast::Monitors\n");
     DISPLAY_DEVICE DispDev;
     memset(&DispDev,0,sizeof(DispDev));
     DispDev.cb=sizeof(DispDev);
@@ -987,6 +990,7 @@ void State::getsysinfo_fast()
     monitors=static_cast<ofst>(textas.t_memcpy((char *)buf,(1+buf[0]*2)*2));
 
     // Windows version
+    Log.print_debug("State::getsysinfo_fast::Windows\n");
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4996)
@@ -1004,6 +1008,7 @@ void State::getsysinfo_fast()
 #endif
 
     // Environment
+    Log.print_debug("State::getsysinfo_fast::Environment\n");
     GetEnvironmentVariable(L"windir",buf,BUFLEN);
     wcscat(buf,L"\\inf\\");
     windir=static_cast<ofst>(textas.strcpyw(buf));
@@ -1012,6 +1017,7 @@ void State::getsysinfo_fast()
     temp=static_cast<ofst>(textas.strcpyw(buf));
 
     // 64-bit detection
+    Log.print_debug("State::getsysinfo_fast::Architecture\n");
     architecture=0;
     *buf=0;
     GetEnvironmentVariable(L"PROCESSOR_ARCHITECTURE",buf,BUFLEN);
@@ -1025,6 +1031,7 @@ void State::getsysinfo_fast()
 
 void State::getsysinfo_slow()
 {
+    Log.print_debug("State::getsysinfo_slow\n");
     WStringShort smanuf;
     WStringShort smodel;
     WStringShort sproduct;
@@ -1033,6 +1040,7 @@ void State::getsysinfo_slow()
 
     Timers.start(time_sysinfo);
 
+    Log.print_debug("State::getsysinfo_slow1::getbaseboard\n");
     getbaseboard(smanuf,smodel,sproduct,scs_manuf,scs_model,&ChassisType);
 
     manuf=static_cast<ofst>(textas.strcpyw(smanuf.Get()));
@@ -1046,6 +1054,7 @@ void State::getsysinfo_slow()
 
 void State::getsysinfo_slow(const State *prev)
 {
+    Log.print_debug("State::getsysinfo_slow2\n");
     Timers.reset(time_sysinfo);
     manuf=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->manuf)));
     product=static_cast<ofst>(textas.strcpyw(prev->textas.getw(prev->product)));
@@ -1056,6 +1065,7 @@ void State::getsysinfo_slow(const State *prev)
 
 void State::scanDevices()
 {
+    Log.print_debug("State::scanDevices\n");
     HDEVINFO hDevInfo;
     HKEY   hkey;
     wchar_t buf[BUFLEN];
@@ -1065,6 +1075,7 @@ void State::scanDevices()
     Timers.start(time_devicescan);
     //collection.init(textas.getw(windir),L"",L"");
 
+    Log.print_debug("State::scanDevices::SetupDiGetClassDevs\n");
     hDevInfo=SetupDiGetClassDevs(nullptr,nullptr,nullptr,DIGCF_PRESENT|DIGCF_ALLCLASSES);
     if(hDevInfo==INVALID_HANDLE_VALUE)
     {
@@ -1091,6 +1102,7 @@ void State::scanDevices()
         // Driver
         if(!cur_device->getDriver())continue;
         wsprintf(buf,L"SYSTEM\\CurrentControlSet\\Control\\Class\\%s",textas.getw(cur_device->getDriver()));
+        Log.print_debug("State::scanDevices::Driver::%S\n",buf);
         ret=RegOpenKeyEx(HKEY_LOCAL_MACHINE,buf,0,KEY_QUERY_VALUE,&hkey);
         switch(ret)
         {
@@ -1108,6 +1120,7 @@ void State::scanDevices()
         RegCloseKey(hkey);
     }
 
+    Log.print_debug("State::scanDevices::SetupDiDestroyDeviceInfoList\n");
     SetupDiDestroyDeviceInfoList(hDevInfo);
     Timers.stop(time_devicescan);
 }
