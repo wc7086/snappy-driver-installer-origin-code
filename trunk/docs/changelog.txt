@@ -7,10 +7,11 @@ www.snappy-driver-installer.org
 Change Log
 
 Version 1.3.0.660
-30 September 2017
+4 October 2017
 Driver Packs 17094
 Removed spurious language text from logo panel.
 Added translation tool.
+Translations.
 
 Version 1.2.1.658
 15 September 2017
