@@ -151,7 +151,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     std::cout << "\nSnappy Driver Installer Origin " << VER_VERSION_STR2 << " (" << bit << "bit)\n";
     std::cout << SVN_BUILD_NOTE << "\n\n";
 
-    // Determine number of CPU cores
+    // Determine number of CPU cores ("Logical Processors")
     SYSTEM_INFO siSysInfo;
     GetSystemInfo(&siSysInfo);
     num_cores=siSysInfo.dwNumberOfProcessors;

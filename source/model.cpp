@@ -179,12 +179,17 @@ void Bundle::bundle_load(Bundle *pbundle)
     if((invaidate_set&INVALIDATE_SYSINFO)==0)state.getsysinfo_slow(&pbundle->state);
     if((invaidate_set&INVALIDATE_INDEXES)==0){collection=pbundle->collection;Timers.reset(time_indexes);}
 
-    Log.print_debug("Bundle::bundle_load::threads\n");
+    Log.print_debug("Bundle::bundle_load::thread_scandevices\n");
     thandle0->start(&thread_scandevices,&state);
+    Log.print_debug("Bundle::bundle_load::thread_loadindexes\n");
     thandle1->start(&thread_loadindexes,&collection);
+    Log.print_debug("Bundle::bundle_load::thread_getsysinfo\n");
     thandle2->start(&thread_getsysinfo,&state);
+    Log.print_debug("Bundle::bundle_load::thandle0->join\n");
     thandle0->join();
+    Log.print_debug("Bundle::bundle_load::thandle1->join\n");
     thandle1->join();
+    Log.print_debug("Bundle::bundle_load::thandle2->join\n");
     thandle2->join();
     delete thandle0;
     delete thandle1;

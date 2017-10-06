@@ -597,6 +597,7 @@ void Collection::updatedir()
 
 void Collection::populate()
 {
+    Log.print_debug("Collection::populate\n");
     Driverpack *unpacked_drp;
 
     Timers.start(time_indexes);
@@ -620,17 +621,22 @@ void Collection::populate()
     if(drp_count&&num_thr>1)num_thr=1;
     #endif
 
+    Log.print_debug("Collection::populate::num_thr::%d\n",num_thr);
+
     drplist_t queuedriverpack;
-    ThreadAbs *cons[16];
+    ThreadAbs *cons[num_thr];
     for(int i=0;i<num_thr;i++)
     {
+        Log.print_debug("Collection::populate::ThreadAbs::%d\n",i);
         cons[i]=CreateThread();
         cons[i]->start(&Driverpack::loaddrp_thread,&queuedriverpack);
     }
 
-    ThreadAbs *thr[16];
+    Log.print_debug("Collection::populate::num_thr_1::%d\n",num_thr_1);
+    ThreadAbs *thr[num_thr_1];
     for(int i=0;i<num_thr_1;i++)
     {
+        Log.print_debug("Collection::populate::ThreadAbs1::%d\n",i);
         thr[i]=CreateThread();
         thr[i]->start(&Driverpack::indexinf_thread,&queuedriverpack1);
     }
@@ -638,17 +644,25 @@ void Collection::populate()
 
     drp_cur=1;
 
+    Log.print_debug("Collection::populate::scanfolder::%S\n",driverpack_dir);
     scanfolder(driverpack_dir,&queuedriverpack);
-    for(int i=0;i<num_thr;i++)queuedriverpack.push(driverpack_task{nullptr});
+    for(int i=0;i<num_thr;i++)
+    {
+        Log.print_debug("Collection::populate::queuedriverpack.push::%d\n",i);
+        queuedriverpack.push(driverpack_task{nullptr});
+    }
 
     for(int i=0;i<num_thr;i++)
     {
+        Log.print_debug("Collection::populate::cons[i]->join::%d\n",i);
         cons[i]->join();
         delete cons[i];
     }
 
+    Log.print_debug("Collection::populate::loadOnlineIndexes\n");
     loadOnlineIndexes();
 
+    Log.print_debug("Collection::populate::itembar\n");
     manager_g->itembar_setactive(SLOT_INDEXING,0);
     if(driverpack_list.size()<=1&&(Settings.flags&FLAG_DPINSTMODE)==0)
     {
@@ -659,9 +673,11 @@ void Collection::populate()
     else
         emptydrp=false;
 
+    Log.print_debug("Collection::populate::genhashes\n");
     driverpack_list[0].genhashes();
 
 //{thread
+    Log.print_debug("Collection::populate::queuedriverpack1\n");
     for(int i=0;i<num_thr_1;i++)queuedriverpack1.push(driverpack_task{nullptr});
 
     for(int i=0;i<num_thr_1;i++)
@@ -671,8 +687,10 @@ void Collection::populate()
     }
 //}thread
     Settings.flags&=~COLLECTION_FORCE_REINDEXING;
+    Log.print_debug("Collection::populate::driverpack_list.shrink_to_fit\n");
     driverpack_list.shrink_to_fit();
     Timers.stop(time_indexes);
+    Log.print_debug("Collection::populate::Done\n");
 }
 
 void Collection::save()
@@ -694,7 +712,7 @@ void Collection::save()
         if(driverpack.getType()==DRIVERPACK_TYPE_PENDING_SAVE)count_++;
 
     if(count_)Log.print_con("Saving indexes...\n");
-    ThreadAbs *thr[16];
+    ThreadAbs *thr[num_cores];
     drplist_t queuedriverpack_loc;
     for(int i=0;i<num_cores;i++)
     {
