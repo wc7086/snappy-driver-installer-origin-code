@@ -1049,7 +1049,14 @@ void State::getsysinfo_slow()
     cs_manuf=static_cast<ofst>(textas.strcpyw(scs_manuf.Get()));
     cs_model=static_cast<ofst>(textas.strcpyw(scs_model.Get()));
 
+    Log.print_debug("State::getsysinfo_slow1::getbaseboard::manuf::%S\n",smanuf.Get());
+    Log.print_debug("State::getsysinfo_slow1::getbaseboard::product::%S\n",sproduct.Get());
+    Log.print_debug("State::getsysinfo_slow1::getbaseboard::model::%S\n",smodel.Get());
+    Log.print_debug("State::getsysinfo_slow1::getbaseboard::cs_manuf::%S\n",scs_manuf.Get());
+    Log.print_debug("State::getsysinfo_slow1::getbaseboard::cs_model::%S\n",scs_model.Get());
+
     Timers.stop(time_sysinfo);
+    Log.print_debug("State::getsysinfo_slow1::Done\n");
 }
 
 void State::getsysinfo_slow(const State *prev)
@@ -1083,6 +1090,7 @@ void State::scanDevices()
         return;
     }
 
+    unsigned DeviceCount=0;
     for(unsigned i=0;;i++)
     {
         // Device
@@ -1118,11 +1126,20 @@ void State::scanDevices()
                 break;
         }
         RegCloseKey(hkey);
+        DeviceCount++;
     }
 
+    Log.print_debug("State::scanDevices::Count::%d\n",DeviceCount);
     Log.print_debug("State::scanDevices::SetupDiDestroyDeviceInfoList\n");
-    SetupDiDestroyDeviceInfoList(hDevInfo);
+    if(SetupDiDestroyDeviceInfoList(hDevInfo))
+        Log.print_debug("State::scanDevices::SetupDiDestroyDeviceInfoList::Success\n");
+    else
+    {
+        DWORD error=GetLastError();
+        Log.print_debug("State::scanDevices::SetupDiDestroyDeviceInfoList::Error:%d\n",error);
+    }
     Timers.stop(time_devicescan);
+    Log.print_debug("State::scanDevices::Done\n");
 }
 
 void State::init()
