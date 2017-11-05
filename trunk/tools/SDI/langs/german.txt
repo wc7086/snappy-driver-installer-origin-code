@@ -10,7 +10,7 @@ STR_RTL                       = 0
 
 // left panel
 STR_SHOW_SYSINFO              = "Systeminformationen"
-STR_SHOW_SYSINFO_H            = "Systeminformationen"
+STR_SHOW_SYSINFO_H            = "Systeminformationen anzeigen"
 
 STR_INSTALL                   = "Installieren"
 STR_INSTALL_H                 = "Die ausgewählten Treiber installieren (Strg+I).\n\nHinweis: Die Installation wird sofort ausgeführt, wenn die Umschalttaste (Shift) beim Linksklick auf einen Treiber gedrück wird."
@@ -20,9 +20,9 @@ STR_SELECT_NONE               = "Alles abwählen"
 STR_SELECT_NONE_H             = "Strg+N"
 
 STR_LANG                      = "Sprache (Language)"
-STR_LANG_H                    = "Wähle deine Sprache"
+STR_LANG_H                    = "Deine Sprache wählen"
 STR_THEME                     = "Benutzeroberfläche"
-STR_THEME_H                   = "Wähle ein Thema"
+STR_THEME_H                   = "Benutzeroberfläche wählen"
 STR_EXPERT                    = "Expertenmodus"
 STR_EXPERT_H                  = "Expertenmodus aktivieren.\n\nHinweis: Detaillierte Treiberinformationen werden angezeigt, wenn die Strg-Taste oder die Leertaste gedrückt wird wenn der Mauszeiger sich über einen Treiber befindet."
 
@@ -80,8 +80,8 @@ STR_SHOW_DUP_H                = "Doppelte Treiber anzeigen.\n\nAus technischen G
 STR_SHOW_INVALID              = "Ungültige anzeigen"
 STR_SHOW_INVALID_H            = "Zeigt die mit dem aktuellen System inkompatiblen Treiber an.\n\nWeil diese Treiber mit Ihrer Windows-Version inkompatibel sind, sollten sie NICHT installiert werden."
 
-STR_OPTIONS                   = "Einstellungen"
-STR_OPTIONS_H                 = "Einstellungen"
+STR_OPTIONS                   = "Optionen"
+STR_OPTIONS_H                 = "Optionen wählen"
 STR_REBOOT                    = "PC neustarten"
 STR_REBOOT_H                  = "Falls erforderlich, wird der PC nach der Treiberinstallation neu gestartet (Strg+R).\n\nHinweis: Der Neustart kann jederzeit durch Entfernen des Hakens unterbunden werden."
 
@@ -109,7 +109,7 @@ STR_SYSINF_FLAGS              = "Akku"
 STR_SYSINF_HIGH               = "[hoch]"
 STR_SYSINF_LOW                = "[niedrig]"
 STR_SYSINF_CRITICAL           = "[kritisch]"
-STR_SYSINF_CHARGING           = "[am Aufladen]"
+STR_SYSINF_CHARGING           = "[wird aufgeladen]"
 STR_SYSINF_NOBATTERY          = "[kein Akku]"
 STR_SYSINF_CHARGED            = "Aufgeladen"
 STR_SYSINF_LIFETIME           = "Betriebszeit"
@@ -161,7 +161,7 @@ STR_HINT_SCROLL               = "Hinweis: Seite mit Mausrad waagerecht scrollen"
 // System menu
 STR_SYST_LICENSE              = "Lizenz"
 STR_SYST_ABOUT                = "Über"
-STR_SYST_START_SEED           = "Treiberpakete-Seeding starten"
+STR_SYST_START_SEED           = "Seeding der Treiberpakete starten"
 STR_SYST_STOP_SEED            = "Seeding abbrechen"
 STR_SYST_COMPMNG              = "Computerverwaltung"
 STR_SYST_SYSPROT              = "Computerschutz"
@@ -169,7 +169,7 @@ STR_SYST_DEVICEPRNT           = "Geräte und Drucker"
 STR_SYST_SYSCONTROL           = "Systemsteuerung"
 STR_SYST_REST                 = "Wiederherstellung"
 STR_SYST_USBWIZARD            = "USB-Laufwerk erstellen"
-STR_SYST_TRANSLATE            = "Translation Tool"
+STR_SYST_TRANSLATE            = "Übersetzungsassistent"
 
 // Context menu
 STR_CONT_INSTALL              = "Installation planen"
@@ -288,7 +288,7 @@ STR_UPD_BTN_THISPC            = "Nur für diesen PC"
 STR_UPD_BTN_THISPC_H          = "Zum Bestimmen der erforderlichen Treiberpakete, müssen die Indizes vorab heruntergeladen werden."
 STR_UPD_OPTIONS               = "Optionen"
 STR_UPD_ONLYUPDATES           = "Nur Aktualisierungen ohne fehlende Pakete anzeigen"
-STR_UPD_KEEPSEEDING           = "Seeding nach abgeschlossenem Herunterladen fortsetzen"
+STR_UPD_KEEPSEEDING           = "Seeding nach dem Herunterladen fortsetzen"
 STR_UPD_TOTALSIZE             = "Gesamte Herunterladegröße: %d MB"
 STR_UPD_TOTALAVAIL            = "Verfügbare Speicherkapazität: %d MB"
 STR_UPD_BTN_OK                = "OK"
@@ -328,7 +328,7 @@ STR_UPD_AVAIL3                = "Aktualisierungen sind verfügbar: SDIO R%d und 
 STR_UPD_START                 = "(Hier klicken, um das Herunterladen auszulösen)"
 STR_UPD_PROGRES               = "Heruntergeladen %s von %s (%d%%)"
 STR_UPD_MODIFY                = "(Hier klicken, um Aktualisierungen auszuwählen)"
-STR_UPD_CHECKINGFILES         = "Checking files %s of %s (%d%%)"
+STR_UPD_CHECKINGFILES         = "%s von %s Dateien werden geprüft (%d%%)"
 
 STR_DWN_DOWNLOADED            = "Heruntergeladen"
 STR_DWN_DOWNLOADED_F          = "%s von %s (%d%%)"
@@ -373,12 +373,12 @@ STR_OPTION_OK_BUTTON          = STR_UPD_BTN_OK
 STR_OPTION_CANCEL_BUTTON      = STR_UPD_BTN_CANCEL
 
 // View tab
-STR_OPTION_DRPNAMES           = "Treiberpaketenamen"
+STR_OPTION_DRPNAMES           = "Treiberpaketname"
 STR_OPTION_HIDE_NAMES         = "Nicht anzeigen"
 STR_OPTION_SHOW_RIGHT         = "Rechts anzeigen"
 STR_OPTION_SHOW_ABOVE         = "Oben anzeigen"
 STR_OPTION_SCALLING           = "Anzeigeskalierung"
-STR_OPTION_SCALLING_H         = "Schnittstellenelemente größer oder kleiner machen"
+STR_OPTION_SCALLING_H         = "Oberflächenelemente vergrößern oder verkleinern"
 STR_OPTION_SCALLING_SML       = "Klein"
 STR_OPTION_SCALLING_BIG       = "Groß"
 STR_OPTION_SCALLING_RST       = "Zurücksetzen"
@@ -420,18 +420,18 @@ STR_WELCOME_SUBTITLE          = "Willkommen zu Snappy Driver Installer Origin"
 STR_WELCOME_INTRO             = "Vor Beginn, müssen Treiberpakete oder Indizes heruntergeladen werden. Eine der folgenden Optionen muss gewählt werden, um das Herunterladen auszulösen. Der Fortschrittsbalken zeigt den Herunterladestatus."
 STR_WELCOME_INTRO2            = "Hinweis: Weitere Programmoptionen sind im Hauptmenü oben links im Hauptfenster der Anwendung zu finden."
 STR_WELCOME_BUTTON1           = "Alle Treiberpakete herunterladen"
-STR_WELCOME_BUTTON1_DESC      = "Die volle Treiberpaketsammlung ist sehr umfangreich und das Herunterladen kann - abhängig von der Verfügbarkeit und der Internetgeschwindigkeit - zwischen einer Stunde und einem ganzen Tag dauern. Danach stehen alle Treiberpakete offline zur Verfügung. Dies ist die ideale Option für Unterstützungstechniker."
+STR_WELCOME_BUTTON1_DESC      = "Die volle Treiberpaketsammlung ist sehr umfangreich und das Herunterladen kann - abhängig von der Verfügbarkeit und der Internetgeschwindigkeit - zwischen einer Stunde und einem ganzen Tag dauern. Danach stehen alle Treiberpakete offline zur Verfügung. Diese ist die ideale Option für Unterstützungstechniker."
 STR_WELCOME_BUTTON2           = "Nur Netzwerktreiber herunterladen"
 STR_WELCOME_BUTTON2_DESC      = "Es werden ausschliesslich die aktuellen LAN, WLAN, and WiFi Treiber heruntergeladen. Dies ist ein relativ kleines Paket, mit dem ein PC rasch online gebracht werden kann."
 STR_WELCOME_BUTTON3           = "Nur Indizes herunterladen"
-STR_WELCOME_BUTTON3_DESC      = "Indizes können rasch heruntergeladen werden und dienen zum Feststellen allfälliger auf einen PC zu installierenden oder zu aktualisierenden Treiber, wobei zum Herunterladen der Treiber eine Internetverbindung erforderlich ist. Dies ist die geeignete Option für Gelegenheitsnutzer."
+STR_WELCOME_BUTTON3_DESC      = "Indizes können rasch heruntergeladen werden und dienen zum Feststellen allfälliger auf einen PC zu installierenden oder zu aktualisierenden Treiber, wobei zum Herunterladen der Treiber eine Internetverbindung erforderlich ist. Diese ist die geeignete Option für Gelegenheitsnutzer."
 STR_WELCOME_CLOSE             = "Beenden"
 
 // USB Wizard - page 1
 STR_USBWIZ_TITLE              = "USB-Laufwerk erstellen"
 STR_USBWIZ_SPACEREQ           = "Benötigter Platz:"
 STR_USBWIZ_SPACEAVAIL         = "Verfügbarer Platz:"
-STR_USBWIZ_PAGE1_DESC         = "Dieser Assistent hilft beim Erstellen eines tragbaren USB-Laufwerks, das Snappy Driver Installer Origin und ausgewählte Dateien enthält. \n\nDie Dateien werden in das Stammverzeichnis des vorgesehenen Geräts kopiert. Das Gerät soll über ausreichende Kapazität für die benötigten Dateien verfügen. Deshalb wird die Möglichkeit geboten, das Gerät zuerst abräumen zu können."
+STR_USBWIZ_PAGE1_DESC         = "Dieser Assistent hilft beim Erstellen eines tragbaren USB-Laufwerks, das Snappy Driver Installer Origin und ausgewählte Dateien enthält. \n\nDie Dateien werden in das Stammverzeichnis des vorgesehenen Geräts kopiert. Das Gerät soll über ausreichende Kapazität für die benötigten Dateien verfügen. Deshalb wird die Möglichkeit geboten, das Gerät zuerst abzuräumen."
 
 // USB Wizard - page 2
 STR_USBWIZ_PAGE2_TITLE        = "Ziellaufwerk"
