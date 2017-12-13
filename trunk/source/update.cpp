@@ -179,6 +179,8 @@ dht_settings dht;
 UpdateDialog_t UpdateDialog;
 Updater_t *Updater;
 TorrentStatus_t TorrentStatus;
+int ListViewSortColumn=666;
+bool ListViewSortAsc=TRUE;
 
 enum DOWNLOAD_STATUS
 {
@@ -230,6 +232,17 @@ public:
     }
     void close()
     {
+        // free ItemData
+        LVITEM item;
+        type_item *ItemData;
+        for(int i=0;i<GetItemCount();i++)
+        {
+            item.iItem=i;
+            item.mask=LVIF_PARAM;
+            GetItem(&item);
+            ItemData=(type_item*)item.lParam;
+            delete ItemData;
+        }
         hListg=nullptr;
     }
     bool IsVisible(){ return hListg!=nullptr; }
@@ -243,14 +256,65 @@ public:
     }
     static LPARAM CALLBACK CompareFunc(LPARAM lParam1,LPARAM lParam2,LPARAM lParamSort)
     {
-        UNREFERENCED_PARAMETER(lParamSort);
-        return lParam1-lParam2;
+        // the first two parameters are the ItemData structures to be compared
+        // use the third parameter to control which column is used and
+        // whether it's ascending or descending
+        // -1 -2 -3 sort descending,  1 2 3 sort ascending
+
+        bool isAsc = (lParamSort > 0);
+        int column = abs(lParamSort)-1;
+
+        type_item *ItemData1=(type_item*)lParam1;
+        type_item *ItemData2=(type_item*)lParam2;
+        int nRet=0;
+
+        // default
+        if(column==666)
+        {
+            if(ItemData1->DefaultSort>ItemData2->DefaultSort)nRet=1;
+            else if(ItemData1->DefaultSort<ItemData2->DefaultSort)nRet=-1;
+        }
+        // item name
+        else if(column==0)
+            nRet=wcscmp(ItemData1->ItemName,ItemData2->ItemName);
+        // size
+        else if(column==1)
+        {
+            if(ItemData1->SizeMB>ItemData2->SizeMB)nRet=1;
+            else if(ItemData2->SizeMB>ItemData1->SizeMB)nRet=-1;
+        }
+        // percent
+        else if(column==2)
+        {
+            if(ItemData1->Percent>ItemData2->Percent)nRet=1;
+            else if(ItemData2->Percent>ItemData1->Percent)nRet=-1;
+        }
+        // new ver
+        else if(column==3)
+        {
+            if(ItemData1->VersionNew>ItemData2->VersionNew)nRet=1;
+            else if(ItemData2->VersionNew>ItemData1->VersionNew)nRet=-1;
+        }
+        // current ver
+        else if(column==4)
+        {
+            if(ItemData1->VersionCurrent>ItemData2->VersionCurrent)nRet=1;
+            else if(ItemData2->VersionCurrent>ItemData1->VersionCurrent)nRet=-1;
+        }
+        // for this pc
+        if(column==5)
+        {
+            if(ItemData1->ForThisPC>ItemData2->ForThisPC)nRet=1;
+            else if(ItemData1->ForThisPC<ItemData2->ForThisPC)nRet=-1;
+        }
+        if(!isAsc)nRet=nRet*-1;
+        return nRet;
     }
     void EnableRedraw()
     {
         if(hListg)
         {
-            SendMessage(hListg,LVM_SORTITEMS,0,(LPARAM)CompareFunc);
+            SendMessage(hListg,LVM_SORTITEMS,667,(LPARAM)CompareFunc);
             SendMessage(hListg,WM_SETREDRAW,1,0);
         }
     }
@@ -514,7 +578,6 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
 
 BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
 {
-    UNREFERENCED_PARAMETER(lParam);
     LVCOLUMN lvc;
     HWND thispcbut,chk1,chk2;
     wchar_t buf[32];
@@ -553,14 +616,34 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             return TRUE;
 
         case WM_NOTIFY:
-            if(((LPNMHDR)lParam)->code==LVN_ITEMCHANGED)
             {
-                UpdateDialog.calctotalsize();
-                UpdateDialog.calcavailablespace();
-                UpdateDialog.updateTexts();
-                return TRUE;
+                LPNMHDR lpnmh = (LPNMHDR)lParam;
+                if(lpnmh->code==LVN_ITEMCHANGED)
+                {
+                    UpdateDialog.calctotalsize();
+                    UpdateDialog.calcavailablespace();
+                    UpdateDialog.updateTexts();
+                    return TRUE;
+                }
+                // column sort
+                if(lpnmh->code==LVN_COLUMNCLICK)
+                    if(lpnmh->idFrom==IDLIST)
+                    {
+                        NMLISTVIEW* pListView = (NMLISTVIEW*)lParam;
+                        if(pListView->iSubItem==ListViewSortColumn)
+                            ListViewSortAsc=!ListViewSortAsc;
+                        else
+                        {
+                            ListViewSortColumn=pListView->iSubItem;
+                            ListViewSortAsc=TRUE;
+                        }
+                        LPARAM lParamSort=ListViewSortColumn+1;
+                        if(!ListViewSortAsc)lParamSort=-lParamSort;
+                        SendMessage(ListView.hListg,LVM_SORTITEMS,lParamSort,(LPARAM)ListView.CompareFunc);
+                        return TRUE;
+                    }
+                break;
             }
-            break;
 
         case WM_DESTROY:
             SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)wpOrigButtonProc);
@@ -720,14 +803,23 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     lvI.state     =0;
     lvI.iItem     =0;
 
-    // Add the app to the list
-    lvI.lParam    =-2;
-
     int row=0;
     int LatestExeVersion=System.FindLatestExeVersion();
 
+    // the application entry
     if(NewExeVer>LatestExeVersion&&ListView.IsVisible())
     {
+        // the data item
+        type_item *ItemData=new type_item;
+        lvI.lParam=(LPARAM)ItemData;
+        ItemData->DefaultSort=-2;
+        wcscpy(ItemData->ItemName,STR(STR_UPD_APP));
+        ItemData->SizeMB=basesize/1024/1024;
+        ItemData->Percent=basedownloaded*100/basesize;
+        ItemData->VersionNew=NewExeVer;
+        ItemData->VersionCurrent=LatestExeVersion;
+        wcscpy(ItemData->ForThisPC,STR(STR_UPD_YES));
+        // the list item
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
         if(!update)row=ListView.InsertItem(&lvI);
         wsprintf(buf,L"%d %s",(int)(basesize/1024/1024),STR(STR_UPD_MB));
@@ -743,9 +835,19 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     }
 
     // Add indexes to the list
-    lvI.lParam    =-1;
     if(missingindexes&&ListView.IsVisible())
     {
+        // the data item
+        type_item *ItemData=new type_item;
+        lvI.lParam=(LPARAM)ItemData;
+        ItemData->DefaultSort=-1;
+        wcscpy(ItemData->ItemName,STR(STR_UPD_INDEXES));
+        ItemData->SizeMB=indexsize/1024/1024;
+        ItemData->Percent=indexdownloaded*100/indexsize;
+        ItemData->VersionNew=0;
+        ItemData->VersionCurrent=0;
+        wcscpy(ItemData->ForThisPC,STR(STR_UPD_YES));
+        // the list item
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_INDEXES));
         if(!update)row=ListView.InsertItem(&lvI);
         wsprintf(buf,L"%d %s",(int)(indexsize/1024/1024),STR(STR_UPD_MB));
@@ -787,7 +889,17 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 
             if(newver>oldver&&ListView.IsVisible())
             {
-                lvI.lParam=i;
+                // the data item
+                type_item *ItemData=new type_item;
+                lvI.lParam=(LPARAM)ItemData;
+                ItemData->DefaultSort=i;
+                wcscpy(ItemData->ItemName,buf);
+                ItemData->SizeMB=sz;
+                ItemData->Percent=file_progress[i]*100/ti->file_at(i).size;
+                ItemData->VersionNew=newver;
+                ItemData->VersionCurrent=oldver;
+                wcscpy(ItemData->ForThisPC,STR(STR_UPD_YES+manager_g->manager_drplive(buf)));
+                // the list item
                 if(!update)row=ListView.InsertItem(&lvI);
                 wsprintf(buf,L"%d %s",sz,STR(STR_UPD_MB));
                 ListView.SetItemTextUpdate(row,1,buf);

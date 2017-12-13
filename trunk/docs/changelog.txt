@@ -6,6 +6,12 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.4.0.670
+15 December 2017
+Driver Packs 17122
+Added column sorting to Updates dialog.
+Translations.
+
 Version 1.3.2.667
 3 November 2017
 Driver Packs 17105
