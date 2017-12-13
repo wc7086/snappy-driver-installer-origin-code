@@ -23,6 +23,16 @@ class Canvas;
 // Global variables
 extern Updater_t *Updater;
 
+struct type_item {
+    wchar_t ItemName[BUFSIZ];
+    int SizeMB;
+    int Percent;
+    int VersionNew;
+    int VersionCurrent;
+    wchar_t ForThisPC[BUFSIZ];
+    int DefaultSort;
+    };
+
 // Updater
 class Updater_t
 {
