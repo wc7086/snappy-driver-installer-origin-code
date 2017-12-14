@@ -498,10 +498,11 @@ void UpdateDialog_t::setCheckboxes()
         item.iItem=i;
         ListView.GetItem(&item);
         int val=0;
+        type_item *ItemData=(type_item*)item.lParam;
 
-        if(item.lParam==-2)val=baseChecked;
-        if(item.lParam==-1)val=indexesChecked;
-        if(item.lParam>=0)val=hTorrent.file_priority((int)item.lParam);
+        if(ItemData->DefaultSort==-2)val=baseChecked;
+        if(ItemData->DefaultSort==-1)val=indexesChecked;
+        if(ItemData->DefaultSort>=0)val=hTorrent.file_priority((int)ItemData->DefaultSort);
 
         ListView.SetCheckState(i,val);
     }
@@ -528,12 +529,13 @@ void UpdateDialog_t::setPriorities()
         // get the item check state
         int val=ListView.GetCheckState(i);
 
+        type_item *ItemData=(type_item*)item.lParam;
         // app priority will be 2 if checked
-        if(item.lParam==-2)base_pri=val?2:0;
+        if(ItemData->DefaultSort==-2)base_pri=val?2:0;
         // index priority will be 2 if checked
-        if(item.lParam==-1)indexes_pri=val?2:0;
+        if(ItemData->DefaultSort==-1)indexes_pri=val?2:0;
         // driver priority will be 1 if checked
-        if(item.lParam>= 0)hTorrent.file_priority(static_cast<int>(item.lParam),val);
+        if(ItemData->DefaultSort>= 0)hTorrent.file_priority(static_cast<int>(ItemData->DefaultSort),val);
     }
 
     // Set priorities for any torrent file that's not a driver
