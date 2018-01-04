@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "A telepítés után  (újraindítás szüksége
 STR_OPTION_CMD_FINISHDN       = "A letöltés után"
 STR_OPTION_CONSOLE            = "Konzol megjelenítése"
 
-// Patreon
-STR_PATREON1                  = "Látogassa meg Patreon oldalunkat további információkért, tippekért és a projekt fejlesztés támogatásához."
-STR_PATREON2                  = "(Patreon Weboldalunk megnyitásához klikkeljen ide)"
-STR_PATREON_H                 = "Patreon Weboldalunk megnyitásához klikkeljen ide"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Üdvözöli a Snappy Driver Installer Origin"

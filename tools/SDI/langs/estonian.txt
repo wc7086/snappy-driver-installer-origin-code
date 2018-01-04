@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Peale paigaldamist (taaskäivitus vajalik)"
 STR_OPTION_CMD_FINISHDN       = "Peale allalaadimist"
 STR_OPTION_CONSOLE            = "Näita konsooli"
 
-// Patreon
-STR_PATREON1                  = "Külastage meie Patreoni lehte informatsiooni, näpunäidete ja projekti toetamiseks."
-STR_PATREON2                  = "(Vajutage siia, et avada Patreoni lehekülg)"
-STR_PATREON_H                 = "Vajutage siia, et avada Patreoni lehekülg"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"

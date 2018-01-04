@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Dopo l'installazione (è necessario riavviare)"
 STR_OPTION_CMD_FINISHDN       = "Dopo lo scaricamento"
 STR_OPTION_CONSOLE            = "Mostra la finestra terminale"
 
-// Patreon
-STR_PATREON1                  = "Visita la nostra pagina Patreon per informazioni, suggerimenti e per sostenere il progetto."
-STR_PATREON2                  = "(Clicca qui per aprire la pagina di Patreon)"
-STR_PATREON_H                 = "Clicca qui per aprire la pagina di Patreon"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Benvenuto a Snappy Driver Installer Origin"

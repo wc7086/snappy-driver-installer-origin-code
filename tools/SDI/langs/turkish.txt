@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Kurulumdan sonra (yeniden başlatmaya ihtiyaç 
 STR_OPTION_CMD_FINISHDN       = "İndirmeden sonra"
 STR_OPTION_CONSOLE            = "Konsol penceresini göster"
 
-// Patreon
-STR_PATREON1                  = "Bilgi, ipucu ve projeyi desteklemek için Patreon sayfamızı ziyaret edin."
-STR_PATREON2                  = "(Patreon sitesini açmak için tıklayın)"
-STR_PATREON_H                 = "Patreon sayfasını açmak için burayı tıklayın"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Snappy Sürücüsünün Kurulumuna Hoş Geldiniz"

@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "אחרי ההתקנה (דרוש הפעלה מח
 STR_OPTION_CMD_FINISHDN       = "אחרי ההורדה"
 STR_OPTION_CONSOLE            = "הצג צג מסוף"
 
-// Patreon
-STR_PATREON1                  = "בקר בדף Patreon לקבלת מידע, טיפים ותמיכה בפרויקט."
-STR_PATREON2                  = "(לחץ כאן כדי לפתוח את דף Patreon)"
-STR_PATREON_H                 = "לחץ כאן כדי לפתוח את דף Patreon"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"
