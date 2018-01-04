@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Po instalaci (vyžadující restart)"
 STR_OPTION_CMD_FINISHDN       = "Po stažení"
 STR_OPTION_CONSOLE            = "Zobrazit okno konzole"
 
-// Patreon
-STR_PATREON1                  = "Navštivte naši stránku Patreon pro informace, tipy a podporu projektu."
-STR_PATREON2                  = "(Klikněte zde pro otevření stránky Patreon)"
-STR_PATREON_H                 = "Klikněte zde pro otevření stránky Patreon"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"

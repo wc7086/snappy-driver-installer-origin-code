@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Nakon preuzimanja (potrebno ponovno pokretanje)
 STR_OPTION_CMD_FINISHDN       = "Nakon preuzimanja"
 STR_OPTION_CONSOLE            = "Pokaži prozor konzole"
 
-// Patreon
-STR_PATREON1                  = "Posjetite našu stranicu za Patreon za informacije, savjete i podršku projektu."
-STR_PATREON2                  = "(Kliknite ovdje da biste otvorili Patreon stranicu)"
-STR_PATREON_H                 = "Kliknite ovdje da biste otvorili Patreon stranicu"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"

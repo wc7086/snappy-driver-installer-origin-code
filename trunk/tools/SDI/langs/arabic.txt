@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "بعد التثبيت (تحتاج الي إعا
 STR_OPTION_CMD_FINISHDN       = "بعد التحميل"
 STR_OPTION_CONSOLE            = "إظهار نافذة وحدة التحكم"
 
-// Patreon
-STR_PATREON1                  = "تم تطوير SDIO من قبل متطوعين في أوقات فراغهم. إذا أعجبك هذا البرنامج, يرجي تقديم الدعم لنا علي Patreon."
-STR_PATREON2                  = "(أضغط هنا لفتح صفحة الـPatreon)"
-STR_PATREON_H                 = "أضغط هنا لفتح صفحة الـPatreon"
-
 // Welcome
 STR_WELCOME_TITLE             = "مثبت سائق المثبت المنشأ"
 STR_WELCOME_SUBTITLE          = "مرحبا بكم في المثبت سائق المثبت المنشأ"

@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "پس از نصب(نیاز به راه اندا�
 STR_OPTION_CMD_FINISHDN       = "پس از دانلود"
 STR_OPTION_CONSOLE            = "نمایش پنجره کنسول"
 
-// Patreon
-STR_PATREON1                  = "SDIO توسط داوطلبان توسعه می یابد. اگر این نرم افزار را دوست دارید، لطفا از ما در Patreon حمایت کنید."
-STR_PATREON2                  = "(برای باز کردن صفحه Patreon اینجا را کلیک کنید.)"
-STR_PATREON_H                 = "برای باز کردن صفحه Patreon اینجا را کلیک کنید."
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"

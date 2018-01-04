@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Po įdiegimo (reikia perkrauti)"
 STR_OPTION_CMD_FINISHDN       = "Po atsisiuntimo"
 STR_OPTION_CONSOLE            = "Rodyti konsolės langą"
 
-// Patreon
-STR_PATREON1                  = "Apsilankykite mūsų "Patreon" puslapyje, norėdami gauti informacijos, patarimų ir remti projektą."
-STR_PATREON2                  = "(Spustelėkite čia, jei norite atidaryti Patreon puslapį)"
-STR_PATREON_H                 = "Spustelėkite čia, jei norite atidaryti Patreon puslapį"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"

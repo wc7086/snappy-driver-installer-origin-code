@@ -409,11 +409,6 @@ STR_OPTION_CMD_FINISHRB       = "Após a instalação (tem de reiniciar o PC)"
 STR_OPTION_CMD_FINISHDN       = "Após o download"
 STR_OPTION_CONSOLE            = "Mostrar janela da consola do Windows"
 
-// Patreon
-STR_PATREON1                  = "Visite nossa página Patreon para obter informações, dicas e apoiar o projeto."
-STR_PATREON2                  = "(Clique aqui para abrir a página Patreon)"
-STR_PATREON_H                 = "Clique aqui para abrir a página Patreon"
-
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
 STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"
