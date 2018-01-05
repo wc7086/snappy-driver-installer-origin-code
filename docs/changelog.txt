@@ -6,6 +6,13 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.4.1.675
+05 January 2018
+Driver Packs 17125
+Removed Patreon links.
+Updated Greek translation.
+Fixed bugs and added "Show more drives" option to USB wizard.
+
 Version 1.4.0.671
 15 December 2017
 Driver Packs 17122

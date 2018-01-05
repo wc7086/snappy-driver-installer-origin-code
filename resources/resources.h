@@ -15,11 +15,11 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\source\svnrev.h"
 
-#define VER_FILEVERSION             1,4,0,SVN_REV
-#define VER_FILEVERSION_STR         "1.4.0." SVN_REV_STR "\0"
+#define VER_FILEVERSION             1,4,1,SVN_REV
+#define VER_FILEVERSION_STR         "1.4.1." SVN_REV_STR "\0"
 
-#define VER_VERSION_STR             "Version 1.4.0." SVN_REV_STR
-#define VER_VERSION_STR2            "v1.4.0"
+#define VER_VERSION_STR             "Version 1.4.1." SVN_REV_STR
+#define VER_VERSION_STR2            "v1.4.1"
 
 #define IDC_STATIC     -1
 
@@ -37,7 +37,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDR_INSTALL64 209
 #define IDR_CLI_HELP  210
 #define IDR_LOGO      211
-#define IDR_PATREON   212
+//#define IDR_PATREON   212
 #define IDB_LOGO      214
 #define IDB_WATERMARK 215
 
@@ -176,4 +176,3 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #define IDC_TRANSL_CLEAR      1012
 
 #define WEB_HOMEPAGE    L"http://www.snappy-driver-installer.org"
-#define WEB_PATREONPAGE L"https://www.patreon.com/sdi_tool"
