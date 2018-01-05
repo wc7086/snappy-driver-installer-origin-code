@@ -25,8 +25,9 @@ FONT 9, "MS Shell Dlg"
     LTEXT "Snappy Driver Installer Origin will be installed into the root "
           "directory of the selected removable drive. Insert your USB drive now."
           ,IDC_USBWIZ_PAGE2_DESC,20,0,280,20
-    LTEXT "Select target removable drive:",IDC_USBWIZ_PAGE2_DRIVE,20,28,100,12
-    COMBOBOX IDC_USBWIZ_PAGE2_COMBO,120,26,160,120,CBS_DROPDOWNLIST|WS_VSCROLL|WS_TABSTOP
+    LTEXT "Select target removable drive:",IDC_USBWIZ_PAGE2_DRIVE,20,26,100,12
+    COMBOBOX IDC_USBWIZ_PAGE2_COMBO,120,24,160,120,CBS_DROPDOWNLIST|WS_VSCROLL|WS_TABSTOP
+    AUTOCHECKBOX "Show more drives",IDC_USBWIZ_PAGE2_MORE,120,36,100,12,WS_TABSTOP
     GROUPBOX "Clear Selected Drive",IDC_USBWIZ_PAGE2_CLEAR,100,50,215,62
     PUSHBUTTON "Delete Files",IDC_USBWIZ_PAGE2_DELETE,106,64,78,16
     LTEXT "Delete all files and folders on the drive.",IDC_USBWIZ_PAGE2_DELETEDESC,188,64,117,20
