@@ -1026,9 +1026,6 @@ static BOOL CALLBACK AboutBoxProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam
             case IDD_ABOUT_T8:
                 System.run_command(L"open",WEB_HOMEPAGE,SW_SHOWNORMAL,0);
                 break;
-            case IDD_ABOUT_T9:
-                System.run_command(L"open",WEB_PATREONPAGE,SW_SHOWNORMAL,0);
-                break;
             default:
                 break;
         }
@@ -2356,11 +2353,6 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                 #endif
                 break;
             }
-            if(Popup->floating_itembar==SLOT_PATREON)
-            {
-                System.run_command(L"open",WEB_PATREONPAGE,SW_SHOWNORMAL,0);
-                break;
-            }
             if(Popup->floating_itembar>0&&(i==1||i==0||i==3))
             {
                 manager_g->toggle(Popup->floating_itembar);
@@ -2431,8 +2423,6 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                     Popup->drawpopup(itembar_i,STR_RESTOREPOINT_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(itembar_i==SLOT_DOWNLOAD)
                     Popup->drawpopup(itembar_i,0,FLOATING_DOWNLOAD,x,y,hField);
-                else if(itembar_i==SLOT_PATREON)
-                    Popup->drawpopup(itembar_i,STR_PATREON_H,FLOATING_TOOLTIP,x,y,hField);
                 else if(i==0&&itembar_i>=RES_SLOTS)
                     Popup->drawpopup(itembar_i,STR_HINT_DRIVER,FLOATING_TOOLTIP,x,y,hField);
                 else
@@ -2735,9 +2725,6 @@ BOOL CALLBACK WelcomeProcedure(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 return TRUE;
             case IDD_WELC_LINK1:
                 System.run_command(L"open",WEB_HOMEPAGE,SW_SHOWNORMAL,0);
-                break;
-            case IDD_WELC_LINK2:
-                System.run_command(L"open",WEB_PATREONPAGE,SW_SHOWNORMAL,0);
                 break;
             default:
                 break;

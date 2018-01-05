@@ -931,10 +931,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     if(ret)manager_g->itembar_settext(SLOT_NODRIVERS,0);
     manager_g->itembar_settext(SLOT_DOWNLOAD,ret?1:0,nullptr,ret,0,0);
 
-    bool showpatreon=ret?1:0;
-    if(emptydrp)showpatreon=false;
-    if(Settings.flags&FLAG_HIDEPATREON)showpatreon=false;
-    manager_g->itembar_settext(SLOT_PATREON,showpatreon,nullptr,ret,0,0);
     return ret+=NewExeVer<<8;
 }
 
