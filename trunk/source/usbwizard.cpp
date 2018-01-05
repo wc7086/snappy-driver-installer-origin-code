@@ -145,6 +145,11 @@ static void Page2PopulateCombo(HWND hwnd)
 
     wchar_t myDrives[] = L"A:\\";
 
+    // get the system drive
+    wchar_t systemDrive[BUFLEN]={0};
+    GetEnvironmentVariable(L"SystemDrive",systemDrive,BUFLEN);
+    wcscat(systemDrive,L"\\");
+
     // get all logical drives
     DWORD drives=GetLogicalDrives();
 
@@ -157,8 +162,14 @@ static void Page2PopulateCombo(HWND hwnd)
         if(drives&1)
         {
             // get the drive type
+            // some USB drives show up as 'fixed'
+            // so I'll give the option of showing more drives
             UINT driveType=GetDriveType(myDrives);
-            if(driveType==DRIVE_REMOVABLE)
+            if( (wcscmp(systemDrive,myDrives)!=0) &&   // always ignore system drive
+                (driveType!=DRIVE_CDROM) &&            // always ignore cd drive
+                ( (USBWiz->ShowAllDrives) ||           // show all other drives
+                  (driveType!=DRIVE_FIXED) )           // or show all other non fixed drives
+               )
             {
                 // get the volume label
                 GetVolumeInformation(myDrives,vol,MAX_PATH+1,nullptr,nullptr,nullptr,nullptr,0);
@@ -438,7 +449,6 @@ static void BuildFilesList(HWND hwnd)
         if(USBWiz->NoSnapshots)fwprintf(f,L"-nosnapshot ");
         if(USBWiz->NoLogs)fwprintf(f,L"-nologfile ");
         if(Settings.flags&FLAG_SHOWCONSOLE)fwprintf(f,L"-showconsole ");
-        if(Settings.flags&FLAG_HIDEPATREON)fwprintf(f,L"-hidepatreon ");
         if(Settings.flags&FLAG_SHOWDRPNAMES1)fwprintf(f,L"-showdrpnames1 ");
         if(Settings.flags&FLAG_SHOWDRPNAMES2)fwprintf(f,L"-showdrpnames2 ");
         fclose(f);
@@ -509,6 +519,7 @@ static LRESULT CALLBACK Page2DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_SPACEAVAIL),STR(STR_USBWIZ_SPACEAVAIL));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_DESC),STR(STR_USBWIZ_PAGE2_DESC));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_DRIVE),STR(STR_USBWIZ_PAGE2_DRIVE));
+            SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_MORE),STR(STR_USBWIZ_PAGE2_MORE));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_CLEAR),STR(STR_USBWIZ_PAGE2_CLEAR));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_DELETE),STR(STR_USBWIZ_PAGE2_DELETE));
             SetWindowText(GetDlgItem(hwnd,IDC_USBWIZ_PAGE2_DELETEDESC),STR(STR_USBWIZ_PAGE2_DELETEDESC));
@@ -553,6 +564,13 @@ static LRESULT CALLBACK Page2DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
                     USBWiz->QuickFormatTarget(hwnd);
                     BuildFilesList(hwnd);
                     Page2PopulateCombo(hwnd);
+                }
+                // all drives checkbox
+                else if((cid==IDC_USBWIZ_PAGE2_MORE)&&(ntc==BN_CLICKED))
+                {
+                    USBWiz->ShowAllDrives=IsDlgButtonChecked(hwnd,IDC_USBWIZ_PAGE2_MORE);
+                    Page2PopulateCombo(hwnd);
+                    BuildFilesList(hwnd);
                 }
             }
             break;
@@ -773,30 +791,15 @@ static LRESULT CALLBACK Page4DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
 //                HWND hCtl=(HWND)lParam;
                 // radio buttons and checkboxes
                 if((cid==IDC_USBWIZ_PAGE4_ALLLANG)&&(ntc==BN_CLICKED))
-                {
                     USBWiz->Languages=0;
-                    BuildFilesList(hwnd);
-                }
                 else if((cid==IDC_USBWIZ_PAGE4_CURLANG)&&(ntc==BN_CLICKED))
-                {
                     USBWiz->Languages=1;
-                    BuildFilesList(hwnd);
-                }
                 else if((cid==IDC_USBWIZ_PAGE4_ALLTHEME)&&(ntc==BN_CLICKED))
-                {
                     USBWiz->Themes=0;
-                    BuildFilesList(hwnd);
-                }
                 else if((cid==IDC_USBWIZ_PAGE4_CURTHEME)&&(ntc==BN_CLICKED))
-                {
                     USBWiz->Themes=1;
-                    BuildFilesList(hwnd);
-                }
                 else if((cid==IDC_USBWIZ_PAGE4_DEFTHEME)&&(ntc==BN_CLICKED))
-                {
                     USBWiz->Themes=2;
-                    BuildFilesList(hwnd);
-                }
                 else if((cid==IDC_USBWIZ_PAGE4_EXPERT)&&(ntc==BN_CLICKED))
                     USBWiz->ExpertMode=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE4_EXPERT),BM_GETCHECK,0,0);
                 else if((cid==IDC_USBWIZ_PAGE4_NOUPD)&&(ntc==BN_CLICKED))
@@ -807,7 +810,7 @@ static LRESULT CALLBACK Page4DlgProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lP
                     USBWiz->NoLogs=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE4_NOLOG),BM_GETCHECK,0,0);
                 else if((cid==IDC_USBWIZ_PAGE4_INCAUTO)&&(ntc==BN_CLICKED))
                     USBWiz->IncludeAutoFiles=SendMessage(GetDlgItem(hwnd,IDC_USBWIZ_PAGE4_INCAUTO),BM_GETCHECK,0,0);
-
+                BuildFilesList(hwnd);
             }
             break;
 

@@ -48,6 +48,7 @@ class USBWizard
         bool NoSnapshots=false;
         bool NoLogs=false;
         bool IncludeAutoFiles=true;
+        bool ShowAllDrives=false;
         bool doWizard();
         void ClearTarget(HWND hwnd);
         void QuickFormatTarget(HWND parent);
