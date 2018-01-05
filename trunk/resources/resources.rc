@@ -26,7 +26,6 @@ IDR_DOWN        RESFILE     "down.webp"
 IDR_UP_H        RESFILE     "up.webp"
 IDR_DOWN_H      RESFILE     "down.webp"
 IDR_LOGO        RESFILE     "logoorigin.webp"
-IDR_PATREON     RESFILE     "patreon.webp"
 IDR_LICENSE     RESFILE     "gpl-3.0.txt"
 IDR_THEME       RESFILE     "..\\tools\\SDI\\themes\\metallic.txt"
 IDR_LANG        RESFILE     "..\\tools\\SDI\\langs\\english.txt"
@@ -255,7 +254,6 @@ BEGIN
             SVN_BUILD_NOTE
             , IDD_ABOUT_T2, 115,24,255,60,SS_LEFT
     LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_ABOUT_T8,115,57,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_ABOUT_T9,115,67,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Developers:",IDD_ABOUT_T3,10,97,360,30,SS_LEFT
     LTEXT   "BadPointer, Glenn Delahoy",0,70,97,360,30,SS_LEFT
     LTEXT   "GNU General Public License",IDD_ABOUT_T4,10,116,360,12,SS_LEFT
@@ -288,7 +286,6 @@ BEGIN
             SVN_BUILD_NOTE
             , IDD_WELC_TEXT, 115,24,250,90,SS_LEFT
     LTEXT   "Home Page: www.snappy-driver-installer.org",IDD_WELC_LINK1,115,57,200,10,SS_LEFT|SS_NOTIFY
-    LTEXT   "Support: www.patreon.com/sdi_tool",IDD_WELC_LINK2,115,67,200,10,SS_LEFT|SS_NOTIFY
     LTEXT   "Welcome To Snappy Driver Installer Origin"
             ,IDD_WELC_SUBTITLE,34,92,384,40,SS_LEFT
     LTEXT   "Before you can begin, you'll need to download driver packs or indexes. Select one of "
