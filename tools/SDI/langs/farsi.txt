@@ -1,6 +1,6 @@
 ﻿// send updates to translations@snappy-driver-installer.org
 
-STR_TRANSLATORS               = "Mostafa Akbari"
+STR_TRANSLATORS               = "علیرضا ذوالفقار"
 
 STR_LANG_NAME                 = "فارسی"
 STR_LANG_ID                   = "Farsi"
@@ -20,20 +20,20 @@ STR_SELECT_NONE               = "انتخاب هیچ‌کدام"
 STR_SELECT_NONE_H             = "Ctrl+N"
 
 STR_LANG                      = "زبان (Language)"
-STR_LANG_H                    = ""
-STR_THEME                     = "تم"
-STR_THEME_H                   = ""
+STR_LANG_H                    = "زبان خود را انتخاب کنید"
+STR_THEME                     = "پوسته"
+STR_THEME_H                   = "یک پوسته انتخاب کنید"
 STR_EXPERT                    = "حالت تخصصی"
 STR_EXPERT_H                  = "حالت تخصصی را فعال می‌کند\n\nتذکر: برای اطلاعات بیشتر روی درایور کلید Ctrl یا Spacebar را فشار دهید."
 
-STR_REFRESH                   = "Refresh"
-STR_REFRESH_H                 = "Refresh driver list"
-STR_UPDATES                   = "Updates"
-STR_UPDATES_H                 = "Select updates source"
-STR_UPDATES_SDIO              = "Select SDIO Updates"
-STR_UPDATES_SDIO_H            = "Select the standard SDIO updates"
-STR_UPDATES_DRIVERS           = "Select Driver Packs Updates"
-STR_UPDATES_DRIVERS_H         = "Select the latest driver packs updates"
+STR_REFRESH                   = "تازه سازی"
+STR_REFRESH_H                 = "تازه سازی لیست درایورها"
+STR_UPDATES                   = "به‌روزرسانی‌ها"
+STR_UPDATES_H                 = "انتخاب منبع به‌روزرسانی"
+STR_UPDATES_SDIO              = "انتخاب به روزرسانی‌های SDIO "
+STR_UPDATES_SDIO_H            = "انتخاب به روزرسانی‌های استناندارد "
+STR_UPDATES_DRIVERS           = "انتخاب به روزرسانی بسته آپدیت"
+STR_UPDATES_DRIVERS_H         = "انتخاب آخرین به‌روزرسانی بسته درایور"
 STR_TOOLS                     = "Tools"
 STR_TOOLS_H                   = "Shortcuts to Windows tools"
 STR_OPENLOGS                  = "باز کردن Log"
@@ -101,7 +101,7 @@ STR_SYSINF_PRODUCT            = "محصول"
 STR_SYSINF_MODEL              = "مدل"
 STR_SYSINF_MANUF              = "سازنده"
 STR_SYSINF_BATTERY            = "نیرو"
-STR_SYSINF_AC_STATUS          = "A/C"
+STR_SYSINF_AC_STATUS          = "برق شهر"
 STR_SYSINF_OFFLINE            = "قطع‌شده"
 STR_SYSINF_ONLINE             = "اتصال"
 STR_SYSINF_UNKNOWN            = "ناشناخته"
@@ -124,13 +124,13 @@ STR_SYSINF_TYPE               = "نوع"
 STR_SYSINF_LAPTOP             = "لپ‌تاپ"
 STR_SYSINF_DESKTOP            = "دسکتاپ"
 STR_SYSINF_LOCALE             = "محل"
-STR_SYSINF_CPU_ARCH           = "معماری CPU"
-STR_SYSINF_32BIT              = "32-بیت"
-STR_SYSINF_64BIT              = "64-بیت"
+STR_SYSINF_CPU_ARCH           = "معماری پردازنده"
+STR_SYSINF_32BIT              = "۳۲ بیت"
+STR_SYSINF_64BIT              = "۶۴ بیت"
 
 // About (deprecated)
 STR_ABOUT_VER                 = ""
-STR_ABOUT_DEV_TITLE           = "Developers:"
+STR_ABOUT_DEV_TITLE           = "برنامه‌نویسان:"
 STR_ABOUT_DEV_LIST            = ""
 STR_ABOUT_TESTERS_TITLE       = ""
 STR_ABOUT_TESTERS_LIST        = ""
@@ -153,23 +153,23 @@ STR_HINT_PROVIDER             = "ارائه‌دهنده:"
 STR_HINT_DATE                 = "تاریخ:"
 STR_HINT_VERSION              = "نسخه:"
 STR_HINT_ID                   = "شناسه:"
-STR_HINT_INF                  = "فایل INF:"
+STR_HINT_INF                  = "اطلاعات فایل:"
 STR_HINT_SECTION              = "بخش:"
 STR_HINT_SCORE                = "امتیاز:"
 STR_HINT_SCROLL               = "تذکر: با دکمه وسط ماوس صفحه را عمودی پیمایش کنید"
 
 // System menu
-STR_SYST_LICENSE              = "License information"
-STR_SYST_ABOUT                = "About"
-STR_SYST_START_SEED           = "Start seeding driver packs"
-STR_SYST_STOP_SEED            = "Stop seeding"
-STR_SYST_COMPMNG              = "Computer Management"
-STR_SYST_SYSPROT              = "System Protection"
-STR_SYST_DEVICEPRNT           = "Devices and Printers"
-STR_SYST_SYSCONTROL           = "Control Panel"
-STR_SYST_REST                 = "System Restore"
-STR_SYST_USBWIZARD            = "Create A USB Drive"
-STR_SYST_TRANSLATE            = "Translation Tool"
+STR_SYST_LICENSE              = "اطلاعات لایسنس"
+STR_SYST_ABOUT                = "درباره"
+STR_SYST_START_SEED           = "آغاز سید بسته‌های درایور"
+STR_SYST_STOP_SEED            = "توقف سید"
+STR_SYST_COMPMNG              = "مدیریت کامپوتر"
+STR_SYST_SYSPROT              = "محافظت از سیستم"
+STR_SYST_DEVICEPRNT           = "دستگاه‌ها و پرینتر"
+STR_SYST_SYSCONTROL           = "کنترل پنل"
+STR_SYST_REST                 = "منابع سیستم"
+STR_SYST_USBWIZARD            = "سایخت درایو یو‌اس‌بی"
+STR_SYST_TRANSLATE            = "ابزار ترجمه"
 
 // Context menu
 STR_CONT_INSTALL              = "نصب‌های برنامه‌ریزی‌شده"
@@ -280,15 +280,15 @@ STR_UPD_DIALOG_MSG            = "آیا می‌خواهید بررسی خودک�
 STR_UPD_DIALOG_INDEX          = "آیا می‌خواهید نمایه‌ها دانلود شوند تا امکان تشخیص درایورهای موردنیاز برای دانلود مهیا شود؟"
 
 STR_UPD_TITLE                 = "به‌روزرسانی"
-STR_UPD_SELECTION             = "Selection"
+STR_UPD_SELECTION             = "انتخاب"
 STR_UPD_BTN_ALL               = "انتخاب همه"
 STR_UPD_BTN_NONE              = "انتخاب هیچ‌کدام"
-STR_UPD_BTN_NETWORK           = "Network Only"
+STR_UPD_BTN_NETWORK           = "فقط شبکه"
 STR_UPD_BTN_THISPC            = "فقط انتخاب موارد موردنیاز این سیستم"
 STR_UPD_BTN_THISPC_H          = "برای تشخیص درایورهای موردنیاز اول باید نمایه‌ها را دانلود کنید."
-STR_UPD_OPTIONS               = "Options"
+STR_UPD_OPTIONS               = "گزینه‌ها"
 STR_UPD_ONLYUPDATES           = "برای درایورهای گم‌شده اخطار نده"
-STR_UPD_KEEPSEEDING           = "Continue seeding after download is finished"
+STR_UPD_KEEPSEEDING           = "پس از اتمام دانلود به سید کردن ادامه دهید"
 STR_UPD_TOTALSIZE             = "مجموع اندازه دانلود شده: %d مگابایت"
 STR_UPD_TOTALAVAIL            = "مجموع فضای در دسترس: %d مگابایت"
 STR_UPD_BTN_OK                = "تأیید"
@@ -321,23 +321,23 @@ STR_UPD_UPDATEHINT1           = "تذکر"
 STR_UPD_UPDATEHINT2           = "برای استفاده از این ویژگی باید اول موارد اساسی را به‌روزرسانی کنید."
 
 // Update hint
-STR_UPD_CHECKING              = "Checking for updates"
+STR_UPD_CHECKING              = "برسی برای به‌روزرسانی"
 STR_UPD_AVAIL1                = "به‌روزرسانی موجود است: SDIO R%d"
 STR_UPD_AVAIL2                = "به‌روزرسانی موجود است: %d بسته‌ درایور"
 STR_UPD_AVAIL3                = "به‌روزرسانی موجود است SDIO R%d و %d بسته‌ درایور"
 STR_UPD_START                 = "(برای شروع دانلود اینجا را کلیک کنید)"
 STR_UPD_PROGRES               = "دانلود شده %s از %s (%d%%)"
 STR_UPD_MODIFY                = "(برای انتخاب به‌روزرسانی‌ها اینجا را کلیک کنید)"
-STR_UPD_CHECKINGFILES         = "Checking files %s of %s (%d%%)"
+STR_UPD_CHECKINGFILES         = "برسی فایل %s از %s فایل (%d%%)"
 
 STR_DWN_DOWNLOADED            = "دانلود شده"
 STR_DWN_DOWNLOADED_F          = "%s از %s (%d%%)"
 STR_DWN_UPLOADED              = "آپلود شده"
 STR_DWN_ELAPSED               = "زمان سپری‌شده"
 STR_DWN_REMAINING             = "زمان باقی‌مانده"
-STR_DWN_SEEDING               = "Seeding %s (%s)"
-STR_DWN_MODIFY                = "(Click here to stop)"
-STR_DWN_CLOSING               = "Closing session"
+STR_DWN_SEEDING               = "در حال سید کردن %s (%s)"
+STR_DWN_MODIFY                = "(جهت توقف اینجا کلیک کنید)"
+STR_DWN_CLOSING               = "در حال بستن اتصال"
 
 STR_DWN_STATUS                = "وضعیت"
 STR_DWN_ERROR                 = "خطا"
