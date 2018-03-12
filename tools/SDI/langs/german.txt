@@ -433,7 +433,7 @@ STR_USBWIZ_PAGE2_TITLE        = "Ziellaufwerk"
 STR_USBWIZ_PAGE2_SUBTITLE     = "Wechseldatenträger auswählen."
 STR_USBWIZ_PAGE2_DESC         = "Snappy Driver Installer Origin wird in das Stammverzeichnis des ausgewählten Wechseldatenträgers installiert. Bitte USB-Laufwerk jetzt einlegen."
 STR_USBWIZ_PAGE2_DRIVE        = "Zielwechsellaufwerk:"
-STR_USBWIZ_PAGE2_MORE         = "Show more drives"
+STR_USBWIZ_PAGE2_MORE         = "Weitere Laufwerke anzeigen"
 STR_USBWIZ_PAGE2_CLEAR        = "Gewähltes Laufwerk abräumen"
 STR_USBWIZ_PAGE2_DELETE       = "Dateien löschen"
 STR_USBWIZ_PAGE2_DELETEDESC   = "Alle Dateien und Ordner auf dem Laufwerk werden gelöscht."
@@ -473,8 +473,8 @@ STR_USBWIZ_PAGE4_INCAUTO      = "autorun.inf und SDIO_auto.bat einfügen"
 STR_USBWIZ_PAGE4_EXESIZE      = "Ausführbare Größe:"
 
 // USB Wizard - page 5
-STR_USBWIZ_PAGE5_TITLE        = "Bereit zu beginnen"
-STR_USBWIZ_PAGE5_DESC         = "Alle benötigten Informationen sind vorhanden. Durch Betätigen der Schaltfläche 'Fertig', wird der Vorgang ausgelöst."
+STR_USBWIZ_PAGE5_TITLE        = "Bereit zum Starten"
+STR_USBWIZ_PAGE5_DESC         = "Alle benötigten Informationen sind vorhanden. Durch Betätigen der Schaltfläche 'Fertig stellen', wird der Vorgang ausgelöst."
 
 // USB Wizard - progress
 STR_USBWIZ_PROGR_TITLE        = "USB-Laufwerk erstellen"
