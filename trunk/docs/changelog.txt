@@ -6,6 +6,12 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.4.4.686
+05 May 2018
+Driver Packs 18043
+Translations.
+Newer filter is off by default for Windows 10.
+
 Version 1.4.3.682
 14 March 2018
 Driver Packs 18031
