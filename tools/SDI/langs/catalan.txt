@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Crear un punt de resauració per recuperar el s
 STR_REST_SCHEDULE             = "Programar la creació d'un punt de restauració"
 STR_REST_ROLLBACK             = "Tornar a un punt de restauració existent."
 STR_REST_SYSPROPS             = "Obrir Propietats de Sistema"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Crear un punt de restauració."
 STR_REST_CREATED              = "Punt de restauració creat"
 STR_REST_FAILED               = "No s'ha pogut crear un punt de restauració"

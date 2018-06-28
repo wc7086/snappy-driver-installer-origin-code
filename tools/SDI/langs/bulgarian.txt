@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Създайте точка за възстан
 STR_REST_SCHEDULE             = "Задайте създаване на точка за възстановяване"
 STR_REST_ROLLBACK             = "Върнете се към по-стара точка за възстановяване..."
 STR_REST_SYSPROPS             = "Отвори системните свойства..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Създаване на точка за възстановяване..."
 STR_REST_CREATED              = "Създадена точка за възстановяване"
 STR_REST_FAILED               = "Създаването на точка за възстановяване е неуспешно"

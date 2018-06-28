@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "צור נקודת שחזור על מנת לאפ
 STR_REST_SCHEDULE             = "יצירת נקודת שחזור מתוזמנת"
 STR_REST_ROLLBACK             = "חזור חזרה לנקודת שחזור קיימת..."
 STR_REST_SYSPROPS             = "System Properties"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "יוצר נקודת שחזור..."
 STR_REST_CREATED              = "נקודת שחזור נוצרה"
 STR_REST_FAILED               = "נכשל ביצירת נקודת שחזור"

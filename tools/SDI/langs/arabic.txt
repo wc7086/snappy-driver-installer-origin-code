@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "تستخدم هذه الخاصيخ لانشاء
 STR_REST_SCHEDULE             = "تم اظافه نطقه العوده"
 STR_REST_ROLLBACK             = "استعاده النظام من ملف نقطه العوده...لارجاع الويندوز الى تاريخ سابق"
 STR_REST_SYSPROPS             = "فتح خصائص النظام ..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "يتم عمل نقطه العوده..."
 STR_REST_CREATED              = "تم عمل نقطه العوده"
 STR_REST_FAILED               = "فشل في تمكين نقطه العوده والسبب هو تعطيل خاصيه نقطه العوده في الوندوز"

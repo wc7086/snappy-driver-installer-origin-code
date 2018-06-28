@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Skapa en återställningspunkt för att kunna �
 STR_REST_SCHEDULE             = "Schemaläggaren skapar en återställningspunkt"
 STR_REST_ROLLBACK             = "Rulla tillbaka till en befintlig återställningspunkt..."
 STR_REST_SYSPROPS             = "Öppna Systemegenskaper..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Skapa en återställningspunkt..."
 STR_REST_CREATED              = "Återställningpunkt skapas"
 STR_REST_FAILED               = "Misslyckades med att skapa en återställningspunkt"

@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Een herstelpunt maken om te kunnen terugkeren v
 STR_REST_SCHEDULE             = "Schedule het creëren van een herstelpunt"
 STR_REST_ROLLBACK             = "Terugkeren naar een bestaande herstelpunt..."
 STR_REST_SYSPROPS             = "System Properties"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Een herstelpunt maken..."
 STR_REST_CREATED              = "Herstelpunt gemaakt"
 STR_REST_FAILED               = "Een herstelpunt maken is mislukt"

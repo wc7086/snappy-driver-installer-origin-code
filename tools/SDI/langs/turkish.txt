@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Sistem geri yükleme noktası oluşturursanız 
 STR_REST_SCHEDULE             = "Kurulumdan önce sistem geri yükleme noktası oluştur"
 STR_REST_ROLLBACK             = "Mevcut sistem geri yükleme noktasına geri dön..."
 STR_REST_SYSPROPS             = "Sistem Bilgilerini görüntüle..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Sistem geri yükleme noktası oluşturuluyor..."
 STR_REST_CREATED              = "Sistem geri yükleme noktası oluşturuldu"
 STR_REST_FAILED               = "Sistem geri yükleme noktası oluşturulamadı"

@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Δημιουργήστε ένα σημείο ε
 STR_REST_SCHEDULE             = "Προγραμματισμός δημιουργίας σημείου επαναφοράς"
 STR_REST_ROLLBACK             = "Επιστροφή του συστήματος σε μια προηγούμενη κατάσταση ..."
 STR_REST_SYSPROPS             = "Ανοίξτε τις Ιδιότητες συστήματος..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Δημιουργία σημείου επαναφοράς ..."
 STR_REST_CREATED              = "Το σημείο επαναφοράς δημιουργήθηκε"
 STR_REST_FAILED               = "Αποτυχία δημιουργίας σημείου επαναφοράς"

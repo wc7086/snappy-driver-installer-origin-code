@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Taastuspunkti loomine juhul, kui peaks esinema 
 STR_REST_SCHEDULE             = "Loo ajakava taastuspunkti loomiseks"
 STR_REST_ROLLBACK             = "Keri tagasi olemasolevale taastuspunktile..."
 STR_REST_SYSPROPS             = "Ava süsteemi sätted..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Loon taastuspunkti..."
 STR_REST_CREATED              = "Taastuspunkt loodud"
 STR_REST_FAILED               = "Taastuspunkti loomine ebaõnnestus"

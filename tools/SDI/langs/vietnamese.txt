@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Tạo điểm khôi phục để khôi phục h
 STR_REST_SCHEDULE             = "Tạo khôi phục theo tiến trình đặt sẵn"
 STR_REST_ROLLBACK             = "Khôi phục lại từ 1 bản khôi phục"
 STR_REST_SYSPROPS             = "Thuộc tính Hệ thống"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Tạo 1 bản khôi phục"
 STR_REST_CREATED              = "Đã khôi phục lại 1 bản"
 STR_REST_FAILED               = "Từ chối Tạo 1 bản khôi phục"

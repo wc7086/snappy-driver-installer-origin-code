@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Crea un punto di ripristino per essere in grado
 STR_REST_SCHEDULE             = "Pianifica la creazione di un punto di ripristino"
 STR_REST_ROLLBACK             = "Ripristina da un punto di ripristino esistente..."
 STR_REST_SYSPROPS             = "System Properties"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Creazione di un punto di ripristino..."
 STR_REST_CREATED              = "Punto di ripristino creato"
 STR_REST_FAILED               = "Impossibile creare un punto di ripristino"

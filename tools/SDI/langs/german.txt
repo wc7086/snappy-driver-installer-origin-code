@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Einen Wiederherstellungspunkt wird erstellt, um
 STR_REST_SCHEDULE             = "Erstellen eines Wiederherstellungspunktes planen"
 STR_REST_ROLLBACK             = "Auf einen bestehenden Wiederherstellungspunkt zurücksetzen..."
 STR_REST_SYSPROPS             = "Systemeigenschaften"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Wiederherstellungspunkt wird erstellt..."
 STR_REST_CREATED              = "Wiederherstellungspunkt erfolgreich erstellt"
 STR_REST_FAILED               = "Wiederherstellungspunkt konnte nicht erstellt werden"

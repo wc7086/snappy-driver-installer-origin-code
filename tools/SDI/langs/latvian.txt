@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Izveidot atjaunošanas punktu, lai varētu atri
 STR_REST_SCHEDULE             = "Ieplānot atjaunošanas punkta izveidi"
 STR_REST_ROLLBACK             = "Atritināt sistēmu vēl agrākajā stāvoklī..."
 STR_REST_SYSPROPS             = "Sistēmas rekvizīti"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Atjaunošanas punkta izveide..."
 STR_REST_CREATED              = "Atjaunošanas punkts izveidots"
 STR_REST_FAILED               = "Neizdevās izveidot atjaunināšanas punktu"

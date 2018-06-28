@@ -1,6 +1,6 @@
 ﻿// send updates to translations@snappy-driver-installer.org
 
-STR_TRANSLATORS         = "BadPointer"
+STR_TRANSLATORS         = "BadPointer, Glenn Delahoy"
 
 STR_LANG_NAME           = "English"
 STR_LANG_ID             = "English"
@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H      = "Create a restore point in order to be able to roll ba
 STR_REST_SCHEDULE       = "Schedule creating a restore point"
 STR_REST_ROLLBACK       = "Roll back to an existing restore point..."
 STR_REST_SYSPROPS       = "System Properties"
+STR_SYSPROPS_ADV        = "Advanced System Properties"
 STR_REST_CREATING       = "Creating a restore point..."
 STR_REST_CREATED        = "Restore point created"
 STR_REST_FAILED         = "Failed to create a restore point"
