@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "何か問題が起こった時にシステム�
 STR_REST_SCHEDULE             = "復元ポイント作成のスケジュール"
 STR_REST_ROLLBACK             = "既存の復元ポイントにロールバック..."
 STR_REST_SYSPROPS             = "システムのプロパティを開く..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "復元ポイントを作成しています..."
 STR_REST_CREATED              = "復元ポイントの作成が完了"
 STR_REST_FAILED               = "復元ポイントの作成に失敗"

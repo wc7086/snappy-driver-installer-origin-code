@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Lag et gjenopprettingspunkt for å være istand
 STR_REST_SCHEDULE             = "Avtal et gjenopprettingspunkt"
 STR_REST_ROLLBACK             = "Rull tilbake til et tidligere gjenopprettingspunkt..."
 STR_REST_SYSPROPS             = "Åpne Systemegenskaper..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Lager et gjenopprettingspunkt..."
 STR_REST_CREATED              = "Gjenopprettingspunkt opprettet"
 STR_REST_FAILED               = "Feilet gjenopprettingspunkt"

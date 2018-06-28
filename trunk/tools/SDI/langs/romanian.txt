@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Crează un punct de restaurare a sistemului pen
 STR_REST_SCHEDULE             = "Programează crearea unui punct de restaurare"
 STR_REST_ROLLBACK             = "Revenire la un punct de restaurare existent..."
 STR_REST_SYSPROPS             = "Sistēmas rekvizīti"
+STR_SYSPROPS_ADV              = "Proprietăți avansate ale sistemului"
 STR_REST_CREATING             = "Se crează un punct de restaurare..."
 STR_REST_CREATED              = "Punct de restaurare creat"
 STR_REST_FAILED               = "Crearea unui punct de restaurare a eșuat"
@@ -395,11 +396,11 @@ STR_OPTION_MAX_DOWNLOAD       = "Max download speed in KB/s (0 - unlimited)"
 STR_OPTION_MAX_UPLOAD         = "Max upload speed in KB/s (0 - unlimited)"
 
 // Paths tab
-STR_OPTION_DIR_DRIVERS        = "Drivers"
-STR_OPTION_DIR_INDEXES        = "Indexes"
-STR_OPTION_DIR_INDEXESH       = "Indexes (human-readable)"
-STR_OPTION_DIR_DATA           = "Themes and translations"
-STR_OPTION_DIR_LOGS           = "Log files"
+STR_OPTION_DIR_DRIVERS        = "Conducătorii auto"
+STR_OPTION_DIR_INDEXES        = "Indici ai"
+STR_OPTION_DIR_INDEXESH       = "Indici (citiți de om)"
+STR_OPTION_DIR_DATA           = "Teme și traduceri"
+STR_OPTION_DIR_LOGS           = "Fișierele jurnal"
 
 // Advanced tab
 STR_OPTION_CMD                = "Commands"

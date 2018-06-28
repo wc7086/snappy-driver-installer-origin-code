@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Membuat sebuah restore point agar dapat kembali
 STR_REST_SCHEDULE             = "Menjadwalkan membuat sebuah restore point"
 STR_REST_ROLLBACK             = "Mundur ke restore point yang sudah ada..."
 STR_REST_SYSPROPS             = "Buka System Properties..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Membuat restore point..."
 STR_REST_CREATED              = "Restore point telah dibuat"
 STR_REST_FAILED               = "Gagal untuk membuat sebuah restore point"

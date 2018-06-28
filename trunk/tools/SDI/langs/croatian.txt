@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Stvorite točku vraćanja kako biste mogli vrat
 STR_REST_SCHEDULE             = "Raspored stvara točku vraćanja"
 STR_REST_ROLLBACK             = "Vrati na postojeću točku vraćanja..."
 STR_REST_SYSPROPS             = "Otvori Svojstva sustava..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Stvaranje točke vraćanja..."
 STR_REST_CREATED              = "Točka vraćanja je stvorena"
 STR_REST_FAILED               = "Izrada točke vraćanja nije uspjela"

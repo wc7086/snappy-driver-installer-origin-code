@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Visszaállítási pont létrehozása arra az es
 STR_REST_SCHEDULE             = "Ütemezett Visszaállítási pont létrehozása"
 STR_REST_ROLLBACK             = "Visszaállítás egy meglévõ helyreállítási pontra..."
 STR_REST_SYSPROPS             = "Rendszer tulajdonságok"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Létrehozás..."
 STR_REST_CREATED              = "Létrehozva"
 STR_REST_FAILED               = "Nem sikerült létrehozni"

@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Bərpa nöqtələrinin yaradılmasl sizə siste
 STR_REST_SCHEDULE             = "Bərpa nöqtəsinin yaradılmasını planlaşdırmaq"
 STR_REST_ROLLBACK             = "Sistemi daha əvvəlki vəziyyətə qaytarmaq..."
 STR_REST_SYSPROPS             = "Sistemin xüsusiyyətləri"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Bərpa nöqtəsinin yaradılması..."
 STR_REST_CREATED              = "Bərpa nöqtəsi yaradıldı"
 STR_REST_FAILED               = "Bərpa nöqtənin yaradılması mümkün olmadı"

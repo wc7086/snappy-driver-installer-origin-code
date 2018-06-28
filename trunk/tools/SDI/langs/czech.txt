@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Vytvoří bod obnovení s cílem, aby bylo mož
 STR_REST_SCHEDULE             = "Vytvořit bod obnovení"
 STR_REST_ROLLBACK             = "Vrátit zpět ke stávajícímu bodu obnovení ..."
 STR_REST_SYSPROPS             = "Otevřít vlastnosti systému..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Vytvářím bod obnovy..."
 STR_REST_CREATED              = "Bod obnovení byl vytvořen"
 STR_REST_FAILED               = "Vytvoření bodu obnovy selhalo"

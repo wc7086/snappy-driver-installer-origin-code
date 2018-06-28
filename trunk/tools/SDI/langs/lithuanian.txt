@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Sukurti atkūrimo tašką, kad būtų galima gr
 STR_REST_SCHEDULE             = "Suplanuoti sistemos atkūrimo taško kūrimą"
 STR_REST_ROLLBACK             = "Grąžinti į buvusį sistemos atkūrimo tašką"
 STR_REST_SYSPROPS             = "Atidaryti Sistemos Ypatybes"
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Sistemos atkūrimo taškas kuriamas…"
 STR_REST_CREATED              = "Sistemos atkūrimo taškas sukurtas"
 STR_REST_FAILED               = "Nepavyko sukūrti sistemos atkūrimo taško"

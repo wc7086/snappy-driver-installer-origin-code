@@ -256,6 +256,7 @@ STR_RESTOREPOINT_H            = "Créer un point de restauration pour pouvoir ra
 STR_REST_SCHEDULE             = "Planifier la création d'un point de restauration"
 STR_REST_ROLLBACK             = "Revenir à un point de restauration existant..."
 STR_REST_SYSPROPS             = "Ouvrir les Propriétés Système..."
+STR_SYSPROPS_ADV              = "Advanced System Properties"
 STR_REST_CREATING             = "Création d'un point de restauration en cours..."
 STR_REST_CREATED              = "Point de restauration créé"
 STR_REST_FAILED               = "Echec de la création d'un point de restauration"
