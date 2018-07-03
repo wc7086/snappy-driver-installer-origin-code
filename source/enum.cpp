@@ -1007,10 +1007,6 @@ void State::getsysinfo_fast()
 #pragma warning(pop)
 #endif
 
-    // set filters for windows 10
-    if(platform.dwMajorVersion>=10)
-        Settings.filters=Settings.filters&~FILTER_SHOW_NEWER;
-
     // Environment
     Log.print_debug("State::getsysinfo_fast::Environment\n");
     GetEnvironmentVariable(L"windir",buf,BUFLEN);

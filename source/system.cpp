@@ -650,6 +650,17 @@ bool SystemImp::CreateRestorePoint(std::wstring desc)
     return restorePointSucceeded;
 }
 
+bool SystemImp::GetNonPresentDevices()
+{
+    wchar_t buf[BUFLEN];
+    buf[0]=0;
+    DWORD ret;
+    ret=GetEnvironmentVariable(L"DEVMGR_SHOW_NONPRESENT_DEVICES",buf,BUFLEN);
+    if(ret==0)return false;
+    ret=_wtoi(buf);
+    return (ret);
+}
+
 //{ FileMonitor
 FilemonImp::FilemonImp(const wchar_t *szDirectory, int subdirs_, FileChangeCallback callback_)
 {

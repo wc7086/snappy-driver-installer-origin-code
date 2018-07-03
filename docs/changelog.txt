@@ -6,6 +6,13 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.4.5.688
+03 July 2018
+Driver Packs 18064
+Translations.
+Rolled back Newer filter off by default, had unintended effects.
+Add Advanced System Properties to Tools menu.
+
 Version 1.4.4.686
 05 May 2018
 Driver Packs 18043
