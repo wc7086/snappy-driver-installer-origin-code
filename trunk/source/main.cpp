@@ -356,6 +356,7 @@ void MainWindow_t::LoadMenuItems()
     AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSCONTROL,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSCONTROL));
     AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSREST,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSREST));
     AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROT,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_SYSPROT));
+    AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROPS_ADV,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYSPROPS_ADV));
     AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_SYSPROPS,0,0,nullptr,const_cast<wchar_t *>STR(STR_REST_SYSPROPS));
     AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_DEVICEMNG,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYS_DEVICEMNG));
     AddMenuItem(ToolsMenu,MIIM_STRING|MIIM_ID,ID_COMPMNG,0,0,nullptr,const_cast<wchar_t *>STR(STR_SYST_COMPMNG));
@@ -1967,6 +1968,12 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         {
                             // works on Windows Vista and up
                             System.run_controlpanel(L"system");
+                            return 0;
+                        }
+                    case ID_SYSPROPS_ADV:
+                        {
+                            // works on Windows Vista and up
+                            System.run_command32(L"SystemPropertiesAdvanced",nullptr,SW_NORMAL,0);
                             return 0;
                         }
                     case ID_SYSCONTROL:

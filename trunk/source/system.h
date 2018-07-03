@@ -105,6 +105,7 @@ public:
     bool CreateRestorePoint(std::wstring desc);
     int getver(const char *s);
     int getcurver(const char *s);
+    bool GetNonPresentDevices();
 };
 extern SystemImp System;
 //}
