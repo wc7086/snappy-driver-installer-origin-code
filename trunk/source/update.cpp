@@ -104,6 +104,8 @@ public:
     int  populate(int flags,bool clearlist=false);
     void setFilePriority(const wchar_t *name,int pri);
     void openDialog();
+    long LocalRevision;
+    long TorrentRevision;
 };
 
 // Updater
@@ -752,6 +754,8 @@ int UpdateDialog_t::populate(int update,bool clearlist)
 {
     wchar_t buf[BUFLEN];
     int ret=0;
+    LocalRevision=0;
+    TorrentRevision=0;
 
     // Read torrent info
     boost::intrusive_ptr<torrent_info const> ti;
@@ -765,7 +769,6 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     // Calculate size and progress for the app and indexes
     int missingindexes=0;
     int newver=0;
-    int NewExeVer=0;
     __int64 basesize=0,basedownloaded=0;
     __int64 indexsize=0,indexdownloaded=0;
     for(int i=0;i<Updater->numfiles;i++)
@@ -790,7 +793,7 @@ int UpdateDialog_t::populate(int update,bool clearlist)
             basesize+=fe.size;
             basedownloaded+=file_progress[i];
             if(StrStrIA(filenamefull,"sdio_R"))
-                NewExeVer=atol(StrStrIA(filenamefull,"sdio_R")+6);
+                TorrentRevision=atol(StrStrIA(filenamefull,"sdio_R")+6);
         }
     }
 
@@ -806,10 +809,12 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     lvI.iItem     =0;
 
     int row=0;
-    int LatestExeVersion=System.FindLatestExeVersion();
-
+    LocalRevision=System.FindLatestExeVersion();
+//if(TorrentRevision>0)TorrentRevision=700;  // test
+    // only return the torrent exe version if it's newer than what i have
+    if(TorrentRevision>LocalRevision)ret+=TorrentRevision<<8;
     // the application entry
-    if(NewExeVer>LatestExeVersion&&ListView.IsVisible())
+    if(TorrentRevision>LocalRevision&&ListView.IsVisible())
     {
         // the data item
         type_item *ItemData=new type_item;
@@ -818,8 +823,8 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         wcscpy(ItemData->ItemName,STR(STR_UPD_APP));
         ItemData->SizeMB=basesize/1024/1024;
         ItemData->Percent=basedownloaded*100/basesize;
-        ItemData->VersionNew=NewExeVer;
-        ItemData->VersionCurrent=LatestExeVersion;
+        ItemData->VersionNew=TorrentRevision;
+        ItemData->VersionCurrent=LocalRevision;
         wcscpy(ItemData->ForThisPC,STR(STR_UPD_YES));
         // the list item
         lvI.pszText=const_cast<wchar_t *>(STR(STR_UPD_APP));
@@ -828,9 +833,9 @@ int UpdateDialog_t::populate(int update,bool clearlist)
         ListView.SetItemTextUpdate(row,1,buf);
         wsprintf(buf,L"%d%%",(int)(basedownloaded*100/basesize));
         ListView.SetItemTextUpdate(row,2,buf);
-        wsprintf(buf,L" SDIO_R%d",NewExeVer);
+        wsprintf(buf,L" SDIO_R%d",TorrentRevision);
         ListView.SetItemTextUpdate(row,3,buf);
-        wsprintf(buf,L" SDIO_R%d",LatestExeVersion);
+        wsprintf(buf,L" SDIO_R%d",LocalRevision);
         ListView.SetItemTextUpdate(row,4,buf);
         ListView.SetItemTextUpdate(row,5,STR(STR_UPD_YES));
         row++;
@@ -926,12 +931,12 @@ int UpdateDialog_t::populate(int update,bool clearlist)
     // preselect the first item in the list
     ListView.SetItemState(0,LVIS_FOCUSED|LVIS_SELECTED,LVIS_FOCUSED|LVIS_SELECTED);
 
-    if(update)return ret+=NewExeVer<<8;
+    if(update)return ret;
 
     if(ret)manager_g->itembar_settext(SLOT_NODRIVERS,0);
     manager_g->itembar_settext(SLOT_DOWNLOAD,ret?1:0,nullptr,ret,0,0);
 
-    return ret+=NewExeVer<<8;
+    return ret;
 }
 
 void UpdateDialog_t::setFilePriority(const wchar_t *name,int pri)
@@ -1379,7 +1384,13 @@ int UpdaterImp::downloadTorrent()
 
     // Populate list
     i=UpdateDialog.populate(0);
-    Log.print_con("Latest version: R%d\nUpdated driverpacks available: %d\n",i>>8,i&0xFF);
+    if(UpdateDialog.TorrentRevision==0)
+        Log.print_con("Latest Version: Not found.\n");
+    else if(UpdateDialog.TorrentRevision<=UpdateDialog.LocalRevision)
+        Log.print_con("Latest Version: R%d. Up to date.\n",UpdateDialog.TorrentRevision);
+    else
+        Log.print_con("Latest Version: R%d.\n",UpdateDialog.TorrentRevision);
+    Log.print_con("Updated driver packs available: %d\n",i&0xFF);
 
     // clear the torrent priorities
     for(int j=0;j<numfiles;j++)hTorrent.file_priority(j,0);
