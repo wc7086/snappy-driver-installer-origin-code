@@ -391,24 +391,24 @@ STR_OPTION_CHECKUPDATES       = "Do not check for new version of app/driverpacks
 STR_OPTION_ONLYUPDATES        = STR_UPD_ONLYUPDATES
 STR_OPTION_TORRENT            = "Torrent"
 STR_OPTION_PORT               = "Port"
-STR_OPTION_MAX_CON            = "Max connections (0 - unlimited)"
-STR_OPTION_MAX_DOWNLOAD       = "Max download speed in KB/s (0 - unlimited)"
-STR_OPTION_MAX_UPLOAD         = "Max upload speed in KB/s (0 - unlimited)"
+STR_OPTION_MAX_CON            = "Max əlaqələri (0 - unlimited)"
+STR_OPTION_MAX_DOWNLOAD       = "Maksimum yükləmə sürəti KB/s (0 - unlimited)"
+STR_OPTION_MAX_UPLOAD         = "Maksimum yükləmə sürəti KB/s (0 - unlimited)"
 
 // Paths tab
-STR_OPTION_DIR_DRIVERS        = "Drivers"
-STR_OPTION_DIR_INDEXES        = "Indexes"
-STR_OPTION_DIR_INDEXESH       = "Indexes (human-readable)"
-STR_OPTION_DIR_DATA           = "Themes and translations"
-STR_OPTION_DIR_LOGS           = "Log files"
+STR_OPTION_DIR_DRIVERS        = "Sürücülər"
+STR_OPTION_DIR_INDEXES        = "İndekslər"
+STR_OPTION_DIR_INDEXESH       = "İndekslər (insan oxunaqlı)"
+STR_OPTION_DIR_DATA           = "Mövzular və tərcümələr"
+STR_OPTION_DIR_LOGS           = "Faylları qeyd edin"
 
 // Advanced tab
-STR_OPTION_CMD                = "Commands"
-STR_OPTION_CMD_LABEL          = "You can define commands that will be executed via CMD after specified operations are completed."
-STR_OPTION_CMD_FINISH         = "After installation"
-STR_OPTION_CMD_FINISHRB       = "After installation (need reboot)"
-STR_OPTION_CMD_FINISHDN       = "After downloading"
-STR_OPTION_CONSOLE            = "Show console window"
+STR_OPTION_CMD                = "Komanda"
+STR_OPTION_CMD_LABEL          = "Belirlenen işlemler tamamlandıktan sonra CMD ile yürütülecek komutları tanımlayabilirsiniz."
+STR_OPTION_CMD_FINISH         = "Quraşdırıldıqdan sonra"
+STR_OPTION_CMD_FINISHRB       = "Quraşdırıldıqdan sonra (reboot lazımdır)"
+STR_OPTION_CMD_FINISHDN       = "Yüklədikdən sonra"
+STR_OPTION_CONSOLE            = "Konsol pəncərəsini göstərin"
 
 // Welcome
 STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
