@@ -196,17 +196,17 @@ STR_STATUS_INVALID            = "Inkompatibler Treiber"
 STR_STATUS_MISSING            = "Treiber ist verfügbar (noch nicht installiert)"
 STR_STATUS_NOTSIGNED          = "(nicht signiert)"
 
-STR_STATUS_BETTER_NEW         = "Aktuellerer, optimalerer Treiber ist verfügbar"
+STR_STATUS_BETTER_NEW         = "Aktuellerer, besserer Treiber ist verfügbar"
 STR_STATUS_SAME_NEW           = "Aktuellerer Treiber ist verfügbar"
-STR_STATUS_WORSE_NEW          = "Neuerer, jedoch weniger optimaler Treiber, ist verfügbar"
+STR_STATUS_WORSE_NEW          = "Neuerer, jedoch weniger guter Treiber, ist verfügbar"
 
-STR_STATUS_BETTER_CUR         = "Optimalerer Treiber ist verfügbar"
+STR_STATUS_BETTER_CUR         = "Besserer Treiber ist verfügbar"
 STR_STATUS_SAME_CUR           = "Bereits installiert"
-STR_STATUS_WORSE_CUR          = "Weniger optimaler Treiber ist verfügbar"
+STR_STATUS_WORSE_CUR          = "Weniger guter Treiber ist verfügbar"
 
-STR_STATUS_BETTER_OLD         = "Optimalerer, jedoch älterer Treiber, ist verfügbar"
+STR_STATUS_BETTER_OLD         = "Besserer, jedoch älterer Treiber, ist verfügbar"
 STR_STATUS_SAME_OLD           = "Älterer Treiber"
-STR_STATUS_WORSE_OLD          = "Älterer, weniger optimaler Treiber"
+STR_STATUS_WORSE_OLD          = "Älterer, weniger guter Treiber"
 
 STR_STATUS_DUP                = "(Duplikat)"
 
@@ -481,3 +481,4 @@ STR_USBWIZ_PAGE5_DESC         = "Alle benötigten Informationen sind vorhanden. 
 STR_USBWIZ_PROGR_TITLE        = "USB-Laufwerk erstellen"
 STR_USBWIZ_PROGR_COPYING      = "Dateien werden kopiert"
 STR_USBWIZ_PROGR_DELETING     = "Dateien auf dem Wechseldatenträger werden gelöscht"
+
