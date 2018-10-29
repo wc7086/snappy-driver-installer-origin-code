@@ -481,4 +481,3 @@ STR_USBWIZ_PAGE5_DESC         = "Alle benötigten Informationen sind vorhanden. 
 STR_USBWIZ_PROGR_TITLE        = "USB-Laufwerk erstellen"
 STR_USBWIZ_PROGR_COPYING      = "Dateien werden kopiert"
 STR_USBWIZ_PROGR_DELETING     = "Dateien auf dem Wechseldatenträger werden gelöscht"
-
