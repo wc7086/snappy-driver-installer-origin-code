@@ -6,6 +6,14 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.5.0.699
+06 March 2019
+Driver Packs 19030
+Changed the way the "Continue Seeding" option in the Updates dialog works. Now,
+when the updates have finished downloading, they will be moved to the Drivers
+directory and indexed as normal. When this is complete, if the seeding option is
+selected, seeding from the Drivers directory will begin.
+
 Version 1.4.9.698
 23 December 2018
 Driver Packs 18115

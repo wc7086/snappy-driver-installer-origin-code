@@ -58,7 +58,6 @@ public:
     virtual bool isPaused()=0;
     virtual bool isUpdateCompleted()=0;
     virtual bool isSeedingDrivers()=0;
-    virtual bool isSeedingDownloads()=0;
 
     virtual int  Populate(int flags)=0;
     virtual void SetFilePriority(const wchar_t *name,int pri)=0;
@@ -69,7 +68,6 @@ public:
     virtual void DownloadIndexes()=0;
     virtual void StartSeedingDrivers()=0;
     virtual void StopSeedingDrivers()=0;
-    virtual void StopSeedingDownloads()=0;
 
     virtual int scriptInitUpdates(int torrentport)=0;
     virtual int scriptDownloadApp()=0;

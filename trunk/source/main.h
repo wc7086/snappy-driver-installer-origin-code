@@ -89,6 +89,7 @@ enum MessagesWND
     WM_UPDATETHEME     = WM_APP+3,
     WM_SEEDING         = WM_APP+4,
     WM_TORRENT         = WM_APP+5,
+    WM_INDEXESSAVED    = WM_APP+6,
 };
 
 // torrents
