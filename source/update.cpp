@@ -94,6 +94,7 @@ private:
     void calctotalsize();
     void calcavailablespace();
     void updateTexts();
+    void updateButtons();
 
     void setCheckboxes();
     void setPriorities();
@@ -147,7 +148,6 @@ public:
     bool isTorrentReady();
     bool isPaused();
     bool isUpdateCompleted();
-    bool isSeedingDownloads();
     bool isSeedingDrivers();
 
     int  Populate(int flags);
@@ -160,7 +160,6 @@ public:
     void DownloadIndexes();
     void StartSeedingDrivers();
     void StopSeedingDrivers();
-    void StopSeedingDownloads();
 
     int scriptInitUpdates(int torrentport);
     int scriptDownloadApp();
@@ -462,10 +461,7 @@ void UpdateDialog_t::updateTexts()
     buf.sprintf(STR(STR_UPD_TOTALAVAIL),totalavail);
     SetWindowText(GetDlgItem(hUpdate,IDTOTALAVAIL),buf.Get());
 
-    // disable buttons if not enough space
-    bool avail=UpdateDialog.totalsize<UpdateDialog.totalavail;
-    EnableWindow(GetDlgItem(hUpdate, IDOK),avail);
-    EnableWindow(GetDlgItem(hUpdate, IDACCEPT),avail);
+    updateButtons();
 
     // Column headers
     LVCOLUMN lvc;
@@ -475,6 +471,17 @@ void UpdateDialog_t::updateTexts()
         lvc.pszText=const_cast<wchar_t *>(STR(STR_UPD_COL_NAME+i));
         ListView.SetColumn(i,&lvc);
     }
+}
+
+void UpdateDialog_t::updateButtons()
+{
+    // disable buttons if not enough space
+    bool avail=UpdateDialog.totalsize<UpdateDialog.totalavail;
+    EnableWindow(GetDlgItem(hUpdate, IDOK),avail);
+
+    // disable Accept button not enough space or if seeding
+    bool chk=SendMessage(GetDlgItem(hUpdate, IDKEEPSEEDING),BM_GETCHECK,0,0);
+    EnableWindow(GetDlgItem(hUpdate, IDACCEPT),avail&&!chk);
 }
 
 void UpdateDialog_t::setCheckboxes()
@@ -680,6 +687,8 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     Settings.flags&=~FLAG_KEEPSEEDING;
                     if(SendMessage(chk2,BM_GETCHECK,0,0))Settings.flags|=FLAG_KEEPSEEDING;
                     Updater->resumeDownloading();
+                    if(Settings.flags&FLAG_KEEPSEEDING)
+                        EndDialog(hwnd,IDOK);
                     return TRUE;
 
                 case IDCANCEL:
@@ -694,6 +703,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     break;
 
                 case IDKEEPSEEDING:
+                    UpdateDialog.updateButtons();
                     return TRUE;
 
                 case IDCHECKALL:
@@ -1744,19 +1754,12 @@ void UpdaterImp::StopSeedingDrivers()
         closingsession=true;
         // give the gui time to update
         // when it's done it will reset the updater via WM_TIMER
+        // why is this not firing the WM_TIMER procedure?
         SetTimer(MainWindow.hMain,2,500,nullptr);
         // update the system menu text
         PostMessage(MainWindow.hMain, WM_SEEDING, 0, 0);
-    }
-}
 
-void UpdaterImp::StopSeedingDownloads()
-{
-    // are we in an updates session (triggered from the updates dialog)
-    if(isSeedingDownloads())
-    {
-        SeedMode=false;
-        Settings.flags&=~FLAG_KEEPSEEDING;
+        MainWindow.ResetUpdater(Updater_t::activetorrent);
     }
 }
 
@@ -1798,10 +1801,6 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
             downloadmangar_event->wait();
 
         if(downloadmangar_exitflag==DOWNLOAD_STATUS_STOPPING)break;
-
-        // check for dialog option to continue seeding
-        if(Settings.flags&FLAG_KEEPSEEDING)
-            SeedMode=true;
 
         // Downloading loop
         Log.print_con("{torrent_start\n");
@@ -1927,8 +1926,7 @@ void UpdaterImp::pause(){downloadmangar_exitflag=DOWNLOAD_STATUS_PAUSING;}
 bool UpdaterImp::isTorrentReady(){return hTorrent.torrent_file()!=nullptr;}
 bool UpdaterImp::isPaused(){return TorrentStatus.sessionpaused;}
 bool UpdaterImp::isUpdateCompleted(){return finishedupdating;}
-bool UpdaterImp::isSeedingDownloads(){return SeedMode&&Settings.flags&FLAG_KEEPSEEDING;}
-bool UpdaterImp::isSeedingDrivers(){return SeedMode&&!(Settings.flags&FLAG_KEEPSEEDING);}
+bool UpdaterImp::isSeedingDrivers(){return SeedMode;}
 int  UpdaterImp::Populate(int flags){return UpdateDialog.populate(flags,!flags);}
 void UpdaterImp::SetFilePriority(const wchar_t *name,int pri){UpdateDialog.setFilePriority(name,pri);}
 void UpdaterImp::SetLimits()

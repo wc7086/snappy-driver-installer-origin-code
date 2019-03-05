@@ -1523,7 +1523,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             if(!Updater->isPaused())
             {
                 Updater->ShowProgress(bufw);
-                if(Updater->isSeedingDrivers()||Updater->isSeedingDownloads())
+                if(Updater->isSeedingDrivers())
                     itembar->drawbutton(canvas,x,pos,bufw,STR(STR_DWN_MODIFY));
                 else
                     itembar->drawbutton(canvas,x,pos,bufw,STR(STR_UPD_MODIFY));

@@ -1331,7 +1331,17 @@ void MainWindow_t::DownloadedTorrent(int TorrentResults)
     int LatestExeVersion=System.FindLatestExeVersion();
     int DriverPacksAvailable=TorrentResults&0xFF;
 
-	if(TorrentSelectionMode==TSM_AUTO)
+    // user selected "continue seeding"
+    if(Settings.flags&FLAG_KEEPSEEDING)
+    {
+        if(Updater)
+        {
+            Settings.flags&=~FLAG_KEEPSEEDING;
+            Updater->StartSeedingDrivers();
+        }
+    }
+
+	else if(TorrentSelectionMode==TSM_AUTO)
 	{
         // just finished downloading the first torrent after startup
         // if there are no drivers and no indexes
@@ -1677,6 +1687,14 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                 DownloadedTorrent(lParam);
                 break;
             }
+        case WM_INDEXESSAVED:
+            {
+                if(Settings.flags&FLAG_KEEPSEEDING)
+                {
+                    ResetUpdater(Updater_t::activetorrent);
+                }
+                break;
+            }
         case WM_DROPFILES:
             {
                 wchar_t lpszFile[MAX_PATH]={0};
@@ -1928,6 +1946,7 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         #ifdef USE_TORRENT
                         if(Updater)
                         {
+                            Settings.flags&=~FLAG_KEEPSEEDING;
                             if(Updater->isSeedingDrivers())Updater->StopSeedingDrivers();
                             else Updater->StartSeedingDrivers();
                         }
@@ -2355,7 +2374,6 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
             {
                 #ifdef USE_TORRENT
                 if(Updater->isSeedingDrivers())Updater->StopSeedingDrivers();
-                else if(Updater->isSeedingDownloads())Updater->StopSeedingDownloads();
                 else Updater->OpenDialog();
                 #endif
                 break;

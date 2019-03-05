@@ -138,6 +138,7 @@ unsigned int __stdcall Bundle::thread_loadall(void *arg)
             bundle_shadow^=1;
             Log.print_con("}2Sync\n");
             bundle[bundle_shadow].bundle_init();
+            PostMessage(MainWindow.hMain,WM_INDEXESSAVED,0,0);
             if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
         }
     }
