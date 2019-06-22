@@ -1143,7 +1143,9 @@ void UpdaterImp::moveNewFiles()
         }
         // Move file
         Log.print_con("New file: %S\n",filenamefull_dst);
-        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING))
+        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING||
+                                                         MOVEFILE_COPY_ALLOWED||
+                                                         MOVEFILE_WRITE_THROUGH))
             Log.print_syserr(GetLastError(),L"MoveFileEx()");
     }
     System.run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
