@@ -15,11 +15,11 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "..\source\svnrev.h"
 
-#define VER_FILEVERSION             1,5,3,SVN_REV
-#define VER_FILEVERSION_STR         "1.5.3." SVN_REV_STR "\0"
+#define VER_FILEVERSION             1,5,4,SVN_REV
+#define VER_FILEVERSION_STR         "1.5.4." SVN_REV_STR "\0"
 
-#define VER_VERSION_STR             "Version 1.5.3." SVN_REV_STR
-#define VER_VERSION_STR2            "v1.5.3"
+#define VER_VERSION_STR             "Version 1.5.4." SVN_REV_STR
+#define VER_VERSION_STR2            "v1.5.4"
 
 #define IDC_STATIC     -1
 
