@@ -411,17 +411,17 @@ STR_OPTION_CMD_FINISHDN       = "Пасля запампоўкі драйвер�
 STR_OPTION_CONSOLE            = "Адлюстроўваць кансольнае акно"
 
 // Welcome
-STR_WELCOME_TITLE             = "Snappy Driver Installer Origin"
-STR_WELCOME_SUBTITLE          = "Welcome To Snappy Driver Installer Origin"
-STR_WELCOME_INTRO             = "Before you can begin, you'll need to download driver packs or indexes. Select one of the following options to start downloading. The Updates bar will keep you apprised of the download status."
-STR_WELCOME_INTRO2            = "Note: Look for additional tools on the System Menu at the top left of the main application window."
-STR_WELCOME_BUTTON1           = "Download All Driver Packs"
-STR_WELCOME_BUTTON1_DESC      = "Get the entire driver pack collection. This is a big download and will take anywhere from an hour to a day depending on availability and internet speed. When complete, you'll have everything required to work offline. If you're a technician, this is the option you want."
-STR_WELCOME_BUTTON2           = "Download Network Drivers Only"
-STR_WELCOME_BUTTON2_DESC      = "Get the latest LAN, WLAN, and Wifi drivers. This allows you to get any PC online quickly and is a relatively small download."
-STR_WELCOME_BUTTON3           = "Download Indexes Only"
-STR_WELCOME_BUTTON3_DESC      = "This allows you to scan your PC to see which drivers need to be installed or updated. The download will only take a few minutes but you'll need an internet connection when the required driver packs need to be downloaded. If you're a casual user, this is the option you want."
-STR_WELCOME_CLOSE             = "Close"
+STR_WELCOME_TITLE             = "Паходжанне ўстаноўкі Snappy Driver"
+STR_WELCOME_SUBTITLE          = "Сардэчна запрашаем у паходжанне ўстаноўкі Snappy Driver"
+STR_WELCOME_INTRO             = "Перш чым пачаць, вам спатрэбіцца загрузіць драйверы або індэксы. Каб пачаць загрузку, выберыце адзін з наступных варыянтаў. Панэль абнаўленняў дапаможа вам даведацца пра стан загрузкі."
+STR_WELCOME_INTRO2            = "Заўвага: Пашукайце дадатковыя інструменты ў меню Сістэма ў верхняй левай частцы галоўнага акна прыкладання."
+STR_WELCOME_BUTTON1           = "Спампаваць усе пакеты драйвераў"
+STR_WELCOME_BUTTON1_DESC      = "Атрымаць усю калекцыю драйвераў. Гэта вялікая загрузка і зойме ад гадзіны да дня, у залежнасці ад даступнасці і хуткасці Інтэрнэту. Пасля завяршэння працы ў вас будзе ўсё неабходнае для працы ў аўтаномным рэжыме. Калі вы тэхнік, гэта варыянт, які вы хочаце."
+STR_WELCOME_BUTTON2           = "Спампаваць толькі сеткавыя драйверы"
+STR_WELCOME_BUTTON2_DESC      = "Атрымайце найноўшыя драйверы лакальнай сеткі, WLAN і Wi-Fi. Гэта дазваляе хутка атрымаць любы кампутар у Інтэрнэце і гэта адносна невялікая загрузка."
+STR_WELCOME_BUTTON3           = "Спампаваць толькі індэксы"
+STR_WELCOME_BUTTON3_DESC      = "Гэта дазваляе сканаваць ваш кампутар, каб даведацца, якія драйверы трэба ўсталяваць ці абнавіць. Загрузка зойме ўсяго некалькі хвілін, але вам спатрэбіцца злучэнне з Інтэрнэтам, калі неабходна загрузіць неабходныя пакеты драйвераў. Калі вы выпадковы карыстальнік, гэта варыянт, які вы хочаце."
+STR_WELCOME_CLOSE             = "Зачыніць"
 
 // USB Wizard - page 1
 STR_USBWIZ_TITLE              = "Create a USB Drive"
