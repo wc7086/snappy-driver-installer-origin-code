@@ -156,9 +156,10 @@ PANEL5_INSIDE_COLOR      = 0x108010
 // Panel, filters (not found)
 PANEL6_OFSX              = PANEL_OFSX
 PANEL6_OFSY              = 513
+
 // Panel, revision
-PANEL8_OFSX              = -1
-PANEL8_OFSY              = -1
+PANEL8_OFSX              = PANEL_OFSX
+PANEL8_OFSY              = -24
 
 // Panel, options, reboot after install
 PANEL12_OFSX             = PANEL_OFSX
