@@ -27,6 +27,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "gui.h"
 #include "draw.h"
 #include "install.h"
+#include <direct.h>     // _wgetcwd
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -1141,12 +1142,46 @@ void UpdaterImp::moveNewFiles()
                 mkdir_r(dirs.Get());
             }
         }
-        // Move file
-        Log.print_con("New file: %S\n",filenamefull_dst);
-        if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING||
-                                                         MOVEFILE_COPY_ALLOWED||
-                                                         MOVEFILE_WRITE_THROUGH))
-            Log.print_syserr(GetLastError(),L"MoveFileEx()");
+
+        // can't move a file to a different drive
+        // instead do a copy/delete
+
+        // get current working drive
+        wchar_t* buffer;
+        int cwdDrive=-1;
+        if ( (buffer = _wgetcwd(nullptr,BUFLEN) ) == nullptr)
+            Log.print_con("_wgetcwd error");
+        else
+            cwdDrive = System.DriveNumber(buffer);
+
+        // find the source  drive
+        int srcDrive = System.DriveNumber(filenamefull_src);
+        if (srcDrive==-1) srcDrive=cwdDrive;
+        Log.print_con("Src: %d %S\n",srcDrive,filenamefull_src);
+        // find the destination drive
+        int destDrive = System.DriveNumber(filenamefull_dst);
+        if ( (wcscspn(filenamefull_dst,L"\\\\")!=0) && (destDrive==-1) ) destDrive=cwdDrive;
+        Log.print_con("Dst: %d %S\n",destDrive,filenamefull_dst);
+
+        // if source and destination drive are the same then perform a move
+        if (srcDrive==destDrive)
+        {
+            // Move file
+            Log.print_con("Move new file: %S\n",filenamefull_dst);
+            if(!MoveFileEx(filenamefull_src,filenamefull_dst,MOVEFILE_REPLACE_EXISTING||
+                                                             MOVEFILE_COPY_ALLOWED||
+                                                             MOVEFILE_WRITE_THROUGH))
+                Log.print_syserr(GetLastError(),L"MoveFileEx()");
+        }
+        // if not perform a copy / delete
+        else
+        {
+            Log.print_con("Copy new file: %S\n",filenamefull_dst);
+            if(!CopyFileExW(filenamefull_src, filenamefull_dst,nullptr,nullptr,nullptr,0))
+                Log.print_syserr(GetLastError(),L"CopyFileExW()");
+            else if(System.FileExists(filenamefull_dst))
+                System.deletefile(filenamefull_src);
+        }
     }
     System.run_command(L"cmd",L" /c rd /s /q update",SW_HIDE,1);
 }

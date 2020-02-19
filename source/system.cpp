@@ -297,6 +297,11 @@ __int64 SystemImp::DirectorySize(const std::wstring directory)
     return ret;
 }
 
+int SystemImp::DriveNumber(const wchar_t *filename)
+{
+    return PathGetDriveNumberW(filename);
+}
+
 std::wstring SystemImp::ExpandEnvVar(std::wstring source)
 {
     wchar_t d[BUFLEN];

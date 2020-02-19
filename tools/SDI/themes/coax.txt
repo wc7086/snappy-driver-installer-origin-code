@@ -126,7 +126,7 @@ PANEL_BITMAP_FILL = hstr_vstr
 // Panel > Sysinfo
 // ----------------------------------------------------------------
 PANEL1_OFSX = PANEL_OFSX
-PANEL1_OFSY = 742
+PANEL1_OFSY = -2
 PANEL1_WX = PANEL_WX
 PANEL1_WY = PANEL_WY
 PANEL1_INSIDE_COLOR = 0xFF000000 // Transparent
