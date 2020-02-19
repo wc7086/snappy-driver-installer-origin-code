@@ -92,6 +92,7 @@ public:
     bool ChooseFile(wchar_t *filename,const wchar_t *strlist,const wchar_t *ext);
     void CreateDir(const wchar_t *filename);
     void fileDelSpec(wchar_t *filename);
+    int DriveNumber(const wchar_t *filename);
 
     void UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj);
     int _vscwprintf_dll(const wchar_t * _Format,va_list _ArgList);

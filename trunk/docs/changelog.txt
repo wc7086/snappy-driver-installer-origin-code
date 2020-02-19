@@ -6,6 +6,17 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.6.0.709
+21 February 2020
+Driver Packs 20010
+Now driver updates works correctly when the dpr_dir is on a different drive. It 
+can be a different drive on the same computer, a network path or mapped drive. 
+If SDIO detects this path is not the working path, it will perform a copy/delete 
+instead of a move operation in order to move downloaded driver packs to the 
+drivers directory.
+Fixed cli help display formatting.
+Fixed bug with coax theme.
+
 Version 1.5.9.708
 11 January 2020
 Driver Packs 19125
