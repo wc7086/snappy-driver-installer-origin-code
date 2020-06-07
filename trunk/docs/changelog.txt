@@ -6,11 +6,15 @@ www.snappy-driver-installer.org
 
 Change Log
 
-Version 1.6.4.713
+Version 1.6.4.714
 7 June 2020
 Driver Packs 20055
 If TEMP environment variable is not set then use the system drive.
 Fixed bug in script where the select command is not working.
+Verify driver pack has downloaded and is available before extraction. If
+you get an Error 2 during driver installation, check the console output
+to see if the driver pack file is missing. It may be due to out of date
+indexes or the torrent download failed for some reason.
 Translations.
 
 Version 1.6.3.712

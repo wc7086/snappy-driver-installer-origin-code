@@ -413,32 +413,49 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                 Log.print_con("Extracting via '%S'\n",cmd);
                 itembar->install_status=(instflag&INSTALLDRIVERS)?STR_INST_EXTRACT:STR_EXTR_EXTRACTING;
                 MainWindow.redrawfield();
+
+                // attempt extaction
                 int tries=0;
                 int r=0;
-                do
+
+                // verify the file is available
+                wchar_t spec1[BUFLEN];
+                wsprintf(spec1,L"%s\\%s",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname());
+                bool FileOk=System.FileExists(spec1);
+                if(!FileOk)
                 {
-                    if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                    if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
-                    r=Extract7z(cmd);
-                    if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
-                    itembar=&manager_g->items_list[itembar_act];
-                    if(r==2)
+                    Log.print_con("Error: %S not found. Download failed?\n", spec1);
+                    itembar->checked=0;
+                    itembar->install_status=STR_INST_FAILED;
+                }
+                else
+                {
+                    do
                     {
-                        Log.print_con("Error, 7Zip unknown fatal error.\n");
-                        Log.print_con("Error, checking for driverpack availability...");
-                        // if the 'drivers' path exists
-                        if(System.FileExists(hwidmatch->getdrp_packpath()))break;
-                        Log.print_con("Waiting for driverpacks to become available.");
-                        do
+                        if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
+                        if(CRITICAL_SECTION_ACTIVE)LeaveCriticalSection(&sync);
+                        r=Extract7z(cmd);
+                        if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
+                        itembar=&manager_g->items_list[itembar_act];
+                        if(r==2)
                         {
-                            Log.print_con(".");
-                            Sleep(1000);
-                            tries++;
-                            if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
-                        }while(!System.FileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
-                        Log.print_con("OK\n");
-                    }
-                }while(r&&!hwidmatch->getdrp_packontorrent());
+                            Log.print_con("Error, 7Zip unknown fatal error.\n");
+                            Log.print_con("Error, checking for driverpack availability...");
+                            // if the 'drivers' path exists
+                            if(System.FileExists(hwidmatch->getdrp_packpath()))break;
+                            Log.print_con("Waiting for driverpacks to become available.");
+                            do
+                            {
+                                Log.print_con(".");
+                                Sleep(1000);
+                                tries++;
+                                if(!itembar->checked||installmode!=MODE_INSTALLING||tries>60)break;
+                            }while(!System.FileExists(hwidmatch->getdrp_packpath())&&!hwidmatch->getdrp_packontorrent());
+                            Log.print_con("OK\n");
+                        }
+                    }while(r&&!hwidmatch->getdrp_packontorrent());
+                }
+
                 if(installmode==MODE_STOPPING)
                 {
                     manager_g->items_list[SLOT_EXTRACTING].install_status=STR_INST_STOPPING;
