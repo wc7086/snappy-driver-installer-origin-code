@@ -1013,7 +1013,18 @@ void State::getsysinfo_fast()
     wcscat(buf,L"\\inf\\");
     windir=static_cast<ofst>(textas.strcpyw(buf));
 
+    // get the system drive
+    wchar_t systemDrive[BUFLEN]={0};
+    GetEnvironmentVariable(L"SystemDrive",systemDrive,BUFLEN);
+    wcscat(systemDrive,L"\\temp");
+
+    // temp directory
     GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
+
+    // if the TEMP environment variable is not set then use the system drive
+    if(wcslen(buf)==0)
+        wcscpy(buf,systemDrive);
+
     temp=static_cast<ofst>(textas.strcpyw(buf));
 
     // 64-bit detection

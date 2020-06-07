@@ -664,6 +664,7 @@ void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
         for(j=0;j<devicematch->num_matches;j++,itembar++,i++)
         {
             if(!itembar)Log.print_err("ERROR a%d\n",j);
+            // default state is inactive
             itembar->isactive=0;
             //if(!itembar->hwidmatch)Log.print_con("ERROR %d,%d\n",itembar->index,j);
             if(!itembar->hwidmatch)continue;
@@ -703,12 +704,12 @@ void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
 
             if((!o1||!cnt[NUM_STATUS])&&(options&FILTER_SHOW_MISSING)&&itembar->hwidmatch->getStatus()&STATUS_MISSING)
             {
-                itembar->isactive=1;
-                if(itembar->hwidmatch->getdrp_packontorrent()&&!ontorrent)
-                    ontorrent=1;
-                else
-                    cnt[NUM_STATUS]++;
-            }
+                        itembar->isactive=1;
+                        if(itembar->hwidmatch->getdrp_packontorrent()&&!ontorrent)
+                            ontorrent=1;
+                        else
+                        cnt[NUM_STATUS]++;
+                    }
 
             if(Settings.flags&FLAG_FILTERSP&&itembar->hwidmatch->getAltsectscore()==2&&!itembar->hwidmatch->isvalidcat(matcher->getState()))
                 itembar->hwidmatch->setAltsectscore(1);
@@ -734,7 +735,7 @@ void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
                    continue;
 
                 // driver pack filters
-                if(drpfilter)
+                if(drpfilter&&drpfilter->size()>0)
                 {
                     bool filtermatch=false;
                     std::wstring drpname=itembar->hwidmatch->getdrp_packname();
@@ -1185,10 +1186,10 @@ void Manager::selectall()
         if(itembar->isactive&&group!=itembar->index&&itembar->hwidmatch&&(itembar->first&2)==0)
         {
             if(itembar->install_status==0)itembar->checked=1;
-            group=itembar->index;
-        }
-    }
-}
+                        group=itembar->index;
+                    }
+                }
+            }
 
 int Manager::selected()
 {
@@ -1811,7 +1812,7 @@ void Manager::restorepos1(Manager *manager_prev)
         {
             if(!isRebootDesired())selectall();
             if((Settings.flags&FLAG_EXTRACTONLY)==0)
-            wsprintf(extractdir,L"%s\\SDI",matcher->getState()->textas.getw(matcher->getState()->getTemp()));
+            wsprintf(extractdir,L"%s\\SDIO",matcher->getState()->textas.getw(matcher->getState()->getTemp()));
             install(INSTALLDRIVERS);
         }
         else

@@ -424,10 +424,10 @@ STR_WELCOME_BUTTON3_DESC      = "Aceasta vă permite să scanați computerul pen
 STR_WELCOME_CLOSE             = "Închide"
 
 // USB Wizard - page 1
-STR_USBWIZ_TITLE              = "Create a USB Drive"
-STR_USBWIZ_SPACEREQ           = "Space Required:"
-STR_USBWIZ_SPACEAVAIL         = "Space Available:"
-STR_USBWIZ_PAGE1_DESC         = "This wizard will help you create a portable USB drive containing Snappy Driver Installer Origin and selected files.\n\nThe files will be copied to the root directory of the selected device. You should ensure the device has sufficient capacity to store the required files. You will be given the option to clear the device first."
+STR_USBWIZ_TITLE              = "Creați o unitate USB"
+STR_USBWIZ_SPACEREQ           = "Necesita spatiu:"
+STR_USBWIZ_SPACEAVAIL         = "Spatiu disponibil:"
+STR_USBWIZ_PAGE1_DESC         = "Acest asistent vă va ajuta să creați o unitate USB portabilă care să conțină Snappy Driver Installer Origin și fișierele selectate. \ N \ n Fișierele vor fi copiate în directorul rădăcină al dispozitivului selectat. Ar trebui să vă asigurați că dispozitivul are o capacitate suficientă pentru a stoca fișierele necesare. Vi se va da opțiunea de a șterge mai întâi dispozitivul."
 
 // USB Wizard - page 2
 STR_USBWIZ_PAGE2_TITLE        = "Target Drive"

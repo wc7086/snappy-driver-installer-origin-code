@@ -111,7 +111,7 @@ void Log_t::start(wchar_t *logdir)
     {
         Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename.Get());
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
-        wcscat(logdir,L"\\SDI_logs");
+        wcscat(logdir,L"\\SDIO_logs");
         filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
     }
 
@@ -121,7 +121,7 @@ void Log_t::start(wchar_t *logdir)
     {
         Log.print_err("ERROR in log_start(): Write-protected,'%S'\n",filename.Get());
         GetEnvironmentVariable(L"TEMP",logdir,BUFLEN);
-        wcscat(logdir,L"\\SDI_logs");
+        wcscat(logdir,L"\\SDIO_logs");
         filename.sprintf(L"%s\\%slog.txt",logdir,timestamp);
         mkdir_r(logdir);
         logfile=_wfopen(filename.Get(),L"wb");
