@@ -149,7 +149,19 @@ bool Script::runscript()
     Updater=CreateUpdater();
     int torrentport=Updater->torrentport;
 
+    // get the system drive
+    wchar_t systemDrive[BUFLEN]={0};
+    GetEnvironmentVariable(L"SystemDrive",systemDrive,BUFLEN);
+    wcscat(systemDrive,L"\\temp");
+
+    // temp directory
     wchar_t buf[BUFLEN];
+    GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
+
+    // if the TEMP environment variable is not set then use the system drive
+    if(wcslen(buf)==0)
+        wcscpy(buf,systemDrive);
+
     GetEnvironmentVariable(L"TEMP",buf,BUFLEN);
     wsprintf(extractdir,L"%s\\SDIO",buf);
 
@@ -217,8 +229,9 @@ bool Script::runscript()
                 }
                 if((filter>0)||(drpfilter.size()>0))
                 {
-                    Log.print_debug("Argument: %d, %d\n",filter,drpfilter.size());
+                    Log.print_con("Select: %d, %d\n",filter,drpfilter.size());
                     selectNone();
+                    Settings.filters=filter;
                     manager_g->filter(filter,&drpfilter);
                     selectAll();
                     LastExitCode=0;

@@ -212,7 +212,7 @@ STR_STATUS_DUP                = "(kopi)"
 
 STR_STATUS_NF_MISSING         = "Enhet krever en driver, men den var ikke funnet i driverpakkene"
 STR_STATUS_NF_UNKNOWN         = "Enhet fungerer normalt men ingen driver funnet i driverpakkene"
-STR_STATUS_NF_STANDARD        = "Standard driver"
+STR_STATUS_NF_STANDARD        = "Standard sjåfør"
 
 // Virus
 STR_VIRUS                     = "Mediet som inneholder applikasjonen er muligens kompromittert med et virus"

@@ -2265,7 +2265,7 @@ void InstallCommand::LeftClick(bool)
     if(installmode==MODE_NONE)
     {
         if((Settings.flags&FLAG_EXTRACTONLY)==0)
-        wsprintf(extractdir,L"%s\\SDI",manager_g->getState()->textas.getw(manager_g->getState()->getTemp()));
+        wsprintf(extractdir,L"%s\\SDIO",manager_g->getState()->textas.getw(manager_g->getState()->getTemp()));
         manager_g->install(INSTALLDRIVERS);
     }
 }
@@ -2384,7 +2384,7 @@ LRESULT MainWindow_t::WndProcField(HWND hwnd,UINT message,WPARAM wParam,LPARAM l
                 if(wParam&MK_SHIFT&&installmode==MODE_NONE)
                 {
                     if((Settings.flags&FLAG_EXTRACTONLY)==0)
-                    wsprintf(extractdir,L"%s\\SDI",manager_g->getState()->textas.getw(manager_g->getState()->getTemp()));
+                    wsprintf(extractdir,L"%s\\SDIO",manager_g->getState()->textas.getw(manager_g->getState()->getTemp()));
                     manager_g->install(INSTALLDRIVERS);
                 }
                 redrawfield();

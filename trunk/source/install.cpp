@@ -217,6 +217,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
     if(CRITICAL_SECTION_ACTIVE)EnterCriticalSection(&sync);
 
     // Prepare extract dir
+    Log.print_con("extractdir='%S'\n",extractdir);
 
     installmode=MODE_INSTALLING;
     manager_g->items_list[SLOT_EXTRACTING].install_status=
