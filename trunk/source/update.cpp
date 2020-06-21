@@ -1669,7 +1669,7 @@ int UpdaterImp::scriptInstall()
     // check if anything selected
     if(manager_g->selected()==0)
     {
-        Log.print_err("Error: install : Nothing selected");
+        Log.print_err("Error: install : Nothing selected.\n");
         return 1;
     }
 

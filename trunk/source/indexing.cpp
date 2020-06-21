@@ -2066,15 +2066,23 @@ void Driverpack::getindexfilename(const wchar_t *dir,const wchar_t *ext,wchar_t 
 {
     wchar_t *p;
     wchar_t buf[BUFLEN];
-    size_t len=wcslen(getFilename());
-
     wsprintf(buf,L"%s",getFilename());
+
+    // sanity checks
+    wsprintf(indfile,L"");
+    size_t len=wcslen(getFilename());
+    if(len>FILENAME_MAX)
+        return;
+    size_t plen=wcslen(getPath());
+    if(plen>MAX_PATH)
+        return;
 
     if(*(getPath()))
         wsprintf(buf+(len-3)*1,L"%s.%s",getPath()+wcslen(col->getDriverpack_dir()),ext);
     else
         wsprintf(buf+(len-3)*1,L".%s",ext);
 
+    // replace all occurrences of '\\' and ' ' with '_'
     p=buf;
     while(*p){if(*p==L'\\'||*p==L' ')*p=L'_';p++;}
     wsprintf(indfile,L"%s\\%s",dir,buf);

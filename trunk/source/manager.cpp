@@ -1186,10 +1186,10 @@ void Manager::selectall()
         if(itembar->isactive&&group!=itembar->index&&itembar->hwidmatch&&(itembar->first&2)==0)
         {
             if(itembar->install_status==0)itembar->checked=1;
-                        group=itembar->index;
-                    }
-                }
-            }
+            group=itembar->index;
+        }
+    }
+}
 
 int Manager::selected()
 {
