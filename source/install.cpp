@@ -257,6 +257,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                     Sleep(100);
                 }
                 if(!Updater->isTorrentReady())break;
+                Log.print_con("\n");
             }
             Updater->SetFilePriority(itembar->hwidmatch->getdrp_packname(),1);
             downdrivers++;

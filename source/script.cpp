@@ -173,6 +173,14 @@ bool Script::runscript()
         //extract the command and arguments
         std::vector<std::wstring>args=split(w, L' ');
 
+        // extract all arguments as a single string
+        std::wstring allargs;
+        size_t p=w.find(' ');
+        if(p!=std::string::npos)
+        {
+            allargs=w.substr(p+1,std::string::npos);
+        }
+
         // process the command
         if(args.size()>0)
         {
@@ -280,13 +288,13 @@ bool Script::runscript()
                             else
                             {
                                 LastExitCode=1;
-                                Log.print_err("Error: get driverpacks : invalid argument");
+                                Log.print_err("Error: get driverpacks : invalid argument\n");
                             }
                         }
                         else
                         {
                             LastExitCode=1;
-                            Log.print_err("Error: get driverpacks : missing argument");
+                            Log.print_err("Error: get driverpacks : missing argument\n");
                         }
                     }
                     else if(_wcsicmp(args[1].c_str(),L"everything")==0)
@@ -298,13 +306,13 @@ bool Script::runscript()
                     else
                     {
                         LastExitCode=1;
-                        Log.print_err("Error: get : Invalid argument");
+                        Log.print_err("Error: get : Invalid argument\n");
                     }
                 }
                 else
                 {
                     LastExitCode=1;
-                    Log.print_err("Error: get : Missing argument");
+                    Log.print_err("Error: get : Missing argument\n");
                 }
             }
             else if(_wcsicmp(args[0].c_str(),L"install")==0)
@@ -313,7 +321,7 @@ bool Script::runscript()
                 NeedReboot=(ret_global>>24)&0x40;
                 unsigned int failed=(ret_global>>16)&255;
                 unsigned int installed=ret_global&65535;
-                Log.print_debug("Installer return code: %d",ret_global);
+                Log.print_debug("Installer return code: %d, ",ret_global);
                 Log.print_con("%d drivers installed, %d drivers failed.\n",installed,failed);
             }
             else if(_wcsicmp(args[0].c_str(),L"snapshot")==0)
@@ -393,10 +401,10 @@ bool Script::runscript()
             }
             else if(StrStrIW(args[0].c_str(),L"logdir"))
             {
-                if(args.size()>1)
+                if(allargs.length()>0)
                 {
-                    logdir=args[1];
-                    Log.print_debug("Argument: %S\n",args[1].c_str());
+                    logdir=allargs;
+                    Log.print_debug("Argument: %S\n",allargs.c_str());
                 }
                 else
                 {
@@ -406,10 +414,10 @@ bool Script::runscript()
             }
             else if(StrStrIW(args[0].c_str(),L"drpdir"))
             {
-                if(args.size()>1)
+                if(allargs.length()>0)
                 {
-                    Log.print_debug("Argument: %S\n",args[1].c_str());
-                    wcscpy(Settings.drp_dir,args[1].c_str());
+                    Log.print_debug("Argument: %S\n",allargs.c_str());
+                    wcscpy(Settings.drp_dir,allargs.c_str());
                     invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
                 }
                 else
@@ -420,10 +428,10 @@ bool Script::runscript()
             }
             else if(StrStrIW(args[0].c_str(),L"indexdir"))
             {
-                if(args.size()>1)
+                if(allargs.length()>0)
                 {
-                    Log.print_debug("Argument: %S\n",args[1].c_str());
-                    wcscpy(Settings.index_dir,args[1].c_str());
+                    Log.print_debug("Argument: %S\n",allargs.c_str());
+                    wcscpy(Settings.index_dir,allargs.c_str());
                     invalidate(INVALIDATE_INDEXES|INVALIDATE_MANAGER);
                 }
                 else
@@ -434,10 +442,10 @@ bool Script::runscript()
             }
             else if (StrStrIW(args[0].c_str(),L"extractdir"))
             {
-                if(args.size()>1)
+                if(allargs.length()>0)
                 {
-                    Log.print_debug("Argument: %S\n",args[1].c_str());
-                    wcscpy(extractdir,args[1].c_str());
+                    Log.print_debug("Argument: %S\n",allargs.c_str());
+                    wcscpy(extractdir,allargs.c_str());
                 }
                 else
                 {
@@ -584,7 +592,7 @@ bool Script::runscript()
                             {
                                 std::wstring label=args[2];
                                 Log.print_debug("Argument: %S\n",label.c_str());
-                                size_t p=label.find(L":");
+                                p=label.find(L":");
                                 if(p==std::string::npos)
                                     label.insert(0, L":");
                                 for(std::vector<std::wstring>::iterator txt2 = ScriptText.begin(); txt2 != ScriptText.end(); ++txt2)
@@ -614,7 +622,7 @@ bool Script::runscript()
                 {
                     std::wstring label=args[1];
                     Log.print_debug("Argument: %S\n",label.c_str());
-                    size_t p=label.find(L":");
+                    p=label.find(L":");
                     if(p==std::string::npos)
                         label.insert(0, L":");
                     for(std::vector<std::wstring>::iterator txt2 = ScriptText.begin(); txt2 != ScriptText.end(); ++txt2)

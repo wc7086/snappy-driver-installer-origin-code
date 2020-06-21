@@ -6,6 +6,17 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.6.5.715
+21 June 2020
+Driver Packs 20062
+Script: Fixed up some debug output strings.
+Script: Fixed bug where drpdir, indexdir, logdir and extractdir were sometimes
+getting mangled.
+Script: Fixed bug with network paths and paths with spaces.
+Script: Fixed bug where the select command was failing.
+Script: I can't make it run over a UNC path but it will work over a mapped drive.
+See the remote.bat in scripts for an example.
+
 Version 1.6.4.714
 7 June 2020
 Driver Packs 20055
