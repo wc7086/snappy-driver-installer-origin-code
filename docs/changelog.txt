@@ -6,6 +6,10 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.6.7.717
+21 August 2020
+Driver Packs 20083
+
 Version 1.6.6.716
 20 July 2020
 Driver Packs 20072
