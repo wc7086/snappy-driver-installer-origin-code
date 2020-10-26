@@ -160,7 +160,7 @@ void StrFormatSize(long long val,wchar_t *buf,int len)
 void mkdir_r(const wchar_t *path)
 {
     if(path[1]==L':'&&path[2]==0)return;
-    if(!System.canWriteDirectory(path))
+    if(!System.canWrite(path))
     {
         Log.print_err("ERROR in mkdir_r(): Path not found or write-protected,'%S'\n",path);
         return;
@@ -420,7 +420,7 @@ int SystemImp::canWriteDirectory(const wchar_t *path)
     // test if i can create a temporary file in the given directory
     else
     {
-        CreateDirectory(path,nullptr);
+        mkdir_r(path);
         wchar_t tmpFile[MAX_PATH];
         // the function opens and closes the temp file
         flagsv=(GetTempFileName(path,L"SDIO",0,tmpFile));
