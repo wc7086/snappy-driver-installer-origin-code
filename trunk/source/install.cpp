@@ -27,6 +27,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "theme.h"
 #include "indexing.h"
 #include "model.h"
+#include "shellapi.h"
 
 #include <windows.h>
 #ifdef _MSC_VER
@@ -422,10 +423,10 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                 // verify the file is available
                 wchar_t spec1[BUFLEN];
                 wsprintf(spec1,L"%s\\%s",hwidmatch->getdrp_packpath(),hwidmatch->getdrp_packname());
-                bool FileOk=System.FileExists(spec1);
+                bool FileOk=System.FileAvailable(spec1,20,5);
                 if(!FileOk)
                 {
-                    Log.print_con("Error: %S not found. Download failed?\n", spec1);
+                    Log.print_con("Error: %S not found. Download failed or network or storage not available.\n", spec1);
                     itembar->checked=0;
                     itembar->install_status=STR_INST_FAILED;
                 }

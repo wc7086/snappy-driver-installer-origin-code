@@ -20,9 +20,9 @@ STR_SELECT_NONE               = "全不選"
 STR_SELECT_NONE_H             = "Ctrl+N"
 
 STR_LANG                      = "系統語言"
-STR_LANG_H                    = "Select your language"
+STR_LANG_H                    = "选择你的语言"
 STR_THEME                     = "介面主題"
-STR_THEME_H                   = "Select a theme"
+STR_THEME_H                   = "选择一个主题"
 STR_EXPERT                    = "專家模式"
 STR_EXPERT_H                  = "啟動專家模式\n\n提示：按住Ctrl或空白鍵並將鼠標移至驅動程式上，便可獲得額外資訊。"
 
@@ -424,10 +424,10 @@ STR_WELCOME_BUTTON3_DESC      = "这使您可以扫描PC来查看需要安装或
 STR_WELCOME_CLOSE             = "关"
 
 // USB Wizard - page 1
-STR_USBWIZ_TITLE              = "Create a USB Drive"
-STR_USBWIZ_SPACEREQ           = "Space Required:"
-STR_USBWIZ_SPACEAVAIL         = "Space Available:"
-STR_USBWIZ_PAGE1_DESC         = "This wizard will help you create a portable USB drive containing Snappy Driver Installer Origin and selected files.\n\nThe files will be copied to the root directory of the selected device. You should ensure the device has sufficient capacity to store the required files. You will be given the option to clear the device first."
+STR_USBWIZ_TITLE              = "创建一个USB驱动器"
+STR_USBWIZ_SPACEREQ           = "需要空间："
+STR_USBWIZ_SPACEAVAIL         = "可用空间："
+STR_USBWIZ_PAGE1_DESC         = "该向导将帮助您创建一个包含Snappy Driver Installer Origin和选定文件的便携式USB驱动器。\ n \ n文件将被复制到选定设备的根目录中。 您应确保设备具有足够的容量来存储所需的文件。 您可以选择先清除设备。"
 
 // USB Wizard - page 2
 STR_USBWIZ_PAGE2_TITLE        = "Target Drive"

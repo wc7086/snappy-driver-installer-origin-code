@@ -446,7 +446,7 @@ void MatcherImp::print()
 
 int MatcherImp::write_device_list(wchar_t *filename)
 {
-    if(!System.canWrite(filename))
+    if(!System.canWriteFile(filename,L"wt"))
     {
         Log.print_err("ERROR in write_device_list(): Unwriteable,'%S'\n",filename);
         return 1;

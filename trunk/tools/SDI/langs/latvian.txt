@@ -396,11 +396,11 @@ STR_OPTION_MAX_DOWNLOAD       = "Maksimālais lejupielādes ātrums KB / s (0 - 
 STR_OPTION_MAX_UPLOAD         = "Maksimālais augšupielādes ātrums KB / s (0 - neierobežots)"
 
 // Paths tab
-STR_OPTION_DIR_DRIVERS        = "Drivers"
-STR_OPTION_DIR_INDEXES        = "Indexes"
-STR_OPTION_DIR_INDEXESH       = "Indexes (human-readable)"
+STR_OPTION_DIR_DRIVERS        = "Autovadītāji"
+STR_OPTION_DIR_INDEXES        = "Indeksi"
+STR_OPTION_DIR_INDEXESH       = "Indeksi (lasāmi cilvēkiem)"
 STR_OPTION_DIR_DATA           = "Motīvi un tulkojumi"
-STR_OPTION_DIR_LOGS           = "Log files"
+STR_OPTION_DIR_LOGS           = "Žurnāla faili"
 
 // Advanced tab
 STR_OPTION_CMD                = "Komandas"
@@ -424,25 +424,25 @@ STR_WELCOME_BUTTON3_DESC      = "Tas ļauj skenēt datoru, lai redzētu, kuri dr
 STR_WELCOME_CLOSE             = "Aizveriet"
 
 // USB Wizard - page 1
-STR_USBWIZ_TITLE              = "Create a USB Drive"
-STR_USBWIZ_SPACEREQ           = "Space Required:"
-STR_USBWIZ_SPACEAVAIL         = "Space Available:"
-STR_USBWIZ_PAGE1_DESC         = "This wizard will help you create a portable USB drive containing Snappy Driver Installer Origin and selected files.\n\nThe files will be copied to the root directory of the selected device. You should ensure the device has sufficient capacity to store the required files. You will be given the option to clear the device first."
+STR_USBWIZ_TITLE              = "Izveidojiet USB disku"
+STR_USBWIZ_SPACEREQ           = "Nepieciešamā vieta:"
+STR_USBWIZ_SPACEAVAIL         = "Brīva vieta:"
+STR_USBWIZ_PAGE1_DESC         = "Šis vednis palīdzēs jums izveidot portatīvo USB disku, kurā ir Snappy Driver Installer Origin un atlasītie faili. \n\nFaili tiks kopēti izvēlētās ierīces saknes direktorijā. Pārliecinieties, vai ierīcei ir pietiekama ietilpība nepieciešamo failu glabāšanai. Jums tiks dota iespēja vispirms notīrīt ierīci."
 
 // USB Wizard - page 2
-STR_USBWIZ_PAGE2_TITLE        = "Target Drive"
-STR_USBWIZ_PAGE2_SUBTITLE     = "Select a removable drive."
-STR_USBWIZ_PAGE2_DESC         = "Snappy Driver Installer Origin will be installed into the root directory of the selected removable drive. Insert your USB drive now."
-STR_USBWIZ_PAGE2_DRIVE        = "Target removable drive:"
-STR_USBWIZ_PAGE2_MORE         = "Show more drives"
-STR_USBWIZ_PAGE2_CLEAR        = "Clear Selected Drive"
-STR_USBWIZ_PAGE2_DELETE       = "Delete Files"
-STR_USBWIZ_PAGE2_DELETEDESC   = "Delete all files and folders on the drive."
-STR_USBWIZ_PAGE2_FORMAT       = "Quick Format"
-STR_USBWIZ_PAGE2_FORMATDESC   = "Perform a quick format of the drive."
-STR_USBWIZ_PAGE2_DELCONF      = "Clear Removable Drive"
-STR_USBWIZ_PAGE2_DELCONF1     = "You are about to remove all data from removable drive"
-STR_USBWIZ_PAGE2_DELCONF2     = "Are you sure you want to do this?"
+STR_USBWIZ_PAGE2_TITLE        = "Mērķa disks"
+STR_USBWIZ_PAGE2_SUBTITLE     = "Atlasiet noņemamo disku."
+STR_USBWIZ_PAGE2_DESC         = "Snappy Driver Installer Origin tiks instalēts izvēlētā noņemamā diska saknes direktorijā. Ievietojiet USB disku tūlīt."
+STR_USBWIZ_PAGE2_DRIVE        = "Atlasīt noņemamo disku:"
+STR_USBWIZ_PAGE2_MORE         = "Rādīt vairāk diskus"
+STR_USBWIZ_PAGE2_CLEAR        = "Notīrīt atlasīto disku"
+STR_USBWIZ_PAGE2_DELETE       = "Dzēst failus"
+STR_USBWIZ_PAGE2_DELETEDESC   = "Dzēsiet visus failus un mapes diskā."
+STR_USBWIZ_PAGE2_FORMAT       = "Ātrais formāts"
+STR_USBWIZ_PAGE2_FORMATDESC   = "Veiciet ātru diska formatēšanu."
+STR_USBWIZ_PAGE2_DELCONF      = "Notīrīt noņemamo disku"
+STR_USBWIZ_PAGE2_DELCONF1     = "Jūs gatavojaties noņemt visus datus no noņemamā diska"
+STR_USBWIZ_PAGE2_DELCONF2     = "Vai tiešām vēlaties to darīt?"
 
 // USB Wizard - page 3
 STR_USBWIZ_PAGE3_TITLE        = "Driver Packs"

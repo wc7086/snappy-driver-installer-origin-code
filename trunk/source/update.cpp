@@ -1188,7 +1188,7 @@ void UpdaterImp::moveNewFiles()
 
 void UpdaterImp::checkUpdates()
 {
-    if(System.canWrite(L"update"))
+    if(System.canWriteDirectory(L"update"))
     {
         downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_TORRENT;
         downloadmangar_event->raise();
@@ -1832,7 +1832,7 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {
         // Wait till is allowed to download driverpacks
-        if(Settings.flags&FLAG_AUTOUPDATE&&System.canWrite(L"update"))
+        if(Settings.flags&FLAG_AUTOUPDATE&&System.canWriteDirectory(L"update"))
             UpdateDialog.openDialog();
         else
             downloadmangar_event->wait();

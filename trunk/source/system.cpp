@@ -20,6 +20,9 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "system.h"
 #include "manager.h"
 #include "matcher.h"
+#include "commdlg.h"
+#include "shellapi.h"
+#include "tchar.h"
 
 #include <windows.h>
 #include <process.h>
@@ -157,7 +160,7 @@ void StrFormatSize(long long val,wchar_t *buf,int len)
 void mkdir_r(const wchar_t *path)
 {
     if(path[1]==L':'&&path[2]==0)return;
-    if(!System.canWrite(path))
+    if(!System.canWriteDirectory(path))
     {
         Log.print_err("ERROR in mkdir_r(): Path not found or write-protected,'%S'\n",path);
         return;
@@ -184,6 +187,26 @@ void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *fu
 {
     if(!UnregisterClass(lpClassName,ghInst))
         Log.print_err("ERROR in %S(): failed UnregisterClass(%S)\n",func,obj);
+}
+
+bool SystemImp::FileAvailable(const wchar_t *path, int numRetries, int waitTime)
+{
+    // this repeatedly tests for existence of the given file
+    // for the given number of retries
+    bool FileOk;
+    int retries=0;
+
+    FileOk=System.FileExists(path);
+    while(!FileOk)
+    {
+        retries++;
+        if(retries>numRetries)break;
+        Log.print_con("Waiting: %S\n", path);
+        Sleep(waitTime*1000);
+        FileOk=System.FileExists(path);
+    }
+
+    return(FileOk);
 }
 
 bool SystemImp::FileExists(const wchar_t *path)
@@ -312,7 +335,7 @@ std::wstring SystemImp::ExpandEnvVar(std::wstring source)
 
 int SystemImp::canWrite(const wchar_t *path)
 {
-    DWORD flagsv;
+    DWORD flagsv=0;
     DWORD lasterror;
     wchar_t drive[4];
 
@@ -336,6 +359,76 @@ int SystemImp::canWrite(const wchar_t *path)
             if(lasterror==3)Log.print_err("Error: Path not found: %S\n",path);
         }
 
+    return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
+}
+
+int SystemImp::canWriteFile(const wchar_t *path,const wchar_t *mode)
+{
+    // test if the given file name can be written or updated
+
+    FILE *f;
+    DWORD flagsv=0;
+    DWORD lasterror;
+    wchar_t drive[4];
+
+    // full local path given
+    if(path&&wcslen(path)>1&&path[1]==':')
+    {
+        wcscpy(drive,L"C:\\");
+        drive[0]=path[0];
+        if(!GetVolumeInformation(drive,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0))
+        {
+            lasterror=GetLastError();
+            Log.print_err("Error: canWriteFile : GetVolumeInformation(1) failed with error %d\n",lasterror);
+            if(lasterror==3)Log.print_err("Error: Path not found: %S\n",path);
+        }
+    }
+    // test if the file can be opened for the required mode
+    else
+    {
+        if((f=_wfopen(path,mode)) == NULL)
+        {
+            Log.print_err("Error: canWriteFile : _wfopen failed.\n");
+            return(0);
+        }
+        fclose(f);
+        return(1);
+    }
+    return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
+}
+
+int SystemImp::canWriteDirectory(const wchar_t *path)
+{
+    // test if the given directory is writeable
+
+    DWORD flagsv=0;
+    DWORD lasterror;
+    wchar_t drive[4];
+
+    // full local path given
+    if(path&&wcslen(path)>1&&path[1]==':')
+    {
+        wcscpy(drive,L"C:\\");
+        drive[0]=path[0];
+        if(!GetVolumeInformation(drive,nullptr,0,nullptr,nullptr,&flagsv,nullptr,0))
+        {
+            lasterror=GetLastError();
+            Log.print_err("Error: canWriteDirectory : GetVolumeInformation(1) failed with error %d\n",lasterror);
+            if(lasterror==3)Log.print_err("Error: Path not found: %S\n",path);
+        }
+    }
+    // test if i can create a temporary file in the given directory
+    else
+    {
+        CreateDirectory(path,nullptr);
+        wchar_t tmpFile[MAX_PATH];
+        // the function opens and closes the temp file
+        flagsv=(GetTempFileName(path,L"SDIO",0,tmpFile));
+        // if temp file was successfully created then I should delete it
+        if(flagsv)
+            DeleteFile(tmpFile);
+        return(flagsv);
+    }
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
 

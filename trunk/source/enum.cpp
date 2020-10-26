@@ -856,7 +856,7 @@ int State::save(const wchar_t *filename)
 
     if(Settings.flags&FLAG_NOSNAPSHOT)return 0;
     Log.print_con("Saving state in '%S'...",filename);
-    if(!System.canWrite(filename))
+    if(!System.canWriteFile(filename,L"wb"))
     {
         Log.print_err("ERROR in state_save(): Write-protected,'%S'\n",filename);
         return 1;

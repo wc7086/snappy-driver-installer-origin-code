@@ -24,6 +24,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include "settings.h"
 #include "system.h"
+#include "shellapi.h"
 
 #include "matcher.h"
 #include "indexing.h"
