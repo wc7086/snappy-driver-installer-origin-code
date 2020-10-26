@@ -76,12 +76,15 @@ public:
     unsigned GetTickCountWr();
 
     int canWrite(const wchar_t *path);
+    int canWriteFile(const wchar_t *path,const wchar_t *mode);
+    int canWriteDirectory(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
     int run_command32(const wchar_t* file,const wchar_t* cmd,int show,int wait);
     void run_controlpanel(const wchar_t* cmd);
     void benchmark();
 
     void deletefile(const wchar_t *filename);
+    bool FileAvailable(const wchar_t *path, int numRetries, int waitTime);
     bool FileExists(const wchar_t *filename);
     bool FileExists2(const wchar_t *spec);
     bool DirectoryExists(const wchar_t *spec);

@@ -22,6 +22,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "update.h"
 #include "install.h"
 #include "theme.h"
+#include "shellapi.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
@@ -241,7 +242,7 @@ void Settings_t::parse(const wchar_t *str,size_t ind)
 void Settings_t::save()
 {
     if(flags&FLAG_PRESERVECFG)return;
-    if(!System.canWrite(L"sdi.cfg"))
+    if(!System.canWriteFile(L"sdi.cfg",L"wt"))
     {
         Log.print_err("ERROR in settings_save(): Write-protected,'sdi.cfg'\n");
         return;

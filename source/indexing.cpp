@@ -696,7 +696,7 @@ void Collection::populate()
 void Collection::save()
 {
     if(*Settings.drpext_dir)return;
-    if(!System.canWrite(index_bin_dir))
+    if(!System.canWriteDirectory(index_bin_dir))
     {
         Log.print_err("ERROR in collection_save(): Write-protected,'%S'\n",index_bin_dir);
         return;
@@ -1844,7 +1844,7 @@ void Driverpack::saveindex()
     char *mem,*p,*mem_pack;
 
     getindexfilename(col->getIndex_bin_dir(),L"bin",filename);
-    if(!System.canWrite(filename))
+    if(!System.canWriteFile(filename,L"wb"))
     {
         Log.print_err("ERROR in driverpack_saveindex(): Write-protected,'%S'\n",filename);
         return;

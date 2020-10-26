@@ -27,6 +27,9 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "draw.h"   // non-portable
 #include "theme.h"
 #include "usbwizard.h"
+#include "shellapi.h"
+#include "commdlg.h"
+#include "tchar.h"
 
 #include <windows.h>
 #include <setupapi.h>       // for CommandLineToArgvW
