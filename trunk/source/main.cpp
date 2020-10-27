@@ -226,7 +226,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     System.benchmark();
     #endif
 
-    // Make dirs
+    // force create the directories
     mkdir_r(Settings.drp_dir);
     mkdir_r(Settings.index_dir);
     mkdir_r(Settings.output_dir);

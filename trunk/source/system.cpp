@@ -159,28 +159,44 @@ void StrFormatSize(long long val,wchar_t *buf,int len)
 
 void mkdir_r(const wchar_t *path)
 {
-    if(path[1]==L':'&&path[2]==0)return;
-    if(!System.canWrite(path))
-    {
-        Log.print_err("ERROR in mkdir_r(): Path not found or write-protected,'%S'\n",path);
-        return;
-    }
+    // force create the directory path
+    // by attempting to create each component of the path
+    // one at a time
 
+    // invalid path - 'C:'
+    if(path[1]==L':'&&path[2]==0)return;
+
+    // if it exists there's nothing to do
     if(System.DirectoryExists(path))return;
 
     wchar_t buf[BUFLEN];
     wcscpy(buf,path);
     wchar_t *p=buf;
+
+    // unc path - skip past server name
+    if((wcslen(buf)>2)&&(buf[0]==L'\\')&&(buf[1]=L'\\'))
+    {
+        p++;p++;
+        p=wcschr(p,L'\\');
+        p++;
+    }
+
+    // work through the path one directory at a time
+    // by searching for the backslash delimiter
     while((p=wcschr(p,L'\\')))
     {
         *p=0;
         if(_wmkdir(buf)<0&&errno!=EEXIST&&wcslen(buf)>2)
-            Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+        {
+            Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d). Write protected?\n",buf,errno);
+            return;
+        }
         *p=L'\\';
         p++;
     }
+    // final directory component
     if(_wmkdir(buf)<0&&errno!=EEXIST&&wcslen(buf)>2)
-        Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d)\n",buf,errno);
+        Log.print_err("ERROR in mkdir_r(): failed _wmkdir(%S,%d). Write protected?\n",buf,errno);
 }
 
 void SystemImp::UnregisterClass_log(const wchar_t *lpClassName,const wchar_t *func,const wchar_t *obj)
@@ -332,7 +348,7 @@ std::wstring SystemImp::ExpandEnvVar(std::wstring source)
     ExpandEnvironmentStringsW(source.c_str(),d,BUFLEN);
     return d;
 }
-
+/*
 int SystemImp::canWrite(const wchar_t *path)
 {
     DWORD flagsv=0;
@@ -361,7 +377,7 @@ int SystemImp::canWrite(const wchar_t *path)
 
     return (flagsv&FILE_READ_ONLY_VOLUME)?0:1;
 }
-
+*/
 int SystemImp::canWriteFile(const wchar_t *path,const wchar_t *mode)
 {
     // test if the given file name can be written or updated
@@ -388,7 +404,7 @@ int SystemImp::canWriteFile(const wchar_t *path,const wchar_t *mode)
     {
         if((f=_wfopen(path,mode)) == NULL)
         {
-            Log.print_err("Error: canWriteFile : _wfopen failed.\n");
+            Log.print_err("Error: canWriteFile : _wfopen failed: %S\n",path);
             return(0);
         }
         fclose(f);
@@ -405,6 +421,9 @@ int SystemImp::canWriteDirectory(const wchar_t *path)
     DWORD lasterror;
     wchar_t drive[4];
 
+    // attempt to force create it first
+    mkdir_r(path);
+
     // full local path given
     if(path&&wcslen(path)>1&&path[1]==':')
     {
@@ -420,7 +439,6 @@ int SystemImp::canWriteDirectory(const wchar_t *path)
     // test if i can create a temporary file in the given directory
     else
     {
-        mkdir_r(path);
         wchar_t tmpFile[MAX_PATH];
         // the function opens and closes the temp file
         flagsv=(GetTempFileName(path,L"SDIO",0,tmpFile));

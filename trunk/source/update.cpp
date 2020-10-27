@@ -1188,11 +1188,14 @@ void UpdaterImp::moveNewFiles()
 
 void UpdaterImp::checkUpdates()
 {
-    if(System.canWriteDirectory(L"update"))
+    if(!System.canWriteDirectory(L"update"))
     {
-        downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_TORRENT;
-        downloadmangar_event->raise();
+        Log.print_err("ERROR in checkUpdates(): Write-protected,'update'\n");
+        return;
     }
+
+    downloadmangar_exitflag=DOWNLOAD_STATUS_DOWLOADING_TORRENT;
+    downloadmangar_event->raise();
 }
 
 void UpdaterImp::ShowProgress(wchar_t *buf)

@@ -6,7 +6,20 @@ www.snappy-driver-installer.org
 
 Change Log
 
-Version 1.7.0.719
+Version 1.7.1.721
+28 October 2020
+* Driver Packs 20.10.3
+* Further testing revealed some issues with the new code that deals with path
+  read/write conditions and building directory structures.
+* Tools updated as follows:
+   msys2 v20200903
+   gcc v7.1.0
+   boost v1.63.0
+   webp v0.6.1
+   libtorrent v1.0.8
+   7-zip v16.02
+
+Version 1.7.0.720
 26 October 2020
 * Driver Packs 20.10.3
 * Fixed bug in script mode when there are spaces in the paths.
@@ -22,13 +35,12 @@ Version 1.7.0.719
   temporarily unavailable due to a previous driver install.
 * Translations.
 * Tools updated as follows:
-  msys2 v20200903
-  gcc v7.1.0
-  boost v1.63.0
-  webp v0.5.2
-  libtorrent v1.0.8
-  7-zip v16.02
-
+   msys2 v20200903
+   gcc v7.1.0
+   boost v1.63.0
+   webp v0.5.2
+   libtorrent v1.0.8
+   7-zip v16.02
 
 Version 1.6.8.718
 2 October 2020
