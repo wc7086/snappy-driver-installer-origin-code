@@ -339,6 +339,7 @@ int Parser::parseField()
 #ifdef DEBUG_EXTRACHECKS
                     log_file("ERR2 '%.*s'\n",30,s1b-1);
 #endif
+                    break;
                 case '\"':          // "str"
                     strEnd=p;
                     blockBeg=strEnd+1;

@@ -75,7 +75,7 @@ public:
     bool IsLangInstalled(int group);
     unsigned GetTickCountWr();
 
-    int canWrite(const wchar_t *path);
+//    int canWrite(const wchar_t *path);
     int canWriteFile(const wchar_t *path,const wchar_t *mode);
     int canWriteDirectory(const wchar_t *path);
     int run_command(const wchar_t* file,const wchar_t* cmd,int show,int wait);
