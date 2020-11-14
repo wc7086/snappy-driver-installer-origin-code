@@ -734,24 +734,6 @@ void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
                    devicematch->driver)
                    continue;
 
-                // driver pack filters
-                if(drpfilter&&drpfilter->size()>0)
-                {
-                    bool filtermatch=false;
-                    std::wstring drpname=itembar->hwidmatch->getdrp_packname();
-                    for(std::vector<std::wstring>::iterator txt = drpfilter->begin(); txt != drpfilter->end(); ++txt)
-                    {
-                        std::wstring w=*txt;
-                        w.insert(0,L"dp_");w.append(L"_");
-                        if(StrStrIW(drpname.c_str(),w.c_str()))
-                        {
-                            filtermatch=true;
-                            break;
-                        }
-                    }
-                    if(!filtermatch)continue;
-                }
-
                 if(itembar->hwidmatch->getdrp_packontorrent()&&!ontorrent)
                     ontorrent=1;
                 else
@@ -761,7 +743,6 @@ void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
                 }
                 itembar->isactive=1;
             }
-
 
             if(itembar->isactive&&Settings.flags&FLAG_SHOWDRPNAMES2)
             {
@@ -793,6 +774,30 @@ void Manager::filter(int options,std::vector<std::wstring> *drpfilter)
             itembar++;i++;
         }
     }
+
+    // driver pack filters
+    if(drpfilter&&drpfilter->size()>0)
+    {
+        itembar=&items_list[RES_SLOTS];
+        for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
+            if(itembar->isactive&&itembar->hwidmatch)
+            {
+                bool filtermatch=false;
+                std::wstring drpname=itembar->hwidmatch->getdrp_packname();
+                for(std::vector<std::wstring>::iterator txt = drpfilter->begin(); txt != drpfilter->end(); ++txt)
+                {
+                    std::wstring w=*txt;
+                    w.insert(0,L"dp_");w.append(L"_");
+                    if(StrStrIW(drpname.c_str(),w.c_str()))
+                    {
+                        filtermatch=true;
+                        break;
+                    }
+                }
+                if(!filtermatch)itembar->isactive=false;
+            }
+    }
+
     i=0;
     itembar=&items_list[RES_SLOTS];
     for(k=RES_SLOTS;k<items_list.size();k++,itembar++)
