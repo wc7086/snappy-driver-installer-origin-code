@@ -14,14 +14,22 @@ set c_do=0D
 set c_skip=02
 
 rem Versions
-set BOOST_VER=1_63_0
-set BOOST_VER2=1.63.0
-set BOOST_VER3=1_63
-set LIBTORRENT_VER2=1.0.8
-set LIBTORRENT_VER=1_0_8
+rem boost 1.64.0 19 Apr 2017
+set BOOST_VER=1_64_0
+set BOOST_VER2=1.64.0
+set BOOST_VER3=1_64
+
+rem libtorrent 1.0.11 5 Feb 2017
+set LIBTORRENT_VER2=1.0.11
+set LIBTORRENT_VER=1_0_11
+
+rem libwebp 0.6.1 29 Nov 2017
 set LIBWEBP_VER=0.6.1
-set GCC_VERSION=7.1.0
-set GCC_VERSION2=71
+
+rem mingw-w64 7.3.0 post 10 Nov 2019
+set GCC_VERSION=7.3.0
+set GCC_VERSION2=73
+
 set MSVC_VERSION=12.0
 
 rem GCC 32-bit
@@ -35,8 +43,9 @@ set GCC64_PREFIX1=/x86_64-w64-mingw32
 set GCC64_PREFIX=\x86_64-w64-mingw32
 
 rem GCC (common)
+rem -w inhibit all warning messages
 if %TOOLSET%==gcc set TOOLSET2=gcc
-set EXTRA_OPTIONS="cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30"
+set EXTRA_OPTIONS="cxxflags=-fexpensive-optimizations -fomit-frame-pointer -D IPV6_TCLASS=30 -w"
 set LIBBOOST32="%GCC_PATH%%GCC_PREFIX%\lib\libboost_system_tr.a"
 set LIBBOOST64="%GCC64_PATH%%GCC64_PREFIX%\lib\libboost_system_tr.a"
 set LIBWEBP="%GCC_PATH%%GCC_PREFIX%\lib\libwebp.a"
@@ -118,6 +127,7 @@ if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (call :ColorText %c
 call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
+rem BOOST_USE_WINAPI_VERSION=0x0501 = Win XP
 bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH% define=BOOST_USE_WINAPI_VERSION=0x0501
 popd
 :skipinstallboost32
@@ -141,6 +151,12 @@ goto :eof
 
 :delall
 echo.
+
+echo Checking for hanging g++.exe
+tasklist /FI "IMAGENAME eq g++.exe" 2>NUL | find /I /N "g++.exe" >NUL 2>NUL
+if %ERRORLEVEL%==0 taskkill /im g++.exe /f /t
+echo.
+
 echo|set /p=Deleting...
 
 rem del libtorrent
@@ -278,6 +294,8 @@ goto :eof
 :installall
 echo.
 
+del "%MSYS_PATH%\var\lib\pacman\db.lck" 2>nul
+
 rem download wget
 if /I exist "%MSYS_BIN%\wget.exe" (call :ColorText %c_skip% "Skipping downloading wget"&echo. & goto skipwget)
 call :ColorText %c_do% "Downloading wget"&echo.
@@ -321,12 +339,15 @@ call :ColorText %c_do% "Downloading libtorrent"&echo.
 %MSYS_BIN%\wget https://github.com/arvidn/libtorrent/archive/libtorrent-%LIBTORRENT_VER%.tar.gz -Olibtorrent-rasterbar-%LIBTORRENT_VER%.tar.gz --no-check-certificate
 :skipdownloadlibtorrent
 if /I not exist "%LIBTORRENT_PATH%\examples\client_test.cpp" (%MSYS_BIN%\tar -xf "libtorrent-rasterbar-%LIBTORRENT_VER%.tar.gz" -v)
+if /I exist "libtorrent-rasterbar-%LIBTORRENT_VER2%\examples\client_test.cpp" (move "libtorrent-rasterbar-%LIBTORRENT_VER2%" "libtorrent-libtorrent-%LIBTORRENT_VER%")
 
 rem Creating dirs for libs
+if %TOOLSET%==gcc goto skipcreatelibdir
 mkdir %LIBDIR%\Release_Win32 2>nul
 mkdir %LIBDIR%\Release_x64 2>nul
 mkdir %LIBDIR%\Debug_Win32 2>nul
 mkdir %LIBDIR%\Debug_x64 2>nul
+:skipcreatelibdir
 
 rem Install webp
 if /I exist %LIBWEBP% (call :ColorText %c_skip% "Skipping installing WebP"&echo. & goto skipprepwebp)
@@ -374,6 +395,7 @@ del %LIBTORREN64% 2>nul
 :skiprebuild
 
 rem Copy libtorrent headers
+
 if /I exist "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" (call :ColorText %c_skip% "Skipping copying headers for libtorrent"&echo. & goto skipcopylibtorrentinc)
 call :ColorText %c_do% "Copying libtorrent headers"&echo.
 xcopy "%LIBTORRENT_PATH%\include" "%GCC_PATH%%GCC_PREFIX%\include" /E /I /Y

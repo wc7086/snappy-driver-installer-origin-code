@@ -1172,6 +1172,6 @@ void ShowHelp()
     CLIHelp_Font=CreateFont(-12,0,0,0,FW_DONTCARE,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                             CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,VARIABLE_PITCH,L"Consolas");
 
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)ShowHelpProcedure);
+    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),nullptr,(DLGPROC)ShowHelpProcedure);
     DeleteObject(CLIHelp_Font);
 }

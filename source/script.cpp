@@ -228,17 +228,20 @@ bool Script::runscript()
                 std::vector<std::wstring> drpfilter;
                 for(size_t i=1;i<args.size();i++)
                 {
-                    if(_wcsicmp(args[i].c_str(),L"missing")==0)filter|=2;
-                    else if(_wcsicmp(args[i].c_str(),L"newer")==0)filter|=4;
-                    else if(_wcsicmp(args[i].c_str(),L"current")==0)filter|=8;
-                    else if(_wcsicmp(args[i].c_str(),L"older")==0)filter|=16;
-                    else if(_wcsicmp(args[i].c_str(),L"better")==0)filter|=32;
-                    else if(_wcsicmp(args[i].c_str(),L"worse")==0)filter|=64;
-                    else drpfilter.push_back(args[i]);
+                    std::wstring s(args[i]);
+                    // trim spaces
+                    s.erase(s.begin(), std::find_if(s.begin(),s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+                    if(_wcsicmp(s.c_str(),L"missing")==0)filter|=2;
+                    else if(_wcsicmp(s.c_str(),L"newer")==0)filter|=4;
+                    else if(_wcsicmp(s.c_str(),L"current")==0)filter|=8;
+                    else if(_wcsicmp(s.c_str(),L"older")==0)filter|=16;
+                    else if(_wcsicmp(s.c_str(),L"better")==0)filter|=32;
+                    else if(_wcsicmp(s.c_str(),L"worse")==0)filter|=64;
+                    else if(s.length()>0)drpfilter.push_back(s);
                 }
                 if((filter>0)||(drpfilter.size()>0))
                 {
-                    Log.print_con("Select: %d, %d\n",filter,drpfilter.size());
+                    Log.print_con("Select: filter:%d, drpfilter:%d\n",filter,drpfilter.size());
                     selectNone();
                     Settings.filters=filter;
                     manager_g->filter(filter,&drpfilter);
@@ -647,8 +650,14 @@ bool Script::runscript()
             }
             else
             {
-                LastExitCode=1;
-                Log.print_con("Invalid command\n");
+                // label
+                std::wstring label=args[0];
+                p=label.find(L":");
+                if(p!=0)
+                {
+                    LastExitCode=1;
+                    Log.print_con("Invalid command\n");
+                }
             }
         }
     }

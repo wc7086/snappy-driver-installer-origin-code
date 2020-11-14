@@ -429,6 +429,7 @@ unsigned int __stdcall Manager::thread_install(void *arg)
                     Log.print_con("Error: %S not found. Download failed or network or storage not available.\n", spec1);
                     itembar->checked=0;
                     itembar->install_status=STR_INST_FAILED;
+                    failed++;
                 }
                 else
                 {

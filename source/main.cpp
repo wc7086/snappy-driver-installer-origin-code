@@ -452,7 +452,7 @@ void MainWindow_t::MainLoop(int nCmd)
 
     // license dialog
     if(!Settings.license)
-        DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),0,(DLGPROC)LicenseProcedure);
+        DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG1),nullptr,(DLGPROC)LicenseProcedure);
 
     // Enable updates notifications
     if(Settings.license==2)
