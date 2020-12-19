@@ -57,6 +57,8 @@ struct CExtractNtOptions
   bool ReplaceColonForAltStream;
   bool WriteToAltStreamIfColon;
 
+  bool PreAllocateOutFile;
+
   CExtractNtOptions():
       ReplaceColonForAltStream(false),
       WriteToAltStreamIfColon(false)
@@ -64,6 +66,13 @@ struct CExtractNtOptions
     SymLinks.Val = true;
     HardLinks.Val = true;
     AltStreams.Val = true;
+    
+    PreAllocateOutFile =
+      #ifdef _WIN32
+        true;
+      #else
+        false;
+      #endif
   }
 };
 
@@ -163,6 +172,7 @@ class CArchiveExtractCallback:
   FString _dirPathPrefix_Full;
   NExtract::NPathMode::EEnum _pathMode;
   NExtract::NOverwriteMode::EEnum _overwriteMode;
+  bool _keepAndReplaceEmptyDirPrefixes; // replace them to "_";
 
   #ifndef _SFX
 
@@ -201,6 +211,7 @@ class CArchiveExtractCallback:
   UInt32 _index;
   UInt64 _curSize;
   bool _curSizeDefined;
+  bool _fileLengthWasSet;
   COutFileStream *_outFileStreamSpec;
   CMyComPtr<ISequentialOutStream> _outFileStream;
 
@@ -268,11 +279,13 @@ public:
 
   void InitForMulti(bool multiArchives,
       NExtract::NPathMode::EEnum pathMode,
-      NExtract::NOverwriteMode::EEnum overwriteMode)
+      NExtract::NOverwriteMode::EEnum overwriteMode,
+      bool keepAndReplaceEmptyDirPrefixes)
   {
     _multiArchives = multiArchives;
     _pathMode = pathMode;
     _overwriteMode = overwriteMode;
+    _keepAndReplaceEmptyDirPrefixes = keepAndReplaceEmptyDirPrefixes;
     NumFolders = NumFiles = NumAltStreams = UnpackSize = AltStreams_UnpackSize = 0;
   }
 

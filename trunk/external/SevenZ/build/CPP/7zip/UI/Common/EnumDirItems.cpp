@@ -213,7 +213,8 @@ HRESULT CDirItems::EnumerateDir(int phyParent, int logParent, const FString &phy
 {
   RINOK(ScanProgress(phyPrefix));
 
-  NFind::CEnumerator enumerator(phyPrefix + FCHAR_ANY_MASK);
+  NFind::CEnumerator enumerator;
+  enumerator.SetDirPrefix(phyPrefix);
   for (unsigned ttt = 0; ; ttt++)
   {
     NFind::CFileInfo fi;
@@ -342,6 +343,7 @@ static HRESULT EnumerateAltStreams(
     const NWildcard::CCensorNode &curNode,
     int phyParent, int logParent, const FString &fullPath,
     const UStringVector &addArchivePrefix,  // prefix from curNode
+    bool addAllItems,
     CDirItems &dirItems)
 {
   NFind::CStreamEnumerator enumerator(fullPath);
@@ -362,6 +364,10 @@ static HRESULT EnumerateAltStreams(
     addArchivePrefixNew.Back() += reducedName;
     if (curNode.CheckPathToRoot(false, addArchivePrefixNew, true))
       continue;
+    if (!addAllItems)
+      if (!curNode.CheckPathToRoot(true, addArchivePrefixNew, true))
+        continue;
+
     NFind::CFileInfo fi2 = fi;
     fi2.Name += us2fs(reducedName);
     fi2.Size = si.Size;
@@ -412,6 +418,8 @@ static HRESULT EnumerateForItem(
   }
   int dirItemIndex = -1;
   
+  bool addAllSubStreams = false;
+
   if (curNode.CheckPathToRoot(true, addArchivePrefixNew, !fi.IsDir()))
   {
     int secureIndex = -1;
@@ -426,6 +434,8 @@ static HRESULT EnumerateForItem(
     dirItems.AddDirFileInfo(phyParent, logParent, secureIndex, fi);
     if (fi.IsDir())
       enterToSubFolders2 = true;
+
+    addAllSubStreams = true;
   }
 
   #ifndef UNDER_CE
@@ -433,7 +443,9 @@ static HRESULT EnumerateForItem(
   {
     RINOK(EnumerateAltStreams(fi, curNode, phyParent, logParent,
         phyPrefix + fi.Name,
-        addArchivePrefixNew, dirItems));
+        addArchivePrefixNew,
+        addAllSubStreams,
+        dirItems));
   }
 
   if (dirItemIndex >= 0)
@@ -570,7 +582,7 @@ static HRESULT EnumerateDirItems(
               #endif
               */
 
-              fullPath = FCHAR_PATH_SEPARATOR;
+              fullPath = CHAR_PATH_SEPARATOR;
             }
             #if defined(_WIN32) && !defined(UNDER_CE)
             else if (item.IsDriveItem())
@@ -642,7 +654,9 @@ static HRESULT EnumerateDirItems(
           UStringVector pathParts;
           pathParts.Add(fs2us(fi.Name));
           RINOK(EnumerateAltStreams(fi, curNode, phyParent, logParent,
-              fullPath, pathParts, dirItems));
+              fullPath, pathParts,
+              true, /* addAllSubStreams */
+              dirItems));
         }
         #endif
 
@@ -682,7 +696,7 @@ static HRESULT EnumerateDirItems(
         {
           {
             if (nextNode.Name.IsEmpty())
-              fullPath = FCHAR_PATH_SEPARATOR;
+              fullPath = CHAR_PATH_SEPARATOR;
             #ifdef _WIN32
             else if (NWildcard::IsDriveColonName(nextNode.Name))
               fullPath.Add_PathSepar();
@@ -773,7 +787,9 @@ static HRESULT EnumerateDirItems(
   #endif
   #endif
 
-  NFind::CEnumerator enumerator(phyPrefix + FCHAR_ANY_MASK);
+  NFind::CEnumerator enumerator;
+  enumerator.SetDirPrefix(phyPrefix);
+
   for (unsigned ttt = 0; ; ttt++)
   {
     NFind::CFileInfo fi;
