@@ -13,7 +13,6 @@ class CCopyCoder:
   public ICompressCoder,
   public ICompressSetInStream,
   public ISequentialInStream,
-  public ICompressSetFinishMode,
   public ICompressGetInStreamProcessedSize,
   public CMyUnknownImp
 {
@@ -25,11 +24,10 @@ public:
   CCopyCoder(): _buf(0), TotalSize(0) {};
   ~CCopyCoder();
 
-  MY_UNKNOWN_IMP5(
+  MY_UNKNOWN_IMP4(
       ICompressCoder,
       ICompressSetInStream,
       ISequentialInStream,
-      ICompressSetFinishMode,
       ICompressGetInStreamProcessedSize)
 
   STDMETHOD(Code)(ISequentialInStream *inStream, ISequentialOutStream *outStream,
@@ -37,7 +35,6 @@ public:
   STDMETHOD(SetInStream)(ISequentialInStream *inStream);
   STDMETHOD(ReleaseInStream)();
   STDMETHOD(Read)(void *data, UInt32 size, UInt32 *processedSize);
-  STDMETHOD(SetFinishMode)(UInt32 finishMode);
   STDMETHOD(GetInStreamProcessedSize)(UInt64 *value);
 };
 

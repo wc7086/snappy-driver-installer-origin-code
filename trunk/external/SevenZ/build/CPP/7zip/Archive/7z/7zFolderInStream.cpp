@@ -80,17 +80,14 @@ STDMETHODIMP CFolderInStream::Read(void *data, UInt32 size, UInt32 *processedSiz
   {
     if (_stream)
     {
-      UInt32 cur = size;
-      const UInt32 kMax = (UInt32)1 << 20;
-      if (cur > kMax)
-        cur = kMax;
-      RINOK(_stream->Read(data, cur, &cur));
-      if (cur != 0)
+      UInt32 processed2;
+      RINOK(_stream->Read(data, size, &processed2));
+      if (processed2 != 0)
       {
-        _crc = CrcUpdate(_crc, data, cur);
-        _pos += cur;
+        _crc = CrcUpdate(_crc, data, processed2);
+        _pos += processed2;
         if (processedSize)
-          *processedSize = cur;
+          *processedSize = processed2;
         return S_OK;
       }
       

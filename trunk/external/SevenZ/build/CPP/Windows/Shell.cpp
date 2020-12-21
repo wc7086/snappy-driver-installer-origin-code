@@ -153,8 +153,8 @@ bool BrowseForFolder(HWND /* owner */, LPCTSTR /* title */,
     MessageBoxW(0, L"yes", L"", 0);
   */
   /*
-  UString s = "all files";
-  s += " (*.*)";
+  UString s = L"all files";
+  s += L" (*.*)";
   return MyGetOpenFileName(owner, title, initialFolder, s, resultPath, true);
   */
   return false;

@@ -8,7 +8,27 @@
 
 #include "StreamUtils.h"
 
-SRes HRESULT_To_SRes(HRESULT res, SRes defaultRes) throw()
+#define PROGRESS_UNKNOWN_VALUE ((UInt64)(Int64)-1)
+
+#define CONVERT_PR_VAL(x) (x == PROGRESS_UNKNOWN_VALUE ? NULL : &x)
+
+static SRes CompressProgress(void *pp, UInt64 inSize, UInt64 outSize) throw()
+{
+  CCompressProgressWrap *p = (CCompressProgressWrap *)pp;
+  p->Res = p->Progress->SetRatioInfo(CONVERT_PR_VAL(inSize), CONVERT_PR_VAL(outSize));
+  return (SRes)p->Res;
+}
+
+CCompressProgressWrap::CCompressProgressWrap(ICompressProgressInfo *progress) throw()
+{
+  p.Progress = CompressProgress;
+  Progress = progress;
+  Res = SZ_OK;
+}
+
+static const UInt32 kStreamStepSize = (UInt32)1 << 31;
+
+SRes HRESULT_To_SRes(HRESULT res, SRes defaultRes)
 {
   switch (res)
   {
@@ -22,51 +42,9 @@ SRes HRESULT_To_SRes(HRESULT res, SRes defaultRes) throw()
   return defaultRes;
 }
 
-
-HRESULT SResToHRESULT(SRes res) throw()
+static SRes MyRead(void *object, void *data, size_t *size) throw()
 {
-  switch (res)
-  {
-    case SZ_OK: return S_OK;
-    case SZ_ERROR_DATA: return S_FALSE;
-    case SZ_ERROR_CRC: return S_FALSE;
-    case SZ_ERROR_MEM: return E_OUTOFMEMORY;
-    case SZ_ERROR_PARAM: return E_INVALIDARG;
-    case SZ_ERROR_PROGRESS: return E_ABORT;
-    case SZ_ERROR_UNSUPPORTED: return E_NOTIMPL;
-    // case SZ_ERROR_THREAD: return E_FAIL;
-    // case SZ_ERROR_READ: return E_FAIL;
-  }
-  if (res < 0)
-    return res;
-  return E_FAIL;
-}
-
-
-#define PROGRESS_UNKNOWN_VALUE ((UInt64)(Int64)-1)
-
-#define CONVERT_PR_VAL(x) (x == PROGRESS_UNKNOWN_VALUE ? NULL : &x)
-
-
-static SRes CompressProgress(const ICompressProgress *pp, UInt64 inSize, UInt64 outSize) throw()
-{
-  CCompressProgressWrap *p = CONTAINER_FROM_VTBL(pp, CCompressProgressWrap, vt);
-  p->Res = p->Progress->SetRatioInfo(CONVERT_PR_VAL(inSize), CONVERT_PR_VAL(outSize));
-  return HRESULT_To_SRes(p->Res, SZ_ERROR_PROGRESS);
-}
-
-void CCompressProgressWrap::Init(ICompressProgressInfo *progress) throw()
-{
-  vt.Progress = CompressProgress;
-  Progress = progress;
-  Res = SZ_OK;
-}
-
-static const UInt32 kStreamStepSize = (UInt32)1 << 31;
-
-static SRes MyRead(const ISeqInStream *pp, void *data, size_t *size) throw()
-{
-  CSeqInStreamWrap *p = CONTAINER_FROM_VTBL(pp, CSeqInStreamWrap, vt);
+  CSeqInStreamWrap *p = (CSeqInStreamWrap *)object;
   UInt32 curSize = ((*size < kStreamStepSize) ? (UInt32)*size : kStreamStepSize);
   p->Res = (p->Stream->Read(data, curSize, &curSize));
   *size = curSize;
@@ -76,9 +54,9 @@ static SRes MyRead(const ISeqInStream *pp, void *data, size_t *size) throw()
   return HRESULT_To_SRes(p->Res, SZ_ERROR_READ);
 }
 
-static size_t MyWrite(const ISeqOutStream *pp, const void *data, size_t size) throw()
+static size_t MyWrite(void *object, const void *data, size_t size) throw()
 {
-  CSeqOutStreamWrap *p = CONTAINER_FROM_VTBL(pp, CSeqOutStreamWrap, vt);
+  CSeqOutStreamWrap *p = (CSeqOutStreamWrap *)object;
   if (p->Stream)
   {
     p->Res = WriteStream(p->Stream, data, size);
@@ -91,36 +69,47 @@ static size_t MyWrite(const ISeqOutStream *pp, const void *data, size_t size) th
   return size;
 }
 
-
-void CSeqInStreamWrap::Init(ISequentialInStream *stream) throw()
+CSeqInStreamWrap::CSeqInStreamWrap(ISequentialInStream *stream) throw()
 {
-  vt.Read = MyRead;
+  p.Read = MyRead;
   Stream = stream;
   Processed = 0;
-  Res = S_OK;
 }
 
-void CSeqOutStreamWrap::Init(ISequentialOutStream *stream) throw()
+CSeqOutStreamWrap::CSeqOutStreamWrap(ISequentialOutStream *stream) throw()
 {
-  vt.Write = MyWrite;
+  p.Write = MyWrite;
   Stream = stream;
   Res = SZ_OK;
   Processed = 0;
 }
 
-
-static SRes InStreamWrap_Read(const ISeekInStream *pp, void *data, size_t *size) throw()
+HRESULT SResToHRESULT(SRes res) throw()
 {
-  CSeekInStreamWrap *p = CONTAINER_FROM_VTBL(pp, CSeekInStreamWrap, vt);
+  switch (res)
+  {
+    case SZ_OK: return S_OK;
+    case SZ_ERROR_MEM: return E_OUTOFMEMORY;
+    case SZ_ERROR_PARAM: return E_INVALIDARG;
+    case SZ_ERROR_PROGRESS: return E_ABORT;
+    case SZ_ERROR_DATA: return S_FALSE;
+    case SZ_ERROR_UNSUPPORTED: return E_NOTIMPL;
+  }
+  return E_FAIL;
+}
+
+static SRes InStreamWrap_Read(void *pp, void *data, size_t *size) throw()
+{
+  CSeekInStreamWrap *p = (CSeekInStreamWrap *)pp;
   UInt32 curSize = ((*size < kStreamStepSize) ? (UInt32)*size : kStreamStepSize);
   p->Res = p->Stream->Read(data, curSize, &curSize);
   *size = curSize;
   return (p->Res == S_OK) ? SZ_OK : SZ_ERROR_READ;
 }
 
-static SRes InStreamWrap_Seek(const ISeekInStream *pp, Int64 *offset, ESzSeek origin) throw()
+static SRes InStreamWrap_Seek(void *pp, Int64 *offset, ESzSeek origin) throw()
 {
-  CSeekInStreamWrap *p = CONTAINER_FROM_VTBL(pp, CSeekInStreamWrap, vt);
+  CSeekInStreamWrap *p = (CSeekInStreamWrap *)pp;
   UInt32 moveMethod;
   switch (origin)
   {
@@ -135,11 +124,11 @@ static SRes InStreamWrap_Seek(const ISeekInStream *pp, Int64 *offset, ESzSeek or
   return (p->Res == S_OK) ? SZ_OK : SZ_ERROR_READ;
 }
 
-void CSeekInStreamWrap::Init(IInStream *stream) throw()
+CSeekInStreamWrap::CSeekInStreamWrap(IInStream *stream) throw()
 {
   Stream = stream;
-  vt.Read = InStreamWrap_Read;
-  vt.Seek = InStreamWrap_Seek;
+  p.Read = InStreamWrap_Read;
+  p.Seek = InStreamWrap_Seek;
   Res = S_OK;
 }
 
@@ -179,9 +168,9 @@ Byte CByteInBufWrap::ReadByteFromNewBlock() throw()
   return 0;
 }
 
-static Byte Wrap_ReadByte(const IByteIn *pp) throw()
+static Byte Wrap_ReadByte(void *pp) throw()
 {
-  CByteInBufWrap *p = CONTAINER_FROM_VTBL_CLS(pp, CByteInBufWrap, vt);
+  CByteInBufWrap *p = (CByteInBufWrap *)pp;
   if (p->Cur != p->Lim)
     return *p->Cur++;
   return p->ReadByteFromNewBlock();
@@ -189,7 +178,7 @@ static Byte Wrap_ReadByte(const IByteIn *pp) throw()
 
 CByteInBufWrap::CByteInBufWrap(): Buf(0)
 {
-  vt.Read = Wrap_ReadByte;
+  p.Read = Wrap_ReadByte;
 }
 
 
@@ -225,9 +214,9 @@ HRESULT CByteOutBufWrap::Flush() throw()
   return Res;
 }
 
-static void Wrap_WriteByte(const IByteOut *pp, Byte b) throw()
+static void Wrap_WriteByte(void *pp, Byte b) throw()
 {
-  CByteOutBufWrap *p = CONTAINER_FROM_VTBL_CLS(pp, CByteOutBufWrap, vt);
+  CByteOutBufWrap *p = (CByteOutBufWrap *)pp;
   Byte *dest = p->Cur;
   *dest = b;
   p->Cur = ++dest;
@@ -237,5 +226,5 @@ static void Wrap_WriteByte(const IByteOut *pp, Byte b) throw()
 
 CByteOutBufWrap::CByteOutBufWrap() throw(): Buf(0)
 {
-  vt.Write = Wrap_WriteByte;
+  p.Write = Wrap_WriteByte;
 }

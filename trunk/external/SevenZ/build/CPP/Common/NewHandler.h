@@ -4,29 +4,28 @@
 #define __COMMON_NEW_HANDLER_H
 
 /*
-NewHandler.h and NewHandler.cpp allows to solve problem with compilers that
-don't throw exception in operator new().
+This file must be included before any code that uses operators "delete" or "new".
+Also you must compile and link "NewHandler.cpp", if you use MSVC 6.0.
+The operator "new" in MSVC 6.0 doesn't throw exception "bad_alloc".
+So we define another version of operator "new" that throws "CNewException" on failure.
 
-This file must be included before any code that uses operators new() or delete()
-and you must compile and link "NewHandler.cpp", if you use some old MSVC compiler.
+If you use compiler that throws exception in "new" operator (GCC or new version of MSVC),
+you can compile without "NewHandler.cpp". So standard exception "bad_alloc" will be used.
 
-The operator new() in some MSVC versions doesn't throw exception std::bad_alloc.
-MSVC 6.0 (_MSC_VER == 1200) doesn't throw exception.
-The code produced by some another MSVC compilers also can be linked
-to library that doesn't throw exception.
-We suppose that code compiled with VS2015+ (_MSC_VER >= 1900) throws exception std::bad_alloc.
-For older _MSC_VER versions we redefine operator new() and operator delete().
-Our version of operator new() throws CNewException() exception on failure.
-
-It's still allowed to use redefined version of operator new() from "NewHandler.cpp"
-with any compiler. 7-Zip's code can work with std::bad_alloc and CNewException() exceptions.
+It's still allowed to use redefined version of operator "new" from "NewHandler.cpp"
+with any compiler. 7-Zip's code can work with "bad_alloc" and "CNewException" exceptions.
 But if you use some additional code (outside of 7-Zip's code), you must check
-that redefined version of operator new() is not problem for your code.
+that redefined version of operator "new" (that throws CNewException) is not
+problem for your code.
+
+Also we declare delete(void *p) throw() that creates smaller code.
 */
 
 #include <stddef.h>
 
-#ifdef _WIN32
+class CNewException {};
+
+#ifdef WIN32
 // We can compile my_new and my_delete with _fastcall
 /*
 void * my_new(size_t size);
@@ -35,19 +34,7 @@ void my_delete(void *p) throw();
 */
 #endif
 
-
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-  // If you want to use default operator new(), you can disable the following line
-  #define _7ZIP_REDEFINE_OPERATOR_NEW
-#endif
-
-
-#ifdef _7ZIP_REDEFINE_OPERATOR_NEW
-
-// std::bad_alloc can require additional DLL dependency.
-// So we don't define CNewException as std::bad_alloc here.
-
-class CNewException {};
+#ifdef _WIN32
 
 void *
 #ifdef _MSC_VER
@@ -60,12 +47,6 @@ void
 __cdecl
 #endif
 operator delete(void *p) throw();
-
-#else
-
-#include <new>
-
-#define CNewException std::bad_alloc
 
 #endif
 

@@ -291,12 +291,6 @@ UString MultiByteToUnicodeString(const AString &src, UINT codePage)
   return dest;
 }
 
-UString MultiByteToUnicodeString(const char *src, UINT codePage)
-{
-  return MultiByteToUnicodeString(AString(src), codePage);
-}
-
-
 void UnicodeStringToMultiByte2(AString &dest, const UString &src, UINT codePage)
 {
   bool defaultCharWasUsed;

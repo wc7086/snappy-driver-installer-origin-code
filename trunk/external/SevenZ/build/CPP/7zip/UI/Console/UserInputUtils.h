@@ -14,14 +14,11 @@ enum EEnum
   kYesAll,
   kNoAll,
   kAutoRenameAll,
-  kQuit,
-  kEof,
-  kError
+  kQuit
 };
 }
 
 NUserAnswerMode::EEnum ScanUserYesNoAllQuit(CStdOutStream *outStream);
-// bool GetPassword(CStdOutStream *outStream, UString &psw);
-HRESULT GetPassword_HRESULT(CStdOutStream *outStream, UString &psw);
+UString GetPassword(CStdOutStream *outStream);
 
 #endif

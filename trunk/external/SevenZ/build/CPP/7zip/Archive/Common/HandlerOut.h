@@ -22,13 +22,11 @@ public:
   COneMethodInfo _filterMethod;
   bool _autoFilter;
 
-  
-  void SetGlobalLevelTo(COneMethodInfo &oneMethodInfo) const;
-
-  #ifndef _7ZIP_ST
-  static void SetMethodThreadsTo(COneMethodInfo &oneMethodInfo, UInt32 numThreads);
-  #endif
-
+  void SetGlobalLevelAndThreads(COneMethodInfo &oneMethodInfo
+      #ifndef _7ZIP_ST
+      , UInt32 numThreads
+      #endif
+      );
 
   unsigned GetNumEmptyMethods() const
   {

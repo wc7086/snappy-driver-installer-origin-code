@@ -26,13 +26,11 @@ struct CCoderInfo
   bool IsSimpleCoder() const { return NumStreams == 1; }
 };
 
-
 struct CBond
 {
   UInt32 PackIndex;
   UInt32 UnpackIndex;
 };
-
 
 struct CFolder
 {
@@ -89,7 +87,6 @@ public:
   }
 };
 
-
 struct CUInt32DefVector
 {
   CBoolVector Defs;
@@ -113,24 +110,8 @@ struct CUInt32DefVector
     Vals.ReserveDown();
   }
 
-  bool GetItem(unsigned index, UInt32 &value) const
-  {
-    if (index < Defs.Size() && Defs[index])
-    {
-      value = Vals[index];
-      return true;
-    }
-    value = 0;
-    return false;
-  }
-
   bool ValidAndDefined(unsigned i) const { return i < Defs.Size() && Defs[i]; }
-
-  bool CheckSize(unsigned size) const { return Defs.Size() == size || Defs.Size() == 0; }
-
-  void SetItem(unsigned index, bool defined, UInt32 value);
 };
-
 
 struct CUInt64DefVector
 {
@@ -160,15 +141,15 @@ struct CUInt64DefVector
     return false;
   }
   
-  bool CheckSize(unsigned size) const { return Defs.Size() == size || Defs.Size() == 0; }
-
   void SetItem(unsigned index, bool defined, UInt64 value);
-};
 
+  bool CheckSize(unsigned size) const { return Defs.Size() == size || Defs.Size() == 0; }
+};
 
 struct CFileItem
 {
   UInt64 Size;
+  UInt32 Attrib;
   UInt32 Crc;
   /*
   int Parent;
@@ -178,23 +159,23 @@ struct CFileItem
                   // stream in some folder. It can be empty stream
   bool IsDir;
   bool CrcDefined;
-
-  /*
-  void Clear()
-  {
-    HasStream = true;
-    IsDir = false;
-    CrcDefined = false;
-  }
+  bool AttribDefined;
 
   CFileItem():
-    // Parent(-1),
-    // IsAltStream(false),
+    /*
+    Parent(-1),
+    IsAltStream(false),
+    */
     HasStream(true),
     IsDir(false),
     CrcDefined(false),
+    AttribDefined(false)
       {}
-  */
+  void SetAttrib(UInt32 attrib)
+  {
+    AttribDefined = true;
+    Attrib = attrib;
+  }
 };
 
 }}

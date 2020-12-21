@@ -47,11 +47,8 @@ public:
 
   void WriteByte(Byte b)
   {
-    UInt32 pos = _pos;
-    _buf[pos] = b;
-    pos++;
-    _pos = pos;
-    if (pos == _limitPos)
+    _buf[_pos++] = b;
+    if (_pos == _limitPos)
       FlushWithCheck();
   }
   void WriteBytes(const void *data, size_t size)

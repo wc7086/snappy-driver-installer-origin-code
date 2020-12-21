@@ -102,7 +102,7 @@ const UInt32 kBot = (1 << 15);
 
 struct CRangeDecoder
 {
-  IPpmd7_RangeDec vt;
+  IPpmd7_RangeDec s;
   UInt32 Range;
   UInt32 Code;
   UInt32 Low;
@@ -130,7 +130,7 @@ public:
     }
   }
 
-  CRangeDecoder() throw();
+  CRangeDecoder();
 };
 
 struct CFilter: public NVm::CProgram
@@ -200,7 +200,6 @@ class CDecoder:
   UInt32 PrevAlignCount;
 
   bool TablesRead;
-  bool TablesOK;
 
   CPpmd7 _ppmd;
   int PpmEscChar;

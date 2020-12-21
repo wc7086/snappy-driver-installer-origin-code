@@ -1,6 +1,9 @@
 // ShrinkDecoder.cpp
 
+
 #include "StdAfx.h"
+
+#include <stdio.h>
 
 #include "../../../C/Alloc.h"
 
@@ -17,19 +20,18 @@ static const UInt32 kBufferSize = (1 << 18);
 static const unsigned kNumMinBits = 9;
 
 HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *outStream,
-    const UInt64 *inSize, const UInt64 *outSize, ICompressProgressInfo *progress)
+    const UInt64 * /* inSize */, const UInt64 * /* outSize */, ICompressProgressInfo *progress)
 {
   NBitl::CBaseDecoder<CInBuffer> inBuffer;
   COutBuffer outBuffer;
 
   if (!inBuffer.Create(kBufferSize))
     return E_OUTOFMEMORY;
-  if (!outBuffer.Create(kBufferSize))
-    return E_OUTOFMEMORY;
-
   inBuffer.SetStream(inStream);
   inBuffer.Init();
 
+  if (!outBuffer.Create(kBufferSize))
+    return E_OUTOFMEMORY;
   outBuffer.SetStream(outStream);
   outBuffer.Init();
 
@@ -43,69 +45,31 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
       _suffixes[i] = 0;
   }
 
-  UInt64 prevPos = 0, inPrev = 0;
+  UInt64 prevPos = 0;
   unsigned numBits = kNumMinBits;
   unsigned head = 257;
   int lastSym = -1;
   Byte lastChar2 = 0;
-  bool moreOut = false;
-
-  HRESULT res = S_FALSE;
 
   for (;;)
   {
-    _inProcessed = inBuffer.GetProcessedSize();
-    const UInt64 nowPos = outBuffer.GetProcessedSize();
-
-    bool eofCheck = false;
-
-    if (outSize && nowPos >= *outSize)
-    {
-      if (!_fullStreamMode || moreOut)
-      {
-        res = S_OK;
-        break;
-      }
-      eofCheck = true;
-      // Is specSym(=256) allowed after end of stream
-      // Do we need to read it here
-    }
-
-    if (progress)
-    {
-      if (nowPos - prevPos >= (1 << 18)
-          || _inProcessed - inPrev >= (1 << 20))
-      {
-        prevPos = nowPos;
-        inPrev = _inProcessed;
-        RINOK(progress->SetRatioInfo(&_inProcessed, &nowPos));
-      }
-    }
-
     UInt32 sym = inBuffer.ReadBits(numBits);
-
+    
     if (inBuffer.ExtraBitsWereRead())
-    {
-      res = S_OK;
       break;
-    }
     
     if (sym == 256)
     {
       sym = inBuffer.ReadBits(numBits);
-
-      if (inBuffer.ExtraBitsWereRead())
-        break;
-
       if (sym == 1)
       {
         if (numBits >= kNumMaxBits)
-          break;
+          return S_FALSE;
         numBits++;
         continue;
       }
       if (sym != 2)
-        break;
+        return S_FALSE;
       {
         unsigned i;
         for (i = 257; i < kNumItems; i++)
@@ -126,14 +90,6 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
       }
     }
 
-    if (eofCheck)
-    {
-      // It's can be error case.
-      // That error can be detected later in (*inSize != _inProcessed) check.
-      res = S_OK;
-      break;
-    }
-
     bool needPrev = false;
     if (head < kNumItems && lastSym >= 0)
     {
@@ -145,8 +101,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
         {
           // we need to fix the code for that case
           // _parents[head] is not allowed to link to itself
-          res = E_NOTIMPL;
-          break;
+          return E_NOTIMPL;
         }
         needPrev = true;
         _parents[head] = (UInt16)lastSym;
@@ -156,7 +111,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
     }
 
     if (_parents[sym] == kNumItems)
-      break;
+      return S_FALSE;
 
     lastSym = sym;
     unsigned cur = sym;
@@ -172,64 +127,34 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *inStream, ISequentialOutStream *
     lastChar2 = (Byte)cur;
 
     if (needPrev)
-      _suffixes[(size_t)head - 1] = (Byte)cur;
-
-    if (outSize)
-    {
-      const UInt64 limit = *outSize - nowPos;
-      if (i > limit)
-      {
-        moreOut = true;
-        i = (unsigned)limit;
-      }
-    }
+      _suffixes[head - 1] = (Byte)cur;
 
     do
       outBuffer.WriteByte(_stack[--i]);
     while (i);
+    
+    if (progress)
+    {
+      const UInt64 nowPos = outBuffer.GetProcessedSize();
+      if (nowPos - prevPos >= (1 << 18))
+      {
+        prevPos = nowPos;
+        const UInt64 packSize = inBuffer.GetProcessedSize();
+        RINOK(progress->SetRatioInfo(&packSize, &nowPos));
+      }
+    }
   }
   
-  RINOK(outBuffer.Flush());
-
-  if (res == S_OK)
-    if (_fullStreamMode)
-    {
-      if (moreOut)
-        res = S_FALSE;
-      const UInt64 nowPos = outBuffer.GetProcessedSize();
-      if (outSize && *outSize != nowPos)
-        res = S_FALSE;
-      if (inSize && *inSize != _inProcessed)
-        res = S_FALSE;
-    }
-  
-  return res;
+  return outBuffer.Flush();
 }
 
-
-STDMETHODIMP CDecoder::Code(ISequentialInStream *inStream, ISequentialOutStream *outStream,
+STDMETHODIMP CDecoder ::Code(ISequentialInStream *inStream, ISequentialOutStream *outStream,
     const UInt64 *inSize, const UInt64 *outSize, ICompressProgressInfo *progress)
 {
   try { return CodeReal(inStream, outStream, inSize, outSize, progress); }
-  // catch(const CInBufferException &e) { return e.ErrorCode; }
-  // catch(const COutBufferException &e) { return e.ErrorCode; }
-  catch(const CSystemException &e) { return e.ErrorCode; }
+  catch(const CInBufferException &e) { return e.ErrorCode; }
+  catch(const COutBufferException &e) { return e.ErrorCode; }
   catch(...) { return S_FALSE; }
 }
-
-
-STDMETHODIMP CDecoder::SetFinishMode(UInt32 finishMode)
-{
-  _fullStreamMode = (finishMode != 0);
-  return S_OK;
-}
-
-
-STDMETHODIMP CDecoder::GetInStreamProcessedSize(UInt64 *value)
-{
-  *value = _inProcessed;
-  return S_OK;
-}
-
 
 }}

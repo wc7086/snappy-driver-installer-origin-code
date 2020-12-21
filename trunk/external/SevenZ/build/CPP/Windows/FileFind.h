@@ -134,7 +134,7 @@ class CEnumerator
 
   bool NextAny(CFileInfo &fileInfo);
 public:
-  void SetDirPrefix(const FString &dirPrefix);
+  CEnumerator(const FString &wildcard): _wildcard(wildcard) {}
   bool Next(CFileInfo &fileInfo);
   bool Next(CFileInfo &fileInfo, bool &found);
 };

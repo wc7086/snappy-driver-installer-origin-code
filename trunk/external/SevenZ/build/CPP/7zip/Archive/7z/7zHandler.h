@@ -54,7 +54,6 @@ public:
   CBoolPair Write_CTime;
   CBoolPair Write_ATime;
   CBoolPair Write_MTime;
-  CBoolPair Write_Attrib;
 
   bool _useMultiThreadMixer;
 

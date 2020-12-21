@@ -39,6 +39,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 #include <process.h>
 #include <signal.h>
+#include <iostream>
 
 // Depend on Win32API
 #include "enum.h"   // non-portable
