@@ -42,6 +42,7 @@ Snappy Driver Installer Origin.  If not, see <http://www.gnu.org/licenses/>.
 #include "libtorrent/bencode.hpp"
 #include "libtorrent/alert_types.hpp"
 #include "libtorrent/session.hpp"
+#include "libtorrent/session_settings.hpp"
 
 #ifdef _MSC_VER
 #pragma warning(pop)

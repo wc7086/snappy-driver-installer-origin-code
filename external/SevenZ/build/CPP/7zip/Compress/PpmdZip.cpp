@@ -15,7 +15,7 @@ namespace NPpmdZip {
 CDecoder::CDecoder(bool fullFileMode):
   _fullFileMode(fullFileMode)
 {
-  _ppmd.Stream.In = &_inStream.vt;
+  _ppmd.Stream.In = &_inStream.p;
   Ppmd8_Construct(&_ppmd);
 }
 
@@ -25,7 +25,7 @@ CDecoder::~CDecoder()
 }
 
 STDMETHODIMP CDecoder::Code(ISequentialInStream *inStream, ISequentialOutStream *outStream,
-    const UInt64 *inSize, const UInt64 *outSize, ICompressProgressInfo *progress)
+    const UInt64 * /* inSize */, const UInt64 *outSize, ICompressProgressInfo *progress)
 {
   if (!_outStream.Alloc())
     return E_OUTOFMEMORY;
@@ -64,21 +64,15 @@ STDMETHODIMP CDecoder::Code(ISequentialInStream *inStream, ISequentialOutStream 
 
   bool wasFinished = false;
   UInt64 processedSize = 0;
-
-  for (;;)
+  while (!outSize || processedSize < *outSize)
   {
     size_t size = kBufSize;
-    if (outSize)
+    if (outSize != NULL)
     {
       const UInt64 rem = *outSize - processedSize;
       if (size > rem)
-      {
         size = (size_t)rem;
-        if (size == 0)
-          break;
-      }
     }
-
     Byte *data = _outStream.Buf;
     size_t i = 0;
     int sym = 0;
@@ -90,7 +84,6 @@ STDMETHODIMP CDecoder::Code(ISequentialInStream *inStream, ISequentialOutStream 
       data[i] = (Byte)sym;
     }
     while (++i != size);
-    
     processedSize += i;
 
     RINOK(WriteStream(outStream, _outStream.Buf, i));
@@ -106,16 +99,13 @@ STDMETHODIMP CDecoder::Code(ISequentialInStream *inStream, ISequentialOutStream 
       wasFinished = true;
       break;
     }
-    
     if (progress)
     {
-      const UInt64 inProccessed = _inStream.GetProcessed();
-      RINOK(progress->SetRatioInfo(&inProccessed, &processedSize));
+      UInt64 inSize = _inStream.GetProcessed();
+      RINOK(progress->SetRatioInfo(&inSize, &processedSize));
     }
   }
-  
   RINOK(_inStream.Res);
-  
   if (_fullFileMode)
   {
     if (!wasFinished)
@@ -127,27 +117,9 @@ STDMETHODIMP CDecoder::Code(ISequentialInStream *inStream, ISequentialOutStream 
     }
     if (!Ppmd8_RangeDec_IsFinishedOK(&_ppmd))
       return S_FALSE;
-
-    if (inSize && *inSize != _inStream.GetProcessed())
-      return S_FALSE;
   }
-  
   return S_OK;
 }
-
-
-STDMETHODIMP CDecoder::SetFinishMode(UInt32 finishMode)
-{
-  _fullFileMode = (finishMode != 0);
-  return S_OK;
-}
-
-STDMETHODIMP CDecoder::GetInStreamProcessedSize(UInt64 *value)
-{
-  *value = _inStream.GetProcessed();
-  return S_OK;
-}
-
 
 
 // ---------- Encoder ----------
@@ -234,7 +206,7 @@ STDMETHODIMP CEncoder::SetCoderProperties(const PROPID *propIDs, const PROPVARIA
 CEncoder::CEncoder()
 {
   _props.Normalize(-1);
-  _ppmd.Stream.Out = &_outStream.vt;
+  _ppmd.Stream.Out = &_outStream.p;
   Ppmd8_Construct(&_ppmd);
 }
 
@@ -276,10 +248,10 @@ STDMETHODIMP CEncoder::Code(ISequentialInStream *inStream, ISequentialOutStream 
       RINOK(_outStream.Res);
     }
     processed += size;
-    if (progress)
+    if (progress != NULL)
     {
-      const UInt64 outProccessed = _outStream.GetProcessed();
-      RINOK(progress->SetRatioInfo(&processed, &outProccessed));
+      UInt64 outSize = _outStream.GetProcessed();
+      RINOK(progress->SetRatioInfo(&processed, &outSize));
     }
   }
 }

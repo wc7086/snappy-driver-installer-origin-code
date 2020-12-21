@@ -130,6 +130,7 @@ class CArcCmdLineParser
 {
   NCommandLineParser::CParser parser;
 public:
+  CArcCmdLineParser();
   void Parse1(const UStringVector &commandStrings, CArcCmdLineOptions &options);
   void Parse2(CArcCmdLineOptions &options);
 };

@@ -463,10 +463,10 @@ HRESULT CDecoder::Code(ISequentialInStream * const *inStreams, const UInt64 * co
 
     if (progress)
     {
-      const UInt64 outSize2 = outSizeProcessed + (dec.dest - _bufs[BCJ2_NUM_STREAMS]);
+      UInt64 outSize2 = outSizeProcessed + (dec.dest - _bufs[BCJ2_NUM_STREAMS]);
       if (outSize2 - prevProgress >= (1 << 22))
       {
-        const UInt64 inSize2 = outSize2 + _inStreamsProcessed[BCJ2_STREAM_RC] - (dec.lims[BCJ2_STREAM_RC] - dec.bufs[BCJ2_STREAM_RC]);
+        UInt64 inSize2 = outSize2 + _inStreamsProcessed[BCJ2_STREAM_RC] - (dec.lims[BCJ2_STREAM_RC] - dec.bufs[BCJ2_STREAM_RC]);
         RINOK(progress->SetRatioInfo(&inSize2, &outSize2));
         prevProgress = outSize2;
       }
@@ -653,14 +653,6 @@ STDMETHODIMP CDecoder::Read(void *data, UInt32 size, UInt32 *processedSize)
   }
 
   return res;
-}
-
-
-STDMETHODIMP CDecoder::GetInStreamProcessedSize2(UInt32 streamIndex, UInt64 *value)
-{
-  const size_t rem = dec.lims[streamIndex] - dec.bufs[streamIndex] + _extraReadSizes[streamIndex];
-  *value = _inStreamsProcessed[streamIndex] - rem;
-  return S_OK;
 }
 
 }}

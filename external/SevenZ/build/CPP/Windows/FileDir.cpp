@@ -128,15 +128,6 @@ bool SetFileAttrib(CFSTR path, DWORD attrib)
   return false;
 }
 
-
-bool SetFileAttrib_PosixHighDetect(CFSTR path, DWORD attrib)
-{
-  if ((attrib & 0xF0000000) != 0)
-    attrib &= 0x3FFF;
-  return SetFileAttrib(path, attrib);
-}
-
-
 bool RemoveDir(CFSTR path)
 {
   #ifndef _UNICODE
@@ -354,7 +345,7 @@ bool CreateComplexDir(CFSTR _path)
   
   #endif
 
-  FString path (_path);
+  FString path = _path;
 
   int pos = path.ReverseFind_PathSepar();
   if (pos >= 0 && (unsigned)pos == path.Len() - 1)
@@ -364,7 +355,7 @@ bool CreateComplexDir(CFSTR _path)
     path.DeleteBack();
   }
 
-  const FString path2 (path);
+  const FString path2 = path;
   pos = path.Len();
   
   for (;;)
@@ -461,11 +452,11 @@ bool RemoveDirWithSubItems(const FString &path)
 
   if (needRemoveSubItems)
   {
-    FString s (path);
+    FString s = path;
     s.Add_PathSepar();
-    const unsigned prefixSize = s.Len();
-    NFind::CEnumerator enumerator;
-    enumerator.SetDirPrefix(s);
+    unsigned prefixSize = s.Len();
+    s += FCHAR_ANY_MASK;
+    NFind::CEnumerator enumerator(s);
     NFind::CFileInfo fi;
     while (enumerator.Next(fi))
     {
@@ -589,18 +580,18 @@ static bool CreateTempFile(CFSTR prefix, bool addRandom, FString &path, NIO::COu
     path = prefix;
     if (addRandom)
     {
-      char s[16];
-      UInt32 val = d;
+      FChar s[16];
+      UInt32 value = d;
       unsigned k;
       for (k = 0; k < 8; k++)
       {
-        unsigned t = val & 0xF;
-        val >>= 4;
-        s[k] = (char)((t < 10) ? ('0' + t) : ('A' + (t - 10)));
+        unsigned t = value & 0xF;
+        value >>= 4;
+        s[k] = (FChar)((t < 10) ? ('0' + t) : ('A' + (t - 10)));
       }
       s[k] = '\0';
       if (outFile)
-        path += '.';
+        path += FChar('.');
       path += s;
       UInt32 step = GetTickCount() + 2;
       if (step == 0)
@@ -609,7 +600,7 @@ static bool CreateTempFile(CFSTR prefix, bool addRandom, FString &path, NIO::COu
     }
     addRandom = true;
     if (outFile)
-      path += ".tmp";
+      path += FTEXT(".tmp");
     if (NFind::DoesFileOrDirExist(path))
     {
       SetLastError(ERROR_ALREADY_EXISTS);

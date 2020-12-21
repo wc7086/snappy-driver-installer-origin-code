@@ -8,32 +8,27 @@
 
 using namespace NWindows;
 
-static void AddHex(AString &s, UInt32 v)
+static AString GetHex(UInt32 v)
 {
   char sz[16];
   sz[0] = '0';
   sz[1] = 'x';
   ConvertUInt32ToHex(v, sz + 2);
-  s += sz;
+  return sz;
 }
-
 
 AString TypePairToString(const CUInt32PCharPair *pairs, unsigned num, UInt32 value)
 {
-  char sz[16];
-  const char *p = NULL;
+  AString s;
   for (unsigned i = 0; i < num; i++)
   {
-    const CUInt32PCharPair &pair = pairs[i];
-    if (pair.Value == value)
-      p = pair.Name;
+    const CUInt32PCharPair &p = pairs[i];
+    if (p.Value == value)
+      s = p.Name;
   }
-  if (!p)
-  {
-    ConvertUInt32ToString(value, sz);
-    p = sz;
-  }
-  return (AString)p;
+  if (s.IsEmpty())
+    s = GetHex(value);
+  return s;
 }
 
 void PairToProp(const CUInt32PCharPair *pairs, unsigned num, UInt32 value, NCOM::CPropVariant &prop)
@@ -44,30 +39,14 @@ void PairToProp(const CUInt32PCharPair *pairs, unsigned num, UInt32 value, NCOM:
 
 AString TypeToString(const char * const table[], unsigned num, UInt32 value)
 {
-  char sz[16];
-  const char *p = NULL;
   if (value < num)
-    p = table[value];
-  if (!p)
-  {
-    ConvertUInt32ToString(value, sz);
-    p = sz;
-  }
-  return (AString)p;
+    return table[value];
+  return GetHex(value);
 }
 
-void TypeToProp(const char * const table[], unsigned num, UInt32 value, NWindows::NCOM::CPropVariant &prop)
+void TypeToProp(const char * const table[], unsigned num, UInt32 value, NCOM::CPropVariant &prop)
 {
-  char sz[16];
-  const char *p = NULL;
-  if (value < num)
-    p = table[value];
-  if (!p)
-  {
-    ConvertUInt32ToString(value, sz);
-    p = sz;
-  }
-  prop = p;
+  prop = TypeToString(table, num, value);
 }
 
 
@@ -80,17 +59,20 @@ AString FlagsToString(const char * const *names, unsigned num, UInt32 flags)
     if ((flags & flag) != 0)
     {
       const char *name = names[i];
-      if (name && name[0] != 0)
+      if (name != 0 && name[0] != 0)
       {
-        s.Add_OptSpaced(name);
+        if (!s.IsEmpty())
+          s += ' ';
+        s += name;
         flags &= ~flag;
       }
     }
   }
   if (flags != 0)
   {
-    s.Add_Space_if_NotEmpty();
-    AddHex(s, flags);
+    if (!s.IsEmpty())
+      s += ' ';
+    s += GetHex(flags);
   }
   return s;
 }
@@ -105,21 +87,21 @@ AString FlagsToString(const CUInt32PCharPair *pairs, unsigned num, UInt32 flags)
     if ((flags & flag) != 0)
     {
       if (p.Name[0] != 0)
-        s.Add_OptSpaced(p.Name);
+      {
+        if (!s.IsEmpty())
+          s += ' ';
+        s += p.Name;
+      }
     }
     flags &= ~flag;
   }
   if (flags != 0)
   {
-    s.Add_Space_if_NotEmpty();
-    AddHex(s, flags);
+    if (!s.IsEmpty())
+      s += ' ';
+    s += GetHex(flags);
   }
   return s;
-}
-
-void FlagsToProp(const char * const *names, unsigned num, UInt32 flags, NCOM::CPropVariant &prop)
-{
-  prop = FlagsToString(names, num, flags);
 }
 
 void FlagsToProp(const CUInt32PCharPair *pairs, unsigned num, UInt32 flags, NCOM::CPropVariant &prop)
@@ -138,18 +120,24 @@ AString Flags64ToString(const CUInt32PCharPair *pairs, unsigned num, UInt64 flag
     if ((flags & flag) != 0)
     {
       if (p.Name[0] != 0)
-        s.Add_OptSpaced(p.Name);
+      {
+        if (!s.IsEmpty())
+          s += ' ';
+        s += p.Name;
+      }
     }
     flags &= ~flag;
   }
   if (flags != 0)
   {
+    if (!s.IsEmpty())
+      s += ' ';
     {
       char sz[32];
       sz[0] = '0';
       sz[1] = 'x';
       ConvertUInt64ToHex(flags, sz + 2);
-      s.Add_OptSpaced(sz);
+      s += sz;
     }
   }
   return s;

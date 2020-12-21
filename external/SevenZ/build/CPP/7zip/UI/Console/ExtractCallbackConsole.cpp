@@ -32,7 +32,7 @@ static HRESULT CheckBreak2()
   return NConsoleClose::TestBreakSignal() ? E_ABORT : S_OK;
 }
 
-static const char * const kError = "ERROR: ";
+static const char *kError = "ERROR: ";
 
 
 void CExtractScanConsole::StartScanning()
@@ -114,39 +114,6 @@ void Print_DirItemsStat(AString &s, const CDirItemsStat &st)
   }
 }
 
-
-void Print_DirItemsStat2(AString &s, const CDirItemsStat2 &st)
-{
-  Print_DirItemsStat(s, (CDirItemsStat &)st);
-  bool needLF = true;
-  if (st.Anti_NumDirs != 0)
-  {
-    if (needLF)
-      s.Add_LF();
-    needLF = false;
-    Print_UInt64_and_String(s, st.Anti_NumDirs, st.Anti_NumDirs == 1 ? "anti-folder" : "anti-folders");
-  }
-  if (st.Anti_NumFiles != 0)
-  {
-    if (needLF)
-      s.Add_LF();
-    else
-      s += ", ";
-    needLF = false;
-    Print_UInt64_and_String(s, st.Anti_NumFiles, st.Anti_NumFiles == 1 ? "anti-file" : "anti-files");
-  }
-  if (st.Anti_NumAltStreams != 0)
-  {
-    if (needLF)
-      s.Add_LF();
-    else
-      s += ", ";
-    needLF = false;
-    Print_UInt64_and_String(s, st.Anti_NumAltStreams, "anti-alternate-streams");
-  }
-}
-
-
 void CExtractScanConsole::PrintStat(const CDirItemsStat &st)
 {
   if (_so)
@@ -171,33 +138,33 @@ static NSynchronization::CCriticalSection g_CriticalSection;
 #endif
 
 
-static const char * const kTestString    =  "T";
-static const char * const kExtractString =  "-";
-static const char * const kSkipString    =  ".";
+static const char *kTestString    =  "T";
+static const char *kExtractString =  "-";
+static const char *kSkipString    =  ".";
 
-// static const char * const kCantAutoRename = "can not create file with auto name\n";
-// static const char * const kCantRenameFile = "can not rename existing file\n";
-// static const char * const kCantDeleteOutputFile = "can not delete output file ";
+// static const char *kCantAutoRename = "can not create file with auto name\n";
+// static const char *kCantRenameFile = "can not rename existing file\n";
+// static const char *kCantDeleteOutputFile = "can not delete output file ";
 
-static const char * const kMemoryExceptionMessage = "Can't allocate required memory!";
+static const char *kMemoryExceptionMessage = "Can't allocate required memory!";
 
-static const char * const kExtracting = "Extracting archive: ";
-static const char * const kTesting = "Testing archive: ";
+static const char *kExtracting = "Extracting archive: ";
+static const char *kTesting = "Testing archive: ";
 
-static const char * const kEverythingIsOk = "Everything is Ok";
-static const char * const kNoFiles = "No files to process";
+static const char *kEverythingIsOk = "Everything is Ok";
+static const char *kNoFiles = "No files to process";
 
-static const char * const kUnsupportedMethod = "Unsupported Method";
-static const char * const kCrcFailed = "CRC Failed";
-static const char * const kCrcFailedEncrypted = "CRC Failed in encrypted file. Wrong password?";
-static const char * const kDataError = "Data Error";
-static const char * const kDataErrorEncrypted = "Data Error in encrypted file. Wrong password?";
-static const char * const kUnavailableData = "Unavailable data";
-static const char * const kUnexpectedEnd = "Unexpected end of data";
-static const char * const kDataAfterEnd = "There are some data after the end of the payload data";
-static const char * const kIsNotArc = "Is not archive";
-static const char * const kHeadersError = "Headers Error";
-static const char * const kWrongPassword = "Wrong password";
+static const char *kUnsupportedMethod = "Unsupported Method";
+static const char *kCrcFailed = "CRC Failed";
+static const char *kCrcFailedEncrypted = "CRC Failed in encrypted file. Wrong password?";
+static const char *kDataError = "Data Error";
+static const char *kDataErrorEncrypted = "Data Error in encrypted file. Wrong password?";
+static const char *kUnavailableData = "Unavailable data";
+static const char *kUnexpectedEnd = "Unexpected end of data";
+static const char *kDataAfterEnd = "There are some data after the end of the payload data";
+static const char *kIsNotArc = "Is not archive";
+static const char *kHeadersError = "Headers Error";
+static const char *kWrongPassword = "Wrong password";
 
 void _7z_total(long long  i);
 int  _7z_setcomplited(long long i);
@@ -243,7 +210,7 @@ STDMETHODIMP CExtractCallbackConsole::SetCompleted(const UInt64 *completeValue)
   return _7z_setcomplited(*completeValue);
 }
 
-static const char * const kTab = "  ";
+static const char *kTab = "  ";
 
 static void PrintFileInfo(CStdOutStream *_so, const wchar_t *path, const FILETIME *ft, const UInt64 *size)
 {
@@ -257,8 +224,10 @@ static void PrintFileInfo(CStdOutStream *_so, const wchar_t *path, const FILETIM
   if (ft)
   {
     char temp[64];
-    if (ConvertUtcFileTimeToString(*ft, temp, kTimestampPrintLevel_SEC))
-      *_so << kTab << "Modified: " << temp << endl;
+    FILETIME locTime;
+    if (FileTimeToLocalFileTime(ft, &locTime))
+      if (ConvertFileTimeToString(locTime, temp, true, true))
+        *_so << kTab << "Modified: " << temp << endl;
   }
 }
 
@@ -291,8 +260,6 @@ STDMETHODIMP CExtractCallbackConsole::AskOverwrite(
     case NUserAnswerMode::kYesAll: *answer = NOverwriteAnswer::kYesToAll; break;
     case NUserAnswerMode::kYes:    *answer = NOverwriteAnswer::kYes; break;
     case NUserAnswerMode::kAutoRenameAll: *answer = NOverwriteAnswer::kAutoRename; break;
-    case NUserAnswerMode::kEof:  return E_ABORT;
-    case NUserAnswerMode::kError:  return E_FAIL;
     default: return E_FAIL;
   }
   
@@ -425,8 +392,10 @@ void SetExtractErrorMessage(Int32 opRes, Int32 encrypted, AString &dest)
       dest += s;
     else
     {
+      char temp[16];
+      ConvertUInt32ToString(opRes, temp);
       dest += "Error #";
-      dest.Add_UInt32(opRes);
+      dest += temp;
     }
 }
 
@@ -559,22 +528,22 @@ void PrintErrorFlags(CStdOutStream &so, const char *s, UInt32 errorFlags)
 void Add_Messsage_Pre_ArcType(UString &s, const char *pre, const wchar_t *arcType)
 {
   s.Add_LF();
-  s += pre;
-  s += " as [";
+  s.AddAscii(pre);
+  s.AddAscii(" as [");
   s += arcType;
-  s += "] archive";
+  s.AddAscii("] archive");
 }
 
 void Print_ErrorFormatIndex_Warning(CStdOutStream *_so, const CCodecs *codecs, const CArc &arc)
 {
   const CArcErrorInfo &er = arc.ErrorInfo;
   
-  UString s ("WARNING:\n");
+  UString s = L"WARNING:\n";
   s += arc.Path;
   if (arc.FormatIndex == er.ErrorFormatIndex)
   {
     s.Add_LF();
-    s += "The archive is open with offset";
+    s.AddAscii("The archive is open with offset");
   }
   else
   {

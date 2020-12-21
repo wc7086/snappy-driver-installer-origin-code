@@ -15,9 +15,9 @@ namespace NWindows {
 #ifndef UNDER_CE
 static UString GetQuotedString(const UString &s)
 {
-  UString s2 ('\"');
+  UString s2 = L'\"';
   s2 += s;
-  s2 += '\"';
+  s2 += L'\"';
   return s2;
 }
 #endif

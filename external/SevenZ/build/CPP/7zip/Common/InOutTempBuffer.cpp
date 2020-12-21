@@ -15,7 +15,7 @@ using namespace NDir;
 
 static const size_t kTempBufSize = (1 << 20);
 
-#define kTempFilePrefixString FTEXT("7zt")
+static CFSTR kTempFilePrefixString = FTEXT("7zt");
 
 CInOutTempBuffer::CInOutTempBuffer(): _buf(NULL) { }
 

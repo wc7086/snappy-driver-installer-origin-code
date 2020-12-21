@@ -81,7 +81,7 @@ using namespace NFile;
 #define kFormatsFolderName FTEXT("Formats")
 
 
-static CFSTR const kMainDll =
+static CFSTR kMainDll =
   // #ifdef _WIN32
     FTEXT("7z.dll");
   // #else
@@ -91,9 +91,9 @@ static CFSTR const kMainDll =
 
 #ifdef _WIN32
 
-static LPCTSTR const kRegistryPath = TEXT("Software") TEXT(STRING_PATH_SEPARATOR) TEXT("7-zip");
-static LPCWSTR const kProgramPathValue = L"Path";
-static LPCWSTR const kProgramPath2Value = L"Path"
+static LPCTSTR kRegistryPath = TEXT("Software") TEXT(STRING_PATH_SEPARATOR) TEXT("7-zip");
+static LPCWSTR kProgramPathValue = L"Path";
+static LPCWSTR kProgramPath2Value = L"Path"
   #ifdef _WIN64
   L"64";
   #else
@@ -516,11 +516,12 @@ HRESULT CCodecs::LoadDll(const FString &dllPath, bool needCheckDll, bool *loaded
     }
 
     lib.CreateObject = (Func_CreateObject)lib.Lib.GetProc("CreateObject");
+    if (lib.CreateObject)
     {
       unsigned startSize = Codecs.Size() + Hashers.Size();
       res = LoadCodecs();
       used = (startSize != Codecs.Size() + Hashers.Size());
-      if (res == S_OK && lib.CreateObject)
+      if (res == S_OK)
       {
         startSize = Formats.Size();
         res = LoadFormats();
@@ -538,8 +539,7 @@ HRESULT CCodecs::LoadDll(const FString &dllPath, bool needCheckDll, bool *loaded
 
 HRESULT CCodecs::LoadDllsFromFolder(const FString &folderPrefix)
 {
-  NFile::NFind::CEnumerator enumerator;
-  enumerator.SetDirPrefix(folderPrefix);
+  NFile::NFind::CEnumerator enumerator(folderPrefix + FCHAR_ANY_MASK);
   NFile::NFind::CFileInfo fi;
   while (enumerator.Next(fi))
   {
@@ -595,7 +595,7 @@ HRESULT CCodecs::Load()
     const CArcInfo &arc = *g_Arcs[i];
     CArcInfoEx item;
     
-    item.Name = arc.Name;
+    item.Name.SetFromAscii(arc.Name);
     item.CreateInArchive = arc.CreateInArchive;
     item.IsArcFunc = arc.IsArc;
     item.Flags = arc.Flags;
@@ -603,9 +603,9 @@ HRESULT CCodecs::Load()
     {
       UString e, ae;
       if (arc.Ext)
-        e = arc.Ext;
+        e.SetFromAscii(arc.Ext);
       if (arc.AddExt)
-        ae = arc.AddExt;
+        ae.SetFromAscii(arc.AddExt);
       item.AddExts(e, ae);
     }
 
@@ -866,8 +866,7 @@ STDMETHODIMP CCodecs::CreateDecoder(UInt32 index, const GUID *iid, void **coder)
     const CCodecLib &lib = Libs[ci.LibIndex];
     if (lib.CreateDecoder)
       return lib.CreateDecoder(ci.CodecIndex, iid, (void **)coder);
-    if (lib.CreateObject)
-      return lib.CreateObject(&ci.Decoder, iid, (void **)coder);
+    return lib.CreateObject(&ci.Decoder, iid, (void **)coder);
   }
   return S_OK;
   #else
@@ -889,8 +888,7 @@ STDMETHODIMP CCodecs::CreateEncoder(UInt32 index, const GUID *iid, void **coder)
     const CCodecLib &lib = Libs[ci.LibIndex];
     if (lib.CreateEncoder)
       return lib.CreateEncoder(ci.CodecIndex, iid, (void **)coder);
-    if (lib.CreateObject)
-      return lib.CreateObject(&ci.Encoder, iid, (void **)coder);
+    return lib.CreateObject(&ci.Encoder, iid, (void **)coder);
   }
   return S_OK;
   #else

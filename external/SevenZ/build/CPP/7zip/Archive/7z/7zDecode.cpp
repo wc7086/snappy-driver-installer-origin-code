@@ -226,13 +226,11 @@ HRESULT CDecoder::Decode(
 
     , ISequentialOutStream *outStream
     , ICompressProgressInfo *compressProgress
-    
     , ISequentialInStream **
-        #ifdef USE_MIXER_ST
-        inStreamMainRes
-        #endif
 
-    , bool &dataAfterEnd_Error
+    #ifdef USE_MIXER_ST
+    inStreamMainRes
+    #endif
     
     _7Z_DECODER_CRYPRO_VARS_DECL
 
@@ -241,8 +239,6 @@ HRESULT CDecoder::Decode(
     #endif
     )
 {
-  dataAfterEnd_Error = false;
-
   const UInt64 *packPositions = &folders.PackPositions[folders.FoStartPackStreamIndex[folderIndex]];
   CFolderEx folderInfo;
   folders.ParseFolderEx(folderIndex, folderInfo);
@@ -419,14 +415,12 @@ HRESULT CDecoder::Decode(
     }
     #endif
 
-    bool finishMode = false;
     {
       CMyComPtr<ICompressSetFinishMode> setFinishMode;
       decoder->QueryInterface(IID_ICompressSetFinishMode, (void **)&setFinishMode);
       if (setFinishMode)
       {
-        finishMode = fullUnpack;
-        RINOK(setFinishMode->SetFinishMode(BoolToInt(finishMode)));
+        RINOK(setFinishMode->SetFinishMode(BoolToInt(fullUnpack)));
       }
     }
     
@@ -456,7 +450,7 @@ HRESULT CDecoder::Decode(
             unpackSize :
             &folders.CoderUnpackSizes[unpackStreamIndexStart + i];
     
-    _mixer->SetCoderInfo(i, unpackSizesPointer, packSizesPointers, finishMode);
+    _mixer->SetCoderInfo(i, unpackSizesPointer, packSizesPointers);
   }
 
   if (outStream)
@@ -536,9 +530,7 @@ HRESULT CDecoder::Decode(
       progress2 = new CDecProgress(compressProgress);
 
     ISequentialOutStream *outStreamPointer = outStream;
-    return _mixer->Code(inStreamPointers, &outStreamPointer,
-        progress2 ? (ICompressProgressInfo *)progress2 : compressProgress,
-        dataAfterEnd_Error);
+    return _mixer->Code(inStreamPointers, &outStreamPointer, progress2 ? (ICompressProgressInfo *)progress2 : compressProgress);
   }
   
   #ifdef USE_MIXER_ST

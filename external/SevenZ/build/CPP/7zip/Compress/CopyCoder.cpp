@@ -15,11 +15,6 @@ CCopyCoder::~CCopyCoder()
   ::MidFree(_buf);
 }
 
-STDMETHODIMP CCopyCoder::SetFinishMode(UInt32 /* finishMode */)
-{
-  return S_OK;
-}
-
 STDMETHODIMP CCopyCoder::Code(ISequentialInStream *inStream,
     ISequentialOutStream *outStream,
     const UInt64 * /* inSize */, const UInt64 *outSize,

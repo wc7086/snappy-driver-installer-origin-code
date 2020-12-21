@@ -10,7 +10,7 @@
 
 #ifndef DEBUG_MEMORY_LEAK
 
-#ifdef _7ZIP_REDEFINE_OPERATOR_NEW
+#ifdef _WIN32
 
 /*
 void * my_new(size_t size)

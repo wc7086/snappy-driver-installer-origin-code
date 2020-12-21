@@ -23,7 +23,6 @@ const int kLenIdNeedInit = -2;
 
 class CCoder:
   public ICompressCoder,
-  public ICompressSetFinishMode,
   public ICompressGetInStreamProcessedSize,
   #ifndef NO_READ_FROM_CODER
   public ICompressSetInStream,
@@ -55,13 +54,6 @@ class CCoder:
   Int32 _remainLen;
   UInt32 _rep0;
 
-  bool _outSizeDefined;
-  UInt64 _outSize;
-  UInt64 _outStartPos;
-
-  void SetOutStreamSizeResume(const UInt64 *outSize);
-  UInt64 GetOutProcessedCur() const { return m_OutWindowStream.GetProcessedSize() - _outStartPos; }
-
   UInt32 ReadBits(unsigned numBits);
 
   bool DecodeLevels(Byte *levels, unsigned numSymbols);
@@ -82,7 +74,7 @@ class CCoder:
   };
   friend class CCoderReleaser;
 
-  HRESULT CodeSpec(UInt32 curSize, bool finishInputStream, UInt32 inputProgressLimit = 0);
+  HRESULT CodeSpec(UInt32 curSize, bool finishInputStream);
 public:
   bool ZlibMode;
   Byte ZlibFooter[4];
@@ -98,27 +90,25 @@ public:
   bool IsFinished() const { return _remainLen == kLenIdFinished;; }
   bool IsFinalBlock() const { return m_FinalBlock; }
 
-  HRESULT CodeReal(ISequentialOutStream *outStream, ICompressProgressInfo *progress);
-
-  MY_QUERYINTERFACE_BEGIN2(ICompressCoder)
-  MY_QUERYINTERFACE_ENTRY(ICompressSetFinishMode)
-  MY_QUERYINTERFACE_ENTRY(ICompressGetInStreamProcessedSize)
+  HRESULT CodeReal(ISequentialOutStream *outStream,
+      const UInt64 *outSize, ICompressProgressInfo *progress);
 
   #ifndef NO_READ_FROM_CODER
-  MY_QUERYINTERFACE_ENTRY(ICompressSetInStream)
-  MY_QUERYINTERFACE_ENTRY(ICompressSetOutStreamSize)
-  MY_QUERYINTERFACE_ENTRY(ISequentialInStream)
+  MY_UNKNOWN_IMP5(
+      ICompressCoder,
+      ICompressGetInStreamProcessedSize,
+      ICompressSetInStream,
+      ICompressSetOutStreamSize,
+      ISequentialInStream
+      )
+  #else
+  MY_UNKNOWN_IMP2(
+      ICompressCoder,
+      ICompressGetInStreamProcessedSize)
   #endif
-
-  MY_QUERYINTERFACE_END
-  MY_ADDREF_RELEASE
-
 
   STDMETHOD(Code)(ISequentialInStream *inStream, ISequentialOutStream *outStream,
       const UInt64 *inSize, const UInt64 *outSize, ICompressProgressInfo *progress);
-
-  STDMETHOD(SetFinishMode)(UInt32 finishMode);
-  STDMETHOD(GetInStreamProcessedSize)(UInt64 *value);
 
   STDMETHOD(SetInStream)(ISequentialInStream *inStream);
   STDMETHOD(ReleaseInStream)();
@@ -128,9 +118,19 @@ public:
   STDMETHOD(Read)(void *data, UInt32 size, UInt32 *processedSize);
   #endif
 
-  HRESULT CodeResume(ISequentialOutStream *outStream, const UInt64 *outSize, ICompressProgressInfo *progress);
+  STDMETHOD(CodeResume)(ISequentialOutStream *outStream, const UInt64 *outSize, ICompressProgressInfo *progress);
 
-  HRESULT InitInStream(bool needInit);
+  HRESULT InitInStream(bool needInit)
+  {
+    if (!m_InBitStream.Create(1 << 17))
+      return E_OUTOFMEMORY;
+    if (needInit)
+    {
+      m_InBitStream.Init();
+      _needInitInStream = false;
+    }
+    return S_OK;
+  }
 
   void AlignToByte() { m_InBitStream.AlignToByte(); }
   Byte ReadAlignedByte();
@@ -143,6 +143,9 @@ public:
 
   UInt64 GetStreamSize() const { return m_InBitStream.GetStreamSize(); }
   UInt64 GetInputProcessedSize() const { return m_InBitStream.GetProcessedSize(); }
+
+  // IGetInStreamProcessedSize
+  STDMETHOD(GetInStreamProcessedSize)(UInt64 *value);
 };
 
 class CCOMCoder     : public CCoder { public: CCOMCoder(): CCoder(false) {} };

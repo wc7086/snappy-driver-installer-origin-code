@@ -97,11 +97,12 @@ FString GetModuleDirPrefix()
   {
     int pos = s.ReverseFind_PathSepar();
     if (pos >= 0)
+    {
       s.DeleteFrom(pos + 1);
+      return s;
+    }
   }
-  if (s.IsEmpty())
-    s = "." STRING_PATH_SEPARATOR;
-  return s;
+  return FTEXT(".") FSTRING_PATH_SEPARATOR;
 }
 
 #endif

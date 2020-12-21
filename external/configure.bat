@@ -14,10 +14,10 @@ set c_do=0D
 set c_skip=02
 
 rem Versions
-rem boost 1.64.0 19 Apr 2017
-set BOOST_VER=1_64_0
-set BOOST_VER2=1.64.0
-set BOOST_VER3=1_64
+rem boost 1.65.0 21 Aug 2017
+set BOOST_VER=1_65_0
+set BOOST_VER2=1.65.0
+set BOOST_VER3=1_65
 
 rem libtorrent 1.0.11 5 Feb 2017
 set LIBTORRENT_VER2=1.0.11
@@ -26,19 +26,21 @@ set LIBTORRENT_VER=1_0_11
 rem libwebp 0.6.1 29 Nov 2017
 set LIBWEBP_VER=0.6.1
 
-rem mingw-w64 7.3.0 post 10 Nov 2019
+rem mingw-w64 7.3.0 25 Jan 2018
 set GCC_VERSION=7.3.0
 set GCC_VERSION2=73
 
 set MSVC_VERSION=12.0
 
+set MINGW_PATH=C:\mingw
+
 rem GCC 32-bit
-set GCC_PATH=c:\mingw\mingw32
+set GCC_PATH=%MINGW_PATH%\mingw32
 set GCC_PREFIX1=/i686-w64-mingw32
 set GCC_PREFIX=\i686-w64-mingw32
 
 rem GCC 64-bit
-set GCC64_PATH=c:\mingw\mingw64
+set GCC64_PATH=%MINGW_PATH%\mingw64
 set GCC64_PREFIX1=/x86_64-w64-mingw32
 set GCC64_PREFIX=\x86_64-w64-mingw32
 
@@ -124,7 +126,7 @@ goto mainmenu
 :buildboost
 rem Install BOOST (32-bit)
 if /I exist "%BOOST_INSTALL_PATH%\include\boost\version.hpp" (call :ColorText %c_skip% "Skipping installing BOOST32"&echo. & goto skipinstallboost32)
-call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
+if %BOOST_VER2% LSS 1.65.0 (call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y)
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
 rem BOOST_USE_WINAPI_VERSION=0x0501 = Win XP
@@ -157,59 +159,29 @@ tasklist /FI "IMAGENAME eq g++.exe" 2>NUL | find /I /N "g++.exe" >NUL 2>NUL
 if %ERRORLEVEL%==0 taskkill /im g++.exe /f /t
 echo.
 
-echo|set /p=Deleting...
-
-rem del libtorrent
+echo Deleting libtorrent
 rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\libtorrent" 2>nul
-echo|set /p=.
 rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\libtorrent" 2>nul
-echo|set /p=.
 del %LIBTORREN32% 2>nul
-echo|set /p=.
 del "%GCC_PATH%%GCC_PREFIX%\lib\libtorrent_dbg.a" 2>nul
-echo|set /p=.
 del %LIBTORREN64% 2>nul
-echo|set /p=.
 del "%GCC64_PATH%%GCC64_PREFIX%\lib\libtorrent_dbg.a" 2>nul
-echo|set /p=.
 del %LIBBOOST32% 2>nul
-echo|set /p=.
 del %LIBBOOST64% 2>nul
-echo|set /p=.
-rd /S /Q "%LIBTORRENT_PATH%\bin" 2>nul
-echo|set /p=.
-rd /S /Q "%LIBTORRENT_PATH%\examples\bin" 2>nul
-echo|set /p=.
+rd /S /Q "%LIBTORRENT_PATH%"
 
-rem del webp
+echo Deleting webp
 rd /S /Q "%GCC_PATH%%GCC_PREFIX%\include\webp" 2>nul
-echo|set /p=.
 rd /S /Q "%GCC64_PATH%%GCC64_PREFIX%\include\webp" 2>nul
-echo|set /p=.
 del "%GCC_PATH%%GCC_PREFIX%\lib\libwebp.*" 2>nul
-echo|set /p=.
 del "%GCC64_PATH%%GCC64_PREFIX%\lib\libwebp.*" 2>nul
-echo|set /p=.
 rd /S /Q "%MSYS_PATH%\home\libwebp-%LIBWEBP_VER%" 2>nul
-echo|set /p=.
 del "%MSYS_PATH%\makewebp.bat" 2>nul
-echo|set /p=.
 del "%MSYS_PATH%\home\makewebp.bat" 2>nul
-echo|set /p=.
 del "%MSYS_PATH%\home\libwebp-%LIBWEBP_VER%.tar.gz" 2>nul
-echo|set /p=.
 
-rem del BOOST
-rd /S /Q "%BOOST_ROOT%\bin.v2" 2>nul
-echo|set /p=.
-rd /S /Q "%BOOST_ROOT%\libs\config\checks\architecture\bin" 2>nul
-echo|set /p=.
-rd /S /Q "%BOOST_ROOT%\tools\build\src\engine\bin.ntx86" 2>nul
-echo|set /p=.
-del "%BOOST_ROOT%\bjam.exe" 2>nul
-echo|set /p=.
-del "%BOOST_ROOT%\b2.exe" 2>nul
-echo|set /p=.
+echo Deleting boost
+rd /S /Q "%BOOST_ROOT%"
 
 call :ColorText %c_done% "DONE"
 echo.
@@ -226,7 +198,7 @@ if %TOOLSET%==gcc echo GCC (64 bit):  %GCC64_PATH%
 echo MSYS:          %MSYS_PATH%
 echo WebP:          %WEBP_PATH%
 echo libtorrent:    %LIBTORRENT_PATH%
-echo BOOST_scr:     %BOOST_ROOT%
+echo BOOST_src:     %BOOST_ROOT%
 echo BOOST_dest:    %BOOST_INSTALL_PATH%
 echo BOOST64_dest:  %BOOST64_INSTALL_PATH%
 echo.
@@ -331,7 +303,7 @@ call :ColorText %c_do% "Downloading BOOST"&echo.
 %MSYS_BIN%\wget http://sourceforge.net/projects/boost/files/boost/%BOOST_VER2%/boost_%BOOST_VER%.tar.gz/download -Oboost_%BOOST_VER%.tar.gz
 :skipdownloadboost
 if /I not exist "%BOOST_ROOT%\boost.png" (%MSYS_BIN%\tar -xf "boost_%BOOST_VER%.tar.gz" -v)
-call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y >nul
+if %BOOST_VER2% LSS 1.65.0 (call :copyecho "libtorrent_patch\socket_types.hpp" "%BOOST_ROOT%\boost\asio\detail\socket_types.hpp" /Y)
 
 rem download libtorrent
 if /I exist "libtorrent-rasterbar-%LIBTORRENT_VER%.tar.gz" (call :ColorText %c_skip% "Skipping downloading libtorrent"&echo. & goto skipdownloadlibtorrent)
@@ -410,7 +382,9 @@ call :ColorText %c_skip% "Skipping building libtorrent[32-bit]"&echo.
 goto skipbuildlibtorrent
 :buildtorrent32
 call :ColorText %c_do% "Building libtorrent32"&echo.
-call :copyecho "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
+if %LIBTORRENT_VER2% LSS 1.1.0 (call :copyecho "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y)
+if %LIBTORRENT_VER2% GEQ 1.1.0 (call :copyecho "libtorrent_patch\Jamfile_fixed_110" "%LIBTORRENT_PATH%\examples\Jamfile" /Y)
+if %BOOST_VER2% GEQ 1.65.0 (call :copyecho "libtorrent_patch\export.hpp" "%LIBTORRENT_PATH%\include\libtorrent\export.hpp" /Y)
 pushd "%LIBTORRENT_PATH%\examples"
 
 bjam --abbreviate-paths client_test -j%NUMBER_OF_PROCESSORS% toolset=%TOOLSET% rls exception-handling=on %EXTRA_OPTIONS% define=BOOST_USE_WINAPI_VERSION=0x0501
@@ -437,7 +411,9 @@ call :ColorText %c_skip% "Skipping building libtorrent[64-bit]"&echo.
 goto skipbuildlibtorrent64
 :buildtorrent64
 call :ColorText %c_do% "Building libtorrent64"&echo.
-call :copyecho "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y
+if %LIBTORRENT_VER2% LSS 1.1.0 (call :copyecho "libtorrent_patch\Jamfile_fixed" "%LIBTORRENT_PATH%\examples\Jamfile" /Y)
+if %LIBTORRENT_VER2% GEQ 1.1.0 (call :copyecho "libtorrent_patch\Jamfile_fixed_110" "%LIBTORRENT_PATH%\examples\Jamfile" /Y)
+if %BOOST_VER2% GEQ 1.65.0 (call :copyecho "libtorrent_patch\export.hpp" "%LIBTORRENT_PATH%\include\libtorrent\export.hpp" /Y)
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 pushd "%LIBTORRENT_PATH%\examples"

@@ -9,7 +9,9 @@
 #include "StringConvert.h"
 #include "UTFConvert.h"
 
-#define kFileOpenMode "wt"
+static const char kNewLineChar =  '\n';
+
+static const char *kFileOpenMode = "wt";
 
 extern int g_CodePage;
 
@@ -42,7 +44,7 @@ bool CStdOutStream::Flush() throw()
 
 CStdOutStream & endl(CStdOutStream & outStream) throw()
 {
-  return outStream << '\n';
+  return outStream << kNewLineChar;
 }
 
 CStdOutStream & CStdOutStream::operator<<(const wchar_t *s)

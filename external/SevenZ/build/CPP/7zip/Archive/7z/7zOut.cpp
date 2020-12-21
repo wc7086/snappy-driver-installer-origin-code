@@ -330,11 +330,13 @@ void COutArchive::WritePropBoolVector(Byte id, const CBoolVector &boolVector)
   WriteBoolVector(boolVector);
 }
 
-unsigned BoolVector_CountSum(const CBoolVector &v);
-
 void COutArchive::WriteHashDigests(const CUInt32DefVector &digests)
 {
-  const unsigned numDefined = BoolVector_CountSum(digests.Defs);
+  unsigned numDefined = 0;
+  unsigned i;
+  for (i = 0; i < digests.Defs.Size(); i++)
+    if (digests.Defs[i])
+      numDefined++;
   if (numDefined == 0)
     return;
 
@@ -346,8 +348,7 @@ void COutArchive::WriteHashDigests(const CUInt32DefVector &digests)
     WriteByte(0);
     WriteBoolVector(digests.Defs);
   }
-  
-  for (unsigned i = 0; i < digests.Defs.Size(); i++)
+  for (i = 0; i < digests.Defs.Size(); i++)
     if (digests.Defs[i])
       WriteUInt32(digests.Vals[i]);
 }
@@ -452,12 +453,10 @@ void COutArchive::WriteSubStreamsInfo(const CObjectVector<CFolder> &folders,
 
 // 7-Zip 4.50 - 4.58 contain BUG, so they do not support .7z archives with Unknown field.
 
-void COutArchive::SkipToAligned(unsigned pos, unsigned alignShifts)
+void COutArchive::SkipAlign(unsigned pos, unsigned alignSize)
 {
   if (!_useAlign)
     return;
-
-  const unsigned alignSize = (unsigned)1 << alignShifts;
   pos += (unsigned)GetPos();
   pos &= (alignSize - 1);
   if (pos == 0)
@@ -472,11 +471,11 @@ void COutArchive::SkipToAligned(unsigned pos, unsigned alignShifts)
     WriteByte(0);
 }
 
-void COutArchive::WriteAlignedBools(const CBoolVector &v, unsigned numDefined, Byte type, unsigned itemSizeShifts)
+void COutArchive::WriteAlignedBoolHeader(const CBoolVector &v, unsigned numDefined, Byte type, unsigned itemSize)
 {
   const unsigned bvSize = (numDefined == v.Size()) ? 0 : Bv_GetSizeInBytes(v);
-  const UInt64 dataSize = ((UInt64)numDefined << itemSizeShifts) + bvSize + 2;
-  SkipToAligned(3 + (unsigned)bvSize + (unsigned)GetBigNumberSize(dataSize), itemSizeShifts);
+  const UInt64 dataSize = (UInt64)numDefined * itemSize + bvSize + 2;
+  SkipAlign(3 + (unsigned)bvSize + (unsigned)GetBigNumberSize(dataSize), itemSize);
 
   WriteByte(type);
   WriteNumber(dataSize);
@@ -487,18 +486,24 @@ void COutArchive::WriteAlignedBools(const CBoolVector &v, unsigned numDefined, B
     WriteByte(0);
     WriteBoolVector(v);
   }
-  WriteByte(0); // 0 means no switching to external stream
+  WriteByte(0);
 }
 
 void COutArchive::WriteUInt64DefVector(const CUInt64DefVector &v, Byte type)
 {
-  const unsigned numDefined = BoolVector_CountSum(v.Defs);
+  unsigned numDefined = 0;
+
+  unsigned i;
+  for (i = 0; i < v.Defs.Size(); i++)
+    if (v.Defs[i])
+      numDefined++;
+
   if (numDefined == 0)
     return;
 
-  WriteAlignedBools(v.Defs, numDefined, type, 3);
+  WriteAlignedBoolHeader(v.Defs, numDefined, type, 8);
   
-  for (unsigned i = 0; i < v.Defs.Size(); i++)
+  for (i = 0; i < v.Defs.Size(); i++)
     if (v.Defs[i])
       WriteUInt64(v.Vals[i]);
 }
@@ -515,7 +520,7 @@ HRESULT COutArchive::EncodeStream(
   outFolders.FolderUnpackCRCs.Vals.Add(CrcCalc(data, data.Size()));
   // outFolders.NumUnpackStreamsVector.Add(1);
   UInt64 dataSize64 = data.Size();
-  UInt64 unpackSize = data.Size();
+  UInt64 unpackSize;
   RINOK(encoder.Encode(
       EXTERNAL_CODECS_LOC_VARS
       stream,
@@ -643,7 +648,7 @@ void COutArchive::WriteHeader(
     if (numDefined > 0)
     {
       namesDataSize++;
-      SkipToAligned(2 + GetBigNumberSize(namesDataSize), 4);
+      SkipAlign(2 + GetBigNumberSize(namesDataSize), 16);
 
       WriteByte(NID::kName);
       WriteNumber(namesDataSize);
@@ -668,15 +673,28 @@ void COutArchive::WriteHeader(
   
   {
     /* ---------- Write Attrib ---------- */
-    const unsigned numDefined = BoolVector_CountSum(db.Attrib.Defs);
+    CBoolVector boolVector;
+    boolVector.ClearAndSetSize(db.Files.Size());
+    unsigned numDefined = 0;
+    
+    {
+      FOR_VECTOR (i, db.Files)
+      {
+        bool defined = db.Files[i].AttribDefined;
+        boolVector[i] = defined;
+        if (defined)
+          numDefined++;
+      }
+    }
     
     if (numDefined != 0)
     {
-      WriteAlignedBools(db.Attrib.Defs, numDefined, NID::kWinAttrib, 2);
-      FOR_VECTOR (i, db.Attrib.Defs)
+      WriteAlignedBoolHeader(boolVector, numDefined, NID::kWinAttrib, 4);
+      FOR_VECTOR (i, db.Files)
       {
-        if (db.Attrib.Defs[i])
-          WriteUInt32(db.Attrib.Vals[i]);
+        const CFileItem &file = db.Files[i];
+        if (file.AttribDefined)
+          WriteUInt32(file.Attrib);
       }
     }
   }
@@ -684,8 +702,18 @@ void COutArchive::WriteHeader(
   /*
   {
     // ---------- Write IsAux ----------
-    if (BoolVector_CountSum(db.IsAux) != 0)
-      WritePropBoolVector(NID::kIsAux, db.IsAux);
+    unsigned numAux = 0;
+    const CBoolVector &isAux = db.IsAux;
+    for (i = 0; i < isAux.Size(); i++)
+      if (isAux[i])
+        numAux++;
+    if (numAux > 0)
+    {
+      const unsigned bvSize = Bv_GetSizeInBytes(isAux);
+      WriteByte(NID::kIsAux);
+      WriteNumber(bvSize);
+      WriteBoolVector(isAux);
+    }
   }
 
   {
@@ -706,10 +734,10 @@ void COutArchive::WriteHeader(
     }
     if (numParentLinks > 0)
     {
-      // WriteAlignedBools(boolVector, numDefined, NID::kParent, 2);
+      // WriteAlignedBoolHeader(boolVector, numDefined, NID::kParent, 4);
       const unsigned bvSize = (numIsDir == boolVector.Size()) ? 0 : Bv_GetSizeInBytes(boolVector);
       const UInt64 dataSize = (UInt64)db.Files.Size() * 4 + bvSize + 1;
-      SkipToAligned(2 + (unsigned)bvSize + (unsigned)GetBigNumberSize(dataSize), 2);
+      SkipAlign(2 + (unsigned)bvSize + (unsigned)GetBigNumberSize(dataSize), 4);
       
       WriteByte(NID::kParent);
       WriteNumber(dataSize);
@@ -737,7 +765,7 @@ void COutArchive::WriteHeader(
     // secureDataSize += db.SecureIDs.Size() * 4;
     for (i = 0; i < db.SecureIDs.Size(); i++)
       secureDataSize += GetBigNumberSize(db.SecureIDs[i]);
-    SkipToAligned(2 + GetBigNumberSize(secureDataSize), 2);
+    SkipAlign(2 + GetBigNumberSize(secureDataSize), 4);
     WriteByte(NID::kNtSecure);
     WriteNumber(secureDataSize);
     WriteByte(0);
@@ -860,18 +888,6 @@ HRESULT COutArchive::WriteDatabase(
   }
 }
 
-void CUInt32DefVector::SetItem(unsigned index, bool defined, UInt32 value)
-{
-  while (index >= Defs.Size())
-    Defs.Add(false);
-  Defs[index] = defined;
-  if (!defined)
-    return;
-  while (index >= Vals.Size())
-    Vals.Add(0);
-  Vals[index] = value;
-}
-
 void CUInt64DefVector::SetItem(unsigned index, bool defined, UInt64 value)
 {
   while (index >= Defs.Size())
@@ -891,7 +907,6 @@ void CArchiveDatabaseOut::AddFile(const CFileItem &file, const CFileItem2 &file2
   ATime.SetItem(index, file2.ATimeDefined, file2.ATime);
   MTime.SetItem(index, file2.MTimeDefined, file2.MTime);
   StartPos.SetItem(index, file2.StartPosDefined, file2.StartPos);
-  Attrib.SetItem(index, file2.AttribDefined, file2.Attrib);
   SetItem_Anti(index, file2.IsAnti);
   // SetItem_Aux(index, file2.IsAux);
   Names.Add(name);

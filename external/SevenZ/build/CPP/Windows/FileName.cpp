@@ -87,8 +87,8 @@ bool IsAltPathPrefix(CFSTR s) throw()
 
 #if defined(_WIN32) && !defined(UNDER_CE)
 
-const char * const kSuperPathPrefix = "\\\\?\\";
-static const char * const kSuperUncPrefix = "\\\\?\\UNC\\";
+const wchar_t *kSuperPathPrefix = L"\\\\?\\";
+static const wchar_t *kSuperUncPrefix = L"\\\\?\\UNC\\";
 
 #define IS_DEVICE_PATH(s)          (IS_SEPAR((s)[0]) && IS_SEPAR((s)[1]) && (s)[2] == '.' && IS_SEPAR((s)[3]))
 #define IS_SUPER_PREFIX(s)         (IS_SEPAR((s)[0]) && IS_SEPAR((s)[1]) && (s)[2] == '?' && IS_SEPAR((s)[3]))
@@ -109,7 +109,7 @@ bool IsDevicePath(CFSTR s) throw()
   /*
   // actually we don't know the way to open device file in WinCE.
   unsigned len = MyStringLen(s);
-  if (len < 5 || len > 5 || !IsString1PrefixedByString2(s, "DSK"))
+  if (len < 5 || len > 5 || memcmp(s, FTEXT("DSK"), 3 * sizeof(FChar)) != 0)
     return false;
   if (s[4] != ':')
     return false;
@@ -123,7 +123,7 @@ bool IsDevicePath(CFSTR s) throw()
   unsigned len = MyStringLen(s);
   if (len == 6 && s[5] == ':')
     return true;
-  if (len < 18 || len > 22 || !IsString1PrefixedByString2(s + kDevicePathPrefixSize, "PhysicalDrive"))
+  if (len < 18 || len > 22 || memcmp(s + kDevicePathPrefixSize, FTEXT("PhysicalDrive"), 13 * sizeof(FChar)) != 0)
     return false;
   for (unsigned i = 17; i < len; i++)
     if (s[i] < '0' || s[i] > '9')
@@ -191,12 +191,14 @@ bool IsSuperPath(CFSTR s) throw() { return IS_SUPER_PREFIX(s); }
 bool IsSuperOrDevicePath(CFSTR s) throw() { return IS_SUPER_OR_DEVICE_PATH(s); }
 #endif // USE_UNICODE_FSTRING
 
-bool IsDrivePath_SuperAllowed(CFSTR s) throw()
+/*
+bool IsDrivePath_SuperAllowed(CFSTR s)
 {
   if (IsSuperPath(s))
     s += kSuperPathPrefixSize;
   return IsDrivePath(s);
 }
+*/
 
 bool IsDriveRootPath_SuperAllowed(CFSTR s) throw()
 {
@@ -210,7 +212,7 @@ bool IsAbsolutePath(const wchar_t *s) throw()
   return IS_SEPAR(s[0]) || IsDrivePath2(s);
 }
 
-int FindAltStreamColon(CFSTR path) throw()
+int FindAltStreamColon(CFSTR path)
 {
   unsigned i = 0;
   if (IsDrivePath2(path))
@@ -272,7 +274,7 @@ static unsigned GetRootPrefixSize_Of_SuperPath(CFSTR s)
   return kSuperPathPrefixSize + pos + 1;
 }
 
-unsigned GetRootPrefixSize(CFSTR s) throw()
+unsigned GetRootPrefixSize(CFSTR s)
 {
   if (IS_DEVICE_PATH(s))
     return kDevicePathPrefixSize;
@@ -283,7 +285,7 @@ unsigned GetRootPrefixSize(CFSTR s) throw()
 
 #endif // USE_UNICODE_FSTRING
 
-static unsigned GetRootPrefixSize_Of_NetworkPath(const wchar_t *s) throw()
+static unsigned GetRootPrefixSize_Of_NetworkPath(const wchar_t *s)
 {
   // Network path: we look "server\path\" as root prefix
   int pos = FindSepar(s);
@@ -295,7 +297,7 @@ static unsigned GetRootPrefixSize_Of_NetworkPath(const wchar_t *s) throw()
   return pos + pos2 + 2;
 }
 
-static unsigned GetRootPrefixSize_Of_SimplePath(const wchar_t *s) throw()
+static unsigned GetRootPrefixSize_Of_SimplePath(const wchar_t *s)
 {
   if (IsDrivePath(s))
     return kDrivePrefixSize;
@@ -307,7 +309,7 @@ static unsigned GetRootPrefixSize_Of_SimplePath(const wchar_t *s) throw()
   return (size == 0) ? 0 : 2 + size;
 }
 
-static unsigned GetRootPrefixSize_Of_SuperPath(const wchar_t *s) throw()
+static unsigned GetRootPrefixSize_Of_SuperPath(const wchar_t *s)
 {
   if (IS_UNC_WITH_SLASH(s + kSuperPathPrefixSize))
   {
@@ -626,7 +628,7 @@ static bool GetSuperPathBase(CFSTR s, UString &res)
 
   unsigned fixedSizeStart = 0;
   unsigned fixedSize = 0;
-  const char *superMarker = NULL;
+  const wchar_t *superMarker = NULL;
   if (IsSuperPath(curDir))
   {
     fixedSize = GetRootPrefixSize_Of_SuperPath(curDir);
