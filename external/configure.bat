@@ -23,12 +23,15 @@ rem libtorrent 1.0.11 5 Feb 2017
 set LIBTORRENT_VER2=1.0.11
 set LIBTORRENT_VER=1_0_11
 
-rem libwebp 0.6.1 29 Nov 2017
-set LIBWEBP_VER=0.6.1
+rem libwebp 1.1.0 6 Jan 2020
+set LIBWEBP_VER=1.1.0
 
-rem mingw-w64 7.3.0 25 Jan 2018
+rem mingw-w64 7.3.0 10 Nov 2019
 set GCC_VERSION=7.3.0
 set GCC_VERSION2=73
+
+set GCC_VERSION=8.1.0
+set GCC_VERSION2=81
 
 set MSVC_VERSION=12.0
 
@@ -130,7 +133,7 @@ if %BOOST_VER2% LSS 1.65.0 (call :copyecho "libtorrent_patch\socket_types.hpp" "
 pushd %BOOST_ROOT%
 call :ColorText %c_do% "Installing BOOST32"&echo.
 rem BOOST_USE_WINAPI_VERSION=0x0501 = Win XP
-bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH% define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST_INSTALL_PATH% define=BOOST_USE_WINAPI_VERSION=0x0501 define=BOOST_USE_NTDDI_VERSION=0x05010000
 popd
 :skipinstallboost32
 
@@ -140,7 +143,7 @@ pushd %BOOST_ROOT%
 set oldpath=%path%
 set path=%GCC64_PATH%\bin;%BOOST_ROOT%;%MSYS_BIN%;%path%
 call :ColorText %c_do% "Installing BOOST64"&echo.
-bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64 define=BOOST_USE_WINAPI_VERSION=0x0501
+bjam.exe install toolset=%TOOLSET% release --layout=tagged -j%NUMBER_OF_PROCESSORS% --prefix=%BOOST64_INSTALL_PATH% address-model=64 define=BOOST_USE_WINAPI_VERSION=0x0501 define=BOOST_USE_NTDDI_VERSION=0x05010000
 set path=%oldpath%
 popd
 :skipinstallboost64

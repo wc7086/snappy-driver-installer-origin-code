@@ -125,7 +125,7 @@ public:
 //}
 
 //{ Misc functions
-void *mySzAlloc(void *p,size_t size)
+void *mySzAlloc(ISzAllocPtr p,size_t size)
 {
     UNREFERENCED_PARAMETER(p);
 
@@ -149,7 +149,7 @@ void *mySzAlloc(void *p,size_t size)
 
 }
 
-void mySzFree(void *p,void *address)
+void mySzFree(ISzAllocPtr p,void *address)
 {
     UNREFERENCED_PARAMETER(p);
 
@@ -1130,7 +1130,7 @@ void Merger::find_dups()
 int Driverpack::genindex()
 {
     CFileInStream archiveStream;
-    CLookToRead lookStream;
+    CLookToRead2 lookStream;
 
     wchar_t fullname[BUFLEN];
     WStringShort infpath;
@@ -1142,9 +1142,9 @@ int Driverpack::genindex()
     if(InFile_OpenW(&archiveStream.file,name.Get()))return 1;
 
     FileInStream_CreateVTable(&archiveStream);
-    LookToRead_CreateVTable(&lookStream,False);
-    lookStream.realStream=&archiveStream.s;
-    LookToRead_Init(&lookStream);
+    LookToRead2_CreateVTable(&lookStream,False);
+    lookStream.realStream=&archiveStream.vt;
+    LookToRead2_Init(&lookStream);
 
     ISzAlloc allocImp;
     ISzAlloc allocTempImp;
@@ -1153,9 +1153,12 @@ int Driverpack::genindex()
     allocTempImp.Alloc=SzAllocTemp;
     allocTempImp.Free=SzFreeTemp;
 
+    lookStream.bufSize=1<<14;
+    lookStream.buf=((Byte*)(new Byte[lookStream.bufSize]));
+
     CSzArEx db;
     SzArEx_Init(&db);
-    SRes res=SzArEx_Open(&db,&lookStream.s,&allocImp,&allocTempImp);
+    SRes res=SzArEx_Open(&db,&lookStream.vt,&allocImp,&allocTempImp);
     int cc=0;
     if(res==SZ_OK)
     {
@@ -1194,7 +1197,7 @@ int Driverpack::genindex()
                 //Log.print_con("{");
 
             tryagain:
-                res=SzArEx_Extract(&db,&lookStream.s,i,
+                res=SzArEx_Extract(&db,&lookStream.vt,i,
                                    &blockIndex,&outBuffer,&outBufferSize,
                                    &offset,&outSizeProcessed,
                                    &allocImp,&allocTempImp);
@@ -1232,6 +1235,7 @@ int Driverpack::genindex()
     {
         Log.print_err("ERROR with %S:%d\n",getFilename(),res);
     }
+    delete[](Byte*)(lookStream.buf);
     SzArEx_Free(&db,&allocImp);
     File_Close(&archiveStream.file);
     return 1;

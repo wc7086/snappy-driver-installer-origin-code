@@ -34,6 +34,7 @@ class concurrent_queue;
 #include <set>
 #include <list>
 #include <unordered_map>
+#include <7ztypes.h>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -83,8 +84,8 @@ enum DRIVERPACK_TYPE
 
 // Misc functions
 void findosattr(char *bufa,const char *adr,size_t len);
-void *mySzAlloc(void *p,size_t size);
-void mySzFree(void *p,void *address);
+void *mySzAlloc(ISzAllocPtr p,size_t size);
+void mySzFree(ISzAllocPtr p,void *address);
 
 // Driverpack_task
 class driverpack_task
