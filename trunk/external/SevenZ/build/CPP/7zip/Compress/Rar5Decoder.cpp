@@ -196,6 +196,8 @@ HRESULT CDecoder::ExecuteFilter(const CFilter &f)
 
     default:
       _unsupportedFilter = true;
+      memset(_filterSrc, 0, f.Size);
+      // return S_OK;  // unrar
   }
 
   return WriteData(useDest ?
@@ -301,7 +303,11 @@ HRESULT CDecoder::AddFilter(CBitDecoder &_bitStream)
   UInt32 blockStart = ReadUInt32(_bitStream);
   f.Size = ReadUInt32(_bitStream);
 
-  // if (f.Size > ((UInt32)1 << 16)) _unsupportedFilter = true;
+  if (f.Size > ((UInt32)1 << 22))
+  {
+    _unsupportedFilter = true;
+    f.Size = 0;  // unrar 5.5.5
+  }
 
   f.Type = (Byte)_bitStream.ReadBits9fix(3);
   f.Channels = 0;
@@ -448,7 +454,7 @@ HRESULT CDecoder::ReadTables(CBitDecoder &_bitStream)
           // return S_FALSE;
           continue; // original unRAR
         }
-        Byte v = lens[i - 1];
+        Byte v = lens[(size_t)i - 1];
         do
           lens[i++] = v;
         while (i < num);
@@ -475,7 +481,7 @@ HRESULT CDecoder::ReadTables(CBitDecoder &_bitStream)
   _useAlignBits = false;
   // _useAlignBits = true;
   for (i = 0; i < kAlignTableSize; i++)
-    if (lens[kMainTableSize + kDistTableSize + i] != kNumAlignBits)
+    if (lens[kMainTableSize + kDistTableSize + (size_t)i] != kNumAlignBits)
     {
       _useAlignBits = true;
       break;

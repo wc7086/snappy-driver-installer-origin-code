@@ -1,4 +1,4 @@
 echo qwe
-rm -rf libwebp-0.6.1
-tar -xf libwebp-0.6.1.tar.gz
-cd libwebp-0.6.1
+rm -rf libwebp-1.1.0
+tar -xf libwebp-1.1.0.tar.gz
+cd libwebp-1.1.0
