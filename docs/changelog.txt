@@ -6,10 +6,15 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.10.1.730
+1 April 2021
+* Driver Packs 21.03.1
+* Translations
+
 Version 1.10.0.729
+5 February 2021
 I'm unable to get boost/libtorrent updated beyond these versions. If anyone
 knows how to do this please let me know.
-5 February 2021
 * Driver Packs 21.02.01
 * Translations
 * Tools updated as follows:
