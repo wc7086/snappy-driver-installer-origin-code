@@ -30,9 +30,6 @@ rem mingw-w64 7.3.0 10 Nov 2019
 set GCC_VERSION=7.3.0
 set GCC_VERSION2=73
 
-set GCC_VERSION=8.1.0
-set GCC_VERSION2=81
-
 set MSVC_VERSION=12.0
 
 set MINGW_PATH=C:\mingw

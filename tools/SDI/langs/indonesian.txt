@@ -256,7 +256,7 @@ STR_RESTOREPOINT_H            = "Membuat sebuah restore point agar dapat kembali
 STR_REST_SCHEDULE             = "Menjadwalkan membuat sebuah restore point"
 STR_REST_ROLLBACK             = "Mundur ke restore point yang sudah ada..."
 STR_REST_SYSPROPS             = "Buka System Properties..."
-STR_SYSPROPS_ADV              = "Advanced System Properties"
+STR_SYSPROPS_ADV              = "Properti Sistem Lanjutan"
 STR_REST_CREATING             = "Membuat restore point..."
 STR_REST_CREATED              = "Restore point telah dibuat"
 STR_REST_FAILED               = "Gagal untuk membuat sebuah restore point"
@@ -427,7 +427,7 @@ STR_WELCOME_CLOSE             = "Menutup"
 STR_USBWIZ_TITLE              = "Membuat USB Drive"
 STR_USBWIZ_SPACEREQ           = "Ruang yang dibutuhkan:"
 STR_USBWIZ_SPACEAVAIL         = "Ruang yang Tersedia:"
-STR_USBWIZ_PAGE1_DESC         = "This wizard will help you create a portable USB drive containing Snappy Driver Installer Origin and selected files.\n\nThe files will be copied to the root directory of the selected device. You should ensure the device has sufficient capacity to store the required files. You will be given the option to clear the device first."
+STR_USBWIZ_PAGE1_DESC         = "Wizard ini akan membantu Anda membuat drive USB portabel yang berisi Snappy Driver Installer Origin dan file yang dipilih. \n\nFile tersebut akan disalin ke direktori root dari perangkat yang dipilih. Anda harus memastikan perangkat memiliki kapasitas yang cukup untuk menyimpan file yang diperlukan. Anda akan diberikan opsi untuk menghapus perangkat terlebih dahulu."
 
 // USB Wizard - page 2
 STR_USBWIZ_PAGE2_TITLE        = "Pilih Drive"
