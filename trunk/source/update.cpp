@@ -966,7 +966,7 @@ void UpdateDialog_t::setFilePriority(const wchar_t *name,int pri)
 
 void UpdateDialog_t::openDialog()
 {
-    DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),MainWindow.hMain,(DLGPROC)UpdateProcedure);
+        DialogBox(ghInst,MAKEINTRESOURCE(IDD_DIALOG2),MainWindow.hMain,(DLGPROC)UpdateProcedure);
 }
 //}
 
@@ -1832,6 +1832,15 @@ unsigned int __stdcall UpdaterImp::thread_download(void *arg)
     // successfully downloaded the torrent
     // notify main window
     PostMessage(MainWindow.hMain,WM_TORRENT,0,TorrentResults);
+
+    // when run with /autoupdate parameter and nothing to download
+    // openDialog locks up - possibly invisible modal dialog
+    if(Settings.flags&FLAG_AUTOUPDATE&&TorrentResults==0)
+    {
+        finishedupdating=1;
+        monitor_pause=0;
+        downloadmangar_exitflag=DOWNLOAD_STATUS_STOPPING;
+    }
 
     while(downloadmangar_exitflag!=DOWNLOAD_STATUS_STOPPING)
     {

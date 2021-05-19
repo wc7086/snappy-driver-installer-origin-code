@@ -6,6 +6,22 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.10.3.732
+19 May 2021
+* Driver Packs 21.05.1
+* Fixed lockup when run with /autoupdate parameter and nothing to update.
+* Fixed bug failing to create log files.
+* Translations.
+* There were some compatability issues with the 7-zip code and the
+  gcc/mingw v8.1.0 code so I've rolled back gcc to the previous working version.
+* Tools updated as follows:
+  msys2 v20200903
+  gcc v7.3.0
+  boost v1.65.0
+  webp v1.1.0
+  libtorrent v1.0.11
+  7-Zip v17.01
+
 Version 1.10.2.731
 1 May 2021
 * Driver Packs 21.04.3
