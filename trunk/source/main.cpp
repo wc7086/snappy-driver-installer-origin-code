@@ -194,8 +194,7 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE hinst,LPSTR pStr,int nCmd)
     // Load settings
     init_CLIParam();
     if(!Settings.load_cfg_switch(GetCommandLineW()))
-        if(!Settings.load(L"sdi.cfg"))
-            Settings.load(L"tools\\SDI\\settings.cfg");
+        Settings.load(L"sdi.cfg");
 
     Settings.parse(GetCommandLineW(),1);
     RUN_CLI();
@@ -821,7 +820,6 @@ static BOOL CALLBACK DialogProc1(HWND hwnd,UINT msg,WPARAM wp,LPARAM lp)
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UP),STR(STR_OPTION_MAX_UPLOAD));
                 SetWindowText(GetDlgItem(data.pages[1],IDD_P2_UPD),STR(STR_OPTION_CHECKUPDATES));
                 SetWindowText(GetDlgItem(data.pages[1],IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
-                SetWindowText(GetDlgItem(data.pages[1],IDKEEPSEEDING),STR(STR_UPD_KEEPSEEDING));
 
                 SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR1),STR(STR_OPTION_DIR_DRIVERS));
                 SetWindowText(GetDlgItem(data.pages[2],IDD_P3_DIR2),STR(STR_OPTION_DIR_INDEXES));
@@ -1335,17 +1333,7 @@ void MainWindow_t::DownloadedTorrent(int TorrentResults)
     int LatestExeVersion=System.FindLatestExeVersion();
     int DriverPacksAvailable=TorrentResults&0xFF;
 
-    // user selected "continue seeding"
-    if(Settings.flags&FLAG_KEEPSEEDING)
-    {
-        if(Updater)
-        {
-            Settings.flags&=~FLAG_KEEPSEEDING;
-            Updater->StartSeedingDrivers();
-        }
-    }
-
-	else if(TorrentSelectionMode==TSM_AUTO)
+    if(TorrentSelectionMode==TSM_AUTO)
 	{
         // just finished downloading the first torrent after startup
         // if there are no drivers and no indexes
@@ -1693,10 +1681,6 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
             }
         case WM_INDEXESSAVED:
             {
-                if(Settings.flags&FLAG_KEEPSEEDING)
-                {
-                    ResetUpdater(Updater_t::activetorrent);
-                }
                 break;
             }
         case WM_DROPFILES:
@@ -1950,7 +1934,6 @@ LRESULT MainWindow_t::WndProcMain(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                         #ifdef USE_TORRENT
                         if(Updater)
                         {
-                            Settings.flags&=~FLAG_KEEPSEEDING;
                             if(Updater->isSeedingDrivers())Updater->StopSeedingDrivers();
                             else Updater->StartSeedingDrivers();
                         }

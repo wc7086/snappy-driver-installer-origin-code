@@ -289,7 +289,6 @@ STR_UPD_BTN_THISPC            = "Vali ainult need mida on vaja selle arvuti jaok
 STR_UPD_BTN_THISPC_H          = "Vajalike draiveri kogumikkude kindlaks määramiseks on vajalik enne allalaadida indeksid."
 STR_UPD_OPTIONS               = "Valikud"
 STR_UPD_ONLYUPDATES           = "Ära näita puuduvaid kogumikke"
-STR_UPD_KEEPSEEDING           = "Allalaadimise lõpuleviimine jätkub"
 STR_UPD_TOTALSIZE             = "Allalaadimise suurus: %d MB"
 STR_UPD_TOTALAVAIL            = "Vaba kettaruum: %d MB"
 STR_UPD_BTN_OK                = "OK"

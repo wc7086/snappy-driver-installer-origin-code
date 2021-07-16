@@ -289,7 +289,6 @@ STR_UPD_BTN_THISPC            = "סמן רק את אלה הנדרשים למחש
 STR_UPD_BTN_THISPC_H          = "על מנת שנוכל לקבוע איזה ערכת מנהל אתה צריך, עליך להוריד אינדקסים בתחילה."
 STR_UPD_OPTIONS               = "אפשרויות"
 STR_UPD_ONLYUPDATES           = "אל תידע אודות ערכות מנהל חסרות"
-STR_UPD_KEEPSEEDING           = "המשך זריעה לאחר סיום ההורדה"
 STR_UPD_TOTALSIZE             = "גודל הורדה סך הכל: %d MB"
 STR_UPD_TOTALAVAIL            = "מקסימום שטח פנוי: %d MB"
 STR_UPD_BTN_OK                = "אישור"
