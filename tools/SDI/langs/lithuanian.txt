@@ -289,7 +289,6 @@ STR_UPD_BTN_THISPC            = "Pažymėti tik tuos, kuriu reikia šiam kompiut
 STR_UPD_BTN_THISPC_H          = "Siekiant, kad būtų galima nustatyti, kurių driverpacks reikia, turite atsisiųsti indeksus."
 STR_UPD_OPTIONS               = "Galimybės"
 STR_UPD_ONLYUPDATES           = "Nepranešti apie trūkstamus driverpacks"
-STR_UPD_KEEPSEEDING           = "Tęskite sėją, kai baigsite atsisiuntimą"
 STR_UPD_TOTALSIZE             = "Visas atsisiuntimo dydis: %d MB"
 STR_UPD_TOTALAVAIL            = "Iš viso laisvos vietos: %d MB"
 STR_UPD_BTN_OK                = "Gerai"

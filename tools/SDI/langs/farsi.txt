@@ -289,7 +289,6 @@ STR_UPD_BTN_THISPC            = "فقط انتخاب موارد موردنیاز
 STR_UPD_BTN_THISPC_H          = "برای تشخیص درایورهای موردنیاز اول باید نمایه‌ها را دانلود کنید."
 STR_UPD_OPTIONS               = "گزینه‌ها"
 STR_UPD_ONLYUPDATES           = "برای درایورهای گم‌شده اخطار نده"
-STR_UPD_KEEPSEEDING           = "پس از اتمام دانلود به سید کردن ادامه دهید"
 STR_UPD_TOTALSIZE             = "مجموع اندازه دانلود شده: %d مگابایت"
 STR_UPD_TOTALAVAIL            = "مجموع فضای در دسترس: %d مگابایت"
 STR_UPD_BTN_OK                = "تأیید"

@@ -6,6 +6,15 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.11.0.735
+17 July 2021
+* Driver Packs 21.07.2
+* Removed auto seeding option, was too much of a problem.
+  You can still manually start seeding after a download is complete.
+* Fixed metro theme and replaced metallic as default theme.
+* Removed settings.cfg, no longer required.
+* Trimmed trackers.txt.
+
 Version 1.10.3.732
 19 May 2021
 * Driver Packs 21.05.1

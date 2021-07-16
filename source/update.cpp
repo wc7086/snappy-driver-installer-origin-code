@@ -447,7 +447,6 @@ void UpdateDialog_t::updateTexts()
     SetWindowText(GetDlgItem(hUpdate,IDSELECTION),STR(STR_UPD_SELECTION));
     SetWindowText(GetDlgItem(hUpdate,IDOPTIONS),STR(STR_UPD_OPTIONS));
     SetWindowText(GetDlgItem(hUpdate,IDONLYUPDATE),STR(STR_UPD_ONLYUPDATES));
-    SetWindowText(GetDlgItem(hUpdate,IDKEEPSEEDING),STR(STR_UPD_KEEPSEEDING));
     SetWindowText(GetDlgItem(hUpdate,IDCHECKALL),STR(STR_UPD_BTN_ALL));
     SetWindowText(GetDlgItem(hUpdate,IDUNCHECKALL),STR(STR_UPD_BTN_NONE));
     SetWindowText(GetDlgItem(hUpdate,IDCHECKNETWORK),STR(STR_UPD_BTN_NETWORK));
@@ -481,9 +480,7 @@ void UpdateDialog_t::updateButtons()
     bool avail=UpdateDialog.totalsize<UpdateDialog.totalavail;
     EnableWindow(GetDlgItem(hUpdate, IDOK),avail);
 
-    // disable Accept button not enough space or if seeding
-    bool chk=SendMessage(GetDlgItem(hUpdate, IDKEEPSEEDING),BM_GETCHECK,0,0);
-    EnableWindow(GetDlgItem(hUpdate, IDACCEPT),avail&&!chk);
+    EnableWindow(GetDlgItem(hUpdate, IDACCEPT),avail);
 }
 
 void UpdateDialog_t::setCheckboxes()
@@ -592,13 +589,12 @@ LRESULT CALLBACK UpdateDialog_t::NewButtonProc(HWND hWnd,UINT uMsg,WPARAM wParam
 BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam)
 {
     LVCOLUMN lvc;
-    HWND thispcbut,chk1,chk2;
+    HWND thispcbut,chk1;
     wchar_t buf[32];
     int i;
 
     thispcbut=GetDlgItem(hwnd,IDCHECKTHISPC);
     chk1=GetDlgItem(hwnd,IDONLYUPDATE);
-    chk2=GetDlgItem(hwnd,IDKEEPSEEDING);
 
     switch(Message)
     {
@@ -620,7 +616,6 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
             UpdateDialog.updateTexts();
             UpdateDialog.setCheckboxes();
             if(Settings.flags&FLAG_ONLYUPDATES)SendMessage(chk1,BM_SETCHECK,BST_CHECKED,0);
-            if(Settings.flags&FLAG_KEEPSEEDING)SendMessage(chk2,BM_SETCHECK,BST_CHECKED,0);
 
             wpOrigButtonProc=(WNDPROC)SetWindowLongPtr(thispcbut,GWLP_WNDPROC,(LONG_PTR)NewButtonProc);
             SetTimer(hwnd,1,2000,nullptr);
@@ -676,8 +671,6 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     UpdateDialog.setPriorities();
                     Settings.flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk1,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
-                    Settings.flags&=~FLAG_KEEPSEEDING;
-                    if(SendMessage(chk2,BM_GETCHECK,0,0))Settings.flags|=FLAG_KEEPSEEDING;
                     Updater->resumeDownloading();
                     EndDialog(hwnd,IDOK);
                     return TRUE;
@@ -686,11 +679,7 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     UpdateDialog.setPriorities();
                     Settings.flags&=~FLAG_ONLYUPDATES;
                     if(SendMessage(chk1,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
-                    Settings.flags&=~FLAG_KEEPSEEDING;
-                    if(SendMessage(chk2,BM_GETCHECK,0,0))Settings.flags|=FLAG_KEEPSEEDING;
                     Updater->resumeDownloading();
-                    if(Settings.flags&FLAG_KEEPSEEDING)
-                        EndDialog(hwnd,IDOK);
                     return TRUE;
 
                 case IDCANCEL:
@@ -703,10 +692,6 @@ BOOL CALLBACK UpdateDialog_t::UpdateProcedure(HWND hwnd,UINT Message,WPARAM wPar
                     if(SendMessage(chk1,BM_GETCHECK,0,0))Settings.flags|=FLAG_ONLYUPDATES;
                     UpdateDialog.populate(0,true);
                     break;
-
-                case IDKEEPSEEDING:
-                    UpdateDialog.updateButtons();
-                    return TRUE;
 
                 case IDCHECKALL:
                 case IDUNCHECKALL:

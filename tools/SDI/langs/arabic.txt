@@ -289,7 +289,6 @@ STR_UPD_BTN_THISPC            = "أختار فقط الذي يحتاجه هذا 
 STR_UPD_BTN_THISPC_H          = "من أجل تحديد أي حزمة تعريفات التي تحتاج إليها، يجب عليك تحميل الفهارس أولا."
 STR_UPD_OPTIONS               = "خيارات"
 STR_UPD_ONLYUPDATES           = "لا تبلغ عن حزمة التعريفات الناقصة"
-STR_UPD_KEEPSEEDING           = "مواصلة البذر بعد الانتهاء من التحميل"
 STR_UPD_TOTALSIZE             = "إجمالي حجم التحميل: %d ميجا بايت"
 STR_UPD_TOTALAVAIL            = "إجمالي المساحة المتاحة: %d MB"
 STR_UPD_BTN_OK                = "حسنا"
