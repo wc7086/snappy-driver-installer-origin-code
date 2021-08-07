@@ -1451,6 +1451,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
                          itembar->checked,zone>=0,1);
 
             wcscpy(bufw,STR(itembar->install_status));
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos+D_X(ITEM_TEXT_DIST_Y)/2,bufw);
             break;
 
@@ -1458,6 +1459,7 @@ int Manager::drawitem(Canvas &canvas,size_t index,int ofsy,int zone,int cutoff)
             wsprintf(bufw,L"%s (%d%s%d)",STR(itembar->isactive==2?STR_INDEXLZMA:STR_INDEXING),
                         (int)items_list[SLOT_INDEXING].val1,STR(STR_OF),
                         (int)items_list[SLOT_INDEXING].val2);
+            canvas.SetTextColor(D_C(boxindex[itembar->box_status()]+14));
             canvas.DrawTextXY(x+D_X(ITEM_TEXT_OFS_X),pos,bufw);
 
             if(*itembar->txt1)

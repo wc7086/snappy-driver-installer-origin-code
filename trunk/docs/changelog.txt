@@ -6,6 +6,12 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.11.1.736
+7 August 2021
+* Driver Packs 21.08.1
+* Fixed theme text color on restore point and indexing slots
+* Themes updated including a new Dark theme
+
 Version 1.11.0.735
 17 July 2021
 * Driver Packs 21.07.2
