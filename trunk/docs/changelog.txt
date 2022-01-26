@@ -6,7 +6,7 @@ www.snappy-driver-installer.org
 
 Change Log
 
-Version 1.12.2.741
+Version 1.12.2.742
 26 January 2022
 * Driver Packs 22.00.0
 * Under Windows 11, determining the state of system protection seems to
