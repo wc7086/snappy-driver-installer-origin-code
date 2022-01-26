@@ -6,6 +6,13 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.12.2.741
+26 January 2022
+* Driver Packs 22.00.0
+* Under Windows 11, determining the state of system protection seems to
+  be unreliable so SDIO will assume system protection is enabled and 
+  attempt to create a restore point which may or may not succeed.
+
 Version 1.12.1.740
 10 December 2021
 * Driver Packs 21.12.1

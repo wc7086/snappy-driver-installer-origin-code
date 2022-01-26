@@ -658,6 +658,9 @@ bool SystemImp::SystemProtectionEnabled(State *state)
             else if(err==ERROR_FILE_NOT_FOUND)ret=false;
             else Log.print_err("ERROR in SystemProtectionEnabled(): error in RegQueryValueEx %d\n",err);
         }
+        // windows 11 - unknown state
+        else if(vMajor==11)
+            ret=true;
         // every other version
         else
         {
