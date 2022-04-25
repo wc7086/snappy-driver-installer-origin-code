@@ -6,6 +6,10 @@ www.snappy-driver-installer.org
 
 Change Log
 
+Version 1.12.3.743
+26 April 2022
+* Driver Packs 22.04.3
+
 Version 1.12.2.742
 26 January 2022
 * Driver Packs 22.00.0
