@@ -2,9 +2,16 @@
 Snappy Driver Installer Origin
        by Glenn Delahoy
 www.snappy-driver-installer.org
+www.glenn.delahoy.com
 *******************************
 
 Change Log
+
+Version 1.12.4.744
+05 May 2022
+* Driver Packs 22.04.4
+* Updated del_old_driverpacks.bat to accomodate new DCH files.
+* Renewed code signing certificate
 
 Version 1.12.3.743
 26 April 2022
