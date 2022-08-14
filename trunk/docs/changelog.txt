@@ -7,9 +7,14 @@ www.glenn.delahoy.com
 
 Change Log
 
+Version 1.12.7.747
+14 August 2022
+* Driver Packs 22.08.1
+
 Version 1.12.6.746
 11 July 2022
 * Driver Packs 22.07.1
+* Translations
 
 Version 1.12.5.745
 07 June 2022
