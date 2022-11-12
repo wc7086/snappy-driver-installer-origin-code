@@ -7,6 +7,10 @@ www.glenn.delahoy.com
 
 Change Log
 
+Version 1.12.9.749
+13 November 2022
+* Driver Packs 22.11.2
+
 Version 1.12.8.748
 12 September 2022
 * Driver Packs 22.09.2
