@@ -7,6 +7,12 @@ www.glenn.delahoy.com
 
 Change Log
 
+Version 1.12.11.751
+15 April 2023
+* Sam Driver Packs 23.00.0
+* SDIO Driver Packs 23.04.3
+* Updated languages
+
 Version 1.12.10.750
 30 March 2023
 * Sam Driver Packs 23.00.0
