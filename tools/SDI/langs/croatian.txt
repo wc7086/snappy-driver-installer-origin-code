@@ -444,15 +444,15 @@ STR_USBWIZ_PAGE2_DELCONF1     = "Uklonit ćete sve podatke s prijenosnog pogona"
 STR_USBWIZ_PAGE2_DELCONF2     = "Jeste li sigurni da to želite učiniti?"
 
 // USB Wizard - page 3
-STR_USBWIZ_PAGE3_TITLE        = "Driver Packs"
-STR_USBWIZ_PAGE3_SUBTITLE     = "Select which driver packs and indexes to include."
-STR_USBWIZ_PAGE3_SELECT       = "Select driver packs to include:"
-STR_USBWIZ_PAGE3_ALLPACKS     = "All driver packs and indexes"
-STR_USBWIZ_PAGE3_NETWORK      = "Network driver packs and indexes"
-STR_USBWIZ_PAGE3_SELECTED     = "Selected driver packs and indexes"
-STR_USBWIZ_PAGE3_NOPACKS      = "No driver packs"
-STR_USBWIZ_PAGE3_ADDPATH      = "Specify additional driver directory"
-STR_USBWIZ_PAGE3_INDEXES      = "Include online indexes"
+STR_USBWIZ_PAGE3_TITLE        = "Paketi vozača"
+STR_USBWIZ_PAGE3_SUBTITLE     = "Odaberite koje pakete upravljačkih programa i indekse uključiti."
+STR_USBWIZ_PAGE3_SELECT       = "Odaberite pakete upravljačkih programa koje želite uključiti:"
+STR_USBWIZ_PAGE3_ALLPACKS     = "Svi paketi drajvera i indeksi"
+STR_USBWIZ_PAGE3_NETWORK      = "Paketi mrežnih upravljačkih programa i indeksi"
+STR_USBWIZ_PAGE3_SELECTED     = "Odabrani paketi upravljačkih programa i indeksi"
+STR_USBWIZ_PAGE3_NOPACKS      = "Nema vozačkih paketa"
+STR_USBWIZ_PAGE3_ADDPATH      = "Navedite dodatni direktorij upravljačkog programa"
+STR_USBWIZ_PAGE3_INDEXES      = "Uključite online indekse"
 
 // USB Wizard - page 4
 STR_USBWIZ_PAGE4_TITLE        = "Environment"
@@ -473,10 +473,10 @@ STR_USBWIZ_PAGE4_INCAUTO      = "Include autorun.inf and SDIO_auto.bat"
 STR_USBWIZ_PAGE4_EXESIZE      = "Executable Size:"
 
 // USB Wizard - page 5
-STR_USBWIZ_PAGE5_TITLE        = "Ready To Begin"
-STR_USBWIZ_PAGE5_DESC         = "We have all the information we need. When you click the Finish button the process will begin."
+STR_USBWIZ_PAGE5_TITLE        = "Spremni za početak"
+STR_USBWIZ_PAGE5_DESC         = "Imamo sve informacije koje su nam potrebne. Kada kliknete gumb Završi, proces će započeti."
 
 // USB Wizard - progress
-STR_USBWIZ_PROGR_TITLE        = "Creating USB Drive"
-STR_USBWIZ_PROGR_COPYING      = "Copying files"
-STR_USBWIZ_PROGR_DELETING     = "Deleting files from removable drive"
+STR_USBWIZ_PROGR_TITLE        = "Stvaranje USB pogona"
+STR_USBWIZ_PROGR_COPYING      = "Kopiranje datoteka"
+STR_USBWIZ_PROGR_DELETING     = "Brisanje datoteka s prijenosnog diska"
