@@ -1,0 +1,29 @@
+name: SDI Lite Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install build dependencies
+      run: sudo apt-get install -y codeblocks gcc g++
+
+    - name: Build SDI Lite
+      run: |
+        cd project
+        codeblocks --rebuild --target=SDI_Lite Drivers.cbp
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: SDI Lite
+        path: project/output/sdi.exe
