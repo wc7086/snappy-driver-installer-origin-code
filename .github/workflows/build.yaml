@@ -17,7 +17,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y codeblocks gcc g++ xvfb
+        sudo apt-get install -y codeblocks gcc g++ xvfb libgtk-3-dev libglib2.0-dev libcairo2-dev libpango1.0-dev libatk1.0-dev
 
     - name: Start Xvfb
       run: |
